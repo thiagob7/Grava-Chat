@@ -1,4 +1,5 @@
 import { useEffect } from "react";
+import { conversationOnDisk } from "~/@core/infra/cache/conversa-no-disco";
 import { readVoice } from "~/lib/ler-em-voz";
 import { useNavigate } from "react-router";
 import { useQueryClient, type QueryClient } from "@tanstack/react-query";
@@ -365,6 +366,15 @@ export function useRealtime(
 
     const handleMessageCreated = (message: PendingMessageModel) => {
       cache.appendMessage(queryClient, message);
+
+      /*
+        Guarda a mensagem nova no disco na hora em que ela chega, e não só
+        quando a página for buscada de novo. Sem isto, quem fica com a conversa
+        aberta acumula na tela um monte de mensagem que o cache não tem, e a
+        próxima abertura vem com um buraco no meio.
+      */
+      void conversationOnDisk.write(message.channelId, [message]);
+
       notify(message);
       cache.patchGuildsWhere(
         queryClient,
@@ -522,12 +532,19 @@ export function useRealtime(
     };
 
     onMessageCreated(handleMessageCreated);
-    onMessageUpdated((message) =>
-      cache.patchMessage(queryClient, message.channelId, message.id, message),
-    );
-    onMessageDeleted(({ channelId, messageId }) =>
-      cache.removeMessage(queryClient, channelId, messageId),
-    );
+    onMessageUpdated((message) => {
+      cache.patchMessage(queryClient, message.channelId, message.id, message);
+      void conversationOnDisk.write(message.channelId, [message]);
+    });
+    onMessageDeleted(({ channelId, messageId }) => {
+      cache.removeMessage(queryClient, channelId, messageId);
+
+      /*
+        Tira do disco também, senão a mensagem apagada volta a aparecer na
+        próxima abertura — some da tela agora e reaparece amanhã.
+      */
+      void conversationOnDisk.forgetMessage(messageId);
+    });
     onMessageReactions(({ channelId, messageId, reactions }) =>
       cache.patchMessage(queryClient, channelId, messageId, {
         reactions: reactions.map((r) => ({

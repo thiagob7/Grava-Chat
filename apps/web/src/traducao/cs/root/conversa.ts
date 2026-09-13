@@ -133,6 +133,10 @@ export const conversa = {
       outro: "Jiné",
     },
   },
+  fila: {
+    esperando: "Odejde, jakmile se obnoví připojení",
+  },
+
   falha: {
     tentarDeNovo: "Zkusit znovu",
     erro: "Nedoručeno",
@@ -321,5 +325,10 @@ export const conversa = {
     doQueSeTrata: "O co jde?",
     primeiraMensagem: "První zpráva",
     conteDoCaso: "Popiš to",
+  },
+  sistema: {
+    naoEntregue: "Zprávu se nepodařilo doručit. Obvykle je to tím, že nesdílíte žádnou komunitu, nebo tím, že tato osoba přijímá přímé zprávy jen od přátel. Možná budete muset upravit i své soukromí v Nastavení > Soukromí.",
+    soVoce: "Tuto zprávu vidíte jen vy.",
+    dispensar: "Zavřít",
   },
 };

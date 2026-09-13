@@ -252,6 +252,18 @@ export const overwriteSchema = z.object({
 export type Overwrite = z.infer<typeof overwriteSchema>;
 export type GuildMember = z.infer<typeof guildMemberSchema>;
 
+/*
+  De que aparelho a pessoa entrou na chamada.
+
+  Serve para a etiqueta do quadro dizer "está no celular" — o que muda o que se
+  espera de quem está do outro lado. Quem está no telefone pode estar andando na
+  rua, com o áudio picotando, e isso não é defeito do seu app.
+
+  `null` é o estado normal de quem entrou por uma versão antiga do cliente.
+*/
+export const VOICE_DEVICES = ["desktop", "web", "mobile"] as const;
+export type VoiceDevice = (typeof VOICE_DEVICES)[number];
+
 export const voiceStateSchema = z.object({
   userId: objectId,
   channelId: objectId,
@@ -266,6 +278,7 @@ export const voiceStateSchema = z.object({
   serverDeaf: z.boolean(),
   camera: z.boolean(),
   screenShare: z.boolean(),
+  device: z.enum(VOICE_DEVICES).nullable(),
 });
 export type VoiceState = z.infer<typeof voiceStateSchema>;
 
@@ -321,6 +334,8 @@ export const sendMessageInput = z.object({
     .optional(),
   mentionAuthor: z.boolean().optional(),
   nonce: z.string().max(64).optional(),
+  /* Reenvio da fila offline: pode chegar dias depois, quando o recibo do Redis já venceu. */
+  retry: z.boolean().optional(),
 });
 
 export const editMessageInput = z.object({

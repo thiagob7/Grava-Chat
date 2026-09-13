@@ -133,6 +133,10 @@ export const conversa = {
       outro: "Kita",
     },
   },
+  fila: {
+    esperando: "Bus išsiųsta, kai grįš ryšys",
+  },
+
   falha: {
     tentarDeNovo: "Bandyti dar kartą",
     erro: "Nepristatyta",
@@ -321,5 +325,10 @@ export const conversa = {
     doQueSeTrata: "Apie ką tai?",
     primeiraMensagem: "Pirma žinutė",
     conteDoCaso: "Papasakok",
+  },
+  sistema: {
+    naoEntregue: "Jūsų žinutės nepavyko pristatyti. Paprastai taip nutinka, nes neturite bendros bendruomenės arba šis žmogus priima tiesiogines žinutes tik iš draugų. Gali tekti pakeisti ir savo privatumą: Nustatymai > Privatumas.",
+    soVoce: "Šią žinutę matote tik jūs.",
+    dispensar: "Atmesti",
   },
 };

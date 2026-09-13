@@ -133,6 +133,10 @@ export const conversa = {
       outro: "Inne",
     },
   },
+  fila: {
+    esperando: "Wyśle się, gdy wróci połączenie",
+  },
+
   falha: {
     tentarDeNovo: "Spróbuj ponownie",
     erro: "Nie dostarczono",
@@ -321,5 +325,10 @@ export const conversa = {
     doQueSeTrata: "O co chodzi?",
     primeiraMensagem: "Pierwsza wiadomość",
     conteDoCaso: "Opowiedz",
+  },
+  sistema: {
+    naoEntregue: "Nie udało się dostarczyć wiadomości. Zwykle dzieje się tak, gdy nie macie wspólnej społeczności albo gdy ta osoba przyjmuje wiadomości prywatne tylko od znajomych. Możliwe, że musisz też zmienić własną prywatność w Ustawienia > Prywatność.",
+    soVoce: "Tylko ty widzisz tę wiadomość.",
+    dispensar: "Odrzuć",
   },
 };

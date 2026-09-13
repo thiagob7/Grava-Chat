@@ -9,6 +9,7 @@ import {
   Flag,
   Hash,
   Link2,
+  Clock,
   MailOpen,
   MoreHorizontal,
   Forward,
@@ -311,7 +312,7 @@ export const MessageItem: React.FC<MessageItemProps> = ({
             flxCls("messageMentions"),
           ),
         highlighted && "bg-brand/15 shadow-[inset_2px_0_0_var(--color-brand)]",
-        message.pending && "opacity-60",
+        (message.pending || message.queued) && "opacity-60",
         message.failed && "bg-danger-fundo",
       )}
     >
@@ -461,10 +462,23 @@ export const MessageItem: React.FC<MessageItemProps> = ({
           onRemove={canDelete ? deleteAttachment : undefined}
         />
 
-        {message.failed && (
-          <div data-gc="conversa.message-item.div--9" className="mt-1 flex flex-wrap items-center gap-1 text-xs text-danger">
+        {/*
+          Esperando não é falha, então não leva vermelho nem triângulo. Leva um
+          relógio e a promessa de que sai sozinha — que é o que de fato vai
+          acontecer.
+        */}
+        {message.queued && (
+          <div data-gc="conversa.message-item.div--9" className="mt-1 flex items-center gap-1 text-xs text-ink-faint">
+            <Clock data-gc="conversa.message-item.clock" size={12} />
+            <span data-gc="conversa.message-item.span--14">{t("conversa.fila.esperando")}</span>
+          </div>
+        )}
+
+        {/* Na recusa por não entregar, quem explica é o aviso do Gravaê logo abaixo. */}
+        {message.failed && message.reason !== "nao-entregue" && (
+          <div data-gc="conversa.message-item.div--10" className="mt-1 flex flex-wrap items-center gap-1 text-xs text-danger">
             <TriangleAlert data-gc="conversa.message-item.triangle-alert" size={12} />
-            <span data-gc="conversa.message-item.span--14">{t(failureKey(message.reason))}</span>
+            <span data-gc="conversa.message-item.span--15">{t(failureKey(message.reason))}</span>
 
             {newCanTry(message.reason) && (
               <button data-gc="conversa.message-item.button--5" onClick={() => onRetry(message)} className="flex items-center gap-1 hover:underline">
@@ -475,7 +489,7 @@ export const MessageItem: React.FC<MessageItemProps> = ({
         )}
 
         {showReactions && message.reactions.length > 0 && (
-          <div data-gc="conversa.message-item.div--10" className="mt-1 flex flex-wrap items-center gap-1">
+          <div data-gc="conversa.message-item.div--11" className="mt-1 flex flex-wrap items-center gap-1">
             {message.reactions.map((reaction) => (
               <ReactionPill data-gc="conversa.message-item.reaction-pill"
                 key={reaction.emoji}
@@ -515,8 +529,8 @@ export const MessageItem: React.FC<MessageItemProps> = ({
         )}
       </div>
 
-      {!message.pending && !message.failed && !editing && (
-        <div data-gc="conversa.message-item.div--11"
+      {!message.pending && !message.queued && !message.failed && !editing && (
+        <div data-gc="conversa.message-item.div--12"
           className={cn(
             "barra-da-mensagem absolute -top-3 right-2 z-10 max-w-[calc(100%-1rem)] items-center gap-0.5 rounded border border-line bg-surface-1 p-0.5 shadow-lg @sm:right-4",
             flxCls("messageBar"),
@@ -625,7 +639,7 @@ export const MessageItem: React.FC<MessageItemProps> = ({
 
             <DropdownMenuContent data-gc="conversa.message-item.dropdown-menu-content" align="end" className="w-60">
               {showReactions && (
-                <div data-gc="conversa.message-item.div--12" className="mb-1 flex items-center gap-0.5 border-b border-line px-1 pb-1.5">
+                <div data-gc="conversa.message-item.div--13" className="mb-1 flex items-center gap-0.5 border-b border-line px-1 pb-1.5">
                   {shortcuts.map((emoji) => (
                     <ReactionShortcut data-gc="conversa.message-item.reaction-shortcut--2"
                       key={emoji}
@@ -846,18 +860,18 @@ const ReactionPill: React.FC<{
       onOpenChange={setIsOpen}
       className="max-w-[18rem] px-3 py-4"
       label={
-        <span data-gc="conversa.message-item.span--15" className="flex items-center gap-3 text-left">
+        <span data-gc="conversa.message-item.span--16" className="flex items-center gap-3 text-left">
           <ReactionEmoji data-gc="conversa.message-item.reaction-emoji"
             emoji={reaction.emoji}
             fromServer={emojis}
             className="size-12 shrink-0"
           />
 
-          <span data-gc="conversa.message-item.span--16" className="flex min-w-0 flex-col gap-0.5">
-            <span data-gc="conversa.message-item.span--17" className="text-sm font-semibold leading-tight text-ink">
+          <span data-gc="conversa.message-item.span--17" className="flex min-w-0 flex-col gap-0.5">
+            <span data-gc="conversa.message-item.span--18" className="text-sm font-semibold leading-tight text-ink">
               {whoReactedPhrase(t, reaction, names)}
             </span>
-            <span data-gc="conversa.message-item.span--18" className="text-xs text-ink-muted">
+            <span data-gc="conversa.message-item.span--19" className="text-xs text-ink-muted">
               {t("conversa.reacao.dicaSuper")}
             </span>
           </span>
@@ -876,7 +890,7 @@ const ReactionPill: React.FC<{
         )}
       >
         <ReactionEmoji data-gc="conversa.message-item.reaction-emoji--2" emoji={reaction.emoji} fromServer={emojis} />
-        <span data-gc="conversa.message-item.span--19" className="text-xs font-medium text-ink-muted">{reaction.count}</span>
+        <span data-gc="conversa.message-item.span--20" className="text-xs font-medium text-ink-muted">{reaction.count}</span>
       </button>
     </Tooltip>
   );
@@ -941,7 +955,7 @@ const Quote: React.FC<{
     onKeyDown={(e) => e.key === "Enter" && irForOriginal()}
     className={cn("mb-0.5 flex h-5 w-full items-center gap-1.5 overflow-hidden pl-5 text-xs", replyToId && "cursor-pointer [&:hover_.texto-da-citacao]:text-ink", flxCls("messagePreview"), flxCls("replied"))}
   >
-    <span data-gc="conversa.message-item.span--20"
+    <span data-gc="conversa.message-item.span--21"
       aria-hidden
       className="-mb-0.5 h-4 w-5 shrink-0 self-end rounded-tl-lg border-l-2 border-t-2 border-line"
     />
@@ -957,12 +971,12 @@ const Quote: React.FC<{
               size={16}
               className={flxCls("quoteAvatar")}
             />
-            <span data-gc="conversa.message-item.span--21" {...flx("quoteName", "max-w-[7rem] truncate font-medium text-ink hover:underline @sm:max-w-[12rem]")}>
+            <span data-gc="conversa.message-item.span--22" {...flx("quoteName", "max-w-[7rem] truncate font-medium text-ink hover:underline @sm:max-w-[12rem]")}>
               @{replied.author.displayName}
             </span>
           </button>
         </UserProfilePopover>
-        <span data-gc="conversa.message-item.span--22" {...flx("quoteText", "texto-da-citacao min-w-0 truncate text-ink-muted transition [&_img]:inline-block [&_img]:size-4 [&_img]:align-text-bottom")}>
+        <span data-gc="conversa.message-item.span--23" {...flx("quoteText", "texto-da-citacao min-w-0 truncate text-ink-muted transition [&_img]:inline-block [&_img]:size-4 [&_img]:align-text-bottom")}>
           {replied.content ? (
             <MessageContent data-gc="conversa.message-item.message-content--3" content={replied.content} emojis={emojis} mentions={mentions} />
           ) : (
@@ -971,7 +985,7 @@ const Quote: React.FC<{
         </span>
       </>
     ) : (
-      <span data-gc="conversa.message-item.span--23" className="italic text-ink-faint">{t("conversa.mensagem.citacaoSumiu")}</span>
+      <span data-gc="conversa.message-item.span--24" className="italic text-ink-faint">{t("conversa.mensagem.citacaoSumiu")}</span>
     )}
     </div>
   );
@@ -987,7 +1001,7 @@ const Forwarded: React.FC<{
   const channel = guild?.channels.find((c) => c.id === origin.channelId);
 
   return (
-    <div data-gc="conversa.message-item.div--13" className={cn(flxCls("forwardedBox"), "mb-0.5 flex w-full items-center pl-5")}>
+    <div data-gc="conversa.message-item.div--14" className={cn(flxCls("forwardedBox"), "mb-0.5 flex w-full items-center pl-5")}>
       <button data-gc="conversa.message-item.button--10"
         type="button"
         onClick={() =>
@@ -1004,8 +1018,8 @@ const Forwarded: React.FC<{
         )}
       >
         <Forward data-gc="conversa.message-item.forward--3" size={12} />
-        <span data-gc="conversa.message-item.span--24" className={flxCls("originLabel")}>{t("conversa.mensagem.encaminhadaDe")}</span>
-        <span data-gc="conversa.message-item.span--25" className={cn(flxCls("originName"), "font-medium text-ink")}>
+        <span data-gc="conversa.message-item.span--25" className={flxCls("originLabel")}>{t("conversa.mensagem.encaminhadaDe")}</span>
+        <span data-gc="conversa.message-item.span--26" className={cn(flxCls("originName"), "font-medium text-ink")}>
           {channel ? `#${channel.name}` : "…"}
         </span>
       </button>
@@ -1017,25 +1031,25 @@ const MessagePreview: React.FC<{
   message: Message | PendingMessageModel;
   emojis: GuildEmoji[];
 }> = ({ message, emojis }) => (
-  <div data-gc="conversa.message-item.div--14" className="mt-3 max-h-56 overflow-y-auto rounded-lg border border-line bg-surface-2 p-3">
-    <div data-gc="conversa.message-item.div--15" className="flex items-baseline gap-2">
+  <div data-gc="conversa.message-item.div--15" className="mt-3 max-h-56 overflow-y-auto rounded-lg border border-line bg-surface-2 p-3">
+    <div data-gc="conversa.message-item.div--16" className="flex items-baseline gap-2">
       <Avatar data-gc="conversa.message-item.avatar--3"
         id={message.author.id}
         name={message.author.displayName}
         url={message.author.avatarUrl}
         size={20}
       />
-      <span data-gc="conversa.message-item.span--26" className="truncate text-sm font-medium">{message.author.displayName}</span>
-      <span data-gc="conversa.message-item.span--27" className="shrink-0 text-xs text-ink-faint">
+      <span data-gc="conversa.message-item.span--27" className="truncate text-sm font-medium">{message.author.displayName}</span>
+      <span data-gc="conversa.message-item.span--28" className="shrink-0 text-xs text-ink-faint">
         {formatTimestamp(message.createdAt)}
       </span>
     </div>
 
-    <div data-gc="conversa.message-item.div--16" className="mt-1 break-words text-sm text-ink-muted">
+    <div data-gc="conversa.message-item.div--17" className="mt-1 break-words text-sm text-ink-muted">
       {message.content ? (
         <MessageContent data-gc="conversa.message-item.message-content--4" content={message.content} emojis={emojis} blocks />
       ) : (
-        <span data-gc="conversa.message-item.span--28" className="italic text-ink-faint">sem text</span>
+        <span data-gc="conversa.message-item.span--29" className="italic text-ink-faint">sem text</span>
       )}
     </div>
   </div>

@@ -133,6 +133,10 @@ export const conversa = {
       outro: "Altele",
     },
   },
+  fila: {
+    esperando: "Se va trimite când revine conexiunea",
+  },
+
   falha: {
     tentarDeNovo: "Încearcă din nou",
     erro: "Nu a fost livrat",
@@ -321,5 +325,10 @@ export const conversa = {
     doQueSeTrata: "Despre ce e vorba?",
     primeiraMensagem: "Primul mesaj",
     conteDoCaso: "Spune despre ce e",
+  },
+  sistema: {
+    naoEntregue: "Mesajul tău nu a putut fi livrat. De obicei se întâmplă pentru că nu aveți nicio comunitate comună sau pentru că persoana acceptă mesaje directe doar de la prieteni. S-ar putea să trebuiască să-ți ajustezi și confidențialitatea în Setări > Confidențialitate.",
+    soVoce: "Doar tu poți vedea acest mesaj.",
+    dispensar: "Închide",
   },
 };

@@ -133,6 +133,10 @@ export const conversa = {
       outro: "Ostalo",
     },
   },
+  fila: {
+    esperando: "Poslat će se kad se veza vrati",
+  },
+
   falha: {
     tentarDeNovo: "Pokušaj ponovno",
     erro: "Nije dostavljeno",
@@ -321,5 +325,10 @@ export const conversa = {
     doQueSeTrata: "O čemu se radi?",
     primeiraMensagem: "Prva poruka",
     conteDoCaso: "Ispričaj",
+  },
+  sistema: {
+    naoEntregue: "Tvoja poruka nije mogla biti isporučena. To se obično događa jer nemate zajedničku zajednicu ili jer ta osoba prima izravne poruke samo od prijatelja. Možda ćeš trebati prilagoditi i vlastitu privatnost u Postavke > Privatnost.",
+    soVoce: "Samo ti vidiš ovu poruku.",
+    dispensar: "Odbaci",
   },
 };

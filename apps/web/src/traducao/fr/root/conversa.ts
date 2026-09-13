@@ -133,6 +133,10 @@ export const conversa = {
       outro: "Autre",
     },
   },
+  fila: {
+    esperando: "Sera envoyé au retour de la connexion",
+  },
+
   falha: {
     tentarDeNovo: "Réessayer",
     erro: "Non remis",
@@ -321,5 +325,10 @@ export const conversa = {
     doQueSeTrata: "De quoi s'agit-il ?",
     primeiraMensagem: "Premier message",
     conteDoCaso: "Racontez",
+  },
+  sistema: {
+    naoEntregue: "Ton message n'a pas pu être distribué. Cela arrive souvent parce que vous ne partagez aucune communauté, ou parce que cette personne n'accepte les messages privés que de ses amis. Tu devras peut-être aussi ajuster ta confidentialité dans Paramètres > Confidentialité.",
+    soVoce: "Toi seul peux voir ce message.",
+    dispensar: "Ignorer",
   },
 };

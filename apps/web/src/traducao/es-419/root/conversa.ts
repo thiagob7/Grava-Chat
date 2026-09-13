@@ -133,6 +133,10 @@ export const conversa = {
       outro: "Otro",
     },
   },
+  fila: {
+    esperando: "Se enviará cuando vuelva la conexión",
+  },
+
   falha: {
     tentarDeNovo: "Intentar de nuevo",
     erro: "No se entregó",
@@ -321,5 +325,10 @@ export const conversa = {
     doQueSeTrata: "¿De qué se trata?",
     primeiraMensagem: "Primer mensaje",
     conteDoCaso: "Contanos",
+  },
+  sistema: {
+    naoEntregue: "No se pudo entregar tu mensaje. Suele pasar porque no comparten ninguna comunidad o porque esa persona solo acepta mensajes directos de amigos. Quizá también debas ajustar tu privacidad en Configuración > Privacidad.",
+    soVoce: "Solo tú puedes ver este mensaje.",
+    dispensar: "Descartar",
   },
 };

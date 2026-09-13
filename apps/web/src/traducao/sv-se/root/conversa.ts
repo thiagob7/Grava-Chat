@@ -133,6 +133,10 @@ export const conversa = {
       outro: "Annat",
     },
   },
+  fila: {
+    esperando: "Skickas när anslutningen är tillbaka",
+  },
+
   falha: {
     tentarDeNovo: "Försök igen",
     erro: "Levererades inte",
@@ -321,5 +325,10 @@ export const conversa = {
     doQueSeTrata: "Vad handlar det om?",
     primeiraMensagem: "Första meddelandet",
     conteDoCaso: "Berätta",
+  },
+  sistema: {
+    naoEntregue: "Ditt meddelande kunde inte levereras. Det beror oftast på att ni inte delar någon gemenskap, eller på att personen bara tar emot direktmeddelanden från vänner. Du kan också behöva justera din egen integritet under Inställningar > Integritet.",
+    soVoce: "Bara du kan se det här meddelandet.",
+    dispensar: "Avfärda",
   },
 };

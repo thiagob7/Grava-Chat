@@ -24,6 +24,7 @@ import {
   WINDOW_S as FLOW_S_WINDOW,
 } from "~/lib/fluxo-de-mensagens.js";
 import { uploadService } from "./upload-service.js";
+import { friendshipService } from "./friendship-service.js";
 import type { EditMessageInput, SendMessageInput } from "~/validations/message.js";
 
 const USER_MENTION = /<@([a-f\d]{24})>/gi;
@@ -65,11 +66,60 @@ async function resolveMentions(
 
 const WHO_REACTED_LIMIT = 50;
 
+/*
+  Dez minutos de recibo.
+
+  É folgado para o que a fila faz — ela reenvia assim que a rede volta, o que é
+  questão de segundos — e curto para o Redis, que não fica carregando recibo de
+  conversa de ontem.
+*/
+const RECEIPT_S_TTL = 10 * 60;
+
+/*
+  A mensagem que este `nonce` já criou, se criou.
+
+  Uma chave órfã é possível: o recibo pode ter sobrevivido a uma mensagem que
+  foi apagada depois. Nesse caso o certo é deixar passar como envio novo, e não
+  devolver um fantasma — por isso a busca no banco também decide.
+*/
+async function receiptOf(userId: string, input: { nonce: string; channelId: string; retry?: boolean }) {
+  const messageId = await redis.get(keys.sendReceipt(userId, input.nonce)).catch(() => null);
+
+  const found = messageId
+    ? await messageRepository.findByIdWithRelations(messageId).catch(() => null)
+    : input.retry
+      ? await messageRepository
+          .findByNonce(input.channelId, userId, input.nonce, new Date(Date.now() - RETRY_WINDOW_MS))
+          .catch(() => null)
+      : null;
+
+  if (!found || found.deletedAt) return null;
+
+  const message = toMessage(found, userId);
+  replays.add(message);
+  return message;
+}
+
+/*
+  A fila guarda por sete dias; a janela vai um dia além para cobrir fuso e
+  relógio torto de quem reenvia.
+*/
+const RETRY_WINDOW_MS = 8 * 24 * 60 * 60 * 1000;
+
+/*
+  As mensagens devolvidas por recibo, e não criadas agora. Quem difunde
+  pergunta aqui para não anunciar de novo ao canal o que todo mundo já recebeu:
+  anunciar outra vez contava não lida e tocava notificação em dobro.
+*/
+const replays = new WeakSet<object>();
+
+export const wasReplay = (message: object) => replays.has(message);
+
 export const messageService = {
   async history(
     userId: string,
     channelId: string,
-    params: { before?: string; limit: number; postId?: string },
+    params: { before?: string; after?: string; limit: number; postId?: string },
   ) {
     const { context } = await accessService.requireChannelAccess(userId, channelId);
 
@@ -79,8 +129,15 @@ export const messageService = {
 
     const messages = await messageRepository.findPage({ channelId, ...params });
 
+    /*
+      O banco devolve da borda do cursor para fora, então `before` vem do mais
+      novo para o mais velho e `after` vem ao contrário. Quem lê espera sempre a
+      mesma ordem, da mais velha para a mais nova, e é isso que sai daqui.
+    */
+    const ordered = params.after ? messages : messages.reverse();
+
     return {
-      messages: messages.reverse().map((m) => toMessage(m, userId)),
+      messages: ordered.map((m) => toMessage(m, userId)),
       hasMore: messages.length === params.limit,
       withoutHistory: false as const,
     };
@@ -141,6 +198,23 @@ export const messageService = {
   },
 
   async send(userId: string, input: SendMessageInput) {
+    /*
+      O reenvio não pode virar mensagem nova.
+
+      Quando a rede cai depois do pedido sair mas antes da resposta voltar, o
+      aplicativo não tem como saber se chegou. A fila reenvia — é o certo a
+      fazer — e cabe ao servidor reconhecer que é a MESMA mensagem.
+
+      O recibo é consultado antes de qualquer trabalho: antes de permissão, de
+      modo lento, de limite de fluxo. Um reenvio não é uma tentativa nova de
+      falar, é a mesma de antes chegando enfim, e não deve gastar cota nem
+      esbarrar no modo lento de novo.
+    */
+    const already = input.nonce
+      ? await receiptOf(userId, { nonce: input.nonce, channelId: input.channelId, retry: input.retry })
+      : null;
+    if (already) return already;
+
     const { channel, context } = await accessService.requireChannelAccess(userId, input.channelId);
 
     if (channel.type === "FORUM" && !input.postId) {
@@ -158,6 +232,8 @@ export const messageService = {
           "recusada",
         );
       }
+
+      if (other && !other.isBot) await friendshipService.requireDeliverable(userId, channel.id, other);
     }
 
     let messageGuild: Awaited<ReturnType<typeof guildRepository.findById>> = null;
@@ -235,6 +311,7 @@ export const messageService = {
       ...(input.stickerId ? { stickerId: input.stickerId } : {}),
       ...(input.postId ? { postId: input.postId } : {}),
       replyToId: input.replyToId ?? null,
+      ...(input.nonce ? { nonce: input.nonce } : {}),
       channelForwardedId: input.forwarded?.channelId ?? null,
       messageForwardedId: input.forwarded?.messageId ?? null,
       mentions: unique([
@@ -247,6 +324,17 @@ export const messageService = {
     if (input.postId) await forumService.registerReply(input.postId).catch(() => undefined);
 
     await readStateRepository.markRead(userId, input.channelId, created.id);
+
+    if (input.nonce) {
+      /*
+        Falhar aqui não pode desfazer uma mensagem que já existe. O pior caso
+        de perder o recibo é um reenvio duplicar, e isso é menos grave do que
+        derrubar um envio que deu certo.
+      */
+      await redis
+        .set(keys.sendReceipt(userId, input.nonce), created.id, "EX", RECEIPT_S_TTL)
+        .catch(() => undefined);
+    }
 
     return toMessage(created, userId);
   },
@@ -653,11 +741,23 @@ async function verifiedRequireEmail(
   ).having("recusada");
 }
 
+/*
+  Os dois comandos vão juntos de propósito.
+
+  Separados, existia uma janela entre o `incr` e o `expire` em que a API podia
+  morrer. A chave ficava sem prazo, o contador nunca zerava, e como o teste é
+  "usos acima do limite" a pessoa levava 429 em toda mensagem PARA SEMPRE — com
+  a tela dizendo "espere 1s", porque o tempo restante voltava como -1.
+
+  O `NX` é o que mantém a janela fixa: só põe prazo em chave que ainda não tem,
+  então contar de novo não empurra o fim da janela para a frente. É o mesmo
+  feitio que a cota de upload já usava.
+*/
 async function ensureFlow(userId: string) {
   const key = keys.messagesFlow(userId);
 
-  const uses = await redis.incr(key);
-  if (uses === 1) await redis.expire(key, FLOW_S_WINDOW);
+  const rounds = await redis.multi().incr(key).expire(key, FLOW_S_WINDOW, "NX").exec();
+  const uses = Number(rounds?.[0]?.[1] ?? 0);
 
   if (flowPassed(uses)) {
     throw new AppError(flowMessage(await redis.ttl(key)), 429).having("depressa");

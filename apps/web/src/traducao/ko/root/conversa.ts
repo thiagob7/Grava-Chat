@@ -133,6 +133,10 @@ export const conversa = {
       outro: "기타",
     },
   },
+  fila: {
+    esperando: "연결이 돌아오면 전송됩니다",
+  },
+
   falha: {
     tentarDeNovo: "다시 시도",
     erro: "전송되지 않음",
@@ -321,5 +325,10 @@ export const conversa = {
     doQueSeTrata: "무엇에 대한 건가요?",
     primeiraMensagem: "첫 메시지",
     conteDoCaso: "자세히 적어 주세요",
+  },
+  sistema: {
+    naoEntregue: "메시지를 전달하지 못했어요. 보통 같은 커뮤니티에 함께 있지 않거나, 상대가 친구에게서만 다이렉트 메시지를 받도록 설정했을 때 발생해요. 설정 > 개인정보 보호에서 내 설정도 확인해야 할 수 있어요.",
+    soVoce: "이 메시지는 나만 볼 수 있어요.",
+    dispensar: "닫기",
   },
 };
