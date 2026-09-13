@@ -9,6 +9,7 @@ import type {
   BridgeDesktop,
   MediaKind,
   AppVersions,
+  QueuedSend,
 } from "@gravae/shared";
 
 const bridge: BridgeDesktop = {
@@ -121,6 +122,37 @@ const bridge: BridgeDesktop = {
 
       return () => ipcRenderer.off("atualizacao:mudou", listener);
     },
+  },
+
+  cache: {
+    open: (accountId: string): Promise<boolean> => ipcRenderer.invoke("cache:abrir", accountId),
+    close: (): Promise<void> => ipcRenderer.invoke("cache:fechar"),
+
+    read: (channelId: string, limit?: number): Promise<unknown[]> =>
+      ipcRenderer.invoke("cache:ler", channelId, limit),
+
+    write: (channelId: string, messages: unknown[]): Promise<number> =>
+      ipcRenderer.invoke("cache:gravar", channelId, messages),
+
+    forgetMessage: (messageId: string): Promise<void> =>
+      ipcRenderer.invoke("cache:esquecer-mensagem", messageId),
+
+    forgetChannel: (channelId: string): Promise<void> =>
+      ipcRenderer.invoke("cache:esquecer-canal", channelId),
+
+    prune: (): Promise<number> => ipcRenderer.invoke("cache:podar"),
+    size: (): Promise<{ messages: number; channels: number }> =>
+      ipcRenderer.invoke("cache:tamanho"),
+  },
+
+  queue: {
+    put: (nonce: string, channelId: string, payload: unknown): Promise<void> =>
+      ipcRenderer.invoke("fila:por", nonce, channelId, payload),
+
+    list: (): Promise<QueuedSend[]> => ipcRenderer.invoke("fila:listar"),
+    take: (nonce: string): Promise<void> => ipcRenderer.invoke("fila:tirar", nonce),
+    tried: (nonce: string): Promise<number> => ipcRenderer.invoke("fila:tentou", nonce),
+    prune: (): Promise<QueuedSend[]> => ipcRenderer.invoke("fila:podar"),
   },
 
   system: {

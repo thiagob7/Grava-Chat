@@ -6,11 +6,18 @@ export { sendMessageInput, editMessageInput };
 export type SendMessageInput = z.infer<typeof sendMessageInput>;
 export type EditMessageInput = z.infer<typeof editMessageInput>;
 
-export const historyQuery = z.object({
-  before: objectId.optional(),
-  postId: objectId.optional(),
-  limit: z.coerce.number().int().min(1).max(100).default(LIMITS.messagePageSize),
-});
+export const historyQuery = z
+  .object({
+    before: objectId.optional(),
+    after: objectId.optional(),
+    postId: objectId.optional(),
+    limit: z.coerce.number().int().min(1).max(100).default(LIMITS.messagePageSize),
+  })
+  /* Os dois juntos não querem dizer nada: cada um recorta para um lado. */
+  .refine((q) => !(q.before && q.after), {
+    message: "Use before ou after, não os dois",
+    path: ["after"],
+  });
 
 const day = z.string().regex(/^\d{4}-\d{2}-\d{2}$/, "data no formato AAAA-MM-DD");
 
