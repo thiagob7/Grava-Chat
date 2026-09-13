@@ -3,11 +3,10 @@ import { readFile, statfs } from "node:fs/promises";
 import type { FastifyInstance } from "fastify";
 
 import { env } from "~/env.js";
-import { isAdmin } from "~/lib/serialize.js";
 import { prisma } from "~/lib/prisma.js";
 import { redis } from "~/lib/redis.js";
 import { io } from "~/realtime/io.js";
-import { authService } from "~/services/auth-service.js";
+import { adminService } from "~/services/admin-service.js";
 import { voiceService } from "~/services/voice-service.js";
 
 async function measure(name: string, tarefa: () => Promise<unknown>) {
@@ -97,8 +96,8 @@ export async function statusRoutes(app: FastifyInstance) {
   app.addHook("preHandler", app.authenticate);
 
   app.get("/status", async (req, reply) => {
-    const user = await authService.requireUser(req.userId);
-    if (!isAdmin(user.email)) return reply.notFound();
+    const token = req.headers["x-gravae-admin"];
+    await adminService.require(req.userId, typeof token === "string" ? token : undefined, "servidor");
 
     const [db, cache, rooms, ram, hd, voice] = await Promise.all([
       measure("mongo", () => prisma.$runCommandRaw({ ping: 1 })),

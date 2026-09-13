@@ -188,6 +188,13 @@ const AppShell: React.FC<{ children: React.ReactNode }> = ({ children }) => {
 
   if (!isDesktop() && BRAND_SCREENS.some((display) => display.test(pathname))) return <>{children}</>;
 
+  /*
+    No navegador a barra de título do painel não tem o que dizer nem botão de
+    janela para carregar, e sobrava como uma faixa vazia em cima. No aplicativo
+    ela fica, porque é ela que tem os botões de fechar e minimizar.
+  */
+  if (!isDesktop() && pathname.startsWith("/admin")) return <>{children}</>;
+
   return (
     <>
       <TitleBar data-gc="routes.title-bar" />
