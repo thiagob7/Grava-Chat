@@ -3,6 +3,7 @@ import { Clock, Loader2, Search, Smile } from "lucide-react";
 
 import { Emoji } from "~/features/expressao/components/Emoji";
 import { GROUP_ICONS } from "~/features/expressao/components/icones-de-grupo";
+import { IconButton } from "~/components/ui/button";
 import { Input } from "~/components/ui/input";
 import {
   Popover,
@@ -155,15 +156,9 @@ const GroupButton: React.FC<{ title: string; onClick: () => void; children: Reac
   onClick,
   children,
 }) => (
-  <button data-gc="expressao.seletor-de-emoji.button.on-click"
-    type="button"
-    onClick={onClick}
-    title={title}
-    aria-label={title}
-    className="flex size-8 shrink-0 items-center justify-center rounded text-ink-faint transition hover:bg-surface-3 hover:text-ink"
-  >
+  <IconButton data-gc="expressao.seletor-de-emoji.icon-button.on-click" label={title} title={title} onClick={onClick} className="text-ink-faint">
     {children}
-  </button>
+  </IconButton>
 );
 
 const Section: React.FC<{
@@ -185,7 +180,7 @@ const Button: React.FC<{
   title?: string;
   onClick: () => void;
 }> = ({ emoji, title, onClick }) => (
-  <button data-gc="expressao.seletor-de-emoji.button.on-click--2"
+  <button data-gc="expressao.seletor-de-emoji.button.on-click"
     onClick={onClick}
     title={title}
     className="flex size-8 items-center justify-center rounded transition hover:bg-surface-3"

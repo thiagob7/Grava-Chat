@@ -1,4 +1,5 @@
 import React from "react";
+import { IconButton } from "~/components/ui/button";
 import { useTranslation } from "~/traducao";
 import { MessageSquare, PanelBottom, PanelRight, X } from "lucide-react";
 
@@ -84,27 +85,26 @@ export const VoiceChatPanel: React.FC<VoiceChatPanelProps> = ({
       <Tooltip data-gc="voz.voice-chat-panel.tooltip"
         label={below ? t("chamada.chat.paraOLado") : t("chamada.chat.paraBaixo")}
       >
-        <button data-gc="voz.voice-chat-panel.button"
-          type="button"
+        <IconButton data-gc="voz.voice-chat-panel.icon-button"
+          label={below ? t("chamada.chat.paraOLado") : t("chamada.chat.paraBaixo")}
           onClick={() => setSide(below ? "direita" : "baixo")}
-          aria-label={below ? t("chamada.chat.paraOLado") : t("chamada.chat.paraBaixo")}
-          className="text-ink-muted transition hover:text-ink"
+          className="[&_svg]:size-[18px]"
         >
           {below ? (
-            <PanelRight data-gc="voz.voice-chat-panel.panel-right" size={18} />
+            <PanelRight data-gc="voz.voice-chat-panel.panel-right" />
           ) : (
-            <PanelBottom data-gc="voz.voice-chat-panel.panel-bottom" size={18} />
+            <PanelBottom data-gc="voz.voice-chat-panel.panel-bottom" />
           )}
-        </button>
+        </IconButton>
       </Tooltip>
 
-      <button data-gc="voz.voice-chat-panel.button.on-close"
+      <IconButton data-gc="voz.voice-chat-panel.icon-button.on-close"
+        label={t("chamada.fecharChat")}
         onClick={onClose}
-        aria-label={t("chamada.fecharChat")}
-        className="text-ink-muted transition hover:text-ink"
+        className="[&_svg]:size-[18px]"
       >
-        <X data-gc="voz.voice-chat-panel.x" size={18} />
-      </button>
+        <X data-gc="voz.voice-chat-panel.x" />
+      </IconButton>
     </header>
 
     <ChatArea data-gc="voz.voice-chat-panel.chat-area">

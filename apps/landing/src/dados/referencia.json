@@ -480,6 +480,12 @@
           "kind": "string",
           "required": false,
           "limit": 64
+        },
+        {
+          "name": "retry",
+          "kind": "boolean",
+          "required": false,
+          "limit": null
         }
       ]
     },

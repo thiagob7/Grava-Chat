@@ -1,6 +1,7 @@
 import React from "react";
 import { Monitor, MonitorX } from "lucide-react";
 
+import { IconButton } from "~/components/ui/button";
 import { Tooltip } from "~/components/ui/tooltip";
 import { useVoiceStore } from "~/features/voz/stores/voice-store";
 import { cn } from "~/lib/utils";
@@ -39,13 +40,14 @@ export const BroadcastCard: React.FC<{ className?: string }> = ({ className }) =
       </span>
 
       <Tooltip data-gc="voz.cartao-da-transmissao.tooltip" label={t("chamada.tela.pararDeCompartilhar")}>
-        <button data-gc="voz.cartao-da-transmissao.button"
+        <IconButton data-gc="voz.cartao-da-transmissao.icon-button"
+          size="xs"
+          label={t("chamada.tela.pararDeCompartilhar")}
           onClick={() => void end()}
-          aria-label={t("chamada.tela.pararDeCompartilhar")}
-          className="shrink-0 rounded p-1 text-ink-muted transition hover:bg-surface-4 hover:text-danger"
+          className="hover:bg-surface-4 hover:text-danger"
         >
-          <MonitorX data-gc="voz.cartao-da-transmissao.monitor-x" size={14} />
-        </button>
+          <MonitorX data-gc="voz.cartao-da-transmissao.monitor-x" />
+        </IconButton>
       </Tooltip>
     </div>
   );

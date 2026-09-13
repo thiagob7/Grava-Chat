@@ -9,6 +9,7 @@ import {
 import type { Channel, GuildMember, Permission, Role, VoiceState } from "@gravae/shared";
 import { has } from "@gravae/shared";
 
+import { Button } from "~/components/ui/button";
 import { Avatar } from "~/features/perfil/components/Avatar";
 import { UserProfilePopover } from "~/features/perfil/components/UserProfilePopover";
 import { VoiceMemberMenu } from "~/features/voz/components/VoiceMemberMenu";
@@ -241,16 +242,17 @@ const InviteForLive: React.FC<{
           </span>
         </div>
 
-        <button data-gc="voz.voice-members.button--2"
+        <Button data-gc="voz.voice-members.button--2"
+          variant="surface"
+          className="w-full px-2 py-2 text-ink"
           onClick={() => {
             onWatch();
             setIsOpen(false);
           }}
-          className="flex w-full items-center justify-center gap-2 rounded border border-line bg-surface-3 px-2 py-2 text-sm font-medium text-ink transition hover:bg-surface-4"
         >
           <MonitorArrowUp data-gc="voz.voice-members.monitor-arrow-up--2" size={15} weight="fill" className="text-online" />
           {t("chamada.live.assistirPessoa", { nome: name })}
-        </button>
+        </Button>
       </PopoverContent>
     </Popover>
   );

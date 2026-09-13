@@ -169,10 +169,11 @@ const CreateSubject: React.FC<CreateSubjectProps> = ({ open, channelId, onClose,
             {t("comum.cancelar")}
           </Button>
           <Button data-gc="conversa.forum-channel.button--3"
-            disabled={!title.trim() || !content.trim() || create.isPending}
+            disabled={!title.trim() || !content.trim()}
             onClick={() => void send()}
+            loading={create.isPending}
           >
-            {create.isPending ? "Criando…" : "Criar assunto"}
+            Criar assunto
           </Button>
         </DialogFooter>
       </DialogContent>

@@ -7,6 +7,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "~/components/ui/popover";
+import { Button } from "~/components/ui/button";
 import { Switch } from "~/components/ui/switch";
 import { useVoiceMeter } from "~/features/voz/hooks/use-voice-meter";
 import { cn } from "~/lib/utils";
@@ -71,15 +72,17 @@ export const NoisePopoverSuppression: React.FC<Props> = ({
             {t("chamada.ruido.feitoCom")} <span data-gc="voz.supressao-de-ruido-popover.span--2" className="text-ink-muted">RNNoise</span>{t("chamada.ruido.aquiNoAparelho")}
           </span>
 
-          <button data-gc="voz.supressao-de-ruido-popover.button"
+          <Button data-gc="voz.supressao-de-ruido-popover.button"
+            variant="ghost"
+            size="xs"
+            className="gap-1.5 px-1.5 py-1.5 font-normal"
             onClick={() => {
               setIsOpen(false);
               onOpenSettings();
             }}
-            className="flex shrink-0 items-center gap-1.5 rounded p-1.5 text-xs text-ink-muted transition hover:bg-surface-3 hover:text-ink"
           >
             <SlidersHorizontal data-gc="voz.supressao-de-ruido-popover.sliders-horizontal" size={13} /> {t("chamada.ruido.ajustes")}
-          </button>
+          </Button>
         </div>
       </PopoverContent>
     </Popover>

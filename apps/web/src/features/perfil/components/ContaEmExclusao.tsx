@@ -42,10 +42,10 @@ export const AccountDeletion: React.FC<AccountDeletionProps> = ({ user, onLeave 
         <div data-gc="perfil.conta-em-exclusao.div--4" className="mt-6 flex flex-col gap-2">
           <Button data-gc="perfil.conta-em-exclusao.button"
             onClick={() => recover.mutate()}
-            disabled={recover.isPending}
             className="w-full justify-center"
+            loading={recover.isPending}
           >
-            {recover.isPending ? "Recuperando…" : "Recuperar a minha conta"}
+            Recuperar a minha conta
           </Button>
 
           <Button data-gc="perfil.conta-em-exclusao.button.on-leave" variant="ghost" onClick={onLeave} className="w-full justify-center">

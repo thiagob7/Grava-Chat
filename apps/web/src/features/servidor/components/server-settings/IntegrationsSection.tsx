@@ -1,3 +1,4 @@
+import { EmptyState } from "~/components/ui/empty-state";
 import React, { useState } from "react";
 import {
   Check,
@@ -84,12 +85,7 @@ export const IntegrationsSection: React.FC<IntegrationsSectionProps> = ({
         {isLoading && <p data-gc="servidor.server-settings.integrations-section.p--2" className="text-sm text-ink-faint">{t("comum.carregando")}</p>}
 
         {!isLoading && !webhooks.length && (
-          <div data-gc="servidor.server-settings.integrations-section.div--4" className="rounded-lg border border-dashed border-line px-6 py-10 text-center">
-            <WebhookIcon data-gc="servidor.server-settings.integrations-section.webhook-icon" size={28} className="mx-auto text-ink-faint" />
-            <p data-gc="servidor.server-settings.integrations-section.p--3" className="mt-3 text-sm text-ink-muted">
-              {t("servidor.integracoes.vazio")}
-            </p>
-          </div>
+          <EmptyState data-gc="servidor.server-settings.integrations-section.empty-state" icon={<WebhookIcon data-gc="servidor.server-settings.integrations-section.webhook-icon" />} title={t("servidor.integracoes.vazio")} />
         )}
 
         {webhooks.map((webhook) => (
@@ -134,8 +130,8 @@ const WebhookCard: React.FC<CardProps> = ({
   };
 
   return (
-    <div data-gc="servidor.server-settings.integrations-section.div--5" className="rounded-lg bg-surface-1 p-4">
-      <div data-gc="servidor.server-settings.integrations-section.div--6" className="flex items-center gap-3">
+    <div data-gc="servidor.server-settings.integrations-section.div--4" className="rounded-lg bg-surface-1 p-4">
+      <div data-gc="servidor.server-settings.integrations-section.div--5" className="flex items-center gap-3">
         <Avatar data-gc="servidor.server-settings.integrations-section.avatar"
           id={webhook.bot.id}
           name={name || webhook.name}
@@ -143,7 +139,7 @@ const WebhookCard: React.FC<CardProps> = ({
           size={40}
         />
 
-        <div data-gc="servidor.server-settings.integrations-section.div--7" className="grid flex-1 grid-cols-2 gap-3">
+        <div data-gc="servidor.server-settings.integrations-section.div--6" className="grid flex-1 grid-cols-2 gap-3">
           <label data-gc="servidor.server-settings.integrations-section.label" className="block">
             <span data-gc="servidor.server-settings.integrations-section.span" className="mb-1 block text-11 font-semibold uppercase tracking-wide text-ink-faint">
               {t("comum.nome")}
@@ -201,7 +197,7 @@ const WebhookCard: React.FC<CardProps> = ({
         </button>
       </div>
 
-      <div data-gc="servidor.server-settings.integrations-section.div--8" className="mt-3 flex items-center gap-2">
+      <div data-gc="servidor.server-settings.integrations-section.div--7" className="mt-3 flex items-center gap-2">
         <code data-gc="servidor.server-settings.integrations-section.code"
           className={cn(
             "min-w-0 flex-1 truncate rounded bg-surface-0 px-3 py-2 text-xs",
@@ -227,7 +223,7 @@ const WebhookCard: React.FC<CardProps> = ({
         </Button>
       </div>
 
-      <p data-gc="servidor.server-settings.integrations-section.p--4" className="mt-2 text-xs text-ink-faint">
+      <p data-gc="servidor.server-settings.integrations-section.p--3" className="mt-2 text-xs text-ink-faint">
         Quem tem essa URL posta neste canal — trate como senha. Criado por{" "}
         {webhook.createdBy.displayName}.
       </p>
@@ -243,7 +239,7 @@ const AsUse: React.FC<{ example: string }> = ({ example }) => {
     <h3 data-gc="servidor.server-settings.integrations-section.h3" className="text-xs font-semibold uppercase tracking-wide text-ink-faint">
       {t("servidor.integracoes.comoUsar")}
     </h3>
-    <p data-gc="servidor.server-settings.integrations-section.p--5" className="mt-2 text-sm text-ink-muted">
+    <p data-gc="servidor.server-settings.integrations-section.p--4" className="mt-2 text-sm text-ink-muted">
       {t("servidor.integracoes.comoUsarTexto")}
     </p>
 
@@ -253,7 +249,7 @@ const AsUse: React.FC<{ example: string }> = ({ example }) => {
   -d '{"content": "build 42 passou ✅", "username": "CI"}'`}
     </pre>
 
-    <p data-gc="servidor.server-settings.integrations-section.p--6" className="mt-2 text-xs text-ink-faint">
+    <p data-gc="servidor.server-settings.integrations-section.p--5" className="mt-2 text-xs text-ink-faint">
       {t("servidor.integracoes.opcionais")}
     </p>
   </section>

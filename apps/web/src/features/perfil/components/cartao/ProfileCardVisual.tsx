@@ -23,6 +23,7 @@ import {
 } from "~/features/perfil/lib/estilos";
 import { avatarColor } from "~/lib/format";
 import { cn } from "~/lib/utils";
+import { IconButton } from "~/components/ui/button";
 import { Tooltip } from "~/components/ui/tooltip";
 import { currentLanguage, useTranslation } from "~/traducao";
 import { flx, flxCls } from "~/lib/compat-de-tema";
@@ -326,14 +327,14 @@ export const ProfileCardVisual: React.FC<ProfileCardVisualProps> = ({
 
             {onIrForNote && (
               <Tooltip data-gc="perfil.cartao.profile-card-visual.tooltip" label={t("perfil.nota.adicionar")}>
-                <button data-gc="perfil.cartao.profile-card-visual.button.on-ir-for-note"
-                  type="button"
+                <IconButton data-gc="perfil.cartao.profile-card-visual.icon-button.on-ir-for-note"
+                  size="xs"
+                  label={t("perfil.nota.adicionar")}
                   onClick={onIrForNote}
-                  aria-label={t("perfil.nota.adicionar")}
-                  className="shrink-0 rounded p-1 text-ink-faint opacity-0 transition hover:bg-surface-3 hover:text-ink focus-visible:opacity-100 group-hover/cartao:opacity-100"
+                  className="size-7 text-ink-faint opacity-0 focus-visible:opacity-100 group-hover/cartao:opacity-100 [&_svg]:size-4"
                 >
-                  <NotebookPen data-gc="perfil.cartao.profile-card-visual.notebook-pen" size={16} />
-                </button>
+                  <NotebookPen data-gc="perfil.cartao.profile-card-visual.notebook-pen" />
+                </IconButton>
               </Tooltip>
             )}
           </div>
@@ -546,16 +547,16 @@ export const ProfileCardVisual: React.FC<ProfileCardVisualProps> = ({
                     {role.name}
 
                     {onToggleRole && rolesManageable.has(role.id) && (
-                      <button data-gc="perfil.cartao.profile-card-visual.button--3"
-                        type="button"
+                      <IconButton data-gc="perfil.cartao.profile-card-visual.icon-button"
+                        round
+                        label={t("perfil.cartao.tirarCargo", { cargo: role.name })}
+                        title={t("perfil.cartao.tirarCargo", { cargo: role.name })}
                         onClick={() => onToggleRole(role.id)}
                         disabled={savingRoles}
-                        aria-label={t("perfil.cartao.tirarCargo", { cargo: role.name })}
-                        title={t("perfil.cartao.tirarCargo", { cargo: role.name })}
-                        className="-mr-1 rounded-full p-0.5 text-ink-faint transition hover:bg-surface-4 hover:text-ink disabled:opacity-50"
+                        className="-mr-1 size-4 text-ink-faint hover:bg-surface-4 [&_svg]:size-[11px]"
                       >
-                        <X data-gc="perfil.cartao.profile-card-visual.x" size={11} />
-                      </button>
+                        <X data-gc="perfil.cartao.profile-card-visual.x" />
+                      </IconButton>
                     )}
                   </span>
                 ))}

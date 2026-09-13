@@ -332,10 +332,10 @@ export const SignIn: React.FC = () => {
 
             <Button data-gc="auth.sign-in.button--7"
               onClick={() => void submit()}
-              disabled={devLogin.isPending}
               className="mt-5 w-full"
+              loading={devLogin.isPending}
             >
-              {devLogin.isPending ? "Entrando…" : "Entrar"}
+              Entrar
             </Button>
 
             <p data-gc="auth.sign-in.p--11" className="mt-4 text-center text-xs text-ink-faint">

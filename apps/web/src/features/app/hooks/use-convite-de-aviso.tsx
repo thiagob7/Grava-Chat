@@ -3,6 +3,7 @@ import { toast } from "react-toastify";
 
 import { noticeRequestPermission, noticePermission } from "~/lib/notificacoes";
 import { i18next } from "~/traducao";
+import { Button } from "~/components/ui/button";
 
 const KEY = "gravae:aviso-perguntado";
 
@@ -32,25 +33,26 @@ export function useInviteNotice(active: boolean) {
               {i18next.t("comum.avisoDoNavegador.detalhe")}
             </p>
             <div data-gc="app.use-convite-de-aviso.div--2" className="mt-2 flex gap-2">
-              <button data-gc="app.use-convite-de-aviso.button"
+              <Button data-gc="app.use-convite-de-aviso.button"
+                size="xs"
                 onClick={() => {
                   mark();
                   void noticeRequestPermission();
                   closeToast?.();
                 }}
-                className="rounded bg-brand px-2.5 py-1 text-xs font-semibold text-sobre-marca"
               >
                 {i18next.t("chamada.permissoes.permitir")}
-              </button>
-              <button data-gc="app.use-convite-de-aviso.button--2"
+              </Button>
+              <Button data-gc="app.use-convite-de-aviso.button--2"
+                size="xs"
+                variant="ghost"
                 onClick={() => {
                   mark();
                   closeToast?.();
                 }}
-                className="rounded px-2.5 py-1 text-xs text-ink-muted hover:text-ink"
               >
                 {i18next.t("comum.agoraNao")}
-              </button>
+              </Button>
             </div>
           </div>
         ),

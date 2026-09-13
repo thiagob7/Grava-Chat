@@ -12,7 +12,7 @@ import type { RoleModel } from "~/@core/domain/models/guild-model";
 import { Avatar } from "~/features/perfil/components/Avatar";
 import { Button } from "~/components/ui/button";
 import { UnsavedBar } from "~/components/ui/unsaved-bar";
-import { Input, colorFieldClass } from "~/components/ui/input";
+import { Input, colorFieldClass, SearchField } from "~/components/ui/input";
 import { Switch } from "~/components/ui/switch";
 import { useConfirm } from "~/components/ui/confirm";
 import { ROLE_STYLE_OPTIONS } from "~/features/perfil/lib/catalogo";
@@ -417,19 +417,16 @@ export const RoleEditor: React.FC<RoleEditorProps> = ({
 
         {activeTab === "membros" && (
           <div data-gc="servidor.server-settings.role-editor.div--14" className="max-w-2xl">
-            <div data-gc="servidor.server-settings.role-editor.div--15" className="flex items-center gap-2 rounded bg-surface-0 px-3">
-              <Search data-gc="servidor.server-settings.role-editor.search" size={16} className="text-ink-faint" />
-              <Input data-gc="servidor.server-settings.role-editor.input--5"
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
-                placeholder={t("servidor.cargos.adicionar")}
-                className="bg-transparent px-0"
-                disabled={!editable}
-              />
-            </div>
+            <SearchField data-gc="servidor.server-settings.role-editor.search-field"
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              onClear={() => setSearch("")}
+              placeholder={t("servidor.cargos.adicionar")}
+              disabled={!editable}
+            />
 
             {candidates.length > 0 && (
-              <div data-gc="servidor.server-settings.role-editor.div--16" className="mt-2 overflow-hidden rounded border border-line bg-surface-1">
+              <div data-gc="servidor.server-settings.role-editor.div--15" className="mt-2 overflow-hidden rounded border border-line bg-surface-1">
                 {candidates.map((m) => (
                   <button data-gc="servidor.server-settings.role-editor.button--7"
                     key={m.id}
@@ -453,9 +450,9 @@ export const RoleEditor: React.FC<RoleEditorProps> = ({
               </div>
             )}
 
-            <div data-gc="servidor.server-settings.role-editor.div--17" className="mt-4 space-y-px">
+            <div data-gc="servidor.server-settings.role-editor.div--16" className="mt-4 space-y-px">
               {withRole.map((m) => (
-                <div data-gc="servidor.server-settings.role-editor.div--18"
+                <div data-gc="servidor.server-settings.role-editor.div--17"
                   key={m.id}
                   className="flex items-center gap-3 border-t border-line px-2 py-2.5 transition hover:bg-surface-3"
                 >
@@ -465,7 +462,7 @@ export const RoleEditor: React.FC<RoleEditorProps> = ({
                     url={m.user.avatarUrl}
                     size={32}
                   />
-                  <div data-gc="servidor.server-settings.role-editor.div--19" className="min-w-0 flex-1">
+                  <div data-gc="servidor.server-settings.role-editor.div--18" className="min-w-0 flex-1">
                     <p data-gc="servidor.server-settings.role-editor.p--4" className="truncate text-sm">
                       {m.nickname ?? m.user.displayName}
                     </p>
@@ -530,8 +527,8 @@ const Line: React.FC<LineProps> = ({
   disabled,
   onChange,
 }) => (
-  <div data-gc="servidor.server-settings.role-editor.div--20" className={cn("flex items-start gap-4", disabled && "opacity-60")}>
-    <div data-gc="servidor.server-settings.role-editor.div--21" className="min-w-0 flex-1">
+  <div data-gc="servidor.server-settings.role-editor.div--19" className={cn("flex items-start gap-4", disabled && "opacity-60")}>
+    <div data-gc="servidor.server-settings.role-editor.div--20" className="min-w-0 flex-1">
       <p data-gc="servidor.server-settings.role-editor.p--7" className="text-sm font-medium">{title}</p>
       <p data-gc="servidor.server-settings.role-editor.p--8" className="mt-0.5 text-xs text-ink-faint">{description}</p>
     </div>
