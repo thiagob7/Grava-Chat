@@ -38,6 +38,8 @@ export const configuracoes = {
     coresTrocadas: "{{quantas}} 色を変更",
     avisoDeCss: "このテーマには作者の CSS が入っており、CSS は画面のどこにでも手が届きます。信頼できる人のものだけを取り込んでください。",
     soCores: "このテーマは色だけを変えます。外部の CSS はありません。",
+    verCss: "CSS を表示",
+    esconderCss: "CSS を隠す",
     aplicar: "適用",
     previaSemMotor: "プレビューではエンジンが動きません。入れると見られます。",
     motorAnimado: "{{motor}}（アニメーション）",

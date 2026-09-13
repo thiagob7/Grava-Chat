@@ -55,7 +55,7 @@ export const ThemeCard: React.FC<{ themeId: string }> = ({ themeId }) => {
           <span data-gc="tema.cartao-de-tema.span--2" className="flex-1" />
         )}
 
-        <ThemePreview data-gc="tema.cartao-de-tema.theme-preview" themeId={theme.id} className="absolute inset-0 bg-transparent" />
+        <ThemePreview data-gc="tema.cartao-de-tema.theme-preview" themeId={theme.id} className="absolute inset-0 bg-transparent" still />
       </div>
 
       <div data-gc="tema.cartao-de-tema.div--4" className="flex items-center gap-3 p-3">

@@ -39,7 +39,7 @@ export async function discoveryRoutes(app: FastifyInstance) {
 
   app.get("/descobrir/aplicativos/:botId", (req) => {
     const { botId } = z.object({ botId: objectId }).parse(req.params);
-    return botService.isPublic(req.userId, botId);
+    return botService.publicApp(req.userId, botId);
   });
 
   app.post(

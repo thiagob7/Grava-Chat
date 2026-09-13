@@ -38,6 +38,8 @@ export const configuracoes = {
     coresTrocadas: "換了 {{quantas}} 種顏色",
     avisoDeCss: "這個主題帶著作者寫的 CSS，而 CSS 能碰到畫面的每個角落。只從你信得過的人那裡匯入。",
     soCores: "這個主題只換顏色，沒有外來的 CSS。",
+    verCss: "檢視 CSS",
+    esconderCss: "隱藏 CSS",
     aplicar: "套用",
     previaSemMotor: "預覽不會跑引擎，裝上才看得到。",
     motorAnimado: "{{motor}} 動態",

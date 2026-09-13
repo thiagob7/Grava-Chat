@@ -96,7 +96,22 @@ const BODY = `
   </div>
 </div>`;
 
-export function previewDocument(css: string, overrides: Record<string, string>): string {
+/*
+  Na galeria a prévia fica parada. São dezenas de cartões, e tema animado com
+  desfoque redesenhava cada um a cada quadro, o que travava a rolagem. Parado
+  ainda mostra o desenho, que é o que se quer ver ali; quem abre o tema para
+  importar vê ele se mexendo.
+*/
+const STILL = `*, *::before, *::after {
+  animation-play-state: paused !important;
+  transition: none !important;
+}`;
+
+export function previewDocument(
+  css: string,
+  overrides: Record<string, string>,
+  { still = false }: { still?: boolean } = {},
+): string {
   const tokens = Object.entries(overrides)
     .map(([name, value]) => `  ${name}: ${value};`)
     .join("\n");
@@ -107,6 +122,7 @@ export function previewDocument(css: string, overrides: Record<string, string>):
     BASE,
     tokens ? `:root {\n${tokens}\n}` : "",
     css.replace(IMPORT, ""),
+    still ? STILL : "",
     "</style>",
     BODY,
   ].join("\n");

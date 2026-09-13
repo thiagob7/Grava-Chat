@@ -38,6 +38,8 @@ export const configuracoes = {
     coresTrocadas: "{{quantas}} रंग बदले",
     avisoDeCss: "यह थीम लिखने वाले का CSS साथ लाती है, और CSS स्क्रीन के हर कोने तक पहुँचता है। सिर्फ़ भरोसेमंद लोगों से ही आयात करें।",
     soCores: "यह थीम सिर्फ़ रंग बदलती है। बाहर का कोई CSS नहीं।",
+    verCss: "CSS देखें",
+    esconderCss: "CSS छिपाएँ",
     aplicar: "लागू करें",
     previaSemMotor: "झलक इंजन नहीं चलाती। देखने के लिए इंस्टॉल करें।",
     motorAnimado: "{{motor}} एनिमेटेड",

@@ -32,7 +32,7 @@ export const ThemeGalleryCard: React.FC<{
           <span data-gc="descoberta.cartao-de-tema.span--2" className="flex-1" />
         )}
 
-        <ThemePreview data-gc="descoberta.cartao-de-tema.theme-preview" themeId={theme.id} className="absolute inset-0 bg-transparent" />
+        <ThemePreview data-gc="descoberta.cartao-de-tema.theme-preview" themeId={theme.id} className="absolute inset-0 bg-transparent" still />
 
         {theme.actives.length > 0 && (
           <span data-gc="descoberta.cartao-de-tema.span--3" className="absolute bottom-1.5 right-1.5 rounded bg-surface-0/85 px-1.5 py-0.5 text-10 font-medium text-ink backdrop-blur-sm">

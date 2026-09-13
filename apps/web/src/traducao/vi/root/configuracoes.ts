@@ -38,6 +38,8 @@ export const configuracoes = {
     coresTrocadas: "đổi {{quantas}} màu",
     avisoDeCss: "Chủ đề này mang theo CSS của người viết, mà CSS chạm tới mọi ngóc ngách của màn hình. Chỉ nhập từ người bạn tin tưởng.",
     soCores: "Chủ đề này chỉ đổi màu. Không có CSS từ bên ngoài.",
+    verCss: "Xem CSS",
+    esconderCss: "Ẩn CSS",
     aplicar: "Áp dụng",
     previaSemMotor: "Bản xem trước không chạy engine. Cài vào mới thấy được.",
     motorAnimado: "{{motor}} có hoạt ảnh",

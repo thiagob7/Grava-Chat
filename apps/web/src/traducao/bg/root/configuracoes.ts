@@ -38,6 +38,8 @@ export const configuracoes = {
     coresTrocadas: "{{quantas}} сменени цвята",
     avisoDeCss: "Тази тема носи CSS от автора си, а CSS пипа всяко ъгълче на екрана. Внасяйте само от хора, на които вярвате.",
     soCores: "Тази тема сменя само цветове. Никакъв външен CSS.",
+    verCss: "Покажи CSS",
+    esconderCss: "Скрий CSS",
     aplicar: "Приложи",
     previaSemMotor: "Прегледът не пуска двигателя. Инсталирайте, за да го видите.",
     motorAnimado: "{{motor}} с анимация",

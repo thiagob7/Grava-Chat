@@ -38,6 +38,8 @@ export const configuracoes = {
     coresTrocadas: "{{quantas}} warna ditukar",
     avisoDeCss: "Tema ini membawa CSS dari penulisnya, dan CSS menjangkau setiap sudut layar. Impor hanya dari orang yang kamu percaya.",
     soCores: "Tema ini hanya menukar warna. Tanpa CSS dari luar.",
+    verCss: "Lihat CSS",
+    esconderCss: "Sembunyikan CSS",
     aplicar: "Terapkan",
     previaSemMotor: "Pratinjau tidak menjalankan mesinnya. Pasang dulu untuk melihatnya.",
     motorAnimado: "{{motor}} beranimasi",

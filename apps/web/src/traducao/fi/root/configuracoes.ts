@@ -38,6 +38,8 @@ export const configuracoes = {
     coresTrocadas: "{{quantas}} vaihdettua väriä",
     avisoDeCss: "Tämä teema tuo mukanaan tekijänsä CSS:n, ja CSS ylettyy näytön joka nurkkaan. Tuo vain sellaisilta, joihin luotat.",
     soCores: "Tämä teema vaihtaa vain värit. Ei ulkopuolista CSS:ää.",
+    verCss: "Näytä CSS",
+    esconderCss: "Piilota CSS",
     aplicar: "Käytä",
     previaSemMotor: "Esikatselu ei aja moottoria. Asenna nähdäksesi sen.",
     motorAnimado: "{{motor}} animoituna",

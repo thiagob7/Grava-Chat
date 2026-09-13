@@ -38,6 +38,8 @@ export const configuracoes = {
     coresTrocadas: "换了 {{quantas}} 种颜色",
     avisoDeCss: "这个主题带着作者写的 CSS，而 CSS 能碰到屏幕的每个角落。只从你信得过的人那里导入。",
     soCores: "这个主题只换颜色，没有外来的 CSS。",
+    verCss: "查看 CSS",
+    esconderCss: "隐藏 CSS",
     aplicar: "应用",
     previaSemMotor: "预览不会跑引擎，装上才看得到。",
     motorAnimado: "{{motor}} 动态",

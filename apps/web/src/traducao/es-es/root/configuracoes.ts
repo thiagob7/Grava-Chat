@@ -38,6 +38,8 @@ export const configuracoes = {
     coresTrocadas: "{{quantas}} colores cambiados",
     avisoDeCss: "Este tema trae CSS de quien lo escribió, y el CSS toca cualquier rincón de la pantalla. Impórtalo solo de gente en la que confíes.",
     soCores: "Este tema solo cambia colores. Nada de CSS de fuera.",
+    verCss: "Ver el CSS",
+    esconderCss: "Ocultar el CSS",
     aplicar: "Aplicar",
     previaSemMotor: "La vista previa no ejecuta el motor. Instálalo para verlo.",
     motorAnimado: "{{motor}} animado",
