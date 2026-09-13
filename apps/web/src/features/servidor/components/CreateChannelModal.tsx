@@ -18,6 +18,7 @@ import { Switch } from "~/components/ui/switch";
 
 import { cn } from "~/lib/utils";
 import { useTranslation } from "~/traducao";
+import { useFindGuild } from "~/@core/application/queries/guild/use-find-guild";
 
 interface CreateChannelModalProps {
   open: boolean;
@@ -61,6 +62,7 @@ export const CreateChannelModal: React.FC<CreateChannelModalProps> = ({
   categoryId,
   onClose,
 }) => {
+  const flexibleNames = useFindGuild(guildId).data?.guild.flexibleChannelNames === true;
   const { t } = useTranslation();
   const createChannel = useCreateChannel();
   const [name, setName] = useState("");
@@ -146,6 +148,7 @@ export const CreateChannelModal: React.FC<CreateChannelModalProps> = ({
             font={font}
             onFont={setFont}
             isVoice={type !== "TEXT"}
+            flexible={flexibleNames}
             icon={<Icon data-gc="servidor.create-channel-modal.icon" size={18} className="shrink-0 text-ink-faint" />}
             placeholder={type === "TEXT" ? "novo-canal" : "Sala 2"}
             onEnter={() => void submit()}
@@ -186,8 +189,8 @@ export const CreateChannelModal: React.FC<CreateChannelModalProps> = ({
           <Button data-gc="servidor.create-channel-modal.button.on-close" variant="ghost" onClick={onClose}>
             Cancelar
           </Button>
-          <Button data-gc="servidor.create-channel-modal.button--2" onClick={() => void submit()} disabled={createChannel.isPending || !name.trim() || missingAddress}>
-            {createChannel.isPending ? "Criando…" : "Criar canal"}
+          <Button data-gc="servidor.create-channel-modal.button--2" onClick={() => void submit()} disabled={!name.trim() || missingAddress} loading={createChannel.isPending}>
+            Criar canal
           </Button>
         </DialogFooter>
       </DialogContent>

@@ -6,7 +6,7 @@ import { NOTE_LIMIT } from "@gravae/shared";
 import mascotUrl from "~/assets/mascote/capivara-acena.svg?url";
 import { useRequestFriend } from "~/@core/application/queries/friend/use-request-friend";
 import { Button } from "~/components/ui/button";
-import { bareField } from "~/components/ui/input";
+import { BareInput, BareTextarea } from "~/components/ui/input";
 import { cn } from "~/lib/utils";
 import { useTranslation } from "~/traducao";
 
@@ -68,7 +68,7 @@ export const AddFriendForm: React.FC = () => {
           sent ? "border-online" : "border-line",
         )}>
           <div data-gc="amizades.add-friend-form.div--5" className="flex items-center gap-2">
-            <input data-gc="amizades.add-friend-form.input"
+            <BareInput data-gc="amizades.add-friend-form.bare-input"
               value={username}
               onChange={(e) => {
                 setUsername(e.target.value);
@@ -77,27 +77,28 @@ export const AddFriendForm: React.FC = () => {
               onKeyDown={(e) => e.key === "Enter" && void send()}
               placeholder={t("amizades.adicionar.exemplo")}
               aria-label={t("amizades.adicionar.exemplo")}
-              className={cn(bareField, "min-w-0 flex-1 text-sm")}
+              className="text-sm"
             />
 
             <Button data-gc="amizades.add-friend-form.button"
               size="sm"
               className="shrink-0"
               onClick={() => void send()}
-              disabled={!target || requestFriend.isPending}
+              disabled={!target}
+              loading={requestFriend.isPending}
             >
-              {requestFriend.isPending ? t("amizades.adicionar.enviando") : t("amizades.adicionar.enviar")}
+              {t("amizades.adicionar.enviar")}
             </Button>
           </div>
 
           <div data-gc="amizades.add-friend-form.div--6" className="mt-2 flex items-end gap-2 border-t border-line pt-2">
-            <textarea data-gc="amizades.add-friend-form.textarea"
+            <BareTextarea data-gc="amizades.add-friend-form.bare-textarea"
               value={note}
               onChange={(e) => setNote(e.target.value.slice(0, NOTE_LIMIT))}
               placeholder={t("amizades.adicionar.recado")}
               aria-label={t("amizades.adicionar.recado")}
               rows={2}
-              className={cn(bareField, "min-w-0 flex-1 resize-none text-sm")}
+              className="text-sm"
             />
 
             <span data-gc="amizades.add-friend-form.span" className="shrink-0 pb-1 text-11 tabular-nums text-ink-faint">

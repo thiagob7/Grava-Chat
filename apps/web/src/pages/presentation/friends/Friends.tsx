@@ -7,7 +7,7 @@ import {
   UserMinus,
   X,
 } from "@phosphor-icons/react";
-import { Search, Users } from "lucide-react";
+import { Users } from "lucide-react";
 
 import { useFindFriends } from "~/@core/application/queries/friend/use-find-friends";
 import { useRespondFriend } from "~/@core/application/queries/friend/use-respond-friend";
@@ -24,7 +24,9 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "~/components/ui/dropdown-menu";
-import { Input } from "~/components/ui/input";
+import { IconButton } from "~/components/ui/button";
+import { SearchField } from "~/components/ui/input";
+import { CountBadge, TabButton } from "~/components/ui/nav-item";
 import { Tooltip } from "~/components/ui/tooltip";
 import { cn } from "~/lib/utils";
 import { flx, flxAttr, flxCls } from "~/lib/compat-de-tema";
@@ -78,13 +80,14 @@ export const Friends: React.FC<FriendsProps> = ({ onOpenConversation, onOpenMenu
           {...flx("topChannelCore", "flex h-full w-full items-center gap-1 overflow-x-auto px-4")}
         >
           {onOpenMenu && (
-            <button data-gc="friends.friends.button.on-open-menu"
+            <IconButton data-gc="friends.friends.icon-button.on-open-menu"
+              size="md"
+              label={t("amizades.abrirMenu")}
               onClick={onOpenMenu}
-              aria-label={t("amizades.abrirMenu")}
-              className="-ml-1 mr-1 shrink-0 rounded p-1.5 text-ink-muted transition hover:bg-surface-3 hover:text-ink md:hidden"
+              className="-ml-1 mr-1 md:hidden"
             >
-              <List data-gc="friends.friends.list" size={20} />
-            </button>
+              <List data-gc="friends.friends.list" />
+            </IconButton>
           )}
 
           <span data-gc="friends.friends.span" {...flx("friendsTitle", "mr-2 flex shrink-0 items-center gap-2 font-semibold")}>
@@ -93,20 +96,18 @@ export const Friends: React.FC<FriendsProps> = ({ onOpenConversation, onOpenMenu
           </span>
           <span data-gc="friends.friends.span--3" {...flx("topFriendsDivider", "mr-2 hidden h-5 w-px shrink-0 bg-line sm:block")} />
           {tabs.map((item) => (
-            <button data-gc="friends.friends.button"
+            <TabButton data-gc="friends.friends.tab-button"
               key={item.id}
+              active={tab === item.id}
               onClick={() => setTab(item.id)}
               {...flx(
                 "friendsTab",
                 cn(
-                  "flex shrink-0 items-center gap-1.5 rounded px-2.5 py-1 text-sm transition",
-                  item.id === "adicionar"
-                    ? tab === item.id
-                      ? "bg-brand/15 font-semibold text-brand"
-                      : "bg-brand font-semibold text-sobre-marca shadow-sm hover:bg-brand-hover"
-                    : tab === item.id
-                      ? "bg-surface-4 text-ink"
-                      : "text-ink-muted hover:bg-surface-3 hover:text-ink",
+                  "flex items-center gap-1.5 px-2.5",
+                  item.id === "adicionar" &&
+                    (tab === item.id
+                      ? "bg-brand/15 font-semibold text-brand hover:bg-brand/15 hover:text-brand"
+                      : "bg-brand font-semibold text-sobre-marca shadow-sm hover:bg-brand hover:text-sobre-marca hover:brightness-110"),
                   flxCls("tab"),
                   tab === item.id && cn(flxCls("friendsActiveTab"), flxCls("tabPicked")),
                   item.id === "adicionar" && flxCls("friendsPrincipalTab"),
@@ -114,12 +115,8 @@ export const Friends: React.FC<FriendsProps> = ({ onOpenConversation, onOpenMenu
               )}
             >
               {item.label}
-              {Boolean(item.badge) && (
-                <span data-gc="friends.friends.span--4" className="rounded-full bg-danger px-1.5 text-xs font-semibold text-sobre-marca">
-                  {item.badge}
-                </span>
-              )}
-            </button>
+              <CountBadge data-gc="friends.friends.count-badge" count={item.badge ?? 0} />
+            </TabButton>
           ))}
 
           <div data-gc="friends.friends.div--2" className="ml-auto">
@@ -136,22 +133,16 @@ export const Friends: React.FC<FriendsProps> = ({ onOpenConversation, onOpenMenu
         ) : (
           <>
             <div data-gc="friends.friends.div--4" {...flx("searchFriendsFrame", "relative mb-4")}>
-              <Search data-gc="friends.friends.search"
-                size={16}
-                className={cn(
-                  "pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-ink-faint",
-                  flxCls("searchFriendsIcon"),
-                )}
-              />
-              <Input data-gc="friends.friends.input"
+              <SearchField data-gc="friends.friends.search-field"
+                iconClassName={flxCls("searchFriendsIcon")}
                 {...flxAttr("friendsSearch")}
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
+                onClear={() => setSearch("")}
                 placeholder={
                   tab === "pendentes" ? "Buscar solicitações pendentes" : "Procurar amigos"
                 }
                 aria-label="Procurar na lista"
-                className="h-10 border-transparent pl-9 text-sm shadow-none focus-visible:border-line-sutil focus-visible:ring-0"
               />
             </div>
 
@@ -205,7 +196,7 @@ const EmptyState: React.FC<{ tab: Tab; filtering: boolean }> = ({ tab, filtering
         "Tente outro nome — a busca olha o apelido e o nome de usuário."
       ) : (
         <>
-          Use a aba <span data-gc="friends.friends.span--5" className="font-medium text-brand">Adicionar amigo</span> e o nome de
+          Use a aba <span data-gc="friends.friends.span--4" className="font-medium text-brand">Adicionar amigo</span> e o nome de
           usuário da pessoa.
         </>
       )}
@@ -218,8 +209,6 @@ interface FriendRowProps {
   onOpenConversation: (userId: string) => void;
 }
 
-const ACTION = "flex size-9 shrink-0 items-center justify-center rounded-full transition";
-const NEUTRAL = "bg-surface-4 text-ink-muted hover:bg-line hover:text-ink group-hover:text-ink";
 
 const FriendRow: React.FC<FriendRowProps> = ({ relation, onOpenConversation }) => {
   const respond = useRespondFriend();
@@ -291,7 +280,7 @@ const FriendRow: React.FC<FriendRowProps> = ({ relation, onOpenConversation }) =
       <div data-gc="friends.friends.div--7"
         className="group flex items-center gap-3 border-t border-line px-2 py-2.5 transition hover:rounded-lg hover:border-transparent hover:bg-surface-3"
       >
-        <button data-gc="friends.friends.button--2"
+        <button data-gc="friends.friends.button"
           type="button"
           onClick={() => setSeeingProfile(true)}
           className="flex min-w-0 flex-1 items-center gap-3 text-left"
@@ -304,16 +293,16 @@ const FriendRow: React.FC<FriendRowProps> = ({ relation, onOpenConversation }) =
             status={relation.status === "ACCEPTED" ? relation.user.status : undefined}
           />
 
-          <span data-gc="friends.friends.span--6" className="min-w-0 flex-1">
-            <span data-gc="friends.friends.span--7" className="flex min-w-0 items-baseline gap-1.5">
-              <span data-gc="friends.friends.span--8" className="truncate text-sm font-semibold">{relation.user.displayName}</span>
-              <span data-gc="friends.friends.span--9" className="hidden shrink-0 text-xs text-ink-faint group-hover:inline">
+          <span data-gc="friends.friends.span--5" className="min-w-0 flex-1">
+            <span data-gc="friends.friends.span--6" className="flex min-w-0 items-baseline gap-1.5">
+              <span data-gc="friends.friends.span--7" className="truncate text-sm font-semibold">{relation.user.displayName}</span>
+              <span data-gc="friends.friends.span--8" className="hidden shrink-0 text-xs text-ink-faint group-hover:inline">
                 @{relation.user.username}
               </span>
             </span>
 
             {legenda && (
-              <span data-gc="friends.friends.span--10" className="mt-0.5 block truncate text-xs text-ink-faint">{legenda}</span>
+              <span data-gc="friends.friends.span--9" className="mt-0.5 block truncate text-xs text-ink-faint">{legenda}</span>
             )}
           </span>
         </button>
@@ -321,41 +310,50 @@ const FriendRow: React.FC<FriendRowProps> = ({ relation, onOpenConversation }) =
         <div data-gc="friends.friends.div--8" className="flex shrink-0 items-center gap-2">
           {relation.status === "ACCEPTED" && (
             <Tooltip data-gc="friends.friends.tooltip" label="Conversar">
-              <button data-gc="friends.friends.button--3"
+              <IconButton data-gc="friends.friends.icon-button"
+                size="md"
+                round
+                variant="soft"
+                label="Conversar"
                 onClick={() => onOpenConversation(relation.user.id)}
-                aria-label="Conversar"
-                className={cn(ACTION, NEUTRAL)}
+                className="group-hover:text-ink [&_svg]:size-[18px]"
               >
-                <ChatCircleDots data-gc="friends.friends.chat-circle-dots" size={18} weight="fill" />
-              </button>
+                <ChatCircleDots data-gc="friends.friends.chat-circle-dots" weight="fill" />
+              </IconButton>
             </Tooltip>
           )}
 
           {relation.status === "PENDING_IN" && (
             <Tooltip data-gc="friends.friends.tooltip--2" label="Aceitar">
-              <button data-gc="friends.friends.button--4"
+              <IconButton data-gc="friends.friends.icon-button--2"
+                size="md"
+                round
+                variant="primary"
+                label="Aceitar"
                 onClick={(e) => void reply(true, e.shiftKey)}
-                aria-label="Aceitar"
-                className={cn(ACTION, "bg-brand text-sobre-marca hover:bg-brand-hover")}
+                className="[&_svg]:size-[18px]"
               >
-                <Check data-gc="friends.friends.check" size={18} weight="bold" />
-              </button>
+                <Check data-gc="friends.friends.check" weight="bold" />
+              </IconButton>
             </Tooltip>
           )}
 
           {pending && (
             <Tooltip data-gc="friends.friends.tooltip--3" label={relation.status === "PENDING_IN" ? "Recusar" : "Cancelar pedido"}>
-              <button data-gc="friends.friends.button--5"
+              <IconButton data-gc="friends.friends.icon-button--3"
+                size="md"
+                round
+                variant="softDanger"
+                label={relation.status === "PENDING_IN" ? "Recusar" : "Cancelar pedido"}
+                className="group-hover:text-ink [&_svg]:size-[18px]"
                 onClick={(e) =>
                   relation.status === "PENDING_IN"
                     ? void reply(false, e.shiftKey)
                     : void undo(e.shiftKey)
                 }
-                aria-label={relation.status === "PENDING_IN" ? "Recusar" : "Cancelar pedido"}
-                className={cn(ACTION, NEUTRAL, "hover:bg-danger hover:text-sobre-marca")}
               >
-                <X data-gc="friends.friends.x" size={18} weight="bold" />
-              </button>
+                <X data-gc="friends.friends.x" weight="bold" />
+              </IconButton>
             </Tooltip>
           )}
 
@@ -367,9 +365,9 @@ const FriendRow: React.FC<FriendRowProps> = ({ relation, onOpenConversation }) =
           {relation.status === "ACCEPTED" && (
             <DropdownMenu data-gc="friends.friends.dropdown-menu">
               <DropdownMenuTrigger data-gc="friends.friends.dropdown-menu-trigger" asChild>
-                <button data-gc="friends.friends.button--6" aria-label="Mais" className={cn(ACTION, NEUTRAL)}>
-                  <DotsThreeVertical data-gc="friends.friends.dots-three-vertical" size={18} weight="bold" />
-                </button>
+                <IconButton data-gc="friends.friends.icon-button--4" size="md" round variant="soft" label="Mais" className="group-hover:text-ink [&_svg]:size-[18px]">
+                  <DotsThreeVertical data-gc="friends.friends.dots-three-vertical" weight="bold" />
+                </IconButton>
               </DropdownMenuTrigger>
 
               <DropdownMenuContent data-gc="friends.friends.dropdown-menu-content" align="end">

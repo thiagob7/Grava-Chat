@@ -2,6 +2,7 @@ import React, { useEffect } from "react";
 import { useNavigate } from "react-router";
 import { Phone, PhoneOff, Video } from "lucide-react";
 
+import { Button } from "~/components/ui/button";
 import { useFindProfile } from "~/@core/application/queries/user/use-find-profile";
 import { Avatar } from "~/features/perfil/components/Avatar";
 import { refuseCall } from "~/@core/lib/websocket/emit-voice";
@@ -76,28 +77,32 @@ export const CallReceived: React.FC = () => {
       </div>
 
       <div data-gc="voz.chamada-recebida.div--3" className="mt-4 flex gap-2">
-        <button data-gc="voz.chamada-recebida.button.refuse"
+        <Button data-gc="voz.chamada-recebida.button.refuse"
+          variant="surface"
+          className="flex-1 gap-1.5 px-3 py-2 text-ink hover:bg-danger hover:text-palco-ink"
           onClick={refuse}
-          className="flex flex-1 items-center justify-center gap-1.5 rounded bg-surface-3 px-3 py-2 text-sm font-medium transition hover:bg-danger hover:text-palco-ink"
         >
           <PhoneOff data-gc="voz.chamada-recebida.phone-off" size={15} /> Recusar
-        </button>
+        </Button>
 
-        <button data-gc="voz.chamada-recebida.button"
+        <Button data-gc="voz.chamada-recebida.button"
+          variant="success"
+          className="flex-1 gap-1.5 px-3 py-2"
           onClick={() => void answer(call.withVideo)}
-          className="flex flex-1 items-center justify-center gap-1.5 rounded bg-online px-3 py-2 text-sm font-medium text-ink transition hover:brightness-110"
         >
           {call.withVideo ? <Video data-gc="voz.chamada-recebida.video--2" size={15} /> : <Phone data-gc="voz.chamada-recebida.phone--2" size={15} />} Atender
-        </button>
+        </Button>
       </div>
 
       {call.withVideo && (
-        <button data-gc="voz.chamada-recebida.button--2"
+        <Button data-gc="voz.chamada-recebida.button--2"
+          variant="link"
+          size="xs"
+          className="mt-2 w-full font-normal text-ink-muted hover:text-ink"
           onClick={() => void answer(false)}
-          className="mt-2 w-full text-center text-xs text-ink-muted transition hover:text-ink hover:underline"
         >
           Atender sem câmera
-        </button>
+        </Button>
       )}
     </div>
   );

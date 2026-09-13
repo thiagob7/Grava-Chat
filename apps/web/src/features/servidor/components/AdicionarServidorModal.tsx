@@ -1,11 +1,13 @@
 import React, { useRef, useState } from "react";
 import { useNavigate } from "react-router";
+import { LIMITS } from "@gravae/shared";
 import { Home, Link2, Plus, Upload } from "lucide-react";
 
 import { useCreateGuild } from "~/@core/application/queries/guild/use-create-guild";
 import { useUpdateGuild } from "~/@core/application/queries/guild/use-update-guild";
 import { useUploadImage } from "~/@core/application/queries/upload/use-upload-image";
 import { ImageEditor } from "~/components/EditorDeImagem";
+import { ImagePicker } from "~/components/SeletorDeImagem";
 import { Button } from "~/components/ui/button";
 import {
   Dialog,
@@ -109,6 +111,20 @@ const Create: React.FC<{
   const [forCrop, setForCrop] = useState<File | null>(null);
   const [icon, setIcon] = useState<{ file: File; preview: string } | null>(null);
   const picker = useRef<HTMLInputElement>(null);
+  const [choosing, setChoosing] = useState(false);
+  const [fetchingGif, setFetchingGif] = useState(false);
+
+  const pickGif = async (url: string) => {
+    setFetchingGif(true);
+    const file = await fetch(url)
+      .then((reply) => (reply.ok ? reply.blob() : Promise.reject()))
+      .then((blob) => new File([blob], "klipy.gif", { type: blob.type || "image/gif" }))
+      .catch(() => null)
+      .finally(() => setFetchingGif(false));
+
+    if (file) setForCrop(file);
+    else setError("Não consegui trazer esse GIF. Tente outro.");
+  };
 
   const submit = async () => {
     if (name.trim().length < 2) return setError("O nome precisa de pelo menos 2 caracteres");
@@ -135,7 +151,7 @@ const Create: React.FC<{
     onCreated(guild.id);
   };
 
-  const busy = createGuild.isPending || uploadImage.isPending;
+  const busy = createGuild.isPending || uploadImage.isPending || updateGuild.isPending;
 
   return (
     <>
@@ -154,7 +170,7 @@ const Create: React.FC<{
             com o mais só aparece enquanto não há ícone.
           */}
           <button data-gc="servidor.adicionar-servidor-modal.button"
-            onClick={() => picker.current?.click()}
+            onClick={() => setChoosing(true)}
             aria-label={icon ? "Trocar ícone do servidor" : "Enviar ícone do servidor"}
             className="group/icone relative size-20 shrink-0 rounded-full transition focus-visible:outline-none"
           >
@@ -187,18 +203,18 @@ const Create: React.FC<{
           </button>
 
           <div data-gc="servidor.adicionar-servidor-modal.div--3" className="min-w-0">
-            <Button data-gc="servidor.adicionar-servidor-modal.button--2" variant="surface" size="sm" onClick={() => picker.current?.click()}>
+            <Button data-gc="servidor.adicionar-servidor-modal.button--2" variant="surface" size="sm" loading={fetchingGif} onClick={() => setChoosing(true)}>
               {icon ? "Trocar ícone" : "Enviar ícone"}
             </Button>
             <p data-gc="servidor.adicionar-servidor-modal.p" className="mt-1.5 text-xs text-ink-faint">
-              Opcional. Quadrada fica melhor, e a partir de 256px.
+              Opcional. Imagem ou GIF, quadrada e a partir de 256px.
             </p>
           </div>
 
           <input data-gc="servidor.adicionar-servidor-modal.input"
             ref={picker}
             type="file"
-            accept="image/*"
+            accept="image/png,image/jpeg,image/webp,image/gif"
             className="hidden"
             onChange={(e) => {
               const file = e.target.files?.[0];
@@ -227,18 +243,39 @@ const Create: React.FC<{
         <Button data-gc="servidor.adicionar-servidor-modal.button.on-back" variant="ghost" onClick={onBack}>
           Voltar
         </Button>
-        <Button data-gc="servidor.adicionar-servidor-modal.button--3" onClick={() => void submit()} disabled={busy}>
-          {busy ? "Criando…" : "Criar servidor"}
+        <Button data-gc="servidor.adicionar-servidor-modal.button--3" onClick={() => void submit()} loading={busy}>
+          Criar servidor
         </Button>
       </DialogFooter>
+
+      <ImagePicker data-gc="servidor.adicionar-servidor-modal.image-picker"
+        open={choosing}
+        title="Ícone do servidor"
+        footer={`PNG, JPEG, WebP ou GIF. Até ${Math.round(LIMITS.avatarBytes / 1024 / 1024)} MB. O GIF continua animado.`}
+        onClose={() => setChoosing(false)}
+        onFile={() => {
+          setChoosing(false);
+          picker.current?.click();
+        }}
+        onGif={(gif) => void pickGif(gif.gif ?? gif.url)}
+      />
 
       <ImageEditor data-gc="servidor.adicionar-servidor-modal.image-editor"
         file={forCrop}
         aspect={1}
         exportWidth={256}
         mime="image/webp"
+        gifWidth={256}
+        gifMaxBytes={LIMITS.avatarBytes}
         round
+        title="Cortar ícone do servidor"
+        applyLabel="Usar ícone"
         onCancel={() => setForCrop(null)}
+        onSkip={() => {
+          const original = forCrop;
+          setForCrop(null);
+          if (original) setIcon({ file: original, preview: URL.createObjectURL(original) });
+        }}
         onApply={(cropped) => {
           setForCrop(null);
           setIcon({ file: cropped, preview: URL.createObjectURL(cropped) });

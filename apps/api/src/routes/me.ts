@@ -11,6 +11,7 @@ import { messageService } from "~/services/message-service.js";
 import { voiceService } from "~/services/voice-service.js";
 import { userRepository } from "~/repositories/user-repository.js";
 import { toSelfUser } from "~/lib/serialize.js";
+import { adminService } from "~/services/admin-service.js";
 import { updateProfileInput } from "~/validations/auth.js";
 import { objectId } from "~/validations/common.js";
 import { oauthService } from "~/services/oauth-service.js";
@@ -25,7 +26,7 @@ export async function meRoutes(app: FastifyInstance) {
       presenceService.desiredOf(req.userId),
     ]);
 
-    return toSelfUser(user, providers, desired);
+    return { ...toSelfUser(user, providers, desired), admin: await adminService.hasAccess(req.userId) };
   });
 
   app.patch("/me", async (req) => {

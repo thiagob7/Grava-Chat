@@ -276,6 +276,9 @@ export const servidor = {
     comoUsar: "怎么用",
     comoUsarTexto: "发送带 JSON 的 POST：",
   },
+  geral: {
+    titulo: "概览",
+  },
   explorar: {
     titulo: "发现",
   },

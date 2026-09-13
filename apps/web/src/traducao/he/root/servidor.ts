@@ -276,6 +276,9 @@ export const servidor = {
     comoUsar: "איך משתמשים",
     comoUsarTexto: "שלח POST עם JSON:",
   },
+  geral: {
+    titulo: "סקירה כללית",
+  },
   explorar: {
     titulo: "גילוי",
   },

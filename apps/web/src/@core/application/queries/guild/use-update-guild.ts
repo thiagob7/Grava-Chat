@@ -10,9 +10,11 @@ export const useUpdateGuild = () => {
 
   return useMutation({
     mutationFn: (data: UpdateGuildDTO) => updateGuild(data),
-    onSuccess: () => {
+    onSuccess: (_, data) => {
       toast.success("Servidor atualizado.");
       queryClient.invalidateQueries({ queryKey: [queryKeys.guild.find_many] });
+      queryClient.invalidateQueries({ queryKey: queryKeys.guild.detail(data.guildId) });
+      queryClient.invalidateQueries({ queryKey: queryKeys.guild.community(data.guildId) });
     },
     onError: (error) => toast.error(apiErrorMessage(error, "Erro ao salvar o servidor.")),
   });

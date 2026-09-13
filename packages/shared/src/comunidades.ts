@@ -1,6 +1,16 @@
-export const MEMBERS_FOR_DISCOVER = 100;
+export const MEMBERS_FOR_DISCOVER = 80;
 
 export const MEMBERS_FOR_COMMUNITY = 80;
+
+export const GUILD_TAGS_MAX = 5;
+
+export const GUILD_TAG_LENGTH = 24;
+
+export const AFK_TIMEOUTS = [60, 300, 900, 1800, 3600] as const;
+
+export const DEFAULT_NOTIFICATIONS = ["tudo", "mencoes"] as const;
+
+export type DefaultNotifications = (typeof DEFAULT_NOTIFICATIONS)[number];
 
 export function canFlipCommunity(members: number): boolean {
   return members >= MEMBERS_FOR_COMMUNITY;

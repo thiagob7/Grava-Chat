@@ -276,6 +276,9 @@ export const servidor = {
     comoUsar: "Cara memakai",
     comoUsarTexto: "Kirim POST berisi JSON:",
   },
+  geral: {
+    titulo: "Ringkasan",
+  },
   explorar: {
     titulo: "Jelajahi",
   },

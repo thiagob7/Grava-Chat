@@ -276,6 +276,9 @@ export const servidor = {
     comoUsar: "Näin sitä käytetään",
     comoUsarTexto: "Lähetä POST JSONilla:",
   },
+  geral: {
+    titulo: "Yleiskatsaus",
+  },
   explorar: {
     titulo: "Löydä",
   },

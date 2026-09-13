@@ -257,6 +257,13 @@ export const friendshipService = {
     io().to(rooms.user(other.id)).emit("dm:pedido", { channelId });
   },
 
+  async announcePendingMessage(userId: string, channelId: string) {
+    const request = await dmRepositoryRequest.findByChannel(channelId);
+    if (request?.status !== "PENDING" || request.fromId !== userId) return;
+
+    io().to(rooms.user(request.toId)).emit("dm:pedido", { channelId });
+  },
+
   async listRequests(userId: string) {
     const requests = await dmRepositoryRequest.pendingFor(userId);
     if (!requests.length) return { requests: [], spam: [] };

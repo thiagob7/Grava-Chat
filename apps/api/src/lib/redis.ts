@@ -40,6 +40,9 @@ export const keys = {
     não muda com o tamanho do Redis.
   */
   voicePeople: "voice:pessoas",
+  /* A sessão do painel de administração, pela impressão do token (nunca o token cru). */
+  adminSession: (tokenHash: string) => `admin:sessao:${tokenHash}`,
+  adminAttempts: (userId: string) => `admin:tentativas:${userId}`,
   /* Só para a migração: o status escolhido morava aqui antes de ir para o Mongo. */
   legacyPresence: (userId: string) => `presence:${userId}`,
   voiceState: (userId: string) => `voice:user:${userId}`,

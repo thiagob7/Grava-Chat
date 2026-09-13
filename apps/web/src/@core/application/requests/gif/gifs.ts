@@ -4,6 +4,7 @@ export interface GifModel {
   id: string;
   description: string;
   url: string;
+  gif?: string;
   preview: string;
   width: number;
   height: number;

@@ -276,6 +276,9 @@ export const servidor = {
     comoUsar: "Jak na to",
     comoUsarTexto: "Pošli POST s JSON:",
   },
+  geral: {
+    titulo: "Přehled",
+  },
   explorar: {
     titulo: "Objevovat",
   },

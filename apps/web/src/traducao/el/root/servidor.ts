@@ -276,6 +276,9 @@ export const servidor = {
     comoUsar: "Πώς χρησιμοποιείται",
     comoUsarTexto: "Στείλε ένα POST με JSON:",
   },
+  geral: {
+    titulo: "Επισκόπηση",
+  },
   explorar: {
     titulo: "Εξερεύνηση",
   },

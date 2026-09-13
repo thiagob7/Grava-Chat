@@ -10,6 +10,7 @@ import { SegmentedGroup, Label, CardOption, Textarea, Input } from "~/components
 import { NameChannelField } from "~/features/servidor/components/CampoDeNomeDeCanal";
 import { Slider } from "~/components/ui/slider";
 import { useTranslation } from "~/traducao";
+import { useFindGuild } from "~/@core/application/queries/guild/use-find-guild";
 
 interface ChannelOverviewSectionProps {
   guildId: string;
@@ -45,6 +46,7 @@ export const ChannelOverviewSection: React.FC<ChannelOverviewSectionProps> = ({
   guildId,
   channel,
 }) => {
+  const flexibleNames = useFindGuild(guildId).data?.guild.flexibleChannelNames === true;
   const { t } = useTranslation();
   const save = useUpdateChannel(guildId);
 
@@ -86,6 +88,7 @@ export const ChannelOverviewSection: React.FC<ChannelOverviewSectionProps> = ({
             font={font}
             onFont={setFont}
             isVoice={isVoice}
+            flexible={flexibleNames}
           />
         </div>
 

@@ -31,9 +31,10 @@ const CREATE = "criar";
 const loadCommunity = () =>
   import("~/assets/animations/speech-bubbles.json").then((mod) => mod.default);
 
-export const CommunitySection: React.FC<{ guildId: string; channels: Channel[] }> = ({
+export const CommunitySection: React.FC<{ guildId: string; channels: Channel[]; embedded?: boolean }> = ({
   guildId,
   channels,
+  embedded = false,
 }) => {
   const { t } = useTranslation();
   const { data: state, isLoading } = useCommunity(guildId);
@@ -215,7 +216,8 @@ export const CommunitySection: React.FC<{ guildId: string; channels: Channel[] }
           />
         </Field>
 
-        <Field data-gc="servidor.server-settings.comunidade-section.field--4"
+        {!embedded && (
+          <Field data-gc="servidor.server-settings.comunidade-section.field--4"
           label={t("servidor.comunidade.idiomaPrincipal")}
           detail={t("servidor.comunidade.idiomaPrincipalDetalhe")}
         >
@@ -231,6 +233,7 @@ export const CommunitySection: React.FC<{ guildId: string; channels: Channel[] }
             ]}
           />
         </Field>
+        )}
       </Section>
 
       <Section data-gc="servidor.server-settings.comunidade-section.section--2"

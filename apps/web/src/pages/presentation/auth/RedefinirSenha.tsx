@@ -93,8 +93,8 @@ export const ResetPassword: React.FC = () => {
               error={error ?? undefined}
             />
 
-            <Button data-gc="auth.redefinir-senha.button--2" className="mt-5 w-full" disabled={reset.isPending} onClick={() => void save()}>
-              {reset.isPending ? "Um instante…" : "Salvar a senha"}
+            <Button data-gc="auth.redefinir-senha.button--2" className="mt-5 w-full" onClick={() => void save()} loading={reset.isPending}>
+              Salvar a senha
             </Button>
           </>
         )}

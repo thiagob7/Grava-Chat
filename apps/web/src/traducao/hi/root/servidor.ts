@@ -276,6 +276,9 @@ export const servidor = {
     comoUsar: "कैसे इस्तेमाल करें",
     comoUsarTexto: "JSON के साथ POST भेजिए:",
   },
+  geral: {
+    titulo: "अवलोकन",
+  },
   explorar: {
     titulo: "एक्सप्लोर",
   },

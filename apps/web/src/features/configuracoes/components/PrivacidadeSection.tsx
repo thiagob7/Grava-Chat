@@ -217,10 +217,11 @@ const DeleteAccount: React.FC<{ name: string }> = ({ name }) => {
       <div data-gc="configuracoes.privacidade-section.div--7" className="mt-3 flex gap-2">
         <Button data-gc="configuracoes.privacidade-section.button--3"
           variant="danger"
-          disabled={!checks || doDelete.isPending}
+          disabled={!checks}
           onClick={() => doDelete.mutate()}
+          loading={doDelete.isPending}
         >
-          {doDelete.isPending ? "Excluindo…" : "Excluir a minha conta"}
+          Excluir a minha conta
         </Button>
 
         <Button data-gc="configuracoes.privacidade-section.button--4"

@@ -1,3 +1,5 @@
+import { requireAdmin } from "~/routes/admin.js";
+import { adminService } from "~/services/admin-service.js";
 import type { FastifyInstance } from "fastify";
 import { LIMITS, rooms } from "@gravae/shared";
 import { botService } from "~/services/bot-service.js";
@@ -109,8 +111,12 @@ export async function guildRoutes(app: FastifyInstance) {
   app.put("/guilds/:guildId/verificacao", async (req) => {
     const { guildId } = guildParams.parse(req.params);
     const { verified } = z.object({ verified: z.boolean() }).parse(req.body);
+    const actor = await requireAdmin(req, "comunidades");
 
-    return guildService.verify(req.userId, guildId, verified);
+    const result = await guildService.verify(guildId, verified);
+    await adminService.log(actor.userId, verified ? "verificou-comunidade" : "tirou-o-selo", { guildId });
+
+    return result;
   });
 
   app.patch("/guilds/:guildId", async (req) => {

@@ -13,3 +13,4 @@ export * from "./origens.js";
 export * from "./convites.js";
 export * from "./temas.js";
 export * from "./desktop.js";
+export * from "./admin.js";

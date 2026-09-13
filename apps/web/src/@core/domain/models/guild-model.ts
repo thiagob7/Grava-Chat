@@ -1,5 +1,6 @@
 import type {
   CommunityCategory,
+  DefaultNotifications,
   Category,
   Channel,
   Badge,
@@ -24,6 +25,13 @@ export interface GuildModel {
   welcomeMessage?: string | null;
   category?: CommunityCategory | null;
   discoverable?: boolean | null;
+  languagePrincipal?: string | null;
+  tags?: string[];
+  afkChannelId?: string | null;
+  afkTimeoutSeconds?: number;
+  defaultNotifications?: DefaultNotifications;
+  flexibleChannelNames?: boolean;
+  hideOwnerCrown?: boolean;
   ownerId: string;
   memberCount: number;
   verified?: boolean;

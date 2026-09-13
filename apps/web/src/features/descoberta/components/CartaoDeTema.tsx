@@ -16,7 +16,7 @@ export const ThemeGalleryCard: React.FC<{
 
   return (
     <article data-gc="descoberta.cartao-de-tema.article.on-import"
-      className="group flex cursor-pointer flex-col overflow-hidden rounded-lg border border-line bg-surface-2 transition hover:border-ink-faint/30"
+      className="group flex cursor-pointer flex-col overflow-hidden rounded-lg border border-line bg-surface-2 transition [contain-intrinsic-size:auto_380px] [content-visibility:auto] hover:border-ink-faint/30"
       onClick={onImport}
     >
       <div data-gc="descoberta.cartao-de-tema.div" className="relative flex aspect-video shrink-0 overflow-hidden bg-surface-4">

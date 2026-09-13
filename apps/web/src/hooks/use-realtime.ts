@@ -152,9 +152,12 @@ import {
   offFriendUpdated,
 } from "~/@core/lib/websocket/on-friend-updated";
 import { onDmCreated, offDmCreated } from "~/@core/lib/websocket/on-dm-created";
+import { onDmRequest, offDmRequest } from "~/@core/lib/websocket/on-dm-request";
+import { findDmRequests, type RequestsBox } from "~/@core/application/requests/friend/find-pedidos-de-dm";
 import { notifyMessage } from "~/lib/notificacoes";
 import { useIgnoreStore } from "~/stores/ignore-store";
 import { useAbsence } from "~/hooks/use-ausencia";
+import { useAfkChannel } from "~/hooks/use-canal-de-inatividade";
 import { useTypingStore } from "~/features/conversa/stores/typing-store";
 import { playPanelSound } from "~/features/voz/lib/soundboard";
 import { useVoicePrefs } from "~/features/voz/stores/voice-prefs";
@@ -294,6 +297,7 @@ export function useRealtime(
   currentChannelId: string | undefined,
 ) {
   useAbsence(true);
+  useAfkChannel();
 
   const queryClient = useQueryClient();
   const navigate = useNavigate();
@@ -354,6 +358,7 @@ export function useRealtime(
         channelName: place?.channel.name,
         isDm: !place,
         guildId: place?.detail.guild.id ?? null,
+        serverDefault: place?.detail.guild.defaultNotifications,
         ignored: useIgnoreStore.getState().thisIgnored(message.author.id),
         onOpen: () =>
           navigate(
@@ -777,6 +782,28 @@ export function useRealtime(
       void queryClient.invalidateQueries({ queryKey: [queryKeys.friend.dms] });
     });
 
+    onDmRequest(async ({ channelId }) => {
+      const before = queryClient.getQueryData<RequestsBox>([queryKeys.friend.requests]);
+      const known = Boolean(
+        before && [...before.requests, ...before.spam].some((request) => request.channelId === channelId),
+      );
+
+      void queryClient.invalidateQueries({ queryKey: [queryKeys.friend.dms] });
+
+      const after = await queryClient
+        .fetchQuery({ queryKey: [queryKeys.friend.requests], queryFn: findDmRequests, staleTime: 0 })
+        .catch(() => null);
+
+      if (known || !after) return;
+      const fresh = after.requests.find((request) => request.channelId === channelId);
+      if (!fresh || useIgnoreStore.getState().thisIgnored(fresh.de.id)) return;
+
+      playSound("mention");
+      toast.info(`${fresh.de.displayName} quer conversar com você. Veja em Solicitações.`, {
+        onClick: () => navigate("/dm/solicitacoes"),
+      });
+    });
+
     const handleConnect = () => {
       const droppedBefore = useConnectionStore.getState().alreadyConnected;
       useConnectionStore.getState().didConnect();
@@ -862,6 +889,7 @@ export function useRealtime(
       offSocketError();
       offFriendUpdated();
       offDmCreated();
+      offDmRequest();
     };
   }, [queryClient, navigate, currentGuildId, currentChannelId]);
 }

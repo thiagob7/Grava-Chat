@@ -1,5 +1,5 @@
 import React from "react";
-import { ChatsCircle, Compass, CopySimple, Minus, Square, UsersThree, X } from "@phosphor-icons/react";
+import { ChatsCircle, Compass, CopySimple, Minus, ShieldCheck, Square, UsersThree, X } from "@phosphor-icons/react";
 import { useLocation, useMatch } from "react-router";
 
 import { useFindManyGuilds } from "~/@core/application/queries/guild/use-find-many-guilds";
@@ -87,6 +87,11 @@ const PLACES: { test: (path: string) => boolean; icon: React.ReactNode; title: s
     test: (c) => c.startsWith("/explorar") || c.startsWith("/apps/"),
     icon: <Compass data-gc="app.barra-de-titulo.compass" size={14} weight="fill" />,
     title: "Explorar",
+  },
+  {
+    test: (c) => c.startsWith("/admin"),
+    icon: <ShieldCheck data-gc="app.barra-de-titulo.shield-check" size={14} weight="fill" />,
+    title: "Administração",
   },
 ];
 

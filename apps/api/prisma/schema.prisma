@@ -242,6 +242,12 @@ model Guild {
   languagePrincipal       String? @map("idiomaPrincipal")
   verifiedRequiresEmail  Boolean? @default(false) @map("exigeEmailVerificado")
   filtersMediaExplicit  Boolean? @default(false) @map("filtraMidiaExplicita")
+  tags                 String[] @default([]) @map("etiquetas")
+  afkChannelId         String?  @db.ObjectId @map("canalDeInatividadeId")
+  afkTimeoutSeconds    Int?     @default(300) @map("tempoDeInatividade")
+  defaultNotifications String?  @default("tudo") @map("notificacaoPadrao")
+  flexibleChannelNames Boolean? @default(false) @map("nomesDeCanalLivres")
+  hideOwnerCrown       Boolean? @default(false) @map("ocultarCoroaDoDono")
   ownerId   String   @db.ObjectId
   owner     User     @relation("GuildOwner", fields: [ownerId], references: [id])
   createdAt DateTime @default(now())
@@ -793,4 +799,33 @@ model Report {
   @@index([messageId])
   @@index([resolvedAt])
   @@map("Denuncia")
+}
+
+/// Quem entra no painel de administração sem ser dono. O dono vem de
+/// ADMIN_EMAILS e não mora aqui. Sem índice único de propósito: o deploy não
+/// roda `db push`, então a unicidade por pessoa é garantida no código.
+model AdminMember {
+  id               String    @id @default(auto()) @map("_id") @db.ObjectId
+  userId           String    @db.ObjectId
+  email            String
+  areas            String[]
+  passwordHash     String    @map("senhaHash")
+  mustChangePassword Boolean @default(true) @map("trocarSenha")
+  passwordSetAt    DateTime  @default(now()) @map("senhaDefinidaEm")
+  lastUnlockAt     DateTime? @map("ultimaEntradaEm")
+  addedById        String?   @db.ObjectId
+  createdAt        DateTime  @default(now())
+
+  @@map("Administrador")
+}
+
+/// O que foi feito no painel, e por quem.
+model AdminLog {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  actorId   String   @db.ObjectId
+  action    String
+  detail    Json?
+  createdAt DateTime @default(now())
+
+  @@map("RegistroDeAdministracao")
 }

@@ -276,6 +276,9 @@ export const servidor = {
     comoUsar: "Cum se folosește",
     comoUsarTexto: "Trimite un POST cu JSON:",
   },
+  geral: {
+    titulo: "Prezentare generală",
+  },
   explorar: {
     titulo: "Explorează",
   },

@@ -408,8 +408,8 @@ export const CreateEventForm: React.FC<{
         </Button>
 
         {step === "review" ? (
-          <Button data-gc="servidor.create-event-form.button.submit" disabled={create.isPending} onClick={submit}>
-            {create.isPending ? "Criando…" : "Criar evento"}
+          <Button data-gc="servidor.create-event-form.button.submit" onClick={submit} loading={create.isPending}>
+            Criar evento
           </Button>
         ) : (
           <Button data-gc="servidor.create-event-form.button--4"

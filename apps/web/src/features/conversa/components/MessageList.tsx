@@ -401,7 +401,7 @@ export const MessageList: React.FC<MessageListProps> = ({
             )}
             <MessageItem data-gc="conversa.message-list.message-item.retry"
               message={message}
-              compact={!isNewDay && shouldGroup(messages[index - 1], message)}
+              compact={!isNewDay && message.id !== firstFreshId && shouldGroup(messages[index - 1], message)}
               isOwn={message.author.id === currentUserId}
               currentUserId={currentUserId}
               guildId={guildId}
@@ -443,7 +443,7 @@ export const MessageList: React.FC<MessageListProps> = ({
               <button data-gc="conversa.message-list.button.go-to-end"
                 type="button"
                 onClick={goToEnd}
-                className="flex shrink-0 items-center gap-1.5 rounded-full bg-brand px-3 py-1 font-semibold text-sobre-marca transition hover:bg-brand-hover"
+                className="flex shrink-0 items-center gap-1.5 rounded-full bg-brand px-3 py-1 font-semibold text-sobre-marca transition hover:brightness-110"
               >
                 Ir para as recentes <ArrowDown data-gc="conversa.message-list.arrow-down" size={14} />
               </button>
