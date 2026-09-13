@@ -38,6 +38,8 @@ export const configuracoes = {
     coresTrocadas: "เปลี่ยนสี {{quantas}} สี",
     avisoDeCss: "ธีมนี้พก CSS ของคนเขียนมาด้วย และ CSS แตะได้ทุกซอกทุกมุมของหน้าจอ นำเข้าเฉพาะจากคนที่คุณไว้ใจเท่านั้น",
     soCores: "ธีมนี้เปลี่ยนแค่สี ไม่มี CSS จากข้างนอก",
+    verCss: "ดู CSS",
+    esconderCss: "ซ่อน CSS",
     aplicar: "ใช้",
     previaSemMotor: "ตัวอย่างไม่ได้รันเอนจิน ติดตั้งก่อนจึงจะเห็น",
     motorAnimado: "{{motor}} แบบเคลื่อนไหว",

@@ -38,6 +38,8 @@ export const configuracoes = {
     coresTrocadas: "색 {{quantas}}개 교체",
     avisoDeCss: "이 테마에는 만든 사람의 CSS가 들어 있고, CSS는 화면 구석구석에 손을 댑니다. 믿을 만한 사람의 것만 가져오세요.",
     soCores: "이 테마는 색만 바꿉니다. 외부 CSS는 없습니다.",
+    verCss: "CSS 보기",
+    esconderCss: "CSS 숨기기",
     aplicar: "적용",
     previaSemMotor: "미리보기에서는 엔진이 돌지 않습니다. 설치하면 볼 수 있습니다.",
     motorAnimado: "{{motor}} 애니메이션",

@@ -38,6 +38,8 @@ export const configuracoes = {
     coresTrocadas: "{{quantas}} لونًا مُبدَّلًا",
     avisoDeCss: "تحمل هذه السمة CSS من كاتبها، وCSS يطال أي ركن من الشاشة. لا تستوردها إلا ممن تثق بهم.",
     soCores: "هذه السمة تبدّل الألوان فقط. لا CSS خارجي فيها.",
+    verCss: "عرض CSS",
+    esconderCss: "إخفاء CSS",
     aplicar: "تطبيق",
     previaSemMotor: "المعاينة لا تشغّل المحرّك. ثبّتها لتراه.",
     motorAnimado: "{{motor}} متحرك",

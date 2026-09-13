@@ -127,10 +127,11 @@ export const Explore: React.FC = () => {
                 setTab(item.id);
                 setSearch("");
                 setMenuIsOpen(false);
+                if (botId) navigate("/explorar");
               }}
               className={cn(
                 "flex items-center gap-2.5 rounded px-2.5 py-2 text-left text-sm transition",
-                tab === item.id
+                (botId ? item.id === "aplicativos" : tab === item.id)
                   ? "bg-selecionado text-ink"
                   : "text-ink-muted hover:bg-hover hover:text-ink",
               )}
@@ -162,7 +163,7 @@ export const Explore: React.FC = () => {
         navigation
       )}
 
-      <div data-gc="descoberta.explorar.div--6" {...flx("explore", "topo-do-miolo flex min-w-0 flex-1 flex-col")}>
+      <div data-gc="descoberta.explorar.div--6" {...flx("explore", "topo-do-miolo flex min-w-0 flex-1 flex-col bg-surface-2")}>
         <header data-gc="descoberta.explorar.header--2" {...flx("channelTop", "topo-do-canal regiao-de-arrasto h-[var(--layout-header-height)] shrink-0 border-b border-divisor bg-surface-2")}>
           <div data-gc="descoberta.explorar.div--7"
             {...flx("topChannelCore", "flex h-full w-full items-center gap-3 px-4")}
@@ -252,7 +253,7 @@ export const Explore: React.FC = () => {
           </div>
         </header>
 
-        <div data-gc="descoberta.explorar.div--10" className="min-h-0 flex-1 overflow-y-auto">
+        <div data-gc="descoberta.explorar.div--10" className="min-h-0 flex-1 overflow-y-auto bg-surface-0">
           {botId ? (
             <div data-gc="descoberta.explorar.div--11" className="p-5">
               <AppPublic data-gc="descoberta.explorar.app-public" botId={botId} />

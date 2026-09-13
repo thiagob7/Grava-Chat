@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 
 import { useTheme } from "~/@core/application/queries/tema/use-temas";
 import { ENGINES, VARIABLE_NAME } from "~/features/tema/lib/fundos";
@@ -20,6 +20,65 @@ function motorDeclared(css: string): string | null {
 
 const WIDTH = 640;
 const HEIGHT = 360;
+
+/*
+  Uma prévia monta de cada vez.
+
+  Cada uma é um documento inteiro, com o CSS do tema para o navegador ler. A
+  galeria punha todas na tela juntas e o navegador processava tudo no mesmo
+  instante, e a tela travava. Na fila, a próxima só começa quando a anterior
+  terminou de carregar — ou num tempo curto, para um tema quebrado não segurar
+  as outras.
+*/
+const TURN_MS = 600;
+const waiting: (() => void)[] = [];
+let busy = false;
+
+function nextTurn() {
+  const start = waiting.shift();
+  busy = Boolean(start);
+  start?.();
+}
+
+function useTurn(wants: boolean) {
+  const [turn, setTurn] = useState(false);
+  const release = useRef<(() => void) | null>(null);
+
+  useEffect(() => {
+    if (!wants) return;
+
+    let released = false;
+    let timer: ReturnType<typeof setTimeout> | undefined;
+
+    const free = () => {
+      if (released) return;
+      released = true;
+      clearTimeout(timer);
+      release.current = null;
+      nextTurn();
+    };
+
+    const start = () => {
+      release.current = free;
+      timer = setTimeout(free, TURN_MS);
+      setTurn(true);
+    };
+
+    if (busy) waiting.push(start);
+    else {
+      busy = true;
+      start();
+    }
+
+    return () => {
+      const index = waiting.indexOf(start);
+      if (index >= 0) waiting.splice(index, 1);
+      else free();
+    };
+  }, [wants]);
+
+  return { turn, loaded: () => release.current?.() };
+}
 
 /*
   A galeria não carrega o CSS de todo mundo: a lista vem sem ele de propósito,
@@ -63,11 +122,18 @@ function useAppeared<T extends HTMLElement>() {
 export const ThemePreview: React.FC<{
   themeId: string;
   className?: string;
-}> = ({ themeId, className }) => {
+  /* Congela as animações do tema. Para galerias, onde há muitas prévias juntas. */
+  still?: boolean;
+}> = ({ themeId, className, still = false }) => {
   const { t } = useTranslation();
   const { target, appeared, width } = useAppeared<HTMLDivElement>();
   const { data: theme } = useTheme(appeared ? themeId : undefined);
   const scale = width ? width / WIDTH : 0;
+  const { turn, loaded } = useTurn(Boolean(theme && scale > 0));
+  const documentHtml = useMemo(
+    () => (theme ? previewDocument(theme.css, theme.overrides, { still }) : ""),
+    [theme, still],
+  );
   const motor = theme ? motorDeclared(theme.css) : null;
 
   return (
@@ -76,15 +142,16 @@ export const ThemePreview: React.FC<{
       ref={target}
       className={cn("relative overflow-hidden bg-surface-3", className)}
     >
-      {theme && scale > 0 && (
+      {theme && scale > 0 && turn && (
         <iframe
-          data-gc="tema.previa-do-tema.iframe"
+          data-gc="tema.previa-do-tema.iframe.loaded"
           title={`Prévia de ${theme.name}`}
           sandbox=""
           loading="lazy"
           tabIndex={-1}
           aria-hidden
-          srcDoc={previewDocument(theme.css, theme.overrides)}
+          srcDoc={documentHtml}
+          onLoad={loaded}
           /*
             O iframe é desenhado grande e encolhido: em tamanho de cartão o
             texto do app viraria borrão, e o que a pessoa quer ver é o

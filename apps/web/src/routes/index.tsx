@@ -171,7 +171,7 @@ export const AppRoutes: React.FC = () => {
 
 const WINDOWS_OWN = ["/estudio", "/cursores"];
 
-const BRAND_SCREENS = [/^\/login$/, /^\/redefinir$/, /^\/verificar-email$/, /^\/oauth2\/autorizar$/, /^\/bots\/[^/]+\/adicionar$/];
+const BRAND_SCREENS = [/^\/login$/, /^\/login\/app$/, /^\/redefinir$/, /^\/verificar-email$/, /^\/oauth2\/autorizar$/, /^\/bots\/[^/]+\/adicionar$/];
 
 const AppShell: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const { pathname } = useLocation();

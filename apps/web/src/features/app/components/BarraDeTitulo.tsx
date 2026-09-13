@@ -84,7 +84,7 @@ const PLACES: { test: (path: string) => boolean; icon: React.ReactNode; title: s
     title: "Mensagens diretas",
   },
   {
-    test: (c) => c.startsWith("/explorar"),
+    test: (c) => c.startsWith("/explorar") || c.startsWith("/apps/"),
     icon: <Compass data-gc="app.barra-de-titulo.compass" size={14} weight="fill" />,
     title: "Explorar",
   },
