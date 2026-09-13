@@ -30,8 +30,47 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
+  # O web e a API saem do mesmo merge, mas o web vai primeiro: a API pode
+  # apontar para uma rota que só o web novo tem (foi o caso do login pelo app).
+  # Por isso a aprovação só é pedida depois que a Vercel publicou este commit.
+  aguardar-web:
+    name: Esperar o web na Vercel
+    runs-on: ubuntu-latest
+    permissions:
+      deployments: read
+
+    steps:
+      - name: Conferir o deploy de produção deste commit
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+          SHA: ${{ github.sha }}
+        run: |
+          for i in $(seq 1 60); do
+            id=$(gh api "repos/$REPO/deployments?sha=$SHA&environment=Production" --jq '.[0].id // empty')
+
+            if [ -n "$id" ]; then
+              estado=$(gh api "repos/$REPO/deployments/$id/statuses" --jq '.[0].state // "pending"')
+
+              case "$estado" in
+                success) echo "web no ar"; exit 0 ;;
+                failure|error) echo "o deploy do web falhou; a API não sobe sozinha"; exit 1 ;;
+              esac
+            elif [ "$i" -ge 20 ]; then
+              # Commit que não mexe no web pode não gerar deploy na Vercel.
+              echo "a Vercel não abriu deploy para este commit; seguindo"
+              exit 0
+            fi
+
+            sleep 10
+          done
+
+          echo "a Vercel não terminou em dez minutos"
+          exit 1
+
   publicar:
     name: Publicar em produção
+    needs: aguardar-web
     runs-on: ubuntu-latest
     environment:
       name: producao
