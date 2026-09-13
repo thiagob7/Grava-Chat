@@ -59,11 +59,46 @@ async function voiceMachine(): Promise<VoiceMachine | { unavailable: true } | nu
 
     if (!reply.ok) return { unavailable: true };
 
-    const data = (await reply.json()) as Omit<VoiceMachine, "ms">;
-    return { ...data, ms: Math.round(performance.now() - start) };
+    const data = (await reply.json()) as Record<string, unknown>;
+    return { ...readVoiceMachine(data), ms: Math.round(performance.now() - start) };
   } catch {
     return { unavailable: true };
   }
+}
+
+const numberFrom = (...values: unknown[]) => {
+  for (const value of values) if (typeof value === "number" && Number.isFinite(value)) return value;
+  return 0;
+};
+
+const objectFrom = (value: unknown) => (value && typeof value === "object" ? (value as Record<string, unknown>) : {});
+
+function readVoiceMachine(data: Record<string, unknown>): Omit<VoiceMachine, "ms"> {
+  const load = objectFrom(data.carga);
+  const memory = objectFrom(data.memoria);
+  const disk = objectFrom(data.disk ?? data.disco);
+  const livekit = objectFrom(data.livekit);
+
+  return {
+    host: typeof data.host === "string" ? data.host : "voz",
+    cores: numberFrom(data.cores) || 1,
+    carga: {
+      um: numberFrom(load.um, load.one),
+      five: numberFrom(load.five, load.cinco),
+      quinze: numberFrom(load.quinze, load.fifteen),
+    },
+    memoria: {
+      total: numberFrom(memory.total),
+      livre: numberFrom(memory.livre, memory.free),
+      available: numberFrom(memory.available, memory.disponivel, memory.livre),
+    },
+    disk: { total: numberFrom(disk.total), livre: numberFrom(disk.livre, disk.free) },
+    machineUptime: numberFrom(data.machineUptime, data.uptimeDaMaquina),
+    livekit: {
+      inAr: Boolean(livekit.inAr ?? livekit.noAr),
+      resident: numberFrom(livekit.resident, livekit.residente),
+    },
+  };
 }
 
 interface VoiceMachine {
