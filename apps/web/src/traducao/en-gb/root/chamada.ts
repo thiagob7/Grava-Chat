@@ -23,6 +23,11 @@ export const chamada = {
   fecharChat: "Close chat",
   mostrarChat: "Show chat",
   aoVivo: "Live",
+  aparelhoDaPessoa: {
+    desktop: "Desktop app",
+    web: "Browser",
+    mobile: "Phone",
+  },
   estado: {
     mudo: "Microphone off",
     mudoPeloServidor: "Microphone turned off by the server",
@@ -70,6 +75,15 @@ export const chamada = {
     semFontes: "The system returned no screen or window to share.",
     pararDeCompartilhar: "Stop sharing",
     encerrarTransmissao: "End the broadcast",
+    pararTransmissao: "Stop streaming",
+    alterarTransmissao: "Change stream",
+    qualidade: "Stream quality",
+    resolucao: "Resolution",
+    taxaDeQuadros: "Frame rate",
+    original: "Source",
+    compartilharAudio: "Share stream audio",
+    quadros: "{{quadros}} FPS",
+    qualidadeDica: "Resolution is a ceiling: a smaller window keeps its own size. More resolution and frames need more bandwidth, yours and your viewers'. Also applies to a stream already live.",
   },
   live: {
     etiqueta: "Live",

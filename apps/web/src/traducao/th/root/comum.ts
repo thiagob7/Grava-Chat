@@ -96,4 +96,14 @@ export const comum = {
   excluir: "ลบ",
   remover: "เอาออก",
   trocar: "เปลี่ยน",
+  loginNoApp: {
+    titulo: "เรียบร้อยแล้ว!",
+    detalhe: "คุณเข้าสู่ระบบแล้ว กลับไปที่ Gravaê ได้เลย แอปกำลังรออยู่",
+    abrir: "เปิด Gravaê",
+    fecharAba: "ปิดแท็บนี้ได้เลย",
+    falhouTitulo: "เข้าสู่ระบบไม่สำเร็จ",
+    falhouDetalhe: "กลับไปที่แอปแล้วลองเข้าสู่ระบบอีกครั้ง",
+    legenda: "หุ่นยนต์โบกมือ",
+    legendaFalhou: "ลูกแมวร้องไห้",
+  },
 };

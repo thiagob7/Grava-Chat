@@ -1,4 +1,5 @@
 import type { Prisma, PresenceStatus } from "@prisma/client";
+import type { DesiredStatus } from "@gravae/shared";
 import { unset } from "~/lib/mongo.js";
 import { prisma } from "~/lib/prisma.js";
 
@@ -60,6 +61,49 @@ export const userRepository = {
       .catch((err: { code?: string }) => {
         if (err.code !== "P2034") throw err;
       });
+  },
+
+  /*
+    O status escolhido vive aqui, e não no Redis, porque é escolha da pessoa e
+    não cache: tem que continuar valendo depois de um Redis reiniciado ou
+    limpo. O que o Redis guarda de presença é só o que é descartável — quantas
+    abas estão conectadas e se o teclado parou.
+  */
+  async desiredOf(id: string): Promise<DesiredStatus> {
+    const found = await prisma.user.findUnique({
+      where: { id },
+      select: { desiredStatus: true },
+    });
+
+    return (found?.desiredStatus as DesiredStatus | undefined) ?? "ONLINE";
+  },
+
+  async desiredMany(ids: string[]): Promise<Record<string, DesiredStatus>> {
+    if (!ids.length) return {};
+
+    const found = await prisma.user.findMany({
+      where: { id: { in: ids } },
+      select: { id: true, desiredStatus: true },
+    });
+
+    return Object.fromEntries(found.map((u) => [u.id, u.desiredStatus as DesiredStatus]));
+  },
+
+  async idsWithoutDesired(): Promise<string[]> {
+    const found = (await prisma.user.findRaw({
+      filter: { statusEscolhido: { $exists: false } },
+      options: { projection: { _id: 1 } },
+    })) as unknown as { _id: { $oid: string } }[];
+
+    return found.map((u) => u._id.$oid);
+  },
+
+  async setDesiredMany(ids: string[], desiredStatus: DesiredStatus) {
+    await prisma.user.updateMany({ where: { id: { in: ids } }, data: { desiredStatus } });
+  },
+
+  async setDesired(id: string, desiredStatus: DesiredStatus) {
+    await prisma.user.update({ where: { id }, data: { desiredStatus } });
   },
 
   setAllOffline() {

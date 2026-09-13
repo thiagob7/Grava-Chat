@@ -6,7 +6,7 @@ import { messageRepository } from "~/repositories/message-repository.js";
 import { userRepository } from "~/repositories/user-repository.js";
 import { accessService } from "~/services/access-service.js";
 import { botService } from "~/services/bot-service.js";
-import { messageService } from "~/services/message-service.js";
+import { messageService, wasReplay } from "~/services/message-service.js";
 import { io } from "./io.js";
 
 export async function sendMessage(
@@ -15,6 +15,8 @@ export async function sendMessage(
   except?: string,
 ) {
   const message = await messageService.send(userId, input);
+  if (wasReplay(message)) return message;
+
   const room = io().to(rooms.channel(input.channelId));
 
   if (except) room.except(except).emit("message:created", message);

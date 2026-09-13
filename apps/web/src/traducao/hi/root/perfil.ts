@@ -98,6 +98,7 @@ export const perfil = {
     naoPerturbarDetalhe: "नए संदेश की सूचना नहीं मिलती",
     invisivel: "अदृश्य",
     invisivelDetalhe: "दूसरों को आप ऑफ़लाइन दिखते हैं",
+    offline: "ऑफ़लाइन",
   },
   menu: {
     mudarDeConta: "खाता बदलें",

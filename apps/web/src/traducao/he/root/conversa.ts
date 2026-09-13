@@ -133,6 +133,10 @@ export const conversa = {
       outro: "אחר",
     },
   },
+  fila: {
+    esperando: "יישלח כשהחיבור יחזור",
+  },
+
   falha: {
     tentarDeNovo: "לנסות שוב",
     erro: "לא נשלחה",
@@ -321,5 +325,10 @@ export const conversa = {
     doQueSeTrata: "על מה מדובר?",
     primeiraMensagem: "הודעה ראשונה",
     conteDoCaso: "ספר על זה",
+  },
+  sistema: {
+    naoEntregue: "לא ניתן היה למסור את ההודעה שלך. זה קורה בדרך כלל כי אין לכם קהילה משותפת, או כי האדם מקבל הודעות ישירות רק מחברים. ייתכן שתצטרך גם לשנות את הפרטיות שלך בהגדרות > פרטיות.",
+    soVoce: "רק אתה יכול לראות את ההודעה הזו.",
+    dispensar: "סגירה",
   },
 };

@@ -98,6 +98,7 @@ export const perfil = {
     naoPerturbarDetalhe: "Вы не получаете уведомления о новых сообщениях",
     invisivel: "Невидимка",
     invisivelDetalhe: "Для других вы не в сети",
+    offline: "Не в сети",
   },
   menu: {
     mudarDeConta: "Сменить аккаунт",

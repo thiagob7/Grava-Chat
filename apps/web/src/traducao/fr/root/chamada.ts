@@ -23,6 +23,11 @@ export const chamada = {
   fecharChat: "Fermer le chat",
   mostrarChat: "Afficher le chat",
   aoVivo: "En direct",
+  aparelhoDaPessoa: {
+    desktop: "Application de bureau",
+    web: "Navigateur",
+    mobile: "Téléphone",
+  },
   estado: {
     mudo: "Micro coupé",
     mudoPeloServidor: "Micro coupé par le serveur",
@@ -70,6 +75,15 @@ export const chamada = {
     semFontes: "Le système n'a renvoyé aucun écran ni fenêtre à partager.",
     pararDeCompartilhar: "Arrêter le partage",
     encerrarTransmissao: "Terminer la diffusion",
+    pararTransmissao: "Arrêter le partage",
+    alterarTransmissao: "Changer de source",
+    qualidade: "Qualité du stream",
+    resolucao: "Résolution",
+    taxaDeQuadros: "Fréquence d'images",
+    original: "Source",
+    compartilharAudio: "Partager le son du stream",
+    quadros: "{{quadros}} FPS",
+    qualidadeDica: "La résolution est un plafond : une fenêtre plus petite garde sa taille. Plus de résolution et d'images demandent plus de débit, le vôtre et celui des spectateurs. S'applique aussi au stream en cours.",
   },
   live: {
     etiqueta: "En direct",

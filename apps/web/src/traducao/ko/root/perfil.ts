@@ -98,6 +98,7 @@ export const perfil = {
     naoPerturbarDetalhe: "새 메시지 알림을 받지 않습니다",
     invisivel: "오프라인 표시",
     invisivelDetalhe: "다른 사람에게 오프라인으로 보입니다",
+    offline: "오프라인",
   },
   menu: {
     mudarDeConta: "계정 전환",

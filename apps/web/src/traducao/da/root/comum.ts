@@ -96,4 +96,14 @@ export const comum = {
   excluir: "Slet",
   remover: "Fjern",
   trocar: "Skift",
+  loginNoApp: {
+    titulo: "Alt er klar!",
+    detalhe: "Du er logget ind. Gå tilbage til Gravaê, appen venter på dig.",
+    abrir: "Åbn Gravaê",
+    fecharAba: "Du kan lukke denne fane nu.",
+    falhouTitulo: "Login mislykkedes",
+    falhouDetalhe: "Gå tilbage til appen og prøv at logge ind igen.",
+    legenda: "En robot der vinker",
+    legendaFalhou: "En grædende killing",
+  },
 };

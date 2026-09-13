@@ -11,9 +11,11 @@ import { cn } from "~/lib/utils";
   acende e troca de emoji. É o mesmo desenho que o app já serve, e não o do
   sistema, então a fileira não muda de cara entre um Mac e um Windows.
 
-  O acervo inteiro só é buscado no primeiro ponteiro que chega, porque são umas
-  centenas de quilobytes de JSON e ninguém deve baixar isso para ver um botão.
-  Até ele chegar, o sorteio usa este punhado aqui.
+  O sorteio é só entre as carinhas, e não no acervo inteiro: o botão abre todos
+  os emojis, mas anunciar isso com um anzol ou uma bandeira não diz nada a
+  ninguém. O acervo das carinhas só é buscado no primeiro ponteiro que chega,
+  porque o arquivo tem umas centenas de quilobytes e ninguém deve baixar isso
+  para ver um botão. Até ele chegar, o sorteio usa este punhado aqui.
 */
 const START = [
   "😀", "😄", "😁", "😆", "😅", "😊", "🙂", "😉", "😍", "🤩",
@@ -40,7 +42,10 @@ export function usePickerFace() {
     if (pool !== START) return;
 
     void loadEmojis()
-      .then((groups) => setPool(groups.flatMap((group) => group.emojis.map((one) => one.emoji))))
+      .then((groups) => {
+        const faces = groups.find((group) => group.slug === "smileys_emotion");
+        if (faces?.emojis.length) setPool(faces.emojis.map((one) => one.emoji));
+      })
       .catch(() => undefined);
   };
 

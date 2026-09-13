@@ -98,6 +98,7 @@ export const perfil = {
     naoPerturbarDetalhe: "Je krijgt geen melding van nieuwe berichten",
     invisivel: "Onzichtbaar",
     invisivelDetalhe: "Je lijkt offline voor anderen",
+    offline: "Offline",
   },
   menu: {
     mudarDeConta: "Van account wisselen",

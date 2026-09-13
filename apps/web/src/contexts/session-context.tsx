@@ -5,6 +5,7 @@ import axios from "axios";
 import { toast } from "react-toastify";
 
 import { desktopLogin } from "~/@core/application/requests/auth/desktop-login";
+import { conversationOnDisk } from "~/@core/infra/cache/conversa-no-disco";
 import { useMe } from "~/@core/application/queries/auth/use-me";
 import { useAuthConfig } from "~/@core/application/queries/auth/use-auth-config";
 import type { SelfUserModel } from "~/@core/domain/models/user-model";
@@ -102,11 +103,38 @@ export const SessionProvider = ({ children }: { children: ReactNode }) => {
     });
   }, [queryClient]);
 
+  /*
+    O disco é por conta, e só abre depois que sabemos QUEM entrou.
+
+    Cada conta tem o próprio arquivo: trocar de conta não pode fazer a conversa
+    de uma aparecer na outra. E a poda roda uma vez por abertura, que é o
+    momento certo — ninguém está rolando conversa ainda, e o trabalho não
+    disputa com nada.
+
+    Sair fecha o arquivo. No navegador nada disto acontece, porque não há ponte.
+  */
+  const accountId = (me.data as SelfUserModel | undefined)?.id ?? null;
+
+  useEffect(() => {
+    if (!accountId || !conversationOnDisk.available()) return;
+
+    let wanted = true;
+
+    void conversationOnDisk.open(accountId).then((opened) => {
+      if (opened && wanted) void conversationOnDisk.prune();
+    });
+
+    return () => {
+      wanted = false;
+    };
+  }, [accountId]);
+
   useEffect(() => {
     setSessionLostHandler(() => {
       setAccessToken(null);
       setHasSession(false);
       queryClient.clear();
+      void conversationOnDisk.close();
     });
   }, [queryClient]);
 
@@ -130,6 +158,7 @@ export const SessionProvider = ({ children }: { children: ReactNode }) => {
       setAccessToken(null);
       setHasSession(false);
       queryClient.clear();
+      void conversationOnDisk.close();
     },
   };
 

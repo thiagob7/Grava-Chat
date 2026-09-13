@@ -88,7 +88,14 @@ export const FullProfileModal: React.FC<FullProfileModalProps> = ({
       />
 
       <div data-gc="perfil.full-profile-modal.div--2" {...flx("profileContent", "px-6 pb-6")}>
-        <div data-gc="perfil.full-profile-modal.div--3" className="-mt-14 mb-4">
+        {/*
+          O recorte da faixa fica no rodapé dela, então o avatar precisa nascer
+          com o CENTRO nessa mesma altura para o vão sair parelho. Com -mt-14 o
+          centro caía 8px acima do furo, e o anel saía grosso em cima e colado
+          embaixo. A margem de baixo encolhe o mesmo tanto que a de cima cresceu,
+          então nada abaixo daqui se mexe.
+        */}
+        <div data-gc="perfil.full-profile-modal.div--3" className="-mt-12 mb-2">
           <Avatar data-gc="perfil.full-profile-modal.avatar"
             id={profile.id}
             name={profile.displayName}
@@ -97,7 +104,13 @@ export const FullProfileModal: React.FC<FullProfileModalProps> = ({
             status={profile.status}
             charms={profile.profile}
             animate
-            className="rounded-full ring-[6px] ring-surface-3"
+            /*
+              O anel é da cor do CARTÃO, não um cinza próprio. Assim ele não se
+              lê como anel: lê-se como o avatar recortado de dentro do cartão,
+              que é o efeito que a referência faz. Os 8px fecham exatamente o
+              vão entre o avatar de raio 48 e o furo de raio 56.
+            */
+            className="rounded-full ring-[8px] ring-surface-1"
           />
         </div>
 

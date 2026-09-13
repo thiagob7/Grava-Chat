@@ -695,6 +695,12 @@
           "kind": "string",
           "required": false,
           "limit": 64
+        },
+        {
+          "name": "device",
+          "kind": "string",
+          "required": false,
+          "limit": null
         }
       ]
     },
@@ -1871,6 +1877,11 @@
         {
           "name": "screenShare",
           "kind": "boolean",
+          "required": true
+        },
+        {
+          "name": "device",
+          "kind": "vários",
           "required": true
         }
       ],

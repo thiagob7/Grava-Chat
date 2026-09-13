@@ -23,6 +23,11 @@ export const chamada = {
   fecharChat: "Đóng trò chuyện",
   mostrarChat: "Hiện trò chuyện",
   aoVivo: "Trực tiếp",
+  aparelhoDaPessoa: {
+    desktop: "Ứng dụng máy tính",
+    web: "Trình duyệt",
+    mobile: "Điện thoại",
+  },
   estado: {
     mudo: "Đã tắt micrô",
     mudoPeloServidor: "Máy chủ đã tắt micrô",
@@ -70,6 +75,15 @@ export const chamada = {
     semFontes: "Hệ thống không trả về màn hình hay cửa sổ nào để chia sẻ.",
     pararDeCompartilhar: "Ngừng chia sẻ",
     encerrarTransmissao: "Kết thúc buổi phát",
+    pararTransmissao: "Dừng phát trực tiếp",
+    alterarTransmissao: "Đổi nguồn phát",
+    qualidade: "Chất lượng phát",
+    resolucao: "Độ phân giải",
+    taxaDeQuadros: "Tốc độ khung hình",
+    original: "Gốc",
+    compartilharAudio: "Chia sẻ âm thanh khi phát",
+    quadros: "{{quadros}} FPS",
+    qualidadeDica: "Độ phân giải là mức trần: cửa sổ nhỏ hơn giữ nguyên kích thước. Độ phân giải và khung hình cao hơn cần nhiều băng thông hơn, của bạn và người xem. Áp dụng cả cho buổi phát đang diễn ra.",
   },
   live: {
     etiqueta: "Trực tiếp",

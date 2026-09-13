@@ -11,6 +11,8 @@ import type { CreatePollInput } from "@gravae/shared";
 import { queryKeys } from "~/@core/infra/constants/query-keys";
 import { sendMessage } from "~/@core/lib/websocket/send-message";
 import { failureReason } from "~/features/conversa/lib/falha-de-envio";
+import { worthQueueing } from "~/features/conversa/lib/fila-de-saida";
+import { sendQueue } from "~/@core/infra/cache/fila-de-envio";
 
 interface SendMessageVariables {
   channelId: string;
@@ -70,6 +72,9 @@ export const useSendMessage = () => {
     },
 
     onSuccess: (result, variables) => {
+      /* Chegou: sai da prateleira, mesmo que tenha sido pela fila. */
+      if (sendQueue.available()) void sendQueue.take(variables.nonce);
+
       const id = (result as { id?: string } | null)?.id;
       if (!id) return;
 
@@ -93,6 +98,19 @@ export const useSendMessage = () => {
     onError: (error, variables) => {
       const reason = failureReason(error);
 
+      /*
+        Falha que passa com o tempo vai para a prateleira, e o vigia reenvia
+        quando a conexão voltar. Falha que não passa — sem permissão, canal
+        sumido, recusada — morre aqui mesmo: guardar seria mostrar um relógio
+        que nunca vira tique.
+
+        A mensagem continua marcada como falhada na tela de qualquer jeito. Se
+        a fila der conta, o evento de criação chega e troca pela de verdade; se
+        não der, a pessoa vê que não foi e decide o que fazer.
+      */
+      const queued = worthQueueing(reason) && sendQueue.available();
+      if (queued) void sendQueue.put(variables.nonce, variables.channelId, variables);
+
       queryClient.setQueryData(queryKeys.channel.messages(variables.channelId), (old: MessagesCache) => {
         if (!old) return old;
 
@@ -102,7 +120,9 @@ export const useSendMessage = () => {
             ...page,
             messages: page.messages.map((m) =>
               (m as PendingMessageModel).nonce === variables.nonce
-                ? { ...m, pending: undefined, failed: true, reason }
+                ? queued
+                  ? { ...m, pending: undefined, queued: true as const, reason }
+                  : { ...m, pending: undefined, failed: true as const, reason }
                 : m,
             ),
           })),

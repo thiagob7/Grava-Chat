@@ -96,4 +96,14 @@ export const comum = {
   excluir: "Sil",
   remover: "Kaldır",
   trocar: "Değiştir",
+  loginNoApp: {
+    titulo: "Her şey hazır!",
+    detalhe: "Giriş yaptın. Gravaê'ye geri dön, uygulama seni bekliyor.",
+    abrir: "Gravaê'yi aç",
+    fecharAba: "Bu sekmeyi artık kapatabilirsin.",
+    falhouTitulo: "Giriş yapılamadı",
+    falhouDetalhe: "Uygulamaya dön ve tekrar giriş yapmayı dene.",
+    legenda: "El sallayan bir robot",
+    legendaFalhou: "Ağlayan bir yavru kedi",
+  },
 };

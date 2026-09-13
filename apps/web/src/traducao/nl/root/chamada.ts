@@ -23,6 +23,11 @@ export const chamada = {
   fecharChat: "Chat sluiten",
   mostrarChat: "Chat tonen",
   aoVivo: "Live",
+  aparelhoDaPessoa: {
+    desktop: "Desktop-app",
+    web: "Browser",
+    mobile: "Telefoon",
+  },
   estado: {
     mudo: "Microfoon uit",
     mudoPeloServidor: "Microfoon uitgezet door de server",
@@ -70,6 +75,15 @@ export const chamada = {
     semFontes: "Het systeem gaf geen scherm of venster terug om te delen.",
     pararDeCompartilhar: "Stoppen met delen",
     encerrarTransmissao: "De uitzending beëindigen",
+    pararTransmissao: "Stream stoppen",
+    alterarTransmissao: "Stream wijzigen",
+    qualidade: "Streamkwaliteit",
+    resolucao: "Resolutie",
+    taxaDeQuadros: "Framerate",
+    original: "Origineel",
+    compartilharAudio: "Streamaudio delen",
+    quadros: "{{quadros}} FPS",
+    qualidadeDica: "De resolutie is een maximum: een kleiner venster houdt zijn eigen formaat. Meer resolutie en frames vragen meer bandbreedte, van jou en van kijkers. Geldt ook voor een lopende stream.",
   },
   live: {
     etiqueta: "Live",

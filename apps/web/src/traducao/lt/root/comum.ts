@@ -96,4 +96,14 @@ export const comum = {
   excluir: "Ištrinti",
   remover: "Pašalinti",
   trocar: "Pakeisti",
+  loginNoApp: {
+    titulo: "Viskas paruošta!",
+    detalhe: "Prisijungėte. Grįžkite į Gravaê, programa jau laukia.",
+    abrir: "Atidaryti Gravaê",
+    fecharAba: "Dabar galite uždaryti šį skirtuką.",
+    falhouTitulo: "Prisijungti nepavyko",
+    falhouDetalhe: "Grįžkite į programą ir bandykite prisijungti dar kartą.",
+    legenda: "Mojuojantis robotas",
+    legendaFalhou: "Verkiantis kačiukas",
+  },
 };

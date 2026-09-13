@@ -23,6 +23,11 @@ export const chamada = {
   fecharChat: "Закрыть чат",
   mostrarChat: "Показать чат",
   aoVivo: "В эфире",
+  aparelhoDaPessoa: {
+    desktop: "Приложение для компьютера",
+    web: "Браузер",
+    mobile: "Телефон",
+  },
   estado: {
     mudo: "Микрофон выключен",
     mudoPeloServidor: "Микрофон выключен сервером",
@@ -70,6 +75,15 @@ export const chamada = {
     semFontes: "Система не вернула ни одного экрана или окна для показа.",
     pararDeCompartilhar: "Прекратить показ",
     encerrarTransmissao: "Завершить трансляцию",
+    pararTransmissao: "Остановить трансляцию",
+    alterarTransmissao: "Сменить трансляцию",
+    qualidade: "Качество трансляции",
+    resolucao: "Разрешение",
+    taxaDeQuadros: "Частота кадров",
+    original: "Исходное",
+    compartilharAudio: "Транслировать звук",
+    quadros: "{{quadros}} FPS",
+    qualidadeDica: "Разрешение — это потолок: окно поменьше сохраняет свой размер. Больше разрешения и кадров — больше трафика, вашего и зрителей. Применяется и к идущей трансляции.",
   },
   live: {
     etiqueta: "В эфире",

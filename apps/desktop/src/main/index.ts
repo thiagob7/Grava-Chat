@@ -3,6 +3,7 @@ import { app, BrowserWindow, nativeImage } from "electron";
 
 import { registerUpdate } from "./atualizacao-ipc.js";
 import { registerNotices } from "./avisos.js";
+import { registerCache } from "./cache-ipc.js";
 import { screenRegisterCapture } from "./captura-de-tela.js";
 import { createWindow } from "./janela.js";
 import { registerLinks } from "./links.js";
@@ -35,6 +36,7 @@ if (!app.requestSingleInstanceLock()) {
   const pushToTalk = registerPushToTalk();
   registerVersions();
   registerSystem();
+  registerCache();
 
   app.on("will-quit", () => pushToTalk.end());
 

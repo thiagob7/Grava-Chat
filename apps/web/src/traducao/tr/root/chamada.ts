@@ -23,6 +23,11 @@ export const chamada = {
   fecharChat: "Sohbeti kapat",
   mostrarChat: "Sohbeti göster",
   aoVivo: "Canlı",
+  aparelhoDaPessoa: {
+    desktop: "Masaüstü uygulaması",
+    web: "Tarayıcı",
+    mobile: "Telefon",
+  },
   estado: {
     mudo: "Mikrofon kapalı",
     mudoPeloServidor: "Mikrofon sunucu tarafından kapatıldı",
@@ -70,6 +75,15 @@ export const chamada = {
     semFontes: "Sistem paylaşılacak hiçbir ekran ya da pencere döndürmedi.",
     pararDeCompartilhar: "Paylaşımı durdur",
     encerrarTransmissao: "Yayını bitir",
+    pararTransmissao: "Yayını durdur",
+    alterarTransmissao: "Yayını değiştir",
+    qualidade: "Yayın kalitesi",
+    resolucao: "Çözünürlük",
+    taxaDeQuadros: "Kare hızı",
+    original: "Orijinal",
+    compartilharAudio: "Yayın sesini paylaş",
+    quadros: "{{quadros}} FPS",
+    qualidadeDica: "Çözünürlük bir üst sınırdır: daha küçük bir pencere kendi boyutunda kalır. Daha fazla çözünürlük ve kare, sizin ve izleyenlerin daha fazla internetini ister. Süren yayına da uygulanır.",
   },
   live: {
     etiqueta: "Canlı",

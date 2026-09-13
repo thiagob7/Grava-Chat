@@ -46,22 +46,6 @@ const desktopCookieOptions = {
   maxAge: 10 * 60,
 };
 
-function backPage(destination: string | null) {
-  const body = destination
-    ? `<h1>Tudo certo!</h1>
-       <p>Pode voltar pro Gravaê — a janela do aplicativo já está te esperando.</p>
-       <p><a href="${destination}">Abrir o Gravaê</a></p>
-       <script>location.href = ${JSON.stringify(destination)}</script>`
-    : `<h1>O login falhou</h1>
-       <p>Volte pro aplicativo e tente de novo.</p>`;
-
-  return `<!doctype html><html lang="pt-BR"><meta charset="utf-8">
-    <title>Gravaê</title>
-    <body style="background:#2b2d31;color:#f2f3f5;font:15px/1.6 -apple-system,Segoe UI,sans-serif;display:grid;place-items:center;height:100vh;margin:0;text-align:center">
-      <div>${body}</div>
-    </body></html>`;
-}
-
 function tunnelOrigin(req: FastifyRequest): string | null {
   if (!isDev) return null;
 
@@ -240,8 +224,7 @@ export async function authRoutes(app: FastifyInstance) {
 
           return reply
             .clearCookie(DESKTOP_COOKIE, desktopCookieOptions)
-            .type("text/html")
-            .send(backPage(`gravae://auth?codigo=${encodeURIComponent(code)}`));
+            .redirect(webAppUrl(req, `/login/app#codigo=${encodeURIComponent(code)}`));
         }
 
         const refresh = await authService.issueRefreshToken(user.id, metaOf(req));
@@ -255,8 +238,7 @@ export async function authRoutes(app: FastifyInstance) {
         if (challenge) {
           return reply
             .clearCookie(DESKTOP_COOKIE, desktopCookieOptions)
-            .type("text/html")
-            .send(backPage(null));
+            .redirect(webAppUrl(req, "/login/app?erro=google"));
         }
 
         return reply.redirect(webAppUrl(req, "/login?erro=google"));

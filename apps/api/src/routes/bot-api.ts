@@ -38,7 +38,7 @@ const guildParams = z.object({ guildId: objectId });
 const channelParams = z.object({ channelId: objectId });
 const messageParams = z.object({ messageId: objectId });
 
-const sendBody = sendMessageInput.omit({ channelId: true, nonce: true });
+const sendBody = sendMessageInput.omit({ channelId: true, nonce: true, retry: true });
 
 const editBody = editMessageInput.omit({ messageId: true });
 

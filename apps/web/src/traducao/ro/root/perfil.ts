@@ -98,6 +98,7 @@ export const perfil = {
     naoPerturbarDetalhe: "Nu primești notificare pentru mesaje noi",
     invisivel: "Invizibil",
     invisivelDetalhe: "Pentru ceilalți apari offline",
+    offline: "Deconectat",
   },
   menu: {
     mudarDeConta: "Schimbă contul",

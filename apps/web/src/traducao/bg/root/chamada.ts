@@ -23,6 +23,11 @@ export const chamada = {
   fecharChat: "Затвори чата",
   mostrarChat: "Показване на чата",
   aoVivo: "На живо",
+  aparelhoDaPessoa: {
+    desktop: "Настолно приложение",
+    web: "Браузър",
+    mobile: "Телефон",
+  },
   estado: {
     mudo: "Микрофонът е изключен",
     mudoPeloServidor: "Микрофонът е изключен от сървъра",
@@ -70,6 +75,15 @@ export const chamada = {
     semFontes: "Системата не върна нито екран, нито прозорец за споделяне.",
     pararDeCompartilhar: "Спри споделянето",
     encerrarTransmissao: "Приключи предаването",
+    pararTransmissao: "Спри излъчването",
+    alterarTransmissao: "Смени излъчването",
+    qualidade: "Качество на излъчването",
+    resolucao: "Резолюция",
+    taxaDeQuadros: "Кадри в секунда",
+    original: "Оригинална",
+    compartilharAudio: "Сподели звука на излъчването",
+    quadros: "{{quadros}} FPS",
+    qualidadeDica: "Резолюцията е таван: по-малък прозорец запазва размера си. Повече резолюция и кадри искат повече интернет, твоя и на зрителите. Важи и за текущото излъчване.",
   },
   live: {
     etiqueta: "На живо",

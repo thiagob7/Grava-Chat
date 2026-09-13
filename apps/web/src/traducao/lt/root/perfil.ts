@@ -98,6 +98,7 @@ export const perfil = {
     naoPerturbarDetalhe: "Negaunate pranešimų apie naujas žinutes",
     invisivel: "Nematomas",
     invisivelDetalhe: "Kitiems atrodote atsijungęs",
+    offline: "Neprisijungęs",
   },
   menu: {
     mudarDeConta: "Keisti paskyrą",

@@ -165,13 +165,14 @@ export function registerHandlers(socket: GravaeSocket) {
     return { channelId: state?.channelId ?? null };
   });
 
-  on(socket, "voice:join", async ({ channelId, resume, client }) => {
+  on(socket, "voice:join", async ({ channelId, resume, client, device }) => {
     const { state, left } = await voiceService.join(
       userId,
       channelId,
       socket.id,
       resume,
       client ?? null,
+      device ?? null,
     );
     socket.data.voiceChannelId = channelId;
 

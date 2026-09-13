@@ -23,6 +23,11 @@ export const chamada = {
   fecharChat: "Tutup obrolan",
   mostrarChat: "Tampilkan obrolan",
   aoVivo: "Langsung",
+  aparelhoDaPessoa: {
+    desktop: "Aplikasi desktop",
+    web: "Peramban",
+    mobile: "Ponsel",
+  },
   estado: {
     mudo: "Mikrofon mati",
     mudoPeloServidor: "Mikrofon dimatikan server",
@@ -70,6 +75,15 @@ export const chamada = {
     semFontes: "Sistem tidak mengembalikan satu pun layar atau jendela untuk dibagikan.",
     pararDeCompartilhar: "Berhenti berbagi",
     encerrarTransmissao: "Akhiri siaran",
+    pararTransmissao: "Hentikan siaran",
+    alterarTransmissao: "Ganti siaran",
+    qualidade: "Kualitas siaran",
+    resolucao: "Resolusi",
+    taxaDeQuadros: "Laju bingkai",
+    original: "Asli",
+    compartilharAudio: "Bagikan audio siaran",
+    quadros: "{{quadros}} FPS",
+    qualidadeDica: "Resolusi adalah batas atas: jendela yang lebih kecil tetap pada ukurannya. Resolusi dan bingkai lebih tinggi butuh internet lebih besar, milikmu dan penonton. Berlaku juga untuk siaran yang sedang berjalan.",
   },
   live: {
     etiqueta: "Siaran langsung",

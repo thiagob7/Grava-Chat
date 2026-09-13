@@ -1,4 +1,4 @@
-import type { PublicUser } from "@gravae/shared";
+import { rooms, type PublicUser } from "@gravae/shared";
 import { AppError, NotFoundError } from "~/lib/http.js";
 import {
   friendshipRepository,
@@ -15,6 +15,7 @@ import {
 import { voiceService } from "./voice-service.js";
 import { toChannel, toPublicUser } from "~/lib/serialize.js";
 import { presenceService } from "./presence-service.js";
+import { io } from "~/realtime/io.js";
 
 export type FriendshipView = {
   id: string;
@@ -200,27 +201,60 @@ export const friendshipService = {
     const existing = await dmRepository.findBetween(userId, otherId);
 
     if (directWithoutFriendship || areFriends) {
-      if (existing) return { channel: toChannel(existing), request: false };
-      return { channel: toChannel(await dmRepository.create([userId, otherId])), request: false };
+      if (existing) return { channel: toChannel(existing), request: false, silent: false };
+      return { channel: toChannel(await dmRepository.create([userId, otherId])), request: false, silent: false };
     }
 
     if (existing) {
       const request = await dmRepositoryRequest.findByChannel(existing.id);
-      if (!request || request.status === "ACCEPTED") return { channel: toChannel(existing), request: false };
+      if (!request || request.status === "ACCEPTED") {
+        return { channel: toChannel(existing), request: false, silent: false };
+      }
 
-      return { channel: toChannel(existing), request: true };
+      return { channel: toChannel(existing), request: true, silent: request.status === "UNDELIVERED" };
     }
 
-    if (!other.membersAllowDm) throw notDelivered();
-
-    const inCommon = await mutualRepository.guildIdsInCommon(userId, otherId);
-    if (!inCommon.length) throw notDelivered();
-
     const channel = await dmRepository.create([userId, otherId]);
+
+    /*
+      Quem não pode receber ainda ganha a conversa aberta, só que muda: ela
+      existe para quem escreveu, e a mensagem é recusada no envio com o motivo
+      ao lado. Para a outra pessoa nada aparece — nem conversa, nem pedido —
+      até que dê para entregar de verdade.
+    */
+    if (!(await canReach(other, userId))) {
+      await dmRepositoryRequest.create(channel.id, userId, otherId, false, "UNDELIVERED");
+      return { channel: toChannel(channel), request: true, silent: true };
+    }
+
     const suspect = await isSuspect(other, userId);
     await dmRepositoryRequest.create(channel.id, userId, otherId, suspect);
 
-    return { channel: toChannel(channel), request: true };
+    return { channel: toChannel(channel), request: true, silent: false };
+  },
+
+  /*
+    Chamado no envio de toda mensagem de DM. Só age na conversa que foi aberta
+    sem poder entregar: confere de novo, porque de lá para cá as duas pessoas
+    podem ter virado amigas ou entrado na mesma comunidade.
+  */
+  async requireDeliverable(userId: string, channelId: string, other: { id: string; membersAllowDm: boolean; spamFilter: string }) {
+    const request = await dmRepositoryRequest.findByChannel(channelId);
+    if (request?.status !== "UNDELIVERED") return;
+
+    const relation = await friendshipRepository.findBetween(userId, other.id);
+    if (relation?.status === "BLOCKED") throw notDelivered();
+
+    if (relation?.status === "ACCEPTED") {
+      await dmRepositoryRequest.accept(channelId);
+      io().to(rooms.user(other.id)).emit("dm:created", { channelId });
+      return;
+    }
+
+    if (!(await canReach(other, userId))) throw notDelivered();
+
+    await dmRepositoryRequest.reopen(channelId, userId, other.id, await isSuspect(other, userId));
+    io().to(rooms.user(other.id)).emit("dm:pedido", { channelId });
   },
 
   async listRequests(userId: string) {
@@ -305,6 +339,13 @@ function notDelivered() {
   return new AppError(
     "Sua mensagem não pôde ser entregue. Isso costuma acontecer porque vocês não compartilham nenhuma comunidade, ou porque essa pessoa só recebe mensagens de amigos.",
   ).having("nao-entregue");
+}
+
+async function canReach(destination: { id: string; membersAllowDm: boolean }, senderId: string) {
+  if (!destination.membersAllowDm) return false;
+
+  const inCommon = await mutualRepository.guildIdsInCommon(senderId, destination.id);
+  return inCommon.length > 0;
 }
 
 async function isSuspect(destination: { id: string; spamFilter: string }, senderId: string) {

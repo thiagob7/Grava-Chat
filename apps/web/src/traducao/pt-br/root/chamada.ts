@@ -24,6 +24,11 @@ export const chamada = {
   fecharChat: "Fechar chat",
   mostrarChat: "Mostrar o chat",
   aoVivo: "Ao vivo",
+  aparelhoDaPessoa: {
+    desktop: "Aplicativo de desktop",
+    web: "Navegador",
+    mobile: "Celular",
+  },
   estado: {
     mudo: "Microfone desligado",
     mudoPeloServidor: "Microfone desligado pelo servidor",
@@ -72,6 +77,15 @@ export const chamada = {
     semFontes: "O sistema não devolveu nenhuma tela ou janela para compartilhar.",
     pararDeCompartilhar: "Parar de compartilhar",
     encerrarTransmissao: "Encerrar a transmissão",
+    pararTransmissao: "Parar transmissão",
+    alterarTransmissao: "Alterar transmissão",
+    qualidade: "Qualidade da transmissão",
+    resolucao: "Resolução",
+    taxaDeQuadros: "Taxa de quadros",
+    original: "Original",
+    compartilharAudio: "Compartilhar áudio da transmissão",
+    quadros: "{{quadros}} FPS",
+    qualidadeDica: "A resolução é um teto: uma janela menor vai do tamanho que tem. Mais resolução e mais quadros pedem mais internet, sua e de quem assiste. Vale também para a transmissão no ar.",
   },
   live: {
     etiqueta: "Ao vivo",

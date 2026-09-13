@@ -1431,5 +1431,6 @@
   "pages/presentation/tema/VerTema.tsx :: Quem publicou apagou, ou o link está errado.",
   "pages/presentation/tema/VerTema.tsx :: Tema indisponível",
   "pages/presentation/tema/VerTema.tsx :: Tudo junto",
-  "pages/presentation/tema/VerTema.tsx :: Voltar para o Gravaê"
+  "pages/presentation/tema/VerTema.tsx :: Voltar para o Gravaê",
+  "features/conversa/components/AvisoDeNaoEntregue.tsx :: Gravaê"
 ]

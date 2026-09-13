@@ -23,6 +23,11 @@ export const chamada = {
   fecharChat: "Закрити чат",
   mostrarChat: "Показати чат",
   aoVivo: "Наживо",
+  aparelhoDaPessoa: {
+    desktop: "Застосунок для комп'ютера",
+    web: "Браузер",
+    mobile: "Телефон",
+  },
   estado: {
     mudo: "Мікрофон вимкнено",
     mudoPeloServidor: "Мікрофон вимкнено сервером",
@@ -70,6 +75,15 @@ export const chamada = {
     semFontes: "Система не повернула жодного екрана чи вікна для показу.",
     pararDeCompartilhar: "Припинити показ",
     encerrarTransmissao: "Завершити трансляцію",
+    pararTransmissao: "Зупинити трансляцію",
+    alterarTransmissao: "Змінити трансляцію",
+    qualidade: "Якість трансляції",
+    resolucao: "Роздільність",
+    taxaDeQuadros: "Частота кадрів",
+    original: "Оригінальна",
+    compartilharAudio: "Транслювати звук",
+    quadros: "{{quadros}} FPS",
+    qualidadeDica: "Роздільність — це стеля: менше вікно зберігає свій розмір. Більша роздільність і кадри потребують більше інтернету, вашого й глядачів. Діє і для поточної трансляції.",
   },
   live: {
     etiqueta: "У прямому ефірі",

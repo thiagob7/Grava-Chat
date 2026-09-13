@@ -96,4 +96,14 @@ export const comum = {
   excluir: "מחיקה",
   remover: "הסרה",
   trocar: "החלפה",
+  loginNoApp: {
+    titulo: "הכול מוכן!",
+    detalhe: "נכנסת לחשבון. אפשר לחזור ל-Gravaê, האפליקציה כבר מחכה לך.",
+    abrir: "פתיחת Gravaê",
+    fecharAba: "אפשר לסגור את הכרטיסייה הזו.",
+    falhouTitulo: "הכניסה לא הצליחה",
+    falhouDetalhe: "חזרו לאפליקציה ונסו להיכנס שוב.",
+    legenda: "רובוט מנופף",
+    legendaFalhou: "חתלתול בוכה",
+  },
 };

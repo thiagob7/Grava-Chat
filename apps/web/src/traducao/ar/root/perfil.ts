@@ -98,6 +98,7 @@ export const perfil = {
     naoPerturbarDetalhe: "لا تصلك تنبيهات الرسائل الجديدة",
     invisivel: "خفي",
     invisivelDetalhe: "تظهر للآخرين غير متصل",
+    offline: "غير متصل",
   },
   menu: {
     mudarDeConta: "تبديل الحساب",

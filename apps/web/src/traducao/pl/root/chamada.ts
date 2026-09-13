@@ -23,6 +23,11 @@ export const chamada = {
   fecharChat: "Zamknij czat",
   mostrarChat: "Pokaż czat",
   aoVivo: "Na żywo",
+  aparelhoDaPessoa: {
+    desktop: "Aplikacja na komputer",
+    web: "Przeglądarka",
+    mobile: "Telefon",
+  },
   estado: {
     mudo: "Mikrofon wyłączony",
     mudoPeloServidor: "Mikrofon wyłączony przez serwer",
@@ -70,6 +75,15 @@ export const chamada = {
     semFontes: "System nie zwrócił żadnego ekranu ani okna do udostępnienia.",
     pararDeCompartilhar: "Przestań udostępniać",
     encerrarTransmissao: "Zakończ transmisję",
+    pararTransmissao: "Zatrzymaj transmisję",
+    alterarTransmissao: "Zmień transmisję",
+    qualidade: "Jakość transmisji",
+    resolucao: "Rozdzielczość",
+    taxaDeQuadros: "Liczba klatek",
+    original: "Oryginalna",
+    compartilharAudio: "Udostępnij dźwięk transmisji",
+    quadros: "{{quadros}} FPS",
+    qualidadeDica: "Rozdzielczość to górny limit: mniejsze okno zachowuje swój rozmiar. Więcej rozdzielczości i klatek wymaga szybszego internetu, twojego i widzów. Dotyczy też trwającej transmisji.",
   },
   live: {
     etiqueta: "Na żywo",

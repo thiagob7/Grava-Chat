@@ -133,6 +133,10 @@ export const conversa = {
       outro: "Sonstiges",
     },
   },
+  fila: {
+    esperando: "Wird gesendet, sobald die Verbindung zurück ist",
+  },
+
   falha: {
     tentarDeNovo: "Erneut versuchen",
     erro: "Nicht zugestellt",
@@ -321,5 +325,10 @@ export const conversa = {
     doQueSeTrata: "Worum geht es?",
     primeiraMensagem: "Erste Nachricht",
     conteDoCaso: "Erzähl davon",
+  },
+  sistema: {
+    naoEntregue: "Deine Nachricht konnte nicht zugestellt werden. Das passiert meist, weil ihr keine gemeinsame Community habt oder weil die Person Direktnachrichten nur von Freunden annimmt. Eventuell musst du auch deine eigene Privatsphäre unter Einstellungen > Privatsphäre anpassen.",
+    soVoce: "Nur du kannst diese Nachricht sehen.",
+    dispensar: "Verwerfen",
   },
 };

@@ -23,6 +23,11 @@ export const chamada = {
   fecharChat: "Sulje keskustelu",
   mostrarChat: "Näytä keskustelu",
   aoVivo: "Live",
+  aparelhoDaPessoa: {
+    desktop: "Työpöytäsovellus",
+    web: "Selain",
+    mobile: "Puhelin",
+  },
   estado: {
     mudo: "Mikrofoni pois",
     mudoPeloServidor: "Palvelin mykisti mikrofonin",
@@ -70,6 +75,15 @@ export const chamada = {
     semFontes: "Järjestelmä ei palauttanut yhtään näyttöä tai ikkunaa jaettavaksi.",
     pararDeCompartilhar: "Lopeta jakaminen",
     encerrarTransmissao: "Lopeta lähetys",
+    pararTransmissao: "Lopeta striimaus",
+    alterarTransmissao: "Vaihda striimi",
+    qualidade: "Striimin laatu",
+    resolucao: "Resoluutio",
+    taxaDeQuadros: "Kuvataajuus",
+    original: "Alkuperäinen",
+    compartilharAudio: "Jaa striimin ääni",
+    quadros: "{{quadros}} FPS",
+    qualidadeDica: "Resoluutio on yläraja: pienempi ikkuna pysyy omassa koossaan. Suurempi resoluutio ja kuvataajuus vaativat enemmän kaistaa, sinulta ja katsojilta. Koskee myös käynnissä olevaa striimiä.",
   },
   live: {
     etiqueta: "Suorana",

@@ -27,6 +27,15 @@ export async function createGateway(app: FastifyInstance) {
     pingTimeout: 25_000,
   });
 
+  /*
+    Estes dois continuam sem teto de tentativa, ao contrário do cliente
+    principal, e é de propósito.
+
+    Eles não atendem requisição: carregam a difusão entre as instâncias. Desistir
+    aqui não devolve conexão para ninguém, só some com o evento — alguém deixa de
+    ver a mensagem que chegou. Insistir até o Redis voltar é o comportamento
+    certo para este par, e é o que o adaptador do Socket.IO espera.
+  */
   const pub = watch(new Redis(env.REDIS_URL, { maxRetriesPerRequest: null }), "pub");
   const sub = watch(pub.duplicate(), "sub");
   server.adapter(createAdapter(pub, sub));
@@ -94,6 +103,11 @@ export async function createGateway(app: FastifyInstance) {
 
   setIo(server);
   await Promise.all([presenceService.reset(), voiceService.reset()]);
+
+  presenceService
+    .migrateDesired()
+    .then((count) => count && app.log.info(`status escolhido: ${count} conta(s) trazida(s) do Redis`))
+    .catch((err) => app.log.error({ err }, "falha ao migrar o status escolhido"));
 
   const stopWatches = watchCallsGhost((err) =>
     app.log.error({ err }, "falha ao varrer chamadas fantasma"),

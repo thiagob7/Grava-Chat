@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router";
-import { AudioLines, MonitorUp, PhoneOff, Signal, Video } from "lucide-react";
+import { AudioLines, Monitor, MonitorUp, PhoneOff, Signal, Video } from "lucide-react";
 import { useFindGuild } from "~/@core/application/queries/guild/use-find-guild";
 import { usePermissions } from "~/hooks/use-permissions";
 import { SoundboardPanel } from "~/features/voz/components/SoundboardPanel";
@@ -12,6 +12,8 @@ import { pingColor, useVoicePing, type CallPing } from "~/features/voz/hooks/use
 import { desktop } from "~/lib/desktop";
 import { IconeRiscado } from "~/features/voz/components/IconeRiscado";
 import { Tooltip } from "~/components/ui/tooltip";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuTrigger } from "~/components/ui/dropdown-menu";
+import { ScreenShareMenuItems } from "~/features/voz/components/MenuDaTransmissao";
 import { cn } from "~/lib/utils";
 import { flx } from "~/lib/compat-de-tema";
 import { useTranslation } from "~/traducao";
@@ -154,16 +156,34 @@ export const VoicePanel: React.FC<VoicePanelProps> = ({ accountChannelId }) => {
           />
         </VoiceControl>
 
-        <VoiceControl data-gc="voz.voice-panel.voice-control--2"
-          label={screenEnabled ? "Parar de compartilhar" : "Compartilhar tela"}
-          onClick={() => void toggleScreen()}
-        >
-          <IconeRiscado data-gc="voz.voice-panel.icone-riscado--2"
-            icone={MonitorUp}
-            riscado={!screenEnabled}
-            className={screenEnabled ? "text-online" : undefined}
-          />
-        </VoiceControl>
+        {/*
+          Com a transmissão no ar, o clique abre o que dá para fazer com ela em
+          vez de encerrar direto: parar é uma das escolhas, não o único destino
+          de um clique distraído.
+        */}
+        <DropdownMenu data-gc="voz.voice-panel.dropdown-menu">
+          <Tooltip data-gc="voz.voice-panel.tooltip--2" label={screenEnabled ? t("chamada.tela.pararDeCompartilhar") : t("chamada.tela.compartilhar")}>
+            {screenEnabled ? (
+              <DropdownMenuTrigger data-gc="voz.voice-panel.dropdown-menu-trigger" asChild>
+                <button data-gc="voz.voice-panel.button--5" aria-label={t("chamada.tela.pararDeCompartilhar")} className={VOICE_CONTROL}>
+                  <ScreenIcon data-gc="voz.voice-panel.screen-icon" on />
+                </button>
+              </DropdownMenuTrigger>
+            ) : (
+              <button data-gc="voz.voice-panel.button--6"
+                onClick={() => void toggleScreen()}
+                aria-label={t("chamada.tela.compartilhar")}
+                className={VOICE_CONTROL}
+              >
+                <ScreenIcon data-gc="voz.voice-panel.screen-icon--2" on={false} />
+              </button>
+            )}
+          </Tooltip>
+
+          <DropdownMenuContent data-gc="voz.voice-panel.dropdown-menu-content" side="top" align="end" className="w-max min-w-64">
+            <ScreenShareMenuItems data-gc="voz.voice-panel.screen-share-menu-items" />
+          </DropdownMenuContent>
+        </DropdownMenu>
       </div>
     </div>
   );
@@ -175,16 +195,33 @@ interface VoiceControlProps {
   onClick: () => void;
 }
 
+const VOICE_CONTROL =
+  "gc-icone flex items-center justify-center rounded-lg bg-surface-3 py-2 text-ink-muted transition [--cor-do-vao:var(--color-surface-3)] hover:bg-surface-4 hover:text-ink hover:[--cor-do-vao:var(--color-surface-4)] data-[state=open]:bg-surface-4";
+
 const VoiceControl: React.FC<VoiceControlProps> = ({ children, label, onClick }) => (
-  <Tooltip data-gc="voz.voice-panel.tooltip--2" label={label}>
+  <Tooltip data-gc="voz.voice-panel.tooltip--3" label={label}>
     <button data-gc="voz.voice-panel.button.on-click"
       onClick={onClick}
       aria-label={label}
-      className="gc-icone flex items-center justify-center rounded-lg bg-hover py-2 text-ink-muted transition hover:bg-surface-4 hover:text-ink hover:[--cor-do-vao:var(--color-surface-4)]"
+      className={VOICE_CONTROL}
     >
       {children}
     </button>
   </Tooltip>
+);
+
+/*
+  Quando não há transmissão, o ícone é a tela com a seta: o convite para
+  começar. Enquanto a transmissão está no ar, ele vira a tela riscada, porque o
+  próximo clique é o que encerra — o botão mostra o que vai acontecer, não o que
+  está acontecendo. O risco se desenha na virada.
+*/
+const ScreenIcon: React.FC<{ on: boolean }> = ({ on }) => (
+  <IconeRiscado data-gc="voz.voice-panel.icone-riscado--2"
+    icone={on ? Monitor : MonitorUp}
+    riscado={on}
+    className={on ? "text-online" : undefined}
+  />
 );
 
 const NoticeMicrophoneBlocked: React.FC = () => {
@@ -212,7 +249,7 @@ const NoticeMicrophoneBlocked: React.FC = () => {
           {t("chamada.microfone.bloqueadoNoMac")} <b data-gc="voz.voice-panel.b">{bridge.nameSystem}</b> em{" "}
           <b data-gc="voz.voice-panel.b--2">{t("chamada.microfone.caminhoNoMac")}</b>.
         </p>
-        <button data-gc="voz.voice-panel.button--5"
+        <button data-gc="voz.voice-panel.button--7"
           onClick={() => bridge.media.openSettings("microphone")}
           className="mt-1.5 rounded bg-danger/25 px-2 py-1 font-medium transition hover:bg-danger/40"
         >
@@ -231,7 +268,7 @@ const NoticeMicrophoneBlocked: React.FC = () => {
 };
 
 const SignalIcon: React.FC<{ ping: CallPing }> = ({ ping }) => (
-  <Tooltip data-gc="voz.voice-panel.tooltip--3" label={ping.ms !== null ? `${ping.ms} ms` : "Medindo…"}>
+  <Tooltip data-gc="voz.voice-panel.tooltip--4" label={ping.ms !== null ? `${ping.ms} ms` : "Medindo…"}>
     <span data-gc="voz.voice-panel.span--4" className={pingColor(ping)}>
       <Signal data-gc="voz.voice-panel.signal--2" size={16} />
     </span>

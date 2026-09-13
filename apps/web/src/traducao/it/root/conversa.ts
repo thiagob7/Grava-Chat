@@ -133,6 +133,10 @@ export const conversa = {
       outro: "Altro",
     },
   },
+  fila: {
+    esperando: "Verrà inviato al ritorno della connessione",
+  },
+
   falha: {
     tentarDeNovo: "Riprova",
     erro: "Non consegnato",
@@ -321,5 +325,10 @@ export const conversa = {
     doQueSeTrata: "Di cosa si tratta?",
     primeiraMensagem: "Primo messaggio",
     conteDoCaso: "Racconta",
+  },
+  sistema: {
+    naoEntregue: "Il tuo messaggio non è stato consegnato. Di solito succede perché non condividete nessuna community o perché questa persona accetta messaggi diretti solo dagli amici. Potresti anche dover modificare la tua privacy in Impostazioni > Privacy.",
+    soVoce: "Solo tu puoi vedere questo messaggio.",
+    dispensar: "Ignora",
   },
 };

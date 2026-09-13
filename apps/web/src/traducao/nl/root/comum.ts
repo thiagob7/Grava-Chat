@@ -96,4 +96,14 @@ export const comum = {
   excluir: "Verwijderen",
   remover: "Weghalen",
   trocar: "Wijzigen",
+  loginNoApp: {
+    titulo: "Helemaal klaar!",
+    detalhe: "Je bent ingelogd. Ga terug naar Gravaê, de app wacht al op je.",
+    abrir: "Gravaê openen",
+    fecharAba: "Je kunt dit tabblad nu sluiten.",
+    falhouTitulo: "Inloggen is mislukt",
+    falhouDetalhe: "Ga terug naar de app en probeer opnieuw in te loggen.",
+    legenda: "Een zwaaiende robot",
+    legendaFalhou: "Een huilend katje",
+  },
 };

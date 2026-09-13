@@ -133,6 +133,10 @@ export const conversa = {
       outro: "Lainnya",
     },
   },
+  fila: {
+    esperando: "Akan terkirim saat koneksi kembali",
+  },
+
   falha: {
     tentarDeNovo: "Coba lagi",
     erro: "Tidak terkirim",
@@ -321,5 +325,10 @@ export const conversa = {
     doQueSeTrata: "Soal apa ini?",
     primeiraMensagem: "Pesan pertama",
     conteDoCaso: "Ceritakan",
+  },
+  sistema: {
+    naoEntregue: "Pesanmu tidak dapat dikirim. Biasanya karena kalian tidak berada di komunitas yang sama, atau orang ini hanya menerima pesan langsung dari teman. Kamu mungkin juga perlu mengatur privasimu di Pengaturan > Privasi.",
+    soVoce: "Hanya kamu yang bisa melihat pesan ini.",
+    dispensar: "Tutup",
   },
 };
