@@ -53,7 +53,11 @@ const duration = (s: number) => {
   return `${s}s`;
 };
 
+const fixed = (value: unknown, digits = 2) =>
+  typeof value === "number" && Number.isFinite(value) ? value.toFixed(digits) : "—";
+
 const size = (bytes: number) => {
+  if (!Number.isFinite(bytes)) return "—";
   const mb = bytes / 1024 / 1024;
 
   if (mb >= 1024) return `${(mb / 1024).toFixed(1)} GB`;
@@ -166,12 +170,12 @@ export const ServerSection: React.FC = () => {
                 box={{
                   title: "Voz",
                   host: data.voice.host,
-                  legenda: `LiveKit ${data.voice.livekit.inAr ? "no ar" : "parado"} · ${data.voice.ms} ms daqui · ligada há ${duration(data.voice.machineUptime)}`,
+                  legenda: `LiveKit ${data.voice.livekit?.inAr ?? (data.voice.livekit as { noAr?: boolean } | undefined)?.noAr ? "no ar" : "parado"} · ${data.voice.ms} ms daqui · ligada há ${duration(data.voice.machineUptime ?? (data.voice as { uptimeDaMaquina?: number }).uptimeDaMaquina ?? 0)}`,
                   carga: data.voice.carga,
                   cores: data.voice.cores,
                   memoria: data.voice.memoria,
-                  disk: data.voice.disk,
-                  resident: { label: "LiveKit", bytes: data.voice.livekit.resident },
+                  disk: data.voice.disk ?? (data.voice as { disco?: Box["disk"] }).disco ?? null,
+                  resident: { label: "LiveKit", bytes: data.voice.livekit?.resident ?? (data.voice.livekit as { residente?: number } | undefined)?.residente ?? 0 },
                 }}
               />
             )
@@ -399,8 +403,10 @@ interface Box {
 }
 
 const Machine: React.FC<{ box: Box }> = ({ box }) => {
-  const occupancy = Math.min(box.carga.um / box.cores, 1);
-  const used = box.memoria.total - box.memoria.available;
+  const occupancy = Math.min((box.carga?.um ?? 0) / (box.cores || 1), 1) || 0;
+  const available =
+    box.memoria?.available ?? (box.memoria as { disponivel?: number } | undefined)?.disponivel ?? box.memoria?.livre ?? 0;
+  const used = (box.memoria?.total ?? 0) - available;
   const diskUsed = box.disk ? box.disk.total - box.disk.livre : 0;
 
   return (
@@ -419,14 +425,14 @@ const Machine: React.FC<{ box: Box }> = ({ box }) => {
           label="CPU"
           value={`${Math.round(occupancy * 100)}%`}
           ratio={occupancy}
-          detail={`carga ${box.carga.um.toFixed(2)} · ${box.carga.five.toFixed(2)} · ${box.carga.quinze.toFixed(2)} em ${box.cores} threads`}
+          detail={`carga ${fixed(box.carga?.um)} · ${fixed(box.carga?.five ?? (box.carga as { cinco?: number } | undefined)?.cinco)} · ${fixed(box.carga?.quinze)} em ${box.cores} threads`}
         />
         <StatTile inset data-gc="configuracoes.servidor-section.stat-tile--6"
           icon={<MemoryStick data-gc="configuracoes.servidor-section.memory-stick" size={15} />}
           label="Memória"
           value={size(used)}
-          ratio={used / box.memoria.total}
-          detail={`de ${size(box.memoria.total)} · ${size(box.memoria.available)} livres · ${box.resident.label} ${size(box.resident.bytes)}`}
+          ratio={box.memoria?.total ? used / box.memoria.total : 0}
+          detail={`de ${size(box.memoria?.total ?? 0)} · ${size(available)} livres · ${box.resident.label} ${size(box.resident.bytes)}`}
         />
         {box.disk ? (
           <StatTile inset data-gc="configuracoes.servidor-section.stat-tile--7"
