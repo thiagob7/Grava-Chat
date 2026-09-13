@@ -8,6 +8,7 @@ export interface Gif {
   id: string;
   description: string;
   url: string;
+  gif?: string;
   preview: string;
   width: number;
   height: number;
@@ -29,6 +30,7 @@ function convert(reply: ReplyGif): Gif[] {
     const formats = item.media_formats;
     const full = formats?.webp ?? formats?.mediumgif ?? formats?.gif;
     const light = formats?.tinygif ?? formats?.nanogif ?? full;
+    const animated = formats?.gif ?? formats?.mediumgif ?? full;
     if (!full || !light) return [];
 
     return [
@@ -36,6 +38,7 @@ function convert(reply: ReplyGif): Gif[] {
         id: item.id,
         description: item.title || item.content_description || "GIF",
         url: full.url,
+        gif: (animated ?? full).url,
         preview: light.url,
         width: full.dims?.[0] ?? 0,
         height: full.dims?.[1] ?? 0,

@@ -20,6 +20,7 @@ import {
 import { useTranslation } from "react-i18next";
 import type { VoiceServer } from "@gravae/shared";
 
+import { HoverGif } from "~/components/GifNoHover";
 import { useMarkServerRead } from "~/@core/application/queries/guild/use-marcar-servidor-lido";
 import type { GuildSummaryModel } from "~/@core/domain/models/guild-model";
 import { Button } from "~/components/ui/button";
@@ -157,7 +158,7 @@ export const RailFolder: React.FC<RailPropsFolder> = ({
         <span data-gc="servidor.pasta-do-trilho.span" className="grid size-9 grid-cols-2 gap-1">
           {guilds.slice(0, 4).map((g) => (
             <span data-gc="servidor.pasta-do-trilho.span--2" key={g.id} className="size-4 overflow-hidden rounded-full bg-surface-3 text-[8px] font-bold leading-4 text-ink">
-              {g.iconUrl ? <img data-gc="servidor.pasta-do-trilho.img" src={g.iconUrl} alt="" draggable={false} className="size-full object-cover" /> : g.name.slice(0, 1)}
+              {g.iconUrl ? <HoverGif data-gc="servidor.pasta-do-trilho.hover-gif" src={g.iconUrl} alt="" playing={false} className="size-full object-cover" /> : g.name.slice(0, 1)}
             </span>
           ))}
         </span>
