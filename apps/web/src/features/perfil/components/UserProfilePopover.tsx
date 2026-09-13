@@ -34,6 +34,9 @@ import { useRequestFriend } from "~/@core/application/queries/friend/use-request
 import { useRespondFriend } from "~/@core/application/queries/friend/use-respond-friend";
 import { useRemoveFriend } from "~/@core/application/queries/friend/use-remove-friend";
 import { useOpenDm } from "~/@core/application/queries/friend/use-open-dm";
+import { prefetchMessages } from "~/@core/application/queries/message/use-find-messages";
+import { useSendMessage } from "~/@core/application/queries/message/use-send-message";
+import { useQueryClient } from "@tanstack/react-query";
 import type { ProfileModel } from "~/@core/domain/models/profile-model";
 import { highestPosition, type Role } from "@gravae/shared";
 
@@ -566,9 +569,16 @@ const ProfileComposer: React.FC<{
   const navigate = useNavigate();
   const face = usePickerFace();
   const openDm = useOpenDm();
+  const queryClient = useQueryClient();
+  const sendToConversation = useSendMessage();
   const [text, setText] = useState("");
   const [sending, setSending] = useState(false);
 
+  /*
+    A mensagem sai pela conversa, e não por fora dela. Assim, se o servidor
+    recusar, a recusa aparece onde a pessoa vai estar olhando — na conversa,
+    marcada, com o aviso do Gravaê explicando — em vez de um toast que some.
+  */
   const send = async () => {
     const content = text.trim();
     if (!content || sending) return;
@@ -576,19 +586,15 @@ const ProfileComposer: React.FC<{
     setSending(true);
 
     try {
-      const channel = await openDm.mutateAsync(userId);
-      await sendMessage({
-        channelId: channel.id,
-        content: content,
-        nonce: crypto.randomUUID(),
-      });
+      const channel = await openDm.mutateAsync(userId).catch(() => null);
+      if (!channel) return;
+
+      await prefetchMessages(queryClient, channel.id);
+      sendToConversation.mutate({ channelId: channel.id, content, nonce: crypto.randomUUID() });
 
       setText("");
       onGo();
       navigate(`/dm/${channel.id}`);
-    } catch (error) {
-      /* A recusa do servidor explica o motivo; a nossa frase é o último caso. */
-      toast.error(apiErrorMessage(error, t("perfil.recado.falhou")));
     } finally {
       setSending(false);
     }

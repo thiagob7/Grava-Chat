@@ -105,8 +105,21 @@ export const dmRepositoryRequest = {
     return prisma.dmRequest.findUnique({ where: { channelId } });
   },
 
-  create(channelId: string, fromId: string, toId: string, spam: boolean) {
-    return prisma.dmRequest.create({ data: { channelId, fromId, toId, spam } });
+  create(
+    channelId: string,
+    fromId: string,
+    toId: string,
+    spam: boolean,
+    status: "PENDING" | "UNDELIVERED" = "PENDING",
+  ) {
+    return prisma.dmRequest.create({ data: { channelId, fromId, toId, spam, status } });
+  },
+
+  reopen(channelId: string, fromId: string, toId: string, spam: boolean) {
+    return prisma.dmRequest.update({
+      where: { channelId },
+      data: { fromId, toId, spam, status: "PENDING" },
+    });
   },
 
   pendingFor(toId: string) {
