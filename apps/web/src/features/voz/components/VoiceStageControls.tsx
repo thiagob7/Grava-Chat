@@ -35,6 +35,7 @@ import {
 } from "~/components/ui/popover";
 import { Slider } from "~/components/ui/slider";
 import { IconeRiscado } from "~/features/voz/components/IconeRiscado";
+import { ScreenShareMenuItems } from "~/features/voz/components/MenuDaTransmissao";
 import { Tooltip } from "~/components/ui/tooltip";
 import { deviceName, useDevices } from "~/features/voz/hooks/use-dispositivos";
 import { useScreenFull } from "~/features/voz/hooks/use-tela-cheia";
@@ -258,22 +259,8 @@ export const VoiceStageControls: React.FC<{
           labelDoMenu={t("chamada.tela.configCompartilhamento")}
           onClick={() => void toggleScreen()}
           active={screenEnabled}
-          menu={
-            <>
-              <DropdownMenuLabel data-gc="voz.voice-stage-controls.dropdown-menu-label--4">{t("chamada.tela.compartilhar")}</DropdownMenuLabel>
-              <DropdownMenuCheckboxItem data-gc="voz.voice-stage-controls.dropdown-menu-checkbox-item--2"
-                checked={prefs.screenSound}
-                onCheckedChange={(marked) => prefs.set({ screenSound: marked })}
-              >
-                {t("chamada.tela.somDoComputador")}
-              </DropdownMenuCheckboxItem>
-
-              <DropdownMenuSeparator data-gc="voz.voice-stage-controls.dropdown-menu-separator--7" />
-              <DropdownMenuItem data-gc="voz.voice-stage-controls.dropdown-menu-item--4" onSelect={() => openSettings("voice")}>
-                {t("chamada.tela.configCompartilhamento")} <Settings data-gc="voz.voice-stage-controls.settings--4" size={15} />
-              </DropdownMenuItem>
-            </>
-          }
+          menu={<ScreenShareMenuItems data-gc="voz.voice-stage-controls.screen-share-menu-items" withSettings />}
+          menuClassName="w-max min-w-64"
         >
           {/* Igual ao painel: a seta convida, o risco encerra. */}
           <IconeRiscado data-gc="voz.voice-stage-controls.icone-riscado--4"
@@ -296,21 +283,21 @@ export const VoiceStageControls: React.FC<{
           </Tooltip>
 
           <DropdownMenuContent data-gc="voz.voice-stage-controls.dropdown-menu-content" side="top" align="center" className="w-64">
-            <DropdownMenuCheckboxItem data-gc="voz.voice-stage-controls.dropdown-menu-checkbox-item--3"
+            <DropdownMenuCheckboxItem data-gc="voz.voice-stage-controls.dropdown-menu-checkbox-item--2"
               checked={prefs.showWithoutVideo}
               onCheckedChange={(marked) => prefs.set({ showWithoutVideo: marked })}
             >
               {t("chamada.tela.mostrarSemVideo")}
             </DropdownMenuCheckboxItem>
 
-            <DropdownMenuSeparator data-gc="voz.voice-stage-controls.dropdown-menu-separator--8" />
-            <DropdownMenuItem data-gc="voz.voice-stage-controls.dropdown-menu-item--5" onSelect={() => void fullScreen.toggle()}>
+            <DropdownMenuSeparator data-gc="voz.voice-stage-controls.dropdown-menu-separator--7" />
+            <DropdownMenuItem data-gc="voz.voice-stage-controls.dropdown-menu-item--4" onSelect={() => void fullScreen.toggle()}>
               {fullScreen.active ? "Sair da tela cheia" : "Entrar em tela cheia"}
               {fullScreen.active ? <Minimize data-gc="voz.voice-stage-controls.minimize" size={15} /> : <Maximize data-gc="voz.voice-stage-controls.maximize" size={15} />}
             </DropdownMenuItem>
 
-            <DropdownMenuItem data-gc="voz.voice-stage-controls.dropdown-menu-item--6" onSelect={() => openSettings("voice")}>
-              {t("chamada.aparelhos.configAudioEVideo")} <Settings data-gc="voz.voice-stage-controls.settings--5" size={15} />
+            <DropdownMenuItem data-gc="voz.voice-stage-controls.dropdown-menu-item--5" onSelect={() => openSettings("voice")}>
+              {t("chamada.aparelhos.configAudioEVideo")} <Settings data-gc="voz.voice-stage-controls.settings--4" size={15} />
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
@@ -416,8 +403,9 @@ const Control: React.FC<{
   onClick: () => void;
   active?: boolean;
   menu: React.ReactNode;
+  menuClassName?: string;
   onOpenChange?: (isOpen: boolean) => void;
-}> = ({ children, label, labelDoMenu, onClick, active, menu, onOpenChange }) => (
+}> = ({ children, label, labelDoMenu, onClick, active, menu, menuClassName = "w-64", onOpenChange }) => (
   <div data-gc="voz.voice-stage-controls.div--6" className="relative">
     <Tooltip data-gc="voz.voice-stage-controls.tooltip--6" label={label}>
       <button data-gc="voz.voice-stage-controls.button.on-click"
@@ -450,7 +438,7 @@ const Control: React.FC<{
         </DropdownMenuTrigger>
       </Tooltip>
 
-      <DropdownMenuContent data-gc="voz.voice-stage-controls.dropdown-menu-content--2" side="top" align="center" className="w-64">
+      <DropdownMenuContent data-gc="voz.voice-stage-controls.dropdown-menu-content--2" side="top" align="center" className={menuClassName}>
         {menu}
       </DropdownMenuContent>
     </DropdownMenu>

@@ -74,6 +74,8 @@ export function useVoiceSync(guildId: string | undefined, currentUserId?: string
           socketId: "",
           clientId: null,
           orphanedAt: null,
+          /* Este estado é montado do que o SFU vê, e o SFU não sabe do aparelho. */
+          device: null,
           joinedAt: Date.now(),
           selfMute: !t.micEnabled,
           selfDeaf: false,

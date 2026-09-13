@@ -17,7 +17,9 @@ import { Switch } from "~/components/ui/switch";
 import { useVoiceMeter } from "~/features/voz/hooks/use-voice-meter";
 import { desktop } from "~/lib/desktop";
 import { usePttGlobal } from "~/features/voz/stores/ptt-global";
+import { SCREEN_FRAME_RATES, SCREEN_RESOLUTIONS } from "~/features/voz/lib/qualidade-da-transmissao";
 import { useVoicePrefs } from "~/features/voz/stores/voice-prefs";
+import { useTranslation } from "~/traducao";
 import { useVoiceStore } from "~/features/voz/stores/voice-store";
 import { cn } from "~/lib/utils";
 import { ConfigSection as Section } from "~/features/configuracoes/components/SecaoDeConfig";
@@ -94,7 +96,9 @@ export const VoiceSection: React.FC<{ part?: "audio" | "video" }> = ({
   part = "audio",
 }) => {
   const prefs = useVoicePrefs();
+  const { t } = useTranslation();
   const applySettings = useVoiceStore((s) => s.applySettings);
+  const setScreenQuality = useVoiceStore((s) => s.setScreenQuality);
   const inCall = useVoiceStore((s) => s.channelId !== null);
   const noiseFilterAvailable = useVoiceStore((s) => s.noiseFilterAvailable);
 
@@ -499,6 +503,36 @@ export const VoiceSection: React.FC<{ part?: "audio" | "video" }> = ({
                 onCheckedChange={(v) => prefs.set({ screenSound: v })}
               />
             </div>
+
+            <div data-gc="configuracoes.voice-section.div--16" className="mt-5 grid max-w-md grid-cols-2 gap-3">
+              <label data-gc="configuracoes.voice-section.label--5" className="block">
+                <span data-gc="configuracoes.voice-section.span--5" className="mb-2 block text-xs font-semibold uppercase tracking-wide text-ink-muted">
+                  {t("chamada.tela.resolucao")}
+                </span>
+                <SelectField data-gc="configuracoes.voice-section.select-field--4"
+                  value={prefs.screenResolution}
+                  onSelect={(value) => void setScreenQuality({ screenResolution: value })}
+                  options={SCREEN_RESOLUTIONS.map((value) => ({
+                    value,
+                    label: value === "original" ? t("chamada.tela.original") : `${value}p`,
+                  }))}
+                />
+              </label>
+
+              <label data-gc="configuracoes.voice-section.label--6" className="block">
+                <span data-gc="configuracoes.voice-section.span--6" className="mb-2 block text-xs font-semibold uppercase tracking-wide text-ink-muted">
+                  {t("chamada.tela.taxaDeQuadros")}
+                </span>
+                <SelectField data-gc="configuracoes.voice-section.select-field--5"
+                  value={prefs.screenFrameRate}
+                  onSelect={(value) => void setScreenQuality({ screenFrameRate: value })}
+                  options={SCREEN_FRAME_RATES.map((value) => ({ value, label: t("chamada.tela.quadros", { quadros: value }) }))}
+                />
+              </label>
+            </div>
+            <p data-gc="configuracoes.voice-section.p--20" className="mt-2 max-w-md text-xs text-ink-faint">
+              {t("chamada.tela.qualidadeDica")}
+            </p>
           </Section>
         </>
       )}
@@ -519,13 +553,13 @@ const Meter: React.FC<MeterProps> = ({
   threshold,
   className,
 }) => (
-  <div data-gc="configuracoes.voice-section.div--16"
+  <div data-gc="configuracoes.voice-section.div--17"
     className={cn(
       "relative h-2.5 w-full overflow-hidden rounded-full bg-surface-0",
       className,
     )}
   >
-    <div data-gc="configuracoes.voice-section.div--17"
+    <div data-gc="configuracoes.voice-section.div--18"
       className={cn(
         "h-full rounded-full transition-[width] duration-75",
         isOpen ? "bg-online" : "bg-surface-4",
@@ -534,7 +568,7 @@ const Meter: React.FC<MeterProps> = ({
     />
 
     {threshold !== undefined && (
-      <span data-gc="configuracoes.voice-section.span--5"
+      <span data-gc="configuracoes.voice-section.span--7"
         className="absolute top-0 h-full w-0.5 bg-ink"
         style={{ left: `${Math.min(100, threshold * 100)}%` }}
       />
@@ -560,9 +594,9 @@ const Control: React.FC<ControlProps> = ({
   filled,
   ...props
 }) => (
-  <label data-gc="configuracoes.voice-section.label--5" className="block">
-    <span data-gc="configuracoes.voice-section.span--6" className="mb-2 flex items-center justify-between text-xs font-semibold uppercase tracking-wide text-ink-muted">
-      {title} <span data-gc="configuracoes.voice-section.span--7" className="text-ink-faint">{value}</span>
+  <label data-gc="configuracoes.voice-section.label--7" className="block">
+    <span data-gc="configuracoes.voice-section.span--8" className="mb-2 flex items-center justify-between text-xs font-semibold uppercase tracking-wide text-ink-muted">
+      {title} <span data-gc="configuracoes.voice-section.span--9" className="text-ink-faint">{value}</span>
     </span>
     <Slider data-gc="configuracoes.voice-section.slider--2"
       {...props}
@@ -619,19 +653,19 @@ const Choice: React.FC<OptionProps> = ({
       )}
     />
 
-    <span data-gc="configuracoes.voice-section.span--8" className="min-w-0 flex-1">
-      <span data-gc="configuracoes.voice-section.span--9" className="block text-sm font-medium">{title}</span>
-      <span data-gc="configuracoes.voice-section.span--10" className="mt-0.5 block text-xs text-ink-faint">{description}</span>
+    <span data-gc="configuracoes.voice-section.span--10" className="min-w-0 flex-1">
+      <span data-gc="configuracoes.voice-section.span--11" className="block text-sm font-medium">{title}</span>
+      <span data-gc="configuracoes.voice-section.span--12" className="mt-0.5 block text-xs text-ink-faint">{description}</span>
     </span>
 
-    <span data-gc="configuracoes.voice-section.span--11"
+    <span data-gc="configuracoes.voice-section.span--13"
       aria-hidden
       className={cn(
         "relative mt-px size-4 shrink-0 rounded-full border transition",
         active ? "border-brand" : "border-surface-4",
       )}
     >
-      {active && <span data-gc="configuracoes.voice-section.span--12" className="absolute inset-[3px] rounded-full bg-brand" />}
+      {active && <span data-gc="configuracoes.voice-section.span--14" className="absolute inset-[3px] rounded-full bg-brand" />}
     </span>
   </button>
 );

@@ -23,6 +23,11 @@ export const chamada = {
   fecharChat: "Închide chatul",
   mostrarChat: "Afișează chatul",
   aoVivo: "Live",
+  aparelhoDaPessoa: {
+    desktop: "Aplicație desktop",
+    web: "Browser",
+    mobile: "Telefon",
+  },
   estado: {
     mudo: "Microfon oprit",
     mudoPeloServidor: "Microfon oprit de server",
@@ -70,6 +75,15 @@ export const chamada = {
     semFontes: "Sistemul nu a returnat niciun ecran sau fereastră de partajat.",
     pararDeCompartilhar: "Oprește partajarea",
     encerrarTransmissao: "Încheie transmisiunea",
+    pararTransmissao: "Oprește transmisia",
+    alterarTransmissao: "Schimbă transmisia",
+    qualidade: "Calitatea transmisiei",
+    resolucao: "Rezoluție",
+    taxaDeQuadros: "Rată de cadre",
+    original: "Originală",
+    compartilharAudio: "Partajează sunetul transmisiei",
+    quadros: "{{quadros}} FPS",
+    qualidadeDica: "Rezoluția este o limită: o fereastră mai mică își păstrează dimensiunea. Mai multă rezoluție și mai multe cadre cer mai mult internet, al tău și al celor care privesc. Se aplică și transmisiei în curs.",
   },
   live: {
     etiqueta: "În direct",

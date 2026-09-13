@@ -23,6 +23,11 @@ export const chamada = {
   fecharChat: "關閉聊天",
   mostrarChat: "顯示聊天",
   aoVivo: "直播",
+  aparelhoDaPessoa: {
+    desktop: "桌面應用程式",
+    web: "瀏覽器",
+    mobile: "手機",
+  },
   estado: {
     mudo: "麥克風已關閉",
     mudoPeloServidor: "伺服器已關閉麥克風",
@@ -70,6 +75,15 @@ export const chamada = {
     semFontes: "系統沒有回傳任何可分享的螢幕或視窗。",
     pararDeCompartilhar: "停止分享",
     encerrarTransmissao: "結束直播",
+    pararTransmissao: "停止直播",
+    alterarTransmissao: "更換直播內容",
+    qualidade: "直播畫質",
+    resolucao: "解析度",
+    taxaDeQuadros: "影格速率",
+    original: "原始",
+    compartilharAudio: "分享直播音訊",
+    quadros: "{{quadros}} FPS",
+    qualidadeDica: "解析度是上限：較小的視窗維持原本大小。解析度和影格速率越高，你和觀眾需要的頻寬越多。也會套用到正在進行的直播。",
   },
   live: {
     etiqueta: "直播中",

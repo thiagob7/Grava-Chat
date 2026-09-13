@@ -23,6 +23,11 @@ export const chamada = {
   fecharChat: "Stäng chatten",
   mostrarChat: "Visa chatten",
   aoVivo: "Live",
+  aparelhoDaPessoa: {
+    desktop: "Skrivbordsapp",
+    web: "Webbläsare",
+    mobile: "Telefon",
+  },
   estado: {
     mudo: "Mikrofon av",
     mudoPeloServidor: "Mikrofonen avstängd av servern",
@@ -70,6 +75,15 @@ export const chamada = {
     semFontes: "Systemet returnerade ingen skärm eller något fönster att dela.",
     pararDeCompartilhar: "Sluta dela",
     encerrarTransmissao: "Avsluta sändningen",
+    pararTransmissao: "Sluta streama",
+    alterarTransmissao: "Byt stream",
+    qualidade: "Streamkvalitet",
+    resolucao: "Upplösning",
+    taxaDeQuadros: "Bildfrekvens",
+    original: "Original",
+    compartilharAudio: "Dela streamljud",
+    quadros: "{{quadros}} FPS",
+    qualidadeDica: "Upplösningen är ett tak: ett mindre fönster behåller sin storlek. Mer upplösning och fler bilder kräver mer bandbredd, din och tittarnas. Gäller även en pågående stream.",
   },
   live: {
     etiqueta: "Live",

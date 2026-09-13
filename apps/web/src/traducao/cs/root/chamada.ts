@@ -23,6 +23,11 @@ export const chamada = {
   fecharChat: "Zavřít chat",
   mostrarChat: "Zobrazit chat",
   aoVivo: "Živě",
+  aparelhoDaPessoa: {
+    desktop: "Aplikace pro počítač",
+    web: "Prohlížeč",
+    mobile: "Telefon",
+  },
   estado: {
     mudo: "Mikrofon vypnutý",
     mudoPeloServidor: "Mikrofon vypnutý serverem",
@@ -70,6 +75,15 @@ export const chamada = {
     semFontes: "Systém nevrátil žádnou obrazovku ani okno ke sdílení.",
     pararDeCompartilhar: "Přestat sdílet",
     encerrarTransmissao: "Ukončit přenos",
+    pararTransmissao: "Zastavit přenos",
+    alterarTransmissao: "Změnit přenos",
+    qualidade: "Kvalita přenosu",
+    resolucao: "Rozlišení",
+    taxaDeQuadros: "Snímková frekvence",
+    original: "Původní",
+    compartilharAudio: "Sdílet zvuk přenosu",
+    quadros: "{{quadros}} FPS",
+    qualidadeDica: "Rozlišení je strop: menší okno si zachová svou velikost. Vyšší rozlišení a více snímků chtějí rychlejší internet, váš i diváků. Platí i pro probíhající přenos.",
   },
   live: {
     etiqueta: "Živě",

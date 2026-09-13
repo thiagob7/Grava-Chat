@@ -23,6 +23,11 @@ export const chamada = {
   fecharChat: "चैट बंद करें",
   mostrarChat: "चैट दिखाएँ",
   aoVivo: "लाइव",
+  aparelhoDaPessoa: {
+    desktop: "डेस्कटॉप ऐप",
+    web: "ब्राउज़र",
+    mobile: "फ़ोन",
+  },
   estado: {
     mudo: "माइक्रोफ़ोन बंद",
     mudoPeloServidor: "सर्वर ने माइक्रोफ़ोन बंद किया",
@@ -70,6 +75,15 @@ export const chamada = {
     semFontes: "सिस्टम ने साझा करने के लिए कोई स्क्रीन या विंडो नहीं लौटाई।",
     pararDeCompartilhar: "साझा करना बंद करें",
     encerrarTransmissao: "प्रसारण समाप्त करें",
+    pararTransmissao: "स्ट्रीम रोकें",
+    alterarTransmissao: "स्ट्रीम बदलें",
+    qualidade: "स्ट्रीम की गुणवत्ता",
+    resolucao: "रिज़ॉल्यूशन",
+    taxaDeQuadros: "फ़्रेम दर",
+    original: "मूल",
+    compartilharAudio: "स्ट्रीम का ऑडियो साझा करें",
+    quadros: "{{quadros}} FPS",
+    qualidadeDica: "रिज़ॉल्यूशन एक सीमा है: छोटी विंडो अपने आकार में रहती है। ज़्यादा रिज़ॉल्यूशन और फ़्रेम के लिए ज़्यादा इंटरनेट चाहिए, आपका और देखने वालों का। चल रही स्ट्रीम पर भी लागू होता है।",
   },
   live: {
     etiqueta: "लाइव",

@@ -23,6 +23,11 @@ export const chamada = {
   fecharChat: "채팅 닫기",
   mostrarChat: "채팅 표시",
   aoVivo: "라이브",
+  aparelhoDaPessoa: {
+    desktop: "데스크톱 앱",
+    web: "브라우저",
+    mobile: "휴대폰",
+  },
   estado: {
     mudo: "마이크 꺼짐",
     mudoPeloServidor: "서버가 마이크를 끔",
@@ -70,6 +75,15 @@ export const chamada = {
     semFontes: "공유할 화면이나 창을 시스템이 돌려주지 않았습니다.",
     pararDeCompartilhar: "공유 중지",
     encerrarTransmissao: "방송 종료",
+    pararTransmissao: "방송 중지",
+    alterarTransmissao: "방송 변경",
+    qualidade: "방송 화질",
+    resolucao: "해상도",
+    taxaDeQuadros: "프레임 속도",
+    original: "원본",
+    compartilharAudio: "방송 오디오 공유",
+    quadros: "{{quadros}} FPS",
+    qualidadeDica: "해상도는 상한선이에요. 더 작은 창은 원래 크기로 보내져요. 해상도와 프레임이 높을수록 나와 시청자의 인터넷을 더 써요. 진행 중인 방송에도 적용돼요.",
   },
   live: {
     etiqueta: "라이브",

@@ -23,6 +23,11 @@ export const chamada = {
   fecharChat: "Chat schließen",
   mostrarChat: "Chat anzeigen",
   aoVivo: "Live",
+  aparelhoDaPessoa: {
+    desktop: "Desktop-App",
+    web: "Browser",
+    mobile: "Telefon",
+  },
   estado: {
     mudo: "Mikrofon aus",
     mudoPeloServidor: "Mikrofon vom Server ausgeschaltet",
@@ -70,6 +75,15 @@ export const chamada = {
     semFontes: "Das System hat keinen Bildschirm und kein Fenster zum Teilen geliefert.",
     pararDeCompartilhar: "Teilen beenden",
     encerrarTransmissao: "Übertragung beenden",
+    pararTransmissao: "Übertragung beenden",
+    alterarTransmissao: "Übertragung ändern",
+    qualidade: "Streamqualität",
+    resolucao: "Auflösung",
+    taxaDeQuadros: "Bildrate",
+    original: "Original",
+    compartilharAudio: "Stream-Audio teilen",
+    quadros: "{{quadros}} FPS",
+    qualidadeDica: "Die Auflösung ist eine Obergrenze: Ein kleineres Fenster behält seine Größe. Mehr Auflösung und Bilder brauchen mehr Bandbreite, deine und die der Zuschauer. Gilt auch für eine laufende Übertragung.",
   },
   live: {
     etiqueta: "Live",
