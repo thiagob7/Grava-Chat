@@ -6,7 +6,6 @@ import {
   Award,
   Ban,
   Compass,
-  Globe,
   IdCard,
   Link2,
   ScrollText,
@@ -15,7 +14,7 @@ import {
   ShieldAlert,
   Smile,
   Sticker,
-  Sparkles,
+  Settings2,
   Tag,
   Trash2,
   Users,
@@ -67,24 +66,23 @@ export type Section =
   | "audit"
   | "bans"
   | "automod"
-  | "community"
   | "doDelete";
 
 type Icon = React.ComponentType<{ size?: number; className?: string }>;
 
 const GROUPS: { title: string | null; items: Section[] }[] = [
-  { title: null, items: ["profile", "tag", "engagement", "explore"] },
+  { title: null, items: ["profile", "engagement", "tag"] },
   { title: "servidor.abas.expressoes", items: ["emoji", "stickers", "sounds", "badges"] },
   { title: "servidor.abas.pessoas", items: ["members", "roles", "invites"] },
   { title: "servidor.abas.apps", items: ["integrations"] },
   { title: "servidor.abas.moderacao", items: ["audit", "bans", "automod"] },
-  { title: "servidor.abas.comunidade", items: ["community"] },
+  { title: "servidor.abas.comunidade", items: ["explore"] },
 ];
 
 const LABELS: Record<Section, string> = {
   profile: "servidor.perfil.titulo",
   tag: "servidor.etiqueta.titulo",
-  engagement: "servidor.engajamento.titulo",
+  engagement: "servidor.geral.titulo",
   explore: "servidor.explorar.titulo",
   emoji: "comum.emoji",
   stickers: "servidor.expressoes.figurinhas",
@@ -97,14 +95,13 @@ const LABELS: Record<Section, string> = {
   audit: "servidor.auditoria.titulo",
   bans: "servidor.abas.banimentos",
   automod: "servidor.automod.titulo",
-  community: "servidor.comunidade.titulo",
   doDelete: "servidor.excluir.titulo",
 };
 
 const ICONS: Record<Section, Icon> = {
   profile: IdCard,
   tag: Tag,
-  engagement: Sparkles,
+  engagement: Settings2,
   explore: Compass,
   emoji: Smile,
   stickers: Sticker,
@@ -117,7 +114,6 @@ const ICONS: Record<Section, Icon> = {
   audit: ScrollText,
   bans: Ban,
   automod: ShieldAlert,
-  community: Globe,
   doDelete: Trash2,
 };
 
@@ -201,7 +197,6 @@ export const ServerSettingsModal: React.FC<ServerSettingsModalProps> = ({
     audit: can("VIEW_AUDIT_LOG"),
     bans: can("BAN_MEMBERS"),
     automod: canManage,
-    community: canManage,
     doDelete: isOwner,
   };
 
@@ -398,7 +393,7 @@ export const ServerSettingsModal: React.FC<ServerSettingsModalProps> = ({
 
                   {section === "tag" && <ServerTagSection data-gc="servidor.server-settings.server-settings-modal.server-tag-section" guild={detail.guild} />}
 
-                  {section === "explore" && <DiscoverySection data-gc="servidor.server-settings.server-settings-modal.discovery-section" guild={detail.guild} />}
+                  {section === "explore" && <DiscoverySection data-gc="servidor.server-settings.server-settings-modal.discovery-section" guild={detail.guild} channels={detail.channels} />}
 
                   {section === "engagement" && (
                     <EngagementSection data-gc="servidor.server-settings.server-settings-modal.engagement-section"
@@ -467,13 +462,6 @@ export const ServerSettingsModal: React.FC<ServerSettingsModalProps> = ({
 
                   {section === "invites" && (
                     <InvitesSection data-gc="servidor.server-settings.server-settings-modal.invites-section" guildId={detail.guild.id} />
-                  )}
-
-                  {section === "community" && (
-                    <CommunitySection data-gc="servidor.server-settings.server-settings-modal.community-section"
-                      guildId={detail.guild.id}
-                      channels={detail.channels}
-                    />
                   )}
 
                   {section === "doDelete" && (

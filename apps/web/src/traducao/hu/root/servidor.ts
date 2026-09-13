@@ -276,6 +276,9 @@ export const servidor = {
     comoUsar: "Használat",
     comoUsarTexto: "Küldj egy POST-ot JSON-nal:",
   },
+  geral: {
+    titulo: "Áttekintés",
+  },
   explorar: {
     titulo: "Felfedezés",
   },

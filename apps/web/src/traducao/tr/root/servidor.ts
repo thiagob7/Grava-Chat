@@ -276,6 +276,9 @@ export const servidor = {
     comoUsar: "Nasıl kullanılır",
     comoUsarTexto: "JSON ile bir POST gönder:",
   },
+  geral: {
+    titulo: "Genel bakış",
+  },
   explorar: {
     titulo: "Keşfet",
   },

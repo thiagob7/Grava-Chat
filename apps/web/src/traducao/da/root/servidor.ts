@@ -276,6 +276,9 @@ export const servidor = {
     comoUsar: "Sådan bruger du det",
     comoUsarTexto: "Send en POST med JSON:",
   },
+  geral: {
+    titulo: "Oversigt",
+  },
   explorar: {
     titulo: "Udforsk",
   },

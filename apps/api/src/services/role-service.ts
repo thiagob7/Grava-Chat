@@ -4,6 +4,7 @@ import { toMember, toRole } from "~/lib/serialize.js";
 import { memberRepository, channelRepository } from "~/repositories/guild-repository.js";
 import { roleRepository, overwriteRepository } from "~/repositories/role-repository.js";
 import { accessService, type Context } from "./access-service.js";
+import { auditService, difference } from "./audit-service.js";
 import type {
   CreateRoleInput,
   ReorderRolesInput,
@@ -72,6 +73,22 @@ export const roleService = {
       mentionable: input.mentionable ?? false,
     });
 
+    auditService.register({
+      guildId,
+      actorId: userId,
+      action: "role.create",
+      targetType: "role",
+      targetId: role.id,
+      targetName: role.name,
+      changes: difference({} as Record<string, unknown>, {
+        name: role.name,
+        color: role.color,
+        permissions: role.permissions.length ? role.permissions : undefined,
+        hoist: role.hoist || undefined,
+        mentionable: role.mentionable || undefined,
+      }),
+    });
+
     return toRole(role);
   },
 
@@ -96,7 +113,19 @@ export const roleService = {
       throw new AppError("O cargo @everyone só aceita mudança de permissões");
     }
 
-    return toRole(await roleRepository.update(roleId, normalizeIcon(input)));
+    const updated = await roleRepository.update(roleId, normalizeIcon(input));
+
+    auditService.register({
+      guildId,
+      actorId: userId,
+      action: "role.update",
+      targetType: "role",
+      targetId: roleId,
+      targetName: updated.name,
+      changes: difference(role as unknown as Record<string, unknown>, input as Record<string, unknown>),
+    });
+
+    return toRole(updated);
   },
 
   async remove(userId: string, guildId: string, roleId: string) {
@@ -108,6 +137,15 @@ export const roleService = {
 
     await memberRepository.pullRole(guildId, roleId);
     await roleRepository.remove(roleId);
+
+    auditService.register({
+      guildId,
+      actorId: userId,
+      action: "role.delete",
+      targetType: "role",
+      targetId: roleId,
+      targetName: role.name,
+    });
   },
 
   async reorder(userId: string, guildId: string, input: ReorderRolesInput) {
@@ -163,6 +201,27 @@ export const roleService = {
     );
 
     const updated = await memberRepository.setRoles(guildId, targetId, [...after]);
+
+    if (changed.length) {
+      const names = (ids: string[]) => ids.map((id) => byId.get(id)?.name ?? id);
+      auditService.register({
+        guildId,
+        actorId,
+        action: "member.roles",
+        targetType: "member",
+        targetId,
+        targetName: updated.user?.displayName ?? null,
+        changes: {
+          ...(changed.some((id) => after.has(id))
+            ? { added: { de: null, toward: names(changed.filter((id) => after.has(id))) } }
+            : {}),
+          ...(changed.some((id) => before.has(id))
+            ? { removed: { de: null, toward: names(changed.filter((id) => before.has(id))) } }
+            : {}),
+        },
+      });
+    }
+
     return toMember(updated);
   },
 

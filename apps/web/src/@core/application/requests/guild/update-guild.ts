@@ -1,4 +1,4 @@
-import type { CommunityCategory } from "@gravae/shared";
+import type { CommunityCategory, DefaultNotifications } from "@gravae/shared";
 
 import type { GuildModel } from "~/@core/domain/models/guild-model";
 import { api } from "~/@core/lib/api";
@@ -16,6 +16,13 @@ export interface UpdateGuildDTO {
   welcomeMessage?: string | null;
   category?: CommunityCategory | null;
   discoverable?: boolean;
+  languagePrincipal?: string | null;
+  tags?: string[];
+  afkChannelId?: string | null;
+  afkTimeoutSeconds?: number;
+  defaultNotifications?: DefaultNotifications;
+  flexibleChannelNames?: boolean;
+  hideOwnerCrown?: boolean;
 }
 
 export async function updateGuild({ guildId, ...data }: UpdateGuildDTO): Promise<GuildModel> {

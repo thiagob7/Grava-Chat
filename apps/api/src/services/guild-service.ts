@@ -1,4 +1,3 @@
-import { isAdmin } from "~/lib/serialize.js";
 import { serverSeals } from "~/lib/selos.js";
 import { systemService } from "~/services/sistema-service.js";
 import { officialService } from "~/services/oficial-service.js";
@@ -210,6 +209,13 @@ export const guildService = {
         welcomeMessage: guild.welcomeMessage,
         category: guild.category,
         discoverable: guild.discoverable,
+        languagePrincipal: guild.languagePrincipal,
+        tags: guild.tags ?? [],
+        afkChannelId: guild.afkChannelId,
+        afkTimeoutSeconds: guild.afkTimeoutSeconds ?? 300,
+        defaultNotifications: guild.defaultNotifications ?? "tudo",
+        flexibleChannelNames: guild.flexibleChannelNames === true,
+        hideOwnerCrown: guild.hideOwnerCrown === true,
         ownerId: guild.ownerId,
         memberCount: guild._count.members,
         ...serverSeals(guild, guild._count.members),
@@ -263,6 +269,14 @@ export const guildService = {
     await accessService.requirePermission(userId, guildId, "MANAGE_GUILD");
 
     const before = await guildRepository.findByIdOrThrow(guildId);
+
+    if (input.afkChannelId) {
+      const channel = await channelRepository.findById(input.afkChannelId);
+      if (!channel || channel.guildId !== guildId || channel.type !== "VOICE") {
+        throw new AppError("O canal de inatividade precisa ser um canal de voz deste servidor", 400);
+      }
+    }
+
     const guild = await guildRepository.update(guildId, input);
 
     auditService.register({
@@ -288,6 +302,13 @@ export const guildService = {
       welcomeMessage: guild.welcomeMessage,
       category: guild.category,
       discoverable: guild.discoverable,
+      languagePrincipal: guild.languagePrincipal,
+      tags: guild.tags ?? [],
+      afkChannelId: guild.afkChannelId,
+      afkTimeoutSeconds: guild.afkTimeoutSeconds ?? 300,
+      defaultNotifications: guild.defaultNotifications ?? "tudo",
+      flexibleChannelNames: guild.flexibleChannelNames === true,
+      hideOwnerCrown: guild.hideOwnerCrown === true,
       ownerId: guild.ownerId,
       memberCount: guild._count.members,
       ...serverSeals(guild, guild._count.members),
@@ -396,9 +417,8 @@ export const guildService = {
     return guildService.communityState(userId, guildId);
   },
 
-  async verify(adminId: string, guildId: string, verified: boolean) {
-    const admin = await userRepository.findById(adminId);
-    if (!admin || !isAdmin(admin.email)) throw new ForbiddenError("Só a administração do app verifica comunidades");
+  /* Quem pode verificar é decidido na rota, pela área "comunidades" do painel. */
+  async verify(guildId: string, verified: boolean) {
 
     await guildRepository.findByIdOrThrow(guildId);
     const guild = await guildRepository.update(guildId, { verified });
@@ -473,6 +493,15 @@ export const guildService = {
     }
 
     await inviteRepository.remove(inviteId);
+
+    auditService.register({
+      guildId,
+      actorId: userId,
+      action: "invite.delete",
+      targetType: "invite",
+      targetId: inviteId,
+      targetName: invite.code,
+    });
   },
 
   async createChannel(userId: string, guildId: string, input: CreateChannelInput) {
@@ -603,6 +632,19 @@ export const guildService = {
       inviterId: userId,
       maxUses: input.maxUses ?? null,
       expiresAt: input.expiresInHours ? new Date(Date.now() + input.expiresInHours * 3600_000) : null,
+    });
+
+    auditService.register({
+      guildId,
+      actorId: userId,
+      action: "invite.create",
+      targetType: "invite",
+      targetId: invite.id,
+      targetName: invite.code,
+      changes: difference({} as Record<string, unknown>, {
+        maxUses: invite.maxUses ?? undefined,
+        expiresAt: invite.expiresAt?.toISOString(),
+      }),
     });
 
     return { code: invite.code, expiresAt: invite.expiresAt, maxUses: invite.maxUses };

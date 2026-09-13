@@ -276,6 +276,9 @@ export const servidor = {
     comoUsar: "Kako se koristi",
     comoUsarTexto: "Pošalji POST s JSON-om:",
   },
+  geral: {
+    titulo: "Pregled",
+  },
   explorar: {
     titulo: "Otkrivanje",
   },

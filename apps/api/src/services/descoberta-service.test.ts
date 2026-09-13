@@ -42,8 +42,8 @@ const server = (id: string, members: number, extras = {}) => ({
 });
 
 describe("listar comunidades", () => {
-  it("deixa de fora quem nao chegou aos cem membros", async () => {
-    candidates.mockResolvedValue([server("a", 99), server("b", 100)]);
+  it("deixa de fora quem nao chegou aos oitenta membros", async () => {
+    candidates.mockResolvedValue([server("a", 79), server("b", 100)]);
     members.mockResolvedValue(new Map([["b", ["u1"]]]));
     mapFor.mockResolvedValue({ u1: "ONLINE" });
 
@@ -102,7 +102,7 @@ describe("listar comunidades", () => {
 
 describe("entrar pela descoberta", () => {
   it("recusa servidor que nao esta na lista", async () => {
-    candidates.mockResolvedValue([server("a", 99)]);
+    candidates.mockResolvedValue([server("a", 79)]);
 
     await expect(discoveryService.join("eu", "a")).rejects.toThrow(
       "Esta comunidade não está no Explorar",

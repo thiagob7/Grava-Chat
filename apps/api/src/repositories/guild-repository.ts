@@ -79,6 +79,7 @@ export const discoveryRepository = {
               OR: [
                 { name: { contains: search, mode: "insensitive" as const } },
                 { description: { contains: search, mode: "insensitive" as const } },
+                { tags: { has: search.toLowerCase() } },
               ],
             }
           : {}),
