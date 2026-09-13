@@ -97,4 +97,14 @@ export const comum = {
   excluir: "Excluir",
   remover: "Remover",
   trocar: "Trocar",
+  loginNoApp: {
+    titulo: "Tudo certo!",
+    detalhe: "Você entrou com a sua conta. Pode voltar pro Gravaê, o aplicativo já está te esperando.",
+    abrir: "Abrir o Gravaê",
+    fecharAba: "Já pode fechar esta aba.",
+    falhouTitulo: "O login não deu certo",
+    falhouDetalhe: "Volte pro aplicativo e tente entrar de novo.",
+    legenda: "Um robô acenando",
+    legendaFalhou: "Um gatinho chorando",
+  },
 };

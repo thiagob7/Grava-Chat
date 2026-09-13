@@ -96,4 +96,14 @@ export const comum = {
   excluir: "Törlés",
   remover: "Eltávolítás",
   trocar: "Csere",
+  loginNoApp: {
+    titulo: "Minden rendben!",
+    detalhe: "Bejelentkeztél. Térj vissza a Gravaêba, az alkalmazás már vár.",
+    abrir: "Gravaê megnyitása",
+    fecharAba: "Most már bezárhatod ezt a lapot.",
+    falhouTitulo: "A bejelentkezés nem sikerült",
+    falhouDetalhe: "Térj vissza az alkalmazásba, és próbálj újra bejelentkezni.",
+    legenda: "Integető robot",
+    legendaFalhou: "Síró kiscica",
+  },
 };

@@ -96,4 +96,14 @@ export const comum = {
   excluir: "削除",
   remover: "外す",
   trocar: "変更",
+  loginNoApp: {
+    titulo: "準備完了！",
+    detalhe: "ログインしました。Gravaê に戻ってください。アプリが待っています。",
+    abrir: "Gravaê を開く",
+    fecharAba: "このタブは閉じてかまいません。",
+    falhouTitulo: "ログインできませんでした",
+    falhouDetalhe: "アプリに戻って、もう一度ログインしてください。",
+    legenda: "手を振るロボット",
+    legendaFalhou: "泣いている子猫",
+  },
 };

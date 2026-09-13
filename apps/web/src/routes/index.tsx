@@ -5,6 +5,7 @@ import { TitleBar } from "~/features/app/components/BarraDeTitulo";
 import { ShellLoading } from "~/features/app/components/CascaCarregando";
 import { CommunityTrack } from "~/features/servidor/components/FaixaDaComunidade";
 import { Splash } from "~/features/app/components/Splash";
+import { useSendQueue } from "~/features/conversa/hooks/use-fila-de-envio";
 
 import { CallReceived } from "~/features/voz/components/ChamadaRecebida";
 import { FloatingScreenShare } from "~/features/voz/components/FloatingScreenShare";
@@ -18,9 +19,11 @@ import { useLinksDoDesktop } from "~/features/app/hooks/use-links-do-desktop";
 import { useDisconnectOnLogout } from "~/hooks/use-realtime";
 import { ResetPassword } from "~/pages/presentation/auth/RedefinirSenha";
 import { VerifyEmail } from "~/pages/presentation/auth/VerificarEmail";
+import { DesktopLoginDone } from "~/pages/presentation/auth/LoginNoApp";
 import { SignIn } from "~/pages/presentation/auth/SignIn";
 
 const Admin = React.lazy(() => import("~/pages/presentation/admin/Admin"));
+
 import { Chat } from "~/pages/presentation/chat/Chat";
 import { AcceptInvite } from "~/pages/presentation/invite/AcceptInvite";
 import { AddBot } from "~/pages/presentation/bot/AdicionarBot";
@@ -50,8 +53,9 @@ export const AppRoutes: React.FC = () => {
       <Route path="/login" element={<PublicOnly data-gc="routes.public-only" />} />
       <Route path="/redefinir" element={<ResetPassword data-gc="routes.reset-password" />} />
       <Route path="/verificar-email" element={<VerifyEmail data-gc="routes.verify-email" />} />
+      <Route path="/login/app" element={<DesktopLoginDone data-gc="routes.desktop-login-done" />} />
       <Route
-        path="/admin/:tela?"
+        path="/admin/:display?"
         element={
           <Protected data-gc="routes.protected">
             <React.Suspense data-gc="routes.reactsuspense" fallback={<Splash data-gc="routes.splash" />}>
@@ -109,7 +113,7 @@ export const AppRoutes: React.FC = () => {
         }
       />
       <Route
-        path="/tema/:temaId"
+        path="/tema/:themeId"
         element={
           <Protected data-gc="routes.protected--8">
             <SeeTheme data-gc="routes.see-theme" />
@@ -171,6 +175,14 @@ const BRAND_SCREENS = [/^\/login$/, /^\/redefinir$/, /^\/verificar-email$/, /^\/
 
 const AppShell: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const { pathname } = useLocation();
+
+  /*
+    Mora aqui, e não numa tela, porque a fila não é assunto de conversa aberta.
+    A mensagem presa pode ser de um canal que a pessoa nem está olhando, e ela
+    tem que sair assim que a rede voltar — não quando alguém reabrir aquele
+    canal.
+  */
+  useSendQueue();
 
   if (WINDOWS_OWN.includes(pathname)) return <>{children}</>;
 

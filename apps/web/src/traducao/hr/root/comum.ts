@@ -96,4 +96,14 @@ export const comum = {
   excluir: "Obriši",
   remover: "Ukloni",
   trocar: "Promijeni",
+  loginNoApp: {
+    titulo: "Sve je spremno!",
+    detalhe: "Prijavljeni ste. Vratite se u Gravaê, aplikacija vas već čeka.",
+    abrir: "Otvori Gravaê",
+    fecharAba: "Sada možete zatvoriti ovu karticu.",
+    falhouTitulo: "Prijava nije uspjela",
+    falhouDetalhe: "Vratite se u aplikaciju i pokušajte ponovno.",
+    legenda: "Robot koji maše",
+    legendaFalhou: "Mače koje plače",
+  },
 };

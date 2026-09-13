@@ -96,4 +96,14 @@ export const comum = {
   excluir: "Delete",
   remover: "Remove",
   trocar: "Change",
+  loginNoApp: {
+    titulo: "You're all set!",
+    detalhe: "You're signed in. Head back to Gravaê, the app is waiting for you.",
+    abrir: "Open Gravaê",
+    fecharAba: "You can close this tab now.",
+    falhouTitulo: "Sign-in didn't work",
+    falhouDetalhe: "Go back to the app and try signing in again.",
+    legenda: "A robot waving",
+    legendaFalhou: "A crying kitten",
+  },
 };

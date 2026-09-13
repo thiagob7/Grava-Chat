@@ -96,4 +96,14 @@ export const comum = {
   excluir: "Smazat",
   remover: "Odebrat",
   trocar: "Změnit",
+  loginNoApp: {
+    titulo: "Hotovo!",
+    detalhe: "Jste přihlášeni. Vraťte se do Gravaê, aplikace už na vás čeká.",
+    abrir: "Otevřít Gravaê",
+    fecharAba: "Tuto kartu už můžete zavřít.",
+    falhouTitulo: "Přihlášení se nezdařilo",
+    falhouDetalhe: "Vraťte se do aplikace a zkuste se přihlásit znovu.",
+    legenda: "Mávající robot",
+    legendaFalhou: "Plačící koťátko",
+  },
 };

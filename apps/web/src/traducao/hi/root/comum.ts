@@ -96,4 +96,14 @@ export const comum = {
   excluir: "मिटाएँ",
   remover: "हटाएँ",
   trocar: "बदलें",
+  loginNoApp: {
+    titulo: "सब तैयार है!",
+    detalhe: "आपने साइन इन कर लिया है। Gravaê पर वापस जाएँ, ऐप आपका इंतज़ार कर रहा है।",
+    abrir: "Gravaê खोलें",
+    fecharAba: "अब आप यह टैब बंद कर सकते हैं।",
+    falhouTitulo: "साइन इन नहीं हो सका",
+    falhouDetalhe: "ऐप पर वापस जाएँ और फिर से साइन इन करें।",
+    legenda: "हाथ हिलाता रोबोट",
+    legendaFalhou: "रोता हुआ बिल्ली का बच्चा",
+  },
 };

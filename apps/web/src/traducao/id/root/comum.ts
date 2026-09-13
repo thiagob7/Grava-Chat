@@ -96,4 +96,14 @@ export const comum = {
   excluir: "Hapus",
   remover: "Singkirkan",
   trocar: "Ganti",
+  loginNoApp: {
+    titulo: "Semua beres!",
+    detalhe: "Kamu sudah masuk. Kembali ke Gravaê, aplikasinya sudah menunggu.",
+    abrir: "Buka Gravaê",
+    fecharAba: "Kamu bisa menutup tab ini.",
+    falhouTitulo: "Gagal masuk",
+    falhouDetalhe: "Kembali ke aplikasi dan coba masuk lagi.",
+    legenda: "Robot melambaikan tangan",
+    legendaFalhou: "Anak kucing menangis",
+  },
 };

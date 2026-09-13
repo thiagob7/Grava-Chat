@@ -96,4 +96,14 @@ export const comum = {
   excluir: "Șterge",
   remover: "Elimină",
   trocar: "Schimbă",
+  loginNoApp: {
+    titulo: "Totul e gata!",
+    detalhe: "Te-ai conectat. Revino în Gravaê, aplicația te așteaptă deja.",
+    abrir: "Deschide Gravaê",
+    fecharAba: "Poți închide această filă.",
+    falhouTitulo: "Conectarea nu a reușit",
+    falhouDetalhe: "Revino în aplicație și încearcă din nou.",
+    legenda: "Un robot care face cu mâna",
+    legendaFalhou: "Un pisoi care plânge",
+  },
 };

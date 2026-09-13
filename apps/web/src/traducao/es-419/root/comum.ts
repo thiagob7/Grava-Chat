@@ -96,4 +96,14 @@ export const comum = {
   excluir: "Eliminar",
   remover: "Quitar",
   trocar: "Cambiar",
+  loginNoApp: {
+    titulo: "¡Todo listo!",
+    detalhe: "Iniciaste sesión. Vuelve a Gravaê, la app ya te está esperando.",
+    abrir: "Abrir Gravaê",
+    fecharAba: "Ya puedes cerrar esta pestaña.",
+    falhouTitulo: "No se pudo iniciar sesión",
+    falhouDetalhe: "Vuelve a la app e inténtalo de nuevo.",
+    legenda: "Un robot saludando",
+    legendaFalhou: "Un gatito llorando",
+  },
 };

@@ -96,4 +96,14 @@ export const comum = {
   excluir: "삭제",
   remover: "빼기",
   trocar: "바꾸기",
+  loginNoApp: {
+    titulo: "모두 준비됐어요!",
+    detalhe: "로그인했어요. Gravaê로 돌아가세요. 앱이 기다리고 있어요.",
+    abrir: "Gravaê 열기",
+    fecharAba: "이제 이 탭을 닫아도 돼요.",
+    falhouTitulo: "로그인하지 못했어요",
+    falhouDetalhe: "앱으로 돌아가서 다시 로그인해 보세요.",
+    legenda: "손을 흔드는 로봇",
+    legendaFalhou: "울고 있는 고양이",
+  },
 };
