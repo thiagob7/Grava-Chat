@@ -38,6 +38,8 @@ export const configuracoes = {
     coresTrocadas: "{{quantas}} zamijenjenih boja",
     avisoDeCss: "Ova tema nosi CSS onoga tko ju je napisao, a CSS dira svaki kutak zaslona. Uvozi samo od ljudi kojima vjeruješ.",
     soCores: "Ova tema mijenja samo boje. Nikakav vanjski CSS.",
+    verCss: "Prikaži CSS",
+    esconderCss: "Sakrij CSS",
     aplicar: "Primijeni",
     previaSemMotor: "Pretpregled ne pokreće motor. Instaliraj da ga vidiš.",
     motorAnimado: "{{motor}} animirano",

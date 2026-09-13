@@ -38,6 +38,8 @@ export const configuracoes = {
     coresTrocadas: "{{quantas}} renk değişti",
     avisoDeCss: "Bu tema yazarının CSS'ini de getiriyor ve CSS ekranın her köşesine dokunur. Yalnızca güvendiğin kişilerden içe aktar.",
     soCores: "Bu tema sadece renkleri değiştiriyor. Dışarıdan CSS yok.",
+    verCss: "CSS'i göster",
+    esconderCss: "CSS'i gizle",
     aplicar: "Uygula",
     previaSemMotor: "Önizleme motoru çalıştırmaz. Görmek için kur.",
     motorAnimado: "{{motor}} animasyonlu",

@@ -38,6 +38,8 @@ export const configuracoes = {
     coresTrocadas: "pakeistos {{quantas}} spalvos",
     avisoDeCss: "Ši tema atsineša savo autoriaus CSS, o CSS pasiekia kiekvieną ekrano kampą. Importuokite tik iš žmonių, kuriais pasitikite.",
     soCores: "Ši tema keičia tik spalvas. Jokio CSS iš šalies.",
+    verCss: "Rodyti CSS",
+    esconderCss: "Slėpti CSS",
     aplicar: "Taikyti",
     previaSemMotor: "Peržiūra variklio nepaleidžia. Įdiekite, kad pamatytumėte.",
     motorAnimado: "{{motor}} animuotas",

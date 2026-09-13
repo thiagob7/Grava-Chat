@@ -38,6 +38,8 @@ export const configuracoes = {
     coresTrocadas: "{{quantas}} צבעים הוחלפו",
     avisoDeCss: "ערכת הנושא הזו מביאה CSS ממי שכתב אותה, ו‑CSS נוגע בכל פינה במסך. ייבאו רק מאנשים שאתם סומכים עליהם.",
     soCores: "ערכת הנושא הזו מחליפה צבעים בלבד. בלי CSS מבחוץ.",
+    verCss: "הצגת ה-CSS",
+    esconderCss: "הסתרת ה-CSS",
     aplicar: "החלה",
     previaSemMotor: "התצוגה המקדימה לא מריצה את המנוע. התקינו כדי לראות.",
     motorAnimado: "{{motor}} מונפש",

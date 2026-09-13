@@ -38,6 +38,8 @@ export const configuracoes = {
     coresTrocadas: "{{quantas}} vyměněných barev",
     avisoDeCss: "Tenhle motiv nese CSS od svého autora a CSS sahá do každého kouta obrazovky. Importujte jen od lidí, kterým věříte.",
     soCores: "Tenhle motiv mění jen barvy. Žádné cizí CSS.",
+    verCss: "Zobrazit CSS",
+    esconderCss: "Skrýt CSS",
     aplicar: "Použít",
     previaSemMotor: "Náhled motor nespouští. Nainstalujte si ho, ať ho uvidíte.",
     motorAnimado: "{{motor}} animovaný",

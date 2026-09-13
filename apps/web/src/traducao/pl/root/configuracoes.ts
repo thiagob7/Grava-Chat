@@ -38,6 +38,8 @@ export const configuracoes = {
     coresTrocadas: "zmienione kolory: {{quantas}}",
     avisoDeCss: "Ten motyw niesie CSS od swojego autora, a CSS sięga każdego zakątka ekranu. Importuj tylko od ludzi, którym ufasz.",
     soCores: "Ten motyw zmienia tylko kolory. Żadnego CSS z zewnątrz.",
+    verCss: "Pokaż CSS",
+    esconderCss: "Ukryj CSS",
     aplicar: "Zastosuj",
     previaSemMotor: "Podgląd nie uruchamia silnika. Zainstaluj, żeby go zobaczyć.",
     motorAnimado: "{{motor}} animowany",

@@ -38,6 +38,8 @@ export const configuracoes = {
     coresTrocadas: "замінено кольорів: {{quantas}}",
     avisoDeCss: "Ця тема несе CSS свого автора, а CSS дістає до будь-якого куточка екрана. Імпортуйте лише від людей, яким довіряєте.",
     soCores: "Ця тема міняє тільки кольори. Жодного стороннього CSS.",
+    verCss: "Показати CSS",
+    esconderCss: "Сховати CSS",
     aplicar: "Застосувати",
     previaSemMotor: "У перегляді рушій не працює. Установіть, щоб побачити.",
     motorAnimado: "{{motor}}, з анімацією",

@@ -38,6 +38,8 @@ export const configuracoes = {
     coresTrocadas: "{{quantas}} farger byttet",
     avisoDeCss: "Dette temaet har med seg CSS fra den som skrev det, og CSS når hver krok av skjermen. Importer bare fra folk du stoler på.",
     soCores: "Dette temaet bytter bare farger. Ingen CSS utenfra.",
+    verCss: "Vis CSS",
+    esconderCss: "Skjul CSS",
     aplicar: "Bruk",
     previaSemMotor: "Forhåndsvisningen kjører ikke motoren. Installer for å se den.",
     motorAnimado: "{{motor}} animert",

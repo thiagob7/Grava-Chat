@@ -38,6 +38,8 @@ export const configuracoes = {
     coresTrocadas: "{{quantas}} colours swapped",
     avisoDeCss: "This theme carries CSS from whoever wrote it, and CSS reaches every corner of the screen. Only import from people you trust.",
     soCores: "This theme only swaps colours. No CSS from outside.",
+    verCss: "View the CSS",
+    esconderCss: "Hide the CSS",
     aplicar: "Apply",
     previaSemMotor: "The preview does not run the engine. Install it to see it.",
     motorAnimado: "{{motor}} animated",

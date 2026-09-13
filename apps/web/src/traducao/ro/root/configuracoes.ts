@@ -38,6 +38,8 @@ export const configuracoes = {
     coresTrocadas: "{{quantas}} culori schimbate",
     avisoDeCss: "Tema asta vine cu CSS de la cine a scris-o, iar CSS-ul ajunge în orice colț al ecranului. Importă doar de la oameni în care ai încredere.",
     soCores: "Tema asta schimbă doar culori. Niciun CSS din afară.",
+    verCss: "Vezi CSS-ul",
+    esconderCss: "Ascunde CSS-ul",
     aplicar: "Aplică",
     previaSemMotor: "Previzualizarea nu rulează motorul. Instaleaz-o ca să-l vezi.",
     motorAnimado: "{{motor}} animat",

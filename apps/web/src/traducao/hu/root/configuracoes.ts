@@ -38,6 +38,8 @@ export const configuracoes = {
     coresTrocadas: "{{quantas}} kicserélt szín",
     avisoDeCss: "Ez a téma a szerzője CSS-ét hozza magával, és a CSS a képernyő minden sarkába belenyúl. Csak olyantól importálj, akiben megbízol.",
     soCores: "Ez a téma csak színeket cserél. Semmi külső CSS.",
+    verCss: "CSS megtekintése",
+    esconderCss: "CSS elrejtése",
     aplicar: "Alkalmaz",
     previaSemMotor: "Az előnézet nem futtatja a motort. Telepítsd, hogy lásd.",
     motorAnimado: "{{motor}} animálva",
