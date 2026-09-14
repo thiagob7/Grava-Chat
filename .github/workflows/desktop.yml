@@ -55,8 +55,9 @@ jobs:
       # publicado significa todo mundo em laco ate a proxima release.
       - name: Conferir a versao
         shell: bash
+        env:
+          TAG: ${{ github.event.inputs.tag || github.ref_name }}
         run: |
-          TAG="${{ github.event.inputs.tag || github.ref_name }}"
           VERSAO=$(node -p "require('./apps/desktop/package.json').version")
 
           if [ "${TAG#v}" != "$VERSAO" ]; then
