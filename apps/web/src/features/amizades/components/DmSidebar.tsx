@@ -1,5 +1,6 @@
 import React, { useMemo, useState } from "react";
 import { Mail, Phone, Plus, Users, Volume2 } from "lucide-react";
+import type { ProfilePublic } from "@gravae/shared";
 
 import { useFindDms } from "~/@core/application/queries/friend/use-find-dms";
 import { useFindFriends } from "~/@core/application/queries/friend/use-find-friends";
@@ -166,6 +167,7 @@ export const DmSidebar: React.FC<DmSidebarProps> = ({
                 url={dm.user.avatarUrl}
                 size={32}
                 status={dm.user.status}
+                charms={{ decoration: dm.user.decoration as ProfilePublic["decoration"] }}
               />
               <span data-gc="amizades.dm-sidebar.span" className="min-w-0 flex-1 text-left">
                 <span data-gc="amizades.dm-sidebar.span--2" className="block truncate">

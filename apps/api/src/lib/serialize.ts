@@ -27,6 +27,7 @@ export function toPublicUser(u: UserRow): PublicUser {
     status: u.status,
     isBot: u.isBot,
     ...(u.system ? { system: true } : {}),
+    ...(u.profile?.decoration && u.profile.decoration !== "nenhuma" ? { decoration: u.profile.decoration } : {}),
   };
 }
 

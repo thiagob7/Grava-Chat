@@ -24,6 +24,7 @@ export const publicUserSchema = z.object({
   status: z.enum(PRESENCE_STATUSES),
   isBot: z.boolean(),
   system: z.boolean().optional(),
+  decoration: z.string().optional(),
 });
 export type PublicUser = z.infer<typeof publicUserSchema>;
 
