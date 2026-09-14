@@ -254,7 +254,7 @@ export const ProfileCardVisual: React.FC<ProfileCardVisualProps> = ({
           </span>
 
           {(customStatus || onStatus) && (
-            <span data-gc="perfil.cartao.profile-card-visual.span--5" {...flx("profileNote", cn("relative ml-2 mt-9 min-w-0", staff && "mr-9"))}>
+            <span data-gc="perfil.cartao.profile-card-visual.span--5" {...flx("profileNote", cn("relative ml-2 mt-9 min-w-0 shrink", staff && "mr-10"))}>
               <span data-gc="perfil.cartao.profile-card-visual.span--6"
                 aria-hidden
                 className="absolute -left-3 top-0 size-2.5 rounded-full bg-surface-3 shadow-md shadow-sombra"
@@ -267,7 +267,7 @@ export const ProfileCardVisual: React.FC<ProfileCardVisualProps> = ({
               {onStatus ? (
                 <button data-gc="perfil.cartao.profile-card-visual.button.on-status"
                   onClick={onStatus}
-                  className="flex max-w-40 items-center gap-1.5 rounded-full bg-surface-3 px-3 py-1.5 text-left text-xs text-ink-muted shadow-lg shadow-sombra transition hover:bg-surface-4 hover:text-ink [&_svg]:size-3.5"
+                  className="flex max-w-[min(10rem,100%)] items-center gap-1.5 rounded-full bg-surface-3 px-3 py-1.5 text-left text-xs text-ink-muted shadow-lg shadow-sombra transition hover:bg-surface-4 hover:text-ink [&_svg]:size-3.5"
                 >
                   {customStatus ? (
                     <>
@@ -287,7 +287,7 @@ export const ProfileCardVisual: React.FC<ProfileCardVisualProps> = ({
                 </button>
               ) : (
                 customStatus && (
-                  <span data-gc="perfil.cartao.profile-card-visual.span--11" className="flex max-w-40 items-center gap-1.5 rounded-2xl bg-surface-3 px-3 py-1.5 text-xs text-ink-muted shadow-lg shadow-sombra">
+                  <span data-gc="perfil.cartao.profile-card-visual.span--11" className="flex max-w-[min(10rem,100%)] items-center gap-1.5 rounded-2xl bg-surface-3 px-3 py-1.5 text-xs text-ink-muted shadow-lg shadow-sombra">
                     {customStatus.emoji && (
                       <span data-gc="perfil.cartao.profile-card-visual.span--12">{customStatus.emoji}</span>
                     )}

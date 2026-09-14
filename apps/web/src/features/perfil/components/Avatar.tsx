@@ -149,7 +149,7 @@ export const Avatar: React.FC<AvatarProps> = ({
 function statusCorner(size: number) {
   const side = Math.max(8, Math.round(size * 0.26));
   const center = size * 0.82;
-  const slack = Math.max(1.5, size * 0.03);
+  const slack = Math.max(1.5, size * 0.045);
 
   return {
     side,
