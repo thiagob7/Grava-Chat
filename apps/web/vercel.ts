@@ -1,4 +1,4 @@
-import { deploymentEnv, routes, type VercelConfig } from "@vercel/config/v1";
+import type { VercelConfig } from "@vercel/config/v1";
 
 const API = {
   production: "https://gravaechat-api.duckdns.org",
@@ -12,22 +12,31 @@ export const config: VercelConfig = {
   outputDirectory: "dist",
   installCommand: "cd ../.. && yarn install --frozen-lockfile",
 
-  headers: [
+  routes: [
     {
-      source: "/(.*)",
-      headers: [
-        { key: "X-Content-Type-Options", value: "nosniff" },
-        { key: "Referrer-Policy", value: "strict-origin-when-cross-origin" },
-        { key: "Content-Security-Policy", value: "frame-ancestors 'none'; object-src 'none'; base-uri 'self'" },
+      src: "/(.*)",
+      headers: {
+        "X-Content-Type-Options": "nosniff",
+        "Referrer-Policy": "strict-origin-when-cross-origin",
+        "Content-Security-Policy": "frame-ancestors 'none'; object-src 'none'; base-uri 'self'",
+      },
+      continue: true,
+    },
+    {
+      src: "^/api/(.*)$",
+      dest: `${destination}/api/$1`,
+      transforms: [
+        {
+          type: "request.headers",
+          op: "set",
+          target: { key: "x-gravae-borda" },
+          args: "$EDGE_SECRET",
+          env: ["EDGE_SECRET"],
+        },
       ],
     },
-  ],
-
-  rewrites: [
-    routes.rewrite("/api/:path*", `${destination}/api/:path*`, () => ({
-      requestHeaders: { "x-gravae-borda": deploymentEnv("EDGE_SECRET") },
-    })),
-    routes.rewrite("/(.*)", "/index.html"),
+    { handle: "filesystem" },
+    { src: "/(.*)", dest: "/index.html" },
   ],
 };
 
