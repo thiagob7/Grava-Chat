@@ -11,7 +11,7 @@ import {
   type Permission,
 } from "@gravae/shared";
 import { AppError, ForbiddenError, NotFoundError } from "~/lib/http.js";
-import { toPublicUser } from "~/lib/serialize.js";
+import { toMember, toPublicUser } from "~/lib/serialize.js";
 import { botRepository } from "~/repositories/bot-repository.js";
 import { memberRepository, guildRepository } from "~/repositories/guild-repository.js";
 import { roleRepository } from "~/repositories/role-repository.js";
@@ -260,13 +260,13 @@ export const botService = {
         })
       : null;
 
-    await memberRepository.create({
+    const member = await memberRepository.create({
       guildId,
       userId: bot.botUserId,
       roleIds: role ? [role.id] : [],
     });
 
-    return { guildId, botId, roleId: role?.id ?? null };
+    return { guildId, botId, roleId: role?.id ?? null, botUserId: bot.botUserId, member: toMember(member) };
   },
 
   async removeServer(userId: string, botId: string, guildId: string) {

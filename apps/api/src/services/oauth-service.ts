@@ -76,12 +76,15 @@ export const oauthService = {
     },
   ) {
     const request = await oauthService.describeRequest(params);
+    let botAdded: Awaited<ReturnType<typeof botService.addServer>> | null = null;
 
     if (request.scopes.includes("bot")) {
       if (!params.guildId) throw new AppError("Escolha a comunidade onde o bot vai entrar.", 400);
 
       const alreadyThis = await botService.thisAt(request.bot.id, params.guildId);
-      if (!alreadyThis) await botService.addServer(userId, request.bot.id, params.guildId, params.permissions);
+      if (!alreadyThis) {
+        botAdded = await botService.addServer(userId, request.bot.id, params.guildId, params.permissions);
+      }
     }
 
     const code = randomBytes(32).toString("base64url");
@@ -96,7 +99,7 @@ export const oauthService = {
 
     await redis.set(keys.oauthCode(code), JSON.stringify(data), "EX", CODE_TTL);
 
-    return { code, redirectUri: params.redirectUri };
+    return { code, redirectUri: params.redirectUri, botAdded };
   },
 
   async swapCode(params: {
