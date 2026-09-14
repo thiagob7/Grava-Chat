@@ -3,8 +3,9 @@ import { toast } from "react-toastify";
 import { useNavigate, useParams } from "react-router";
 import { Menu } from "lucide-react";
 import { Check, ShieldCheck } from "@phosphor-icons/react";
-import { Phone, PhoneSlash, User, VideoCamera } from "@phosphor-icons/react";
+import { Phone, PhoneSlash, SpeakerHigh, User, VideoCamera } from "@phosphor-icons/react";
 
+import { useActive } from "~/@core/application/queries/friend/use-ativos";
 import { useFindDms } from "~/@core/application/queries/friend/use-find-dms";
 import { useFindFriends } from "~/@core/application/queries/friend/use-find-friends";
 import { useOpenDm } from "~/@core/application/queries/friend/use-open-dm";
@@ -13,6 +14,7 @@ import { useLogout } from "~/@core/application/queries/auth/use-logout";
 import { joinChannel } from "~/@core/lib/websocket/join-channel";
 import { Avatar } from "~/features/perfil/components/Avatar";
 import { UserName } from "~/features/perfil/components/UserName";
+import { UserFullProfile } from "~/features/perfil/components/PerfilCompletoDoUsuario";
 import {
   ChatArea,
   ChatPanel,
@@ -64,6 +66,8 @@ export const DirectMessages: React.FC<{ requests?: boolean }> = ({ requests = fa
   const { data: dms = [] } = useFindDms(true);
   const { data: relations = [] } = useFindFriends(true);
   const { data: readStates = {} } = useReadStates(true);
+  const { data: actives = [] } = useActive();
+  const [seeingProfile, setSeeingProfile] = useState(false);
   const openDm = useOpenDm();
   const logout = useLogout();
 
@@ -74,6 +78,7 @@ export const DirectMessages: React.FC<{ requests?: boolean }> = ({ requests = fa
   }, [channelId]);
 
   const chat = dms.find((dm) => dm.id === channelId);
+  const otherInVoice = Boolean(chat && actives.some((active) => active.user.id === chat.user.id));
   const pending = relations.filter((r) => r.status === "PENDING_IN").length;
 
   const openChat = async (userId: string) => {
@@ -218,27 +223,39 @@ export const DirectMessages: React.FC<{ requests?: boolean }> = ({ requests = fa
                   <Menu data-gc="friends.direct-messages.menu" />
                 </IconButton>
               )}
-              <Avatar data-gc="friends.direct-messages.avatar"
-                id={chat.user.id}
-                name={chat.user.displayName}
-                url={chat.user.avatarUrl}
-                status={chat.user.status}
-                size={24}
-              />
-              <h2 data-gc="friends.direct-messages.h2" className="font-semibold">
-                <UserName data-gc="friends.direct-messages.user-name" name={chat.user.displayName} isBot={chat.user.isBot} isSystem={chat.user.system} />
-              </h2>
+              <Tooltip data-gc="friends.direct-messages.tooltip" label={`@${chat.user.username}`}>
+                <button data-gc="friends.direct-messages.button"
+                  type="button"
+                  onClick={() => setSeeingProfile(true)}
+                  className="flex min-w-0 cursor-pointer items-center gap-2 rounded text-left outline-none focus-visible:ring-2 focus-visible:ring-foco-anel"
+                >
+                  <Avatar data-gc="friends.direct-messages.avatar"
+                    id={chat.user.id}
+                    name={chat.user.displayName}
+                    url={chat.user.avatarUrl}
+                    status={chat.user.status}
+                    size={24}
+                  />
+                  <h2 data-gc="friends.direct-messages.h2" className="truncate text-base font-semibold leading-5">
+                    <UserName data-gc="friends.direct-messages.user-name" name={chat.user.displayName} isBot={chat.user.isBot} isSystem={chat.user.system} />
+                  </h2>
+                </button>
+              </Tooltip>
 
               {inCallHere ? (
-                <span data-gc="friends.direct-messages.span" className="flex items-center gap-1.5 text-sm text-online">
-                  <Phone data-gc="friends.direct-messages.phone" size={13} weight="fill" /> Em uma chamada
+                <span data-gc="friends.direct-messages.span" className="ml-1 flex shrink-0 items-center gap-1 text-xs font-semibold text-online">
+                  <Phone data-gc="friends.direct-messages.phone" size={13} weight="fill" /> {t("amizades.status.emChamada")}
                 </span>
-              ) : (
-                <span data-gc="friends.direct-messages.span--2" className="text-sm text-ink-faint">@{chat.user.username}</span>
-              )}
+              ) : otherInVoice ? (
+                <span data-gc="friends.direct-messages.span--2" className="ml-1 flex shrink-0 items-center gap-1 text-xs font-semibold text-online">
+                  <SpeakerHigh data-gc="friends.direct-messages.speaker-high" size={13} weight="fill" /> {t("amizades.status.emVoz")}
+                </span>
+              ) : null}
+
+              <UserFullProfile data-gc="friends.direct-messages.user-full-profile" userId={chat.user.id} open={seeingProfile} onClose={() => setSeeingProfile(false)} />
 
               <div data-gc="friends.direct-messages.div--4" className="ml-auto flex items-center gap-1">
-                <Tooltip data-gc="friends.direct-messages.tooltip" label={inCallHere ? "Desligar" : "Iniciar chamada de voz"}>
+                <Tooltip data-gc="friends.direct-messages.tooltip--2" label={inCallHere ? "Desligar" : "Iniciar chamada de voz"}>
                   <IconButton data-gc="friends.direct-messages.icon-button--2"
                     onClick={() =>
                       void (inCallHere ? leaveCall() : joinCall(chat.id))
@@ -260,7 +277,7 @@ export const DirectMessages: React.FC<{ requests?: boolean }> = ({ requests = fa
                   </IconButton>
                 </Tooltip>
 
-                <Tooltip data-gc="friends.direct-messages.tooltip--2" label={cameraOn ? "Desligar a câmera" : "Iniciar chamada de vídeo"}>
+                <Tooltip data-gc="friends.direct-messages.tooltip--3" label={cameraOn ? "Desligar a câmera" : "Iniciar chamada de vídeo"}>
                   <IconButton data-gc="friends.direct-messages.icon-button--3"
                     onClick={() => void (cameraOn ? turnonCamera() : turnonWithVideo(chat.id))}
                     label={cameraOn ? "Desligar a câmera" : "Iniciar chamada de vídeo"}
@@ -276,7 +293,7 @@ export const DirectMessages: React.FC<{ requests?: boolean }> = ({ requests = fa
 
                 <PinnedMessagesPanel data-gc="friends.direct-messages.pinned-messages-panel" channelId={chat.id} canManage />
 
-                <Tooltip data-gc="friends.direct-messages.tooltip--3" label={profileIsOpen ? "Ocultar perfil" : "Mostrar perfil"}>
+                <Tooltip data-gc="friends.direct-messages.tooltip--4" label={profileIsOpen ? "Ocultar perfil" : "Mostrar perfil"}>
                   <IconButton data-gc="friends.direct-messages.icon-button--4"
                     onClick={() => setProfileIsOpen((isOpen) => !isOpen)}
                     label={profileIsOpen ? "Ocultar perfil" : "Mostrar perfil"}
