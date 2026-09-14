@@ -14,8 +14,14 @@ export const SCREEN_FRAME_RATES = [15, 30, 60] as const;
 export type ScreenResolution = (typeof SCREEN_RESOLUTIONS)[number];
 export type ScreenFrameRate = (typeof SCREEN_FRAME_RATES)[number];
 
+const ALLOWED_RESOLUTIONS: readonly ScreenResolution[] = ["480", "720"];
+const ALLOWED_FRAME_RATES: readonly ScreenFrameRate[] = [15];
+
+export const isScreenResolutionLocked = (value: ScreenResolution) => !ALLOWED_RESOLUTIONS.includes(value);
+export const isScreenFrameRateLocked = (value: ScreenFrameRate) => !ALLOWED_FRAME_RATES.includes(value);
+
 export const DEFAULT_SCREEN_RESOLUTION: ScreenResolution = "720";
-export const DEFAULT_SCREEN_FRAME_RATE: ScreenFrameRate = 30;
+export const DEFAULT_SCREEN_FRAME_RATE: ScreenFrameRate = 15;
 
 const HEIGHT: Record<ScreenResolution, number> = {
   "480": 480,
@@ -36,10 +42,10 @@ const BITRATE_AT_30: Record<ScreenResolution, number> = {
 const PACE: Record<ScreenFrameRate, number> = { 15: 0.6, 30: 1, 60: 1.5 };
 
 export function screenQuality(resolution: unknown, frameRate: unknown) {
-  const size = SCREEN_RESOLUTIONS.includes(resolution as ScreenResolution)
+  const size = ALLOWED_RESOLUTIONS.includes(resolution as ScreenResolution)
     ? (resolution as ScreenResolution)
     : DEFAULT_SCREEN_RESOLUTION;
-  const fps = SCREEN_FRAME_RATES.includes(frameRate as ScreenFrameRate)
+  const fps = ALLOWED_FRAME_RATES.includes(frameRate as ScreenFrameRate)
     ? (frameRate as ScreenFrameRate)
     : DEFAULT_SCREEN_FRAME_RATE;
 

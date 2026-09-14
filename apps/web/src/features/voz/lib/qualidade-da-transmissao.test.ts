@@ -1,32 +1,35 @@
 import { describe, expect, it } from "vitest";
 
-import { DEFAULT_SCREEN_FRAME_RATE, DEFAULT_SCREEN_RESOLUTION, screenQuality } from "./qualidade-da-transmissao";
+import {
+  DEFAULT_SCREEN_FRAME_RATE,
+  DEFAULT_SCREEN_RESOLUTION,
+  isScreenFrameRateLocked,
+  isScreenResolutionLocked,
+  screenQuality,
+} from "./qualidade-da-transmissao";
 
 describe("qualidade da transmissão de tela", () => {
   it("a resolução escolhida vira teto, sem esticar a janela", () => {
-    expect(screenQuality("720", 30).constraints).toEqual({
+    expect(screenQuality("720", 15).constraints).toEqual({
       width: { max: 1280 },
       height: { max: 720 },
-      frameRate: { ideal: 30, max: 30 },
+      frameRate: { ideal: 15, max: 15 },
     });
   });
 
-  it("original não limita o tamanho, só o ritmo", () => {
-    expect(screenQuality("original", 60).constraints).toEqual({ frameRate: { ideal: 60, max: 60 } });
+  it("opção bloqueada, mesmo guardada de antes, cai em 720p a 15 quadros", () => {
+    const quality = screenQuality("1080", 60);
+
+    expect(quality.resolution).toBe("720");
+    expect(quality.frameRate).toBe(15);
   });
 
-  it("mais quadros pedem mais banda", () => {
-    const at15 = screenQuality("1080", 15).encoding.maxBitrate;
-    const at30 = screenQuality("1080", 30).encoding.maxBitrate;
-    const at60 = screenQuality("1080", 60).encoding.maxBitrate;
-
-    expect(at15).toBeLessThan(at30);
-    expect(at30).toBeLessThan(at60);
-  });
-
-  it("60 quadros segura o ritmo e cede nitidez; os outros seguram o texto nítido", () => {
-    expect(screenQuality("720", 60).contentHint).toBe("motion");
-    expect(screenQuality("720", 30).contentHint).toBe("detail");
+  it("acima de 720p e de 15 quadros fica bloqueado", () => {
+    expect(isScreenResolutionLocked("720")).toBe(false);
+    expect(isScreenResolutionLocked("1080")).toBe(true);
+    expect(isScreenResolutionLocked("original")).toBe(true);
+    expect(isScreenFrameRateLocked(15)).toBe(false);
+    expect(isScreenFrameRateLocked(30)).toBe(true);
   });
 
   it("valor estragado no armazenamento cai no padrão em vez de quebrar a transmissão", () => {

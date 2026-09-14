@@ -1,5 +1,5 @@
 import React from "react";
-import { CircleStop, MonitorPlay, MonitorUp, Settings } from "lucide-react";
+import { CircleStop, Lock, MonitorPlay, MonitorUp, Settings } from "lucide-react";
 
 import {
   DropdownMenuCheckboxItem,
@@ -16,6 +16,8 @@ import { useSettings } from "~/features/configuracoes/stores/configuracoes";
 import {
   SCREEN_FRAME_RATES,
   SCREEN_RESOLUTIONS,
+  isScreenFrameRateLocked,
+  isScreenResolutionLocked,
   screenQuality,
   type ScreenFrameRate,
   type ScreenResolution,
@@ -67,8 +69,9 @@ export const ScreenShareMenuItems: React.FC<{ withSettings?: boolean }> = ({ wit
             onValueChange={(value) => void setScreenQuality({ screenFrameRate: Number(value) as ScreenFrameRate })}
           >
             {SCREEN_FRAME_RATES.map((fps) => (
-              <DropdownMenuRadioItem data-gc="voz.menu-da-transmissao.dropdown-menu-radio-item" key={fps} value={String(fps)} onSelect={(e) => e.preventDefault()}>
+              <DropdownMenuRadioItem data-gc="voz.menu-da-transmissao.dropdown-menu-radio-item" key={fps} value={String(fps)} disabled={isScreenFrameRateLocked(fps)} onSelect={(e) => e.preventDefault()}>
                 {t("chamada.tela.quadros", { quadros: fps })}
+                {isScreenFrameRateLocked(fps) && <Lock data-gc="voz.menu-da-transmissao.lock" size={12} className="ml-auto mr-5 text-ink-faint" />}
               </DropdownMenuRadioItem>
             ))}
           </DropdownMenuRadioGroup>
@@ -81,8 +84,9 @@ export const ScreenShareMenuItems: React.FC<{ withSettings?: boolean }> = ({ wit
             onValueChange={(value) => void setScreenQuality({ screenResolution: value as ScreenResolution })}
           >
             {SCREEN_RESOLUTIONS.map((resolution) => (
-              <DropdownMenuRadioItem data-gc="voz.menu-da-transmissao.dropdown-menu-radio-item--2" key={resolution} value={resolution} onSelect={(e) => e.preventDefault()}>
+              <DropdownMenuRadioItem data-gc="voz.menu-da-transmissao.dropdown-menu-radio-item--2" key={resolution} value={resolution} disabled={isScreenResolutionLocked(resolution)} onSelect={(e) => e.preventDefault()}>
                 {resolution === "original" ? t("chamada.tela.original") : `${resolution}p`}
+                {isScreenResolutionLocked(resolution) && <Lock data-gc="voz.menu-da-transmissao.lock--2" size={12} className="ml-auto mr-5 text-ink-faint" />}
               </DropdownMenuRadioItem>
             ))}
           </DropdownMenuRadioGroup>
