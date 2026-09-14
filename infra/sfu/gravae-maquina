@@ -87,7 +87,22 @@ fi
 # Todo valor tem um padrao: uma medicao que falhou deixaria o campo vazio, e
 # `"carga":{"um":,...}` nao e JSON — o painel do outro lado engoliria o erro de
 # parse e mostraria a maquina como fora do ar, mentindo sobre o motivo.
+trafego=$(vnstat --json m 2>/dev/null | python3 -c '
+import datetime, json, sys
+try:
+    dados = json.load(sys.stdin)
+    agora = datetime.datetime.now(datetime.timezone.utc)
+    placas = [i for i in dados.get("interfaces", []) if i.get("name") != "lo"]
+    placa = max(placas, key=lambda i: i.get("traffic", {}).get("total", {}).get("tx", 0))
+    mes = next((m for m in placa.get("traffic", {}).get("month", []) if m["date"]["year"] == agora.year and m["date"]["month"] == agora.month), {"rx": 0, "tx": 0})
+    criado = placa.get("created", {}).get("date", {})
+    desde = "%d-%02d-%02d" % (criado["year"], criado["month"], criado["day"]) if criado else None
+    print(json.dumps({"mes": "%d-%02d" % (agora.year, agora.month), "enviado": mes["tx"], "recebido": mes["rx"], "desde": desde}))
+except Exception:
+    print("null")
+' 2>/dev/null)
+
 responder "200 OK" "$(cat <<JSON
-{"host":"$(hostname)","nucleos":$(nproc),"carga":{"um":${carga1:-0},"cinco":${carga5:-0},"quinze":${carga15:-0}},"memoria":{"total":${mem_total:-0},"livre":${mem_livre:-0},"disponivel":${mem_disponivel:-0}},"disco":{"total":${disco_total:-0},"livre":${disco_livre:-0}},"uptimeDaMaquina":${uptime_segundos:-0},"livekit":{"noAr":$([ -n "$livekit_pid" ] && echo true || echo false),"residente":${livekit_rss:-0}}}
+{"host":"$(hostname)","nucleos":$(nproc),"carga":{"um":${carga1:-0},"cinco":${carga5:-0},"quinze":${carga15:-0}},"memoria":{"total":${mem_total:-0},"livre":${mem_livre:-0},"disponivel":${mem_disponivel:-0}},"disco":{"total":${disco_total:-0},"livre":${disco_livre:-0}},"uptimeDaMaquina":${uptime_segundos:-0},"livekit":{"noAr":$([ -n "$livekit_pid" ] && echo true || echo false),"residente":${livekit_rss:-0}},"trafego":${trafego:-null}}
 JSON
 )"

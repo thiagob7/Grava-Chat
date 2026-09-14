@@ -20,15 +20,17 @@ export const updateVoiceState = (patch: ClientEventPayload<"voice:state">) =>
 
 export const moderateVoice = (payload: {
   userId: string;
+  fromChannelId?: string;
   serverMute?: boolean;
   serverDeaf?: boolean;
 }) => emit("voice:moderate", payload);
 
-export const kickFromVoice = (userId: string) => emit("voice:kick", { userId });
+export const kickFromVoice = (userId: string, fromChannelId?: string) =>
+  emit("voice:kick", { userId, ...(fromChannelId ? { fromChannelId } : null) });
 
 export const refuseCall = (channelId: string) => emit("voice:recusar", { channelId });
 
-export const moveMember = (userId: string, channelId: string) =>
-  emit("voice:moveMember", { userId, channelId });
+export const moveMember = (userId: string, channelId: string, fromChannelId?: string) =>
+  emit("voice:moveMember", { userId, channelId, ...(fromChannelId ? { fromChannelId } : null) });
 
 export const playSound = (soundId: string) => emit("voice:sound", { soundId });
