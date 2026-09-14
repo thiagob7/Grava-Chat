@@ -7,7 +7,7 @@ import {
   useRemoveBadge,
 } from "~/@core/application/queries/guild/use-emblemas";
 import { useUploadImage } from "~/@core/application/queries/upload/use-upload-image";
-import { Button } from "~/components/ui/button";
+import { Button, IconButton } from "~/components/ui/button";
 import { useConfirm } from "~/components/ui/confirm";
 import { Input, Label } from "~/components/ui/input";
 import { useTranslation } from "~/traducao";
@@ -94,7 +94,7 @@ export const BadgesSection: React.FC<BadgesSectionProps> = ({
             </span>
 
             {editable && (
-              <button data-gc="servidor.server-settings.emblemas-section.button"
+              <IconButton data-gc="servidor.server-settings.emblemas-section.icon-button"
                 onClick={() =>
                   void confirm({
                     title: `Apagar o emblema ${badge.name}?`,
@@ -106,11 +106,11 @@ export const BadgesSection: React.FC<BadgesSectionProps> = ({
                       confirmed && remove.mutate(badge.id),
                   )
                 }
-                aria-label={`Apagar ${badge.name}`}
-                className="rounded p-1.5 text-ink-faint transition hover:bg-surface-3 hover:text-danger"
+                label={`Apagar ${badge.name}`}
+                className="text-ink-faint hover:bg-surface-3 hover:text-danger [&_svg]:size-[15px]"
               >
-                <Trash2 data-gc="servidor.server-settings.emblemas-section.trash2" size={15} />
-              </button>
+                <Trash2 data-gc="servidor.server-settings.emblemas-section.trash2" />
+              </IconButton>
             )}
           </div>
         ))}
@@ -154,7 +154,7 @@ export const BadgesSection: React.FC<BadgesSectionProps> = ({
           </div>
 
           <div data-gc="servidor.server-settings.emblemas-section.div--8" className="mt-3 flex items-center gap-2">
-            <Button data-gc="servidor.server-settings.emblemas-section.button--2"
+            <Button data-gc="servidor.server-settings.emblemas-section.button"
               variant="surface"
               size="sm"
               onClick={() => file.current?.click()}
@@ -180,7 +180,7 @@ export const BadgesSection: React.FC<BadgesSectionProps> = ({
               className="hidden"
             />
 
-            <Button data-gc="servidor.server-settings.emblemas-section.button--3"
+            <Button data-gc="servidor.server-settings.emblemas-section.button--2"
               size="sm"
               className="ml-auto"
               disabled={!canCreate || create.isPending}

@@ -17,7 +17,7 @@ import {
 } from "~/@core/application/queries/expression/use-expressions";
 import { Avatar } from "~/features/perfil/components/Avatar";
 import { EmojiPicker } from "~/features/expressao/components/SeletorDeEmoji";
-import { Button } from "~/components/ui/button";
+import { Button, IconButton } from "~/components/ui/button";
 import { fieldBase, Input, Label } from "~/components/ui/input";
 import {
   Popover,
@@ -152,7 +152,7 @@ export const EmojiSection: React.FC<SectionProps> = ({
               </td>
               <td data-gc="servidor.server-settings.expressions-sections.td--4" className="py-2 text-right">
                 {canManage && (
-                  <button data-gc="servidor.server-settings.expressions-sections.button--2"
+                  <IconButton data-gc="servidor.server-settings.expressions-sections.icon-button"
                     onClick={() =>
                       void confirm(
                         deletionRequest("emoji", emoji.name),
@@ -162,11 +162,12 @@ export const EmojiSection: React.FC<SectionProps> = ({
                           doDelete.mutate({ guildId, emojiId: emoji.id }),
                       )
                     }
+                    label={t("comum.apagar")}
                     title={t("comum.apagar")}
-                    className="rounded p-1.5 text-ink-faint opacity-0 transition group-hover:opacity-100 hover:text-danger"
+                    className="text-ink-faint opacity-0 group-hover:opacity-100 hover:text-danger"
                   >
-                    <Trash2 data-gc="servidor.server-settings.expressions-sections.trash2" size={16} />
-                  </button>
+                    <Trash2 data-gc="servidor.server-settings.expressions-sections.trash2" />
+                  </IconButton>
                 )}
               </td>
             </tr>
@@ -228,7 +229,7 @@ export const StickersSection: React.FC<SectionProps> = ({
 
       {canManage && (
         <>
-          <Button data-gc="servidor.server-settings.expressions-sections.button--3"
+          <Button data-gc="servidor.server-settings.expressions-sections.button--2"
             className="mt-4"
             disabled={remaining <= 0}
             onClick={() => input.current?.click()}
@@ -271,7 +272,7 @@ export const StickersSection: React.FC<SectionProps> = ({
             <EmojiField data-gc="servidor.server-settings.expressions-sections.emoji-field.set-emoji" id="fig-emoji" emoji={emoji} onPick={setEmoji} />
 
             <div data-gc="servidor.server-settings.expressions-sections.div--6" className="flex gap-2">
-              <Button data-gc="servidor.server-settings.expressions-sections.button--4"
+              <Button data-gc="servidor.server-settings.expressions-sections.button--3"
                 size="sm"
                 disabled={!name.trim() || create.isPending}
                 onClick={() =>
@@ -289,7 +290,7 @@ export const StickersSection: React.FC<SectionProps> = ({
               >
                 {t("comum.enviar")}
               </Button>
-              <Button data-gc="servidor.server-settings.expressions-sections.button--5"
+              <Button data-gc="servidor.server-settings.expressions-sections.button--4"
                 variant="surface"
                 size="sm"
                 onClick={() => setPending(null)}
@@ -317,7 +318,7 @@ export const StickersSection: React.FC<SectionProps> = ({
             </p>
 
             {canManage && (
-              <button data-gc="servidor.server-settings.expressions-sections.button--6"
+              <IconButton data-gc="servidor.server-settings.expressions-sections.icon-button--2"
                 onClick={() =>
                   void confirm(
                     deletionRequest("figurinha", sticker.name),
@@ -327,11 +328,13 @@ export const StickersSection: React.FC<SectionProps> = ({
                       doDelete.mutate({ guildId, stickerId: sticker.id }),
                   )
                 }
+                label={t("comum.apagar")}
                 title={t("comum.apagar")}
-                className="absolute right-1 top-1 rounded bg-surface-0 p-1 text-ink-faint opacity-0 transition group-hover:opacity-100 hover:text-danger"
+                size="xs"
+                className="absolute right-1 top-1 bg-surface-0 text-ink-faint opacity-0 group-hover:opacity-100 hover:bg-surface-0 hover:text-danger"
               >
-                <Trash2 data-gc="servidor.server-settings.expressions-sections.trash2--2" size={14} />
-              </button>
+                <Trash2 data-gc="servidor.server-settings.expressions-sections.trash2--2" />
+              </IconButton>
             )}
           </div>
         ))}
@@ -399,7 +402,7 @@ export const SoundboardSection: React.FC<SectionProps> = ({
 
       {canManage && (
         <>
-          <Button data-gc="servidor.server-settings.expressions-sections.button--7"
+          <Button data-gc="servidor.server-settings.expressions-sections.button--5"
             className="mt-4"
             disabled={remaining <= 0}
             onClick={() => input.current?.click()}
@@ -447,7 +450,7 @@ export const SoundboardSection: React.FC<SectionProps> = ({
           </div>
 
           <div data-gc="servidor.server-settings.expressions-sections.div--15" className="flex gap-2">
-            <Button data-gc="servidor.server-settings.expressions-sections.button--8"
+            <Button data-gc="servidor.server-settings.expressions-sections.button--6"
               size="sm"
               disabled={!name.trim() || create.isPending}
               onClick={() =>
@@ -466,7 +469,7 @@ export const SoundboardSection: React.FC<SectionProps> = ({
             >
               {t("comum.enviar")}
             </Button>
-            <Button data-gc="servidor.server-settings.expressions-sections.button--9"
+            <Button data-gc="servidor.server-settings.expressions-sections.button--7"
               variant="surface"
               size="sm"
               onClick={() => setPending(null)}
@@ -498,33 +501,34 @@ export const SoundboardSection: React.FC<SectionProps> = ({
               </span>
             )}
 
-            <button data-gc="servidor.server-settings.expressions-sections.button--10"
+            <IconButton data-gc="servidor.server-settings.expressions-sections.icon-button--3"
               onClick={() => {
                 const audio = new Audio(sound.url);
                 audio.volume = sound.volume;
                 void audio.play().catch(() => undefined);
               }}
+              label={t("servidor.expressoes.ouvir")}
               title={t("servidor.expressoes.ouvir")}
-              className="rounded p-1.5 text-ink-muted transition hover:text-ink"
             >
-              <Play data-gc="servidor.server-settings.expressions-sections.play" size={16} />
-            </button>
+              <Play data-gc="servidor.server-settings.expressions-sections.play" />
+            </IconButton>
 
             {canManage && <SoundVolume data-gc="servidor.server-settings.expressions-sections.sound-volume" guildId={guildId} sound={sound} />}
 
             {canManage && (
-              <button data-gc="servidor.server-settings.expressions-sections.button--11"
+              <IconButton data-gc="servidor.server-settings.expressions-sections.icon-button--4"
                 onClick={() =>
                   void confirm(deletionRequest("som", sound.name)).then(
                     ({ confirmed }) =>
                       confirmed && doDelete.mutate({ guildId, soundId: sound.id }),
                   )
                 }
+                label={t("comum.apagar")}
                 title={t("comum.apagar")}
-                className="rounded p-1.5 text-ink-faint opacity-0 transition group-hover:opacity-100 hover:text-danger"
+                className="text-ink-faint opacity-0 group-hover:opacity-100 hover:text-danger"
               >
-                <Trash2 data-gc="servidor.server-settings.expressions-sections.trash2--3" size={16} />
-              </button>
+                <Trash2 data-gc="servidor.server-settings.expressions-sections.trash2--3" />
+              </IconButton>
             )}
           </div>
         ))}
@@ -548,7 +552,7 @@ const EmojiField: React.FC<{
   <div data-gc="servidor.server-settings.expressions-sections.div--18">
     <Label data-gc="servidor.server-settings.expressions-sections.label--4" htmlFor={id}>{t("servidor.expressoes.emojiRelacionado")}</Label>
     <EmojiPicker data-gc="servidor.server-settings.expressions-sections.emoji-picker.on-pick" onPick={onPick}>
-      <button data-gc="servidor.server-settings.expressions-sections.button--12"
+      <button data-gc="servidor.server-settings.expressions-sections.button--8"
         id={id}
         type="button"
         className={cn(
@@ -582,12 +586,12 @@ const SoundVolume: React.FC<{ guildId: string; sound: GuildSound }> = ({
   return (
     <Popover data-gc="servidor.server-settings.expressions-sections.popover" onOpenChange={(isOpen) => !isOpen && save()}>
       <PopoverTrigger data-gc="servidor.server-settings.expressions-sections.popover-trigger" asChild>
-        <button data-gc="servidor.server-settings.expressions-sections.button--13"
+        <IconButton data-gc="servidor.server-settings.expressions-sections.icon-button--5"
+          label={`Volume do som — ${Math.round(sound.volume * 100)}%`}
           title={`Volume do som — ${Math.round(sound.volume * 100)}%`}
-          className="rounded p-1.5 text-ink-muted transition hover:text-ink"
         >
-          <Volume2 data-gc="servidor.server-settings.expressions-sections.volume2" size={16} />
-        </button>
+          <Volume2 data-gc="servidor.server-settings.expressions-sections.volume2" />
+        </IconButton>
       </PopoverTrigger>
 
       <PopoverContent data-gc="servidor.server-settings.expressions-sections.popover-content" side="top" align="end" portal={false} className="w-64">
@@ -604,17 +608,19 @@ const SoundVolume: React.FC<{ guildId: string; sound: GuildSound }> = ({
           onKeyUp={save}
         />
 
-        <button data-gc="servidor.server-settings.expressions-sections.button--14"
+        <Button data-gc="servidor.server-settings.expressions-sections.button--9"
           type="button"
+          variant="ghost"
+          size="xs"
           onClick={() => {
             const audio = new Audio(sound.url);
             audio.volume = volume;
             void audio.play().catch(() => undefined);
           }}
-          className="mt-3 flex items-center gap-1.5 text-xs text-ink-muted transition hover:text-ink"
+          className="-ml-2.5 mt-3 gap-1.5 font-normal"
         >
           <Play data-gc="servidor.server-settings.expressions-sections.play--2" size={13} /> {t("servidor.expressoes.ouvirAssim")}
-        </button>
+        </Button>
 
         <p data-gc="servidor.server-settings.expressions-sections.p--8" className="mt-3 text-11 leading-snug text-ink-faint">
           {t("servidor.expressoes.volumeDica")}

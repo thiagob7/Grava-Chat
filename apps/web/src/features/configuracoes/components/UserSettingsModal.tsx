@@ -25,7 +25,6 @@ import {
   Video,
   Palette,
   Pencil,
-  Search,
   Server,
   SlidersHorizontal,
   User,
@@ -51,7 +50,8 @@ import { LanguageSection } from "~/features/configuracoes/components/IdiomaSecti
 import { VoiceChatSection } from "~/features/configuracoes/components/BatePapoSection";
 import { PrivacySection } from "~/features/configuracoes/components/PrivacidadeSection";
 import { ErrorBoundary } from "~/features/app/components/ErrorBoundary";
-import { Input } from "~/components/ui/input";
+import { IconButton } from "~/components/ui/button";
+import { SearchField } from "~/components/ui/input";
 import { isDesktop } from "~/lib/desktop";
 import { cn } from "~/lib/utils";
 import {
@@ -367,19 +367,13 @@ export const UserSettingsModal: React.FC<UserSettingsModalProps> = ({
               </DialogPrimitive.Close>
             </div>
 
-            <div data-gc="configuracoes.user-settings-modal.div--2" className="relative">
-              <Search data-gc="configuracoes.user-settings-modal.search"
-                size={15}
-                className="pointer-events-none absolute left-2.5 top-1/2 -translate-y-1/2 text-ink-faint"
-              />
-              <Input data-gc="configuracoes.user-settings-modal.input"
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
-                placeholder="Pesquisar configurações"
-                aria-label="Pesquisar configurações"
-                className="h-9 border-transparent pl-8 text-sm shadow-none focus-visible:border-line-sutil focus-visible:ring-0"
-              />
-            </div>
+            <SearchField data-gc="configuracoes.user-settings-modal.search-field"
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              placeholder="Pesquisar configurações"
+              aria-label="Pesquisar configurações"
+              className="h-9 border-transparent px-2.5 focus-within:border-line-sutil"
+            />
 
             <button data-gc="configuracoes.user-settings-modal.button.on-edit-profile"
               onClick={onEditProfile}
@@ -402,9 +396,9 @@ export const UserSettingsModal: React.FC<UserSettingsModalProps> = ({
               </span>
             </button>
 
-            <div data-gc="configuracoes.user-settings-modal.div--3" className="flex flex-col gap-2">
+            <div data-gc="configuracoes.user-settings-modal.div--2" className="flex flex-col gap-2">
               {groups.map((group) => (
-                <div data-gc="configuracoes.user-settings-modal.div--4" key={group.key} {...flx("settingsGroup", "flex flex-col gap-[3px]")}>
+                <div data-gc="configuracoes.user-settings-modal.div--3" key={group.key} {...flx("settingsGroup", "flex flex-col gap-[3px]")}>
                   <p data-gc="configuracoes.user-settings-modal.p" {...flx("groupSettingsTitle", "truncate px-2.5 pb-[3px] pt-1 text-11 font-semibold uppercase leading-4 tracking-[0.02em] text-ink-faint")}>
                     {t(group.key)}
                   </p>
@@ -435,7 +429,7 @@ export const UserSettingsModal: React.FC<UserSettingsModalProps> = ({
               </p>
             )}
 
-            <div data-gc="configuracoes.user-settings-modal.div--5" className="mt-auto flex flex-col pb-3 pt-2">
+            <div data-gc="configuracoes.user-settings-modal.div--4" className="mt-auto flex flex-col pb-3 pt-2">
               {user.admin && (
                 <button data-gc="configuracoes.user-settings-modal.button"
                   onClick={() => {
@@ -463,17 +457,16 @@ export const UserSettingsModal: React.FC<UserSettingsModalProps> = ({
             </div>
           </nav>
 
-          <div data-gc="configuracoes.user-settings-modal.div--6" {...flx("settingsContent", cn("min-w-0 flex-1 flex-col md:flex", contentIsOpen ? "flex" : "hidden"))}>
-            <div data-gc="configuracoes.user-settings-modal.div--7" {...flx("settingsTop", cn("flex h-15 shrink-0 items-center justify-between gap-4 border-b border-line px-4", flxCls("windowSettingsTop")))}>
+          <div data-gc="configuracoes.user-settings-modal.div--5" {...flx("settingsContent", cn("min-w-0 flex-1 flex-col md:flex", contentIsOpen ? "flex" : "hidden"))}>
+            <div data-gc="configuracoes.user-settings-modal.div--6" {...flx("settingsTop", cn("flex h-15 shrink-0 items-center justify-between gap-4 border-b border-line px-4", flxCls("windowSettingsTop")))}>
               <h2 data-gc="configuracoes.user-settings-modal.h2" className="group/titulo flex min-w-0 items-center gap-1.5 text-lg font-semibold">
-                <button data-gc="configuracoes.user-settings-modal.button--2"
-                  type="button"
+                <IconButton data-gc="configuracoes.user-settings-modal.icon-button"
                   onClick={() => setContentIsOpen(false)}
-                  aria-label="Voltar para a lista"
-                  className="-ml-1 shrink-0 rounded p-1 text-ink-muted transition hover:bg-hover hover:text-ink md:hidden"
+                  label="Voltar para a lista"
+                  className="-ml-1 size-[26px] rounded md:hidden [&_svg]:size-[18px]"
                 >
-                  <ArrowLeft data-gc="configuracoes.user-settings-modal.arrow-left" size={18} />
-                </button>
+                  <ArrowLeft data-gc="configuracoes.user-settings-modal.arrow-left" />
+                </IconButton>
                 <span data-gc="configuracoes.user-settings-modal.span--5" className="truncate">{t(TITLES[section])}</span>
                 <LinkButton data-gc="configuracoes.user-settings-modal.link-button" section={section} oQue="esta página" />
               </h2>
@@ -494,7 +487,7 @@ export const UserSettingsModal: React.FC<UserSettingsModalProps> = ({
               onKeyDown={dropChoice}
               className="min-h-0 flex-1 overflow-y-auto"
             >
-              <div data-gc="configuracoes.user-settings-modal.div--8" className="mx-auto w-full max-w-[max(40rem,min(90%,50rem))] px-[clamp(1rem,3vw,1.5rem)] pb-8 pt-5">
+              <div data-gc="configuracoes.user-settings-modal.div--7" className="mx-auto w-full max-w-[max(40rem,min(90%,50rem))] px-[clamp(1rem,3vw,1.5rem)] pb-8 pt-5">
                 <SectionContext.Provider value={section}>
                   <ErrorBoundary
                     key={section}
@@ -569,7 +562,7 @@ const SideItem: React.FC<SidePropsItem> = ({
   const hasSub = item.subitems.length > 0;
 
   return (
-    <div data-gc="configuracoes.user-settings-modal.div--9" className="flex flex-col">
+    <div data-gc="configuracoes.user-settings-modal.div--8" className="flex flex-col">
       <button data-gc="configuracoes.user-settings-modal.button.on-pick"
         onClick={onPick}
         aria-current={active}
@@ -605,18 +598,18 @@ const SideItem: React.FC<SidePropsItem> = ({
       </button>
 
       {hasSub && (
-        <div data-gc="configuracoes.user-settings-modal.div--10"
+        <div data-gc="configuracoes.user-settings-modal.div--9"
           className="grid transition-[grid-template-rows] duration-200 ease-out motion-reduce:transition-none"
           style={{ gridTemplateRows: active ? "1fr" : "0fr" }}
           aria-hidden={!active}
         >
-          <div data-gc="configuracoes.user-settings-modal.div--11" className="overflow-hidden">
-            <div data-gc="configuracoes.user-settings-modal.div--12"
+          <div data-gc="configuracoes.user-settings-modal.div--10" className="overflow-hidden">
+            <div data-gc="configuracoes.user-settings-modal.div--11"
               ref={list}
               className="subarvore-de-config ml-[21px] mt-[3px] flex flex-col gap-0.5 pl-[7px]"
             >
               {item.subitems.map((sub) => (
-                <button data-gc="configuracoes.user-settings-modal.button--3"
+                <button data-gc="configuracoes.user-settings-modal.button--2"
                   key={sub.id}
                   data-ativo={activeSub === sub.id}
                   tabIndex={active ? 0 : -1}

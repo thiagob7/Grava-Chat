@@ -1,8 +1,9 @@
 import React, { useState } from "react";
-import { ChevronRight, Search, X } from "lucide-react";
+import { ChevronRight } from "lucide-react";
 
 import { Switch } from "~/components/ui/switch";
-import { bareField, fieldGroup } from "~/components/ui/input";
+import { Button, IconButton } from "~/components/ui/button";
+import { SearchField } from "~/components/ui/input";
 import { ConfigSection as Section } from "~/features/configuracoes/components/SecaoDeConfig";
 import {
   SETTINGS,
@@ -14,7 +15,6 @@ import { useAppearance } from "~/features/configuracoes/stores/aparencia";
 import { useShortcuts } from "~/features/configuracoes/stores/atalhos";
 import { useSettings } from "~/features/configuracoes/stores/configuracoes";
 import { useNotices } from "~/stores/notificacoes";
-import { cn } from "~/lib/utils";
 
 export const AdvancedSection: React.FC = () => {
   const open = useSettings((s) => s.open);
@@ -47,30 +47,18 @@ export const AdvancedSection: React.FC = () => {
         interruptores valem daqui mesmo; o resto leva você até onde ele mora.
       </p>
 
-      <div data-gc="configuracoes.avancado-section.div--2" className={cn(fieldGroup, "mt-5")}>
-        <Search data-gc="configuracoes.avancado-section.search" size={14} className="shrink-0 text-ink-faint" />
-        <input data-gc="configuracoes.avancado-section.input"
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-          placeholder="Procurar em todas as configurações"
-          aria-label="Procurar configuração"
-          className={bareField}
-        />
-        {search && (
-          <button data-gc="configuracoes.avancado-section.button"
-            type="button"
-            onClick={() => setSearch("")}
-            aria-label="Limpar a busca"
-            className="shrink-0 rounded p-0.5 text-ink-faint transition hover:text-ink"
-          >
-            <X data-gc="configuracoes.avancado-section.x" size={14} />
-          </button>
-        )}
-      </div>
+      <SearchField data-gc="configuracoes.avancado-section.search-field"
+        value={search}
+        onChange={(e) => setSearch(e.target.value)}
+        onClear={() => setSearch("")}
+        placeholder="Procurar em todas as configurações"
+        aria-label="Procurar configuração"
+        className="mt-5"
+      />
 
       {byCategory.map((category) => (
         <Section data-gc="configuracoes.avancado-section.section" key={category.id} id={`avancado-${category.id}`} title={category.name}>
-          <div data-gc="configuracoes.avancado-section.div--3" className="overflow-hidden rounded-lg border border-line">
+          <div data-gc="configuracoes.avancado-section.div--2" className="overflow-hidden rounded-lg border border-line">
             {category.settings.map((setting) => (
               <SettingLine data-gc="configuracoes.avancado-section.setting-line"
                 key={setting.id}
@@ -90,23 +78,23 @@ export const AdvancedSection: React.FC = () => {
 };
 
 const SettingLine: React.FC<{ setting: Setting; onIr: () => void }> = ({ setting, onIr }) => (
-  <div data-gc="configuracoes.avancado-section.div--4" className="flex items-center gap-3 border-b border-divisor px-3 py-2.5 last:border-b-0">
-    <div data-gc="configuracoes.avancado-section.div--5" className="min-w-0 flex-1">
+  <div data-gc="configuracoes.avancado-section.div--3" className="flex items-center gap-3 border-b border-divisor px-3 py-2.5 last:border-b-0">
+    <div data-gc="configuracoes.avancado-section.div--4" className="min-w-0 flex-1">
       <p data-gc="configuracoes.avancado-section.p--3" className="text-sm font-medium">{setting.label}</p>
       <p data-gc="configuracoes.avancado-section.p--4" className="mt-0.5 text-xs text-ink-faint">{setting.detail}</p>
     </div>
 
     {setting.kind === "interruptor" ? (
       <>
-        <button data-gc="configuracoes.avancado-section.button.on-ir"
-          type="button"
+        <IconButton data-gc="configuracoes.avancado-section.icon-button.on-ir"
+          size="xs"
           onClick={onIr}
-          aria-label={`Ir para ${setting.label}`}
+          label={`Ir para ${setting.label}`}
           title="Ir para onde este ajuste mora"
-          className="shrink-0 rounded p-1 text-ink-faint transition hover:bg-surface-3 hover:text-ink"
+          className="rounded text-ink-faint hover:bg-surface-3 [&_svg]:size-4"
         >
-          <ChevronRight data-gc="configuracoes.avancado-section.chevron-right" size={16} />
-        </button>
+          <ChevronRight data-gc="configuracoes.avancado-section.chevron-right" />
+        </IconButton>
 
         <Switch data-gc="configuracoes.avancado-section.switch.write"
           checked={setting.read()}
@@ -115,14 +103,16 @@ const SettingLine: React.FC<{ setting: Setting; onIr: () => void }> = ({ setting
         />
       </>
     ) : (
-      <button data-gc="configuracoes.avancado-section.button.on-ir--2"
+      <Button data-gc="configuracoes.avancado-section.button.on-ir"
         type="button"
+        variant="ghost"
+        size="xs"
         onClick={onIr}
-        className="flex shrink-0 items-center gap-1 rounded px-1.5 py-1 text-xs text-ink-muted transition hover:bg-surface-3 hover:text-ink"
+        className="gap-1 rounded px-1.5 font-normal"
       >
         {setting.read()}
         <ChevronRight data-gc="configuracoes.avancado-section.chevron-right--2" size={14} className="text-ink-faint" />
-      </button>
+      </Button>
     )}
   </div>
 );

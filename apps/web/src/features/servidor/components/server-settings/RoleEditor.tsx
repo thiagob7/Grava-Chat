@@ -10,7 +10,7 @@ import {
 import { useSetMemberRoles } from "~/@core/application/queries/role/use-set-member-roles";
 import type { RoleModel } from "~/@core/domain/models/guild-model";
 import { Avatar } from "~/features/perfil/components/Avatar";
-import { Button } from "~/components/ui/button";
+import { Button, IconButton } from "~/components/ui/button";
 import { UnsavedBar } from "~/components/ui/unsaved-bar";
 import { Input, colorFieldClass, SearchField } from "~/components/ui/input";
 import { Switch } from "~/components/ui/switch";
@@ -162,7 +162,7 @@ export const RoleEditor: React.FC<RoleEditorProps> = ({
         </h3>
 
         {!role.isEveryone && editable && (
-          <button data-gc="servidor.server-settings.role-editor.button"
+          <IconButton data-gc="servidor.server-settings.role-editor.icon-button"
             onClick={() =>
               void confirm({
                 title: t("servidor.cargos.excluirTitulo", { nome: role.name }),
@@ -178,11 +178,13 @@ export const RoleEditor: React.FC<RoleEditorProps> = ({
                   ),
               )
             }
-            className="ml-auto rounded p-2 text-ink-muted transition hover:bg-surface-0 hover:text-danger"
+            label={t("servidor.cargos.apagar")}
+            size="md"
+            className="ml-auto rounded hover:bg-surface-0 hover:text-danger [&_svg]:size-[18px]"
             title={t("servidor.cargos.apagar")}
           >
-            <Trash2 data-gc="servidor.server-settings.role-editor.trash2" size={18} />
-          </button>
+            <Trash2 data-gc="servidor.server-settings.role-editor.trash2" />
+          </IconButton>
         )}
       </header>
 
@@ -194,7 +196,7 @@ export const RoleEditor: React.FC<RoleEditorProps> = ({
 
       <nav data-gc="servidor.server-settings.role-editor.nav" className="mt-5 flex gap-4 border-b border-line">
         {tabs.map((a) => (
-          <button data-gc="servidor.server-settings.role-editor.button--2"
+          <button data-gc="servidor.server-settings.role-editor.button"
             key={a.id}
             onClick={() => setTab(a.id)}
             className={cn(
@@ -233,7 +235,7 @@ export const RoleEditor: React.FC<RoleEditorProps> = ({
               </p>
 
               <div data-gc="servidor.server-settings.role-editor.div--5" className="flex flex-wrap items-center gap-2">
-                <button data-gc="servidor.server-settings.role-editor.button--3"
+                <button data-gc="servidor.server-settings.role-editor.button--2"
                   onClick={() => editable && setColor(null)}
                   className={cn(
                     "flex size-8 items-center justify-center rounded border border-line bg-surface-0 text-ink-faint transition",
@@ -245,7 +247,7 @@ export const RoleEditor: React.FC<RoleEditorProps> = ({
                 </button>
 
                 {COLORS.map((c) => (
-                  <button data-gc="servidor.server-settings.role-editor.button--4"
+                  <button data-gc="servidor.server-settings.role-editor.button--3"
                     key={c}
                     onClick={() => editable && setColor(c)}
                     style={{ backgroundColor: c }}
@@ -276,7 +278,7 @@ export const RoleEditor: React.FC<RoleEditorProps> = ({
 
               <div data-gc="servidor.server-settings.role-editor.div--7" className="mb-3 grid grid-cols-2 gap-2 sm:grid-cols-3">
                 {ROLE_STYLE_OPTIONS.map((option) => (
-                  <button data-gc="servidor.server-settings.role-editor.button--5"
+                  <button data-gc="servidor.server-settings.role-editor.button--4"
                     key={option.id}
                     onClick={() => editable && setStyle(option.id)}
                     title={option.description}
@@ -303,13 +305,14 @@ export const RoleEditor: React.FC<RoleEditorProps> = ({
                     className={cn(colorFieldClass, "size-8 rounded")}
                   />
                   {color2 && (
-                    <button data-gc="servidor.server-settings.role-editor.button--6"
+                    <IconButton data-gc="servidor.server-settings.role-editor.icon-button--2"
                       onClick={() => setColor2(null)}
-                      className="rounded p-1 text-ink-faint transition hover:text-ink"
-                      aria-label={t("servidor.cargos.limparSegundaCor")}
+                      size="xs"
+                      className="text-ink-faint"
+                      label={t("servidor.cargos.limparSegundaCor")}
                     >
-                      <X data-gc="servidor.server-settings.role-editor.x--2" size={14} />
-                    </button>
+                      <X data-gc="servidor.server-settings.role-editor.x--2" />
+                    </IconButton>
                   )}
                   <span data-gc="servidor.server-settings.role-editor.span--6" className="text-xs text-ink-faint">
                     {t("servidor.cargos.segundaCorDica")}
@@ -428,7 +431,7 @@ export const RoleEditor: React.FC<RoleEditorProps> = ({
             {candidates.length > 0 && (
               <div data-gc="servidor.server-settings.role-editor.div--15" className="mt-2 overflow-hidden rounded border border-line bg-surface-1">
                 {candidates.map((m) => (
-                  <button data-gc="servidor.server-settings.role-editor.button--7"
+                  <button data-gc="servidor.server-settings.role-editor.button--5"
                     key={m.id}
                     onClick={() => changeRole(m, true)}
                     className="flex w-full items-center gap-3 px-3 py-2 text-left transition hover:bg-surface-3"
@@ -472,13 +475,14 @@ export const RoleEditor: React.FC<RoleEditorProps> = ({
                   </div>
 
                   {editable && (
-                    <button data-gc="servidor.server-settings.role-editor.button--8"
+                    <IconButton data-gc="servidor.server-settings.role-editor.icon-button--3"
                       onClick={() => changeRole(m, false)}
+                      label={t("servidor.cargos.tirar")}
                       title={t("servidor.cargos.tirar")}
-                      className="rounded p-2 text-ink-muted transition hover:bg-surface-0 hover:text-danger"
+                      className="hover:bg-surface-0 hover:text-danger"
                     >
-                      <UserMinus data-gc="servidor.server-settings.role-editor.user-minus" size={16} />
-                    </button>
+                      <UserMinus data-gc="servidor.server-settings.role-editor.user-minus" />
+                    </IconButton>
                   )}
                 </div>
               ))}

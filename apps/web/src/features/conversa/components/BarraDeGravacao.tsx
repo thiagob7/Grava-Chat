@@ -1,6 +1,7 @@
 import React, { useEffect } from "react";
 import { Mic, Send, Trash2 } from "lucide-react";
 
+import { IconButton } from "~/components/ui/button";
 import { VoiceWave } from "~/features/conversa/components/OndaDeVoz";
 import { useVoiceRecorder, type NoteRecorded } from "~/features/conversa/hooks/use-gravador-de-voz";
 import { durationWriting, LIMIT_MS } from "~/features/conversa/lib/gravador-de-voz";
@@ -35,14 +36,13 @@ export const RecordingBar: React.FC<{
 
   return (
     <div data-gc="conversa.barra-de-gravacao.div" className="flex flex-1 items-center gap-3 px-2">
-      <button data-gc="conversa.barra-de-gravacao.button"
-        type="button"
+      <IconButton data-gc="conversa.barra-de-gravacao.icon-button"
         onClick={() => void end(false)}
-        aria-label={t("conversa.recado.descartar")}
-        className="shrink-0 rounded p-1.5 text-ink-faint transition hover:bg-hover hover:text-danger"
+        label={t("conversa.recado.descartar")}
+        className="size-[30px] rounded text-ink-faint hover:text-danger [&_svg]:size-[18px]"
       >
-        <Trash2 data-gc="conversa.barra-de-gravacao.trash2" size={18} />
-      </button>
+        <Trash2 data-gc="conversa.barra-de-gravacao.trash2" />
+      </IconButton>
 
       <span data-gc="conversa.barra-de-gravacao.span" className="flex size-2 shrink-0 items-center justify-center">
         <span data-gc="conversa.barra-de-gravacao.span--2" className="size-2 animate-pulse rounded-full bg-danger" />
@@ -54,14 +54,15 @@ export const RecordingBar: React.FC<{
         {durationWriting(ms)} / {durationWriting(LIMIT_MS)}
       </span>
 
-      <button data-gc="conversa.barra-de-gravacao.button--2"
-        type="button"
+      <IconButton data-gc="conversa.barra-de-gravacao.icon-button--2"
+        variant="primary"
+        round
         onClick={() => void end(true)}
-        aria-label={t("conversa.recado.mandar")}
-        className="flex size-8 shrink-0 items-center justify-center rounded-full bg-brand text-sobre-marca transition hover:brightness-110"
+        label={t("conversa.recado.mandar")}
+        className="[&_svg]:size-[15px]"
       >
-        <Send data-gc="conversa.barra-de-gravacao.send" size={15} />
-      </button>
+        <Send data-gc="conversa.barra-de-gravacao.send" />
+      </IconButton>
 
       {error && <span data-gc="conversa.barra-de-gravacao.span--4" className="shrink-0 text-xs text-danger">{error}</span>}
     </div>

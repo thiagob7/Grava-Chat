@@ -41,6 +41,7 @@ const HELP = import.meta.env.VITE_HELP_URL as string | undefined;
 import { thisCalling } from "~/features/voz/lib/chamada-no-privado";
 import { playSound } from "~/lib/ui-sounds";
 import { Tooltip } from "~/components/ui/tooltip";
+import { Button, IconButton } from "~/components/ui/button";
 import { useVoiceStore } from "~/features/voz/stores/voice-store";
 import type { SearchScope } from "~/@core/application/requests/message/buscar-mensagens";
 import { SearchField } from "~/features/conversa/components/CampoDeBusca";
@@ -209,13 +210,13 @@ export const DirectMessages: React.FC<{ requests?: boolean }> = ({ requests = fa
               {...flx("topChannelCore", "flex h-full w-full items-center gap-2 px-4")}
             >
               {screenNarrow && (
-                <button data-gc="friends.direct-messages.button"
+                <IconButton data-gc="friends.direct-messages.icon-button"
                   onClick={() => setMenuIsOpen(true)}
-                  aria-label="Abrir conversas"
-                  className="-ml-1 rounded p-1.5 text-ink-muted transition hover:bg-surface-3 hover:text-ink"
+                  label="Abrir conversas"
+                  className="-ml-1 rounded hover:bg-surface-3 [&_svg]:size-5"
                 >
-                  <Menu data-gc="friends.direct-messages.menu" size={20} />
-                </button>
+                  <Menu data-gc="friends.direct-messages.menu" />
+                </IconButton>
               )}
               <Avatar data-gc="friends.direct-messages.avatar"
                 id={chat.user.id}
@@ -238,57 +239,56 @@ export const DirectMessages: React.FC<{ requests?: boolean }> = ({ requests = fa
 
               <div data-gc="friends.direct-messages.div--4" className="ml-auto flex items-center gap-1">
                 <Tooltip data-gc="friends.direct-messages.tooltip" label={inCallHere ? "Desligar" : "Iniciar chamada de voz"}>
-                  <button data-gc="friends.direct-messages.button--2"
+                  <IconButton data-gc="friends.direct-messages.icon-button--2"
                     onClick={() =>
                       void (inCallHere ? leaveCall() : joinCall(chat.id))
                     }
-                    aria-label={inCallHere ? "Desligar" : "Iniciar chamada de voz"}
+                    label={inCallHere ? "Desligar" : "Iniciar chamada de voz"}
+                    round
                     className={cn(
-                      "flex size-8 items-center justify-center rounded-full transition",
+                      "[&_svg]:size-[17px]",
                       inCallHere
-                        ? "bg-danger text-sobre-marca hover:brightness-110"
-                        : "text-ink-muted hover:bg-surface-3 hover:text-ink",
+                        ? "bg-danger text-sobre-marca hover:bg-danger hover:text-sobre-marca hover:brightness-110"
+                        : "hover:bg-surface-3",
                     )}
                   >
                     {inCallHere ? (
-                      <PhoneSlash data-gc="friends.direct-messages.phone-slash" size={17} weight="fill" />
+                      <PhoneSlash data-gc="friends.direct-messages.phone-slash" weight="fill" />
                     ) : (
-                      <Phone data-gc="friends.direct-messages.phone--2" size={17} weight="fill" />
+                      <Phone data-gc="friends.direct-messages.phone--2" weight="fill" />
                     )}
-                  </button>
+                  </IconButton>
                 </Tooltip>
 
                 <Tooltip data-gc="friends.direct-messages.tooltip--2" label={cameraOn ? "Desligar a câmera" : "Iniciar chamada de vídeo"}>
-                  <button data-gc="friends.direct-messages.button--3"
+                  <IconButton data-gc="friends.direct-messages.icon-button--3"
                     onClick={() => void (cameraOn ? turnonCamera() : turnonWithVideo(chat.id))}
-                    aria-label={cameraOn ? "Desligar a câmera" : "Iniciar chamada de vídeo"}
+                    label={cameraOn ? "Desligar a câmera" : "Iniciar chamada de vídeo"}
+                    round
                     className={cn(
-                      "flex size-8 items-center justify-center rounded-full transition",
-                      cameraOn && inCallHere
-                        ? "bg-surface-4 text-ink"
-                        : "text-ink-muted hover:bg-surface-3 hover:text-ink",
+                      "[&_svg]:size-[17px]",
+                      cameraOn && inCallHere ? "bg-surface-4 text-ink hover:bg-surface-4" : "hover:bg-surface-3",
                     )}
                   >
-                    <VideoCamera data-gc="friends.direct-messages.video-camera" size={17} weight="fill" />
-                  </button>
+                    <VideoCamera data-gc="friends.direct-messages.video-camera" weight="fill" />
+                  </IconButton>
                 </Tooltip>
 
                 <PinnedMessagesPanel data-gc="friends.direct-messages.pinned-messages-panel" channelId={chat.id} canManage />
 
                 <Tooltip data-gc="friends.direct-messages.tooltip--3" label={profileIsOpen ? "Ocultar perfil" : "Mostrar perfil"}>
-                  <button data-gc="friends.direct-messages.button--4"
+                  <IconButton data-gc="friends.direct-messages.icon-button--4"
                     onClick={() => setProfileIsOpen((isOpen) => !isOpen)}
-                    aria-label={profileIsOpen ? "Ocultar perfil" : "Mostrar perfil"}
+                    label={profileIsOpen ? "Ocultar perfil" : "Mostrar perfil"}
                     aria-pressed={profileIsOpen}
+                    round
                     className={cn(
-                      "flex size-8 items-center justify-center rounded-full transition",
-                      profileIsOpen
-                        ? "bg-surface-4 text-ink"
-                        : "text-ink-muted hover:bg-surface-3 hover:text-ink",
+                      "[&_svg]:size-[17px]",
+                      profileIsOpen ? "bg-surface-4 text-ink hover:bg-surface-4" : "hover:bg-surface-3",
                     )}
                   >
-                    <User data-gc="friends.direct-messages.user" weight="fill" size={17} />
-                  </button>
+                    <User data-gc="friends.direct-messages.user" weight="fill" />
+                  </IconButton>
                 </Tooltip>
 
                 <ChannelStar data-gc="friends.direct-messages.channel-star" channelId={chat.id} />
@@ -454,12 +454,13 @@ const Calling: React.FC<{
         Chamando <span data-gc="friends.direct-messages.span--10" className="font-semibold text-ink">{name}</span>…
       </p>
 
-      <button data-gc="friends.direct-messages.button.on-giveup"
+      <Button data-gc="friends.direct-messages.button.on-giveup"
+        variant="danger"
         onClick={onGiveup}
-        className="flex items-center gap-1.5 rounded-full bg-danger px-4 py-2 text-sm font-medium text-sobre-marca transition hover:brightness-110"
+        className="gap-1.5 rounded-full py-2 font-medium"
       >
         <PhoneSlash data-gc="friends.direct-messages.phone-slash--2" size={15} weight="fill" /> Cancelar
-      </button>
+      </Button>
     </div>
   );
 };

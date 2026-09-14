@@ -11,7 +11,7 @@ import {
 import { useCreateEvent } from "~/@core/application/queries/guild/use-events";
 import { useUploadImage } from "~/@core/application/queries/upload/use-upload-image";
 import { useFindGuild } from "~/@core/application/queries/guild/use-find-guild";
-import { Button } from "~/components/ui/button";
+import { Button, IconButton } from "~/components/ui/button";
 import { DialogBody, DialogFooter } from "~/components/ui/dialog";
 import { Input, Label, Textarea } from "~/components/ui/input";
 import { SelectField } from "~/components/ui/select";
@@ -300,17 +300,18 @@ export const CreateEventForm: React.FC<{
               {imageUrl ? (
                 <div data-gc="servidor.create-event-form.div--13" className="relative overflow-hidden rounded-lg">
                   <img data-gc="servidor.create-event-form.img" src={imageUrl} alt="" className="h-32 w-full object-cover" />
-                  <button data-gc="servidor.create-event-form.button"
-                    type="button"
-                    aria-label="Remover a imagem"
+                  <IconButton data-gc="servidor.create-event-form.icon-button"
+                    label="Remover a imagem"
                     onClick={() => setImageUrl(null)}
-                    className="absolute right-2 top-2 rounded-full bg-surface-1/80 p-1 text-ink transition hover:bg-surface-1"
+                    size="xs"
+                    round
+                    className="absolute right-2 top-2 bg-surface-1/80 text-ink hover:bg-surface-1"
                   >
-                    <X data-gc="servidor.create-event-form.x" size={14} weight="bold" />
-                  </button>
+                    <X data-gc="servidor.create-event-form.x" weight="bold" />
+                  </IconButton>
                 </div>
               ) : (
-                <button data-gc="servidor.create-event-form.button--2"
+                <button data-gc="servidor.create-event-form.button"
                   type="button"
                   disabled={uploadImage.isPending}
                   onClick={() => imageInput.current?.click()}
@@ -394,7 +395,7 @@ export const CreateEventForm: React.FC<{
         ) : (
         <>
         {step !== "place" && (
-          <Button data-gc="servidor.create-event-form.button--3"
+          <Button data-gc="servidor.create-event-form.button--2"
             variant="ghost"
             className="mr-auto"
             onClick={() => setStep(step === "review" ? "details" : "place")}
@@ -412,7 +413,7 @@ export const CreateEventForm: React.FC<{
             Criar evento
           </Button>
         ) : (
-          <Button data-gc="servidor.create-event-form.button--4"
+          <Button data-gc="servidor.create-event-form.button--3"
             disabled={step === "place" ? !placeReady : !detailsReady}
             onClick={() => setStep(step === "place" ? "details" : "review")}
           >
@@ -485,7 +486,7 @@ const EventLink: React.FC<{ guildId: string; eventId: string }> = ({ guildId, ev
     <div data-gc="servidor.create-event-form.div--17" className="mt-5 flex items-center gap-2">
       <Input data-gc="servidor.create-event-form.input--5" readOnly value={link} className="min-w-0 flex-1" />
 
-      <Button data-gc="servidor.create-event-form.button--5" onClick={() => void copy()} className="shrink-0">
+      <Button data-gc="servidor.create-event-form.button--4" onClick={() => void copy()} className="shrink-0">
         {copied ? (
           <>
             <Check data-gc="servidor.create-event-form.check" size={16} /> Copiado

@@ -1,6 +1,7 @@
 import React, { useMemo, useState } from "react";
 import { Check, Code2 } from "lucide-react";
 
+import { IconButton } from "~/components/ui/button";
 import { Popover, PopoverContent, PopoverTrigger } from "~/components/ui/popover";
 import { Tooltip } from "~/components/ui/tooltip";
 import { LANGUAGES } from "~/features/conversa/lib/realce";
@@ -45,17 +46,16 @@ export const LanguagePicker: React.FC<LanguagePropsPicker> = ({
     >
       <Tooltip data-gc="conversa.seletor-de-idioma.tooltip" label={t("conversa.codigo.mudarIdioma")}>
         <PopoverTrigger data-gc="conversa.seletor-de-idioma.popover-trigger" asChild>
-          <button data-gc="conversa.seletor-de-idioma.button"
-            type="button"
-            aria-label={t("conversa.codigo.mudarIdioma")}
+          <IconButton data-gc="conversa.seletor-de-idioma.icon-button"
+            label={t("conversa.codigo.mudarIdioma")}
             className={cn(
-              "flex size-7 shrink-0 items-center justify-center rounded text-ink-faint transition hover:bg-hover hover:text-ink",
+              "size-7 rounded text-ink-faint",
               isOpen && "bg-hover text-ink",
               className,
             )}
           >
-            <Code2 data-gc="conversa.seletor-de-idioma.code2" size={16} />
-          </button>
+            <Code2 data-gc="conversa.seletor-de-idioma.code2" />
+          </IconButton>
         </PopoverTrigger>
       </Tooltip>
 
@@ -76,7 +76,7 @@ export const LanguagePicker: React.FC<LanguagePropsPicker> = ({
             const picked = item.id === language;
 
             return (
-              <button data-gc="conversa.seletor-de-idioma.button--2"
+              <button data-gc="conversa.seletor-de-idioma.button"
                 key={item.id}
                 type="button"
                 onClick={() => {

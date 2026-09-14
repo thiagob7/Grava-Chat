@@ -12,6 +12,8 @@ const requestByChannel = vi.fn();
 const requestCreate = vi.fn();
 const requestReopen = vi.fn();
 const requestAccept = vi.fn();
+const requestSilence = vi.fn();
+const socketsJoin = vi.fn();
 const findUser = vi.fn();
 const emit = vi.fn();
 
@@ -33,6 +35,7 @@ vi.mock("~/repositories/friendship-repository.js", () => ({
     create: (...a: unknown[]) => requestCreate(...a),
     reopen: (...a: unknown[]) => requestReopen(...a),
     accept: (...a: unknown[]) => requestAccept(...a),
+    silence: (...a: unknown[]) => requestSilence(...a),
   },
 }));
 
@@ -49,7 +52,10 @@ vi.mock("~/repositories/guild-repository.js", () => ({
 vi.mock("~/services/voice-service.js", () => ({ voiceService: {} }));
 
 vi.mock("~/realtime/io.js", () => ({
-  io: () => ({ to: () => ({ emit: (...a: unknown[]) => emit(...a) }) }),
+  io: () => ({
+    to: () => ({ emit: (...a: unknown[]) => emit(...a) }),
+    in: () => ({ socketsJoin: (...a: unknown[]) => socketsJoin(...a) }),
+  }),
 }));
 
 vi.mock("~/services/presence-service.js", () => ({
@@ -195,13 +201,63 @@ describe("enviar numa conversa que não entrega", () => {
     await friendshipService.requireDeliverable("eu", "c1", destination({ membersAllowDm: false }));
 
     expect(requestAccept).toHaveBeenCalledWith("c1");
+    expect(socketsJoin).toHaveBeenCalledWith(expect.stringContaining("c1"));
   });
 
-  it("conversa comum não é tocada", async () => {
-    requestByChannel.mockResolvedValue({ status: "PENDING" });
+  it("pedido pendente deixa de entregar quando a outra pessoa fecha a porta", async () => {
+    requestByChannel.mockResolvedValue({ status: "PENDING", fromId: "eu", toId: "outra" });
+    findBetween.mockResolvedValue(null);
+
+    await expect(
+      friendshipService.requireDeliverable("eu", "c1", destination({ membersAllowDm: false })),
+    ).rejects.toMatchObject({ reason: "nao-entregue" });
+    expect(requestSilence).toHaveBeenCalledWith("c1");
+  });
+
+  it("pedido pendente que ainda pode entregar segue como está", async () => {
+    requestByChannel.mockResolvedValue({ status: "PENDING", fromId: "eu", toId: "outra" });
+    findBetween.mockResolvedValue(null);
+    guildIdsInCommon.mockResolvedValue(["g1"]);
+
+    await friendshipService.requireDeliverable("eu", "c1", destination());
+
+    expect(requestSilence).not.toHaveBeenCalled();
+    expect(requestReopen).not.toHaveBeenCalled();
+  });
+
+  it("pedido aceito continua entregando", async () => {
+    requestByChannel.mockResolvedValue({ status: "ACCEPTED" });
+    findBetween.mockResolvedValue(null);
 
     await friendshipService.requireDeliverable("eu", "c1", destination({ membersAllowDm: false }));
 
-    expect(findBetween).not.toHaveBeenCalled();
+    expect(requestSilence).not.toHaveBeenCalled();
+  });
+
+  it("conversa antiga sem pedido e sem amizade não entrega quando a pessoa só aceita amigos", async () => {
+    requestByChannel.mockResolvedValue(null);
+    findBetween.mockResolvedValue({ status: "PENDING" });
+
+    await expect(
+      friendshipService.requireDeliverable("eu", "c1", destination({ membersAllowDm: false })),
+    ).rejects.toMatchObject({ reason: "nao-entregue" });
+  });
+
+  it("responder a quem puxou a conversa sempre entrega", async () => {
+    requestByChannel.mockResolvedValue({ status: "PENDING", fromId: "outra", toId: "eu" });
+    findBetween.mockResolvedValue(null);
+
+    await friendshipService.requireDeliverable("eu", "c1", destination({ membersAllowDm: false }));
+
+    expect(requestSilence).not.toHaveBeenCalled();
+  });
+
+  it("bloqueio vence até pedido aceito", async () => {
+    requestByChannel.mockResolvedValue({ status: "ACCEPTED" });
+    findBetween.mockResolvedValue({ status: "BLOCKED" });
+
+    await expect(
+      friendshipService.requireDeliverable("eu", "c1", destination()),
+    ).rejects.toMatchObject({ reason: "nao-entregue" });
   });
 });

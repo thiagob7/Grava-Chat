@@ -256,13 +256,14 @@ export const InviteModal: React.FC<InviteModalProps> = ({ open, guildId, guildNa
                     {options.maxUses ? ` Vale ${options.maxUses} uso(s).` : ""}
                   </span>
 
-                  <button data-gc="servidor.invite-modal.button--3"
+                  <Button data-gc="servidor.invite-modal.button--3"
                     type="button"
+                    variant="link"
                     onClick={() => setView("options")}
-                    className="text-brand transition hover:underline"
+                    className="h-auto p-0 text-xs font-normal"
                   >
                     Editar link de convite
-                  </button>
+                  </Button>
                 </p>
               </div>
                 </DialogBody>

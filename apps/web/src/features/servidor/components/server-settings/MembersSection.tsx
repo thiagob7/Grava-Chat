@@ -21,7 +21,7 @@ import {
 import { useSetMemberRoles } from "~/@core/application/queries/role/use-set-member-roles";
 import type { GuildModel } from "~/@core/domain/models/guild-model";
 import { Avatar } from "~/features/perfil/components/Avatar";
-import { Button } from "~/components/ui/button";
+import { Button, IconButton } from "~/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -260,12 +260,12 @@ export const MembersSection: React.FC<MembersSectionProps> = ({
                   {!isOwner && !euSame && (
                     <DropdownMenu data-gc="servidor.server-settings.members-section.dropdown-menu">
                       <DropdownMenuTrigger data-gc="servidor.server-settings.members-section.dropdown-menu-trigger" asChild>
-                        <button data-gc="servidor.server-settings.members-section.button--2"
-                          aria-label={t("servidor.membros.acoesPara", { nome: member.user.displayName })}
-                          className="rounded p-1.5 text-ink-muted opacity-0 transition group-hover:opacity-100 hover:bg-surface-0 hover:text-ink"
+                        <IconButton data-gc="servidor.server-settings.members-section.icon-button"
+                          label={t("servidor.membros.acoesPara", { nome: member.user.displayName })}
+                          className="opacity-0 group-hover:opacity-100 hover:bg-surface-0"
                         >
-                          <MoreVertical data-gc="servidor.server-settings.members-section.more-vertical" size={16} />
-                        </button>
+                          <MoreVertical data-gc="servidor.server-settings.members-section.more-vertical" />
+                        </IconButton>
                       </DropdownMenuTrigger>
 
                       <DropdownMenuContent data-gc="servidor.server-settings.members-section.dropdown-menu-content" align="end">

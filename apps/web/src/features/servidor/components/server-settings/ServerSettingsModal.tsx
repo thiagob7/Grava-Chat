@@ -26,6 +26,7 @@ import type { GuildMember, Permission } from "@gravae/shared";
 import type { GuildDetailModel } from "~/@core/domain/models/guild-model";
 import { Avatar } from "~/features/perfil/components/Avatar";
 import { ErrorBoundary } from "~/features/app/components/ErrorBoundary";
+import { IconButton } from "~/components/ui/button";
 import { Input } from "~/components/ui/input";
 import { DeleteGuildSection } from "~/features/servidor/components/server-settings/DeleteGuildSection";
 import { InvitesSection } from "~/features/servidor/components/server-settings/InvitesSection";
@@ -362,14 +363,13 @@ export const ServerSettingsModal: React.FC<ServerSettingsModalProps> = ({
           <div data-gc="servidor.server-settings.server-settings-modal.div--7" {...flx("settingsContent", cn("min-w-0 flex-1 flex-col md:flex", contentIsOpen ? "flex" : "hidden"))}>
             <div data-gc="servidor.server-settings.server-settings-modal.div--8" {...flx("settingsTop", cn("flex h-15 shrink-0 items-center justify-between gap-4 border-b border-line px-4", flxCls("windowSettingsTop")))}>
               <h2 data-gc="servidor.server-settings.server-settings-modal.h2" className="flex min-w-0 items-center gap-1.5 text-lg font-semibold">
-                <button data-gc="servidor.server-settings.server-settings-modal.button--3"
-                  type="button"
+                <IconButton data-gc="servidor.server-settings.server-settings-modal.icon-button"
                   onClick={() => setContentIsOpen(false)}
-                  aria-label={t("comum.voltar")}
-                  className="-ml-1 shrink-0 rounded p-1 text-ink-muted transition hover:bg-hover hover:text-ink md:hidden"
+                  label={t("comum.voltar")}
+                  className="-ml-1 md:hidden [&_svg]:size-[18px]"
                 >
-                  <ArrowLeft data-gc="servidor.server-settings.server-settings-modal.arrow-left" size={18} />
-                </button>
+                  <ArrowLeft data-gc="servidor.server-settings.server-settings-modal.arrow-left" />
+                </IconButton>
                 <span data-gc="servidor.server-settings.server-settings-modal.span--6" className="truncate">{t(LABELS[section])}</span>
               </h2>
 

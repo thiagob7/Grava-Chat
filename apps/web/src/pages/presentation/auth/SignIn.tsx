@@ -256,14 +256,12 @@ export const SignIn: React.FC = () => {
               ))}
 
             {!(mode === "esqueci" && request) && (
-              <Button data-gc="auth.sign-in.button--4" onClick={() => void withPassword()} disabled={busy} className="mt-5 w-full">
-                {busy
-                  ? "Um instante…"
-                  : mode === "criar"
-                    ? "Criar conta"
-                    : mode === "esqueci"
-                      ? "Mandar o link"
-                      : "Entrar"}
+              <Button data-gc="auth.sign-in.button--4" onClick={() => void withPassword()} loading={busy} className="mt-5 w-full">
+                {mode === "criar"
+                  ? "Criar conta"
+                  : mode === "esqueci"
+                    ? "Mandar o link"
+                    : "Entrar"}
               </Button>
             )}
 

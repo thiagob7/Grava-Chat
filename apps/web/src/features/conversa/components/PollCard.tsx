@@ -3,6 +3,7 @@ import { BarChart3, Check } from "lucide-react";
 import type { Poll } from "@gravae/shared";
 
 import { closePoll, votePoll } from "~/@core/lib/websocket/emit-message-actions";
+import { Button } from "~/components/ui/button";
 import { cn } from "~/lib/utils";
 import { currentLanguage, useTranslation } from "~/traducao";
 
@@ -98,12 +99,14 @@ export const PollCard: React.FC<PollCardProps> = ({ messageId, poll, currentUser
         )}
 
         {!ended && isAuthor && (
-          <button data-gc="conversa.poll-card.button--2"
+          <Button data-gc="conversa.poll-card.button--2"
+            variant="link"
+            size="xs"
             onClick={() => void closePoll(messageId).catch(() => undefined)}
-            className="ml-auto text-brand hover:underline"
+            className="ml-auto p-0 font-normal"
           >
             {t("conversa.enquete.encerrarAgora")}
-          </button>
+          </Button>
         )}
       </div>
     </div>

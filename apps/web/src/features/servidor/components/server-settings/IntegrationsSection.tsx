@@ -19,7 +19,7 @@ import {
 } from "~/@core/application/queries/webhook/use-webhooks";
 import type { WebhookModel } from "~/@core/domain/models/guild-model";
 import { Avatar } from "~/features/perfil/components/Avatar";
-import { Button } from "~/components/ui/button";
+import { Button, IconButton } from "~/components/ui/button";
 import { SelectField } from "~/components/ui/select";
 import { Input } from "~/components/ui/input";
 import { useConfirm } from "~/components/ui/confirm";
@@ -178,7 +178,7 @@ const WebhookCard: React.FC<CardProps> = ({
           </label>
         </div>
 
-        <button data-gc="servidor.server-settings.integrations-section.button--2"
+        <IconButton data-gc="servidor.server-settings.integrations-section.icon-button"
           onClick={() =>
             void confirm({
               title: `Apagar webhook "${webhook.name}"?`,
@@ -190,11 +190,13 @@ const WebhookCard: React.FC<CardProps> = ({
                 confirmed && doDelete.mutate({ guildId, webhookId: webhook.id }),
             )
           }
+          label={t("servidor.integracoes.apagar")}
           title={t("servidor.integracoes.apagar")}
-          className="rounded p-2 text-ink-muted transition hover:bg-surface-0 hover:text-danger"
+          size="md"
+          className="rounded hover:bg-surface-0 hover:text-danger [&_svg]:size-[18px]"
         >
-          <Trash2 data-gc="servidor.server-settings.integrations-section.trash2" size={18} />
-        </button>
+          <Trash2 data-gc="servidor.server-settings.integrations-section.trash2" />
+        </IconButton>
       </div>
 
       <div data-gc="servidor.server-settings.integrations-section.div--7" className="mt-3 flex items-center gap-2">
@@ -209,15 +211,16 @@ const WebhookCard: React.FC<CardProps> = ({
             : webhook.url.replace(/\/[^/]+$/, "/••••••••••••••••")}
         </code>
 
-        <button data-gc="servidor.server-settings.integrations-section.button--3"
+        <IconButton data-gc="servidor.server-settings.integrations-section.icon-button--2"
           onClick={() => setShowingUrl((v) => !v)}
+          label={showingUrl ? "Esconder" : "Mostrar"}
           title={showingUrl ? "Esconder" : "Mostrar"}
-          className="rounded p-2 text-ink-muted transition hover:bg-surface-0 hover:text-ink"
+          className="hover:bg-surface-0"
         >
-          {showingUrl ? <EyeOff data-gc="servidor.server-settings.integrations-section.eye-off" size={16} /> : <Eye data-gc="servidor.server-settings.integrations-section.eye" size={16} />}
-        </button>
+          {showingUrl ? <EyeOff data-gc="servidor.server-settings.integrations-section.eye-off" /> : <Eye data-gc="servidor.server-settings.integrations-section.eye" />}
+        </IconButton>
 
-        <Button data-gc="servidor.server-settings.integrations-section.button--4" variant="surface" size="sm" onClick={() => void copy()}>
+        <Button data-gc="servidor.server-settings.integrations-section.button--2" variant="surface" size="sm" onClick={() => void copy()}>
           {copied ? <Check data-gc="servidor.server-settings.integrations-section.check" size={14} /> : <Copy data-gc="servidor.server-settings.integrations-section.copy" size={14} />}
           {copied ? "Copiado" : "Copiar URL"}
         </Button>

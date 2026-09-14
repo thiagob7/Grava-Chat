@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { X } from "@phosphor-icons/react";
 
 import { LottieArt } from "~/components/LottieArt";
-import { Button } from "~/components/ui/button";
+import { Button, IconButton } from "~/components/ui/button";
 import { InviteModal } from "~/features/servidor/components/InviteModal";
 
 const loadAddFriend = () =>
@@ -39,14 +39,14 @@ export const InviteFriendsCard: React.FC<{ guildId: string; guildName: string }>
   return (
     <>
       <section data-gc="servidor.invite-friends-card.section" className="relative border-b border-divisor px-4 pb-4 pt-3 text-center">
-        <button data-gc="servidor.invite-friends-card.button.dismiss"
-          type="button"
+        <IconButton data-gc="servidor.invite-friends-card.icon-button.dismiss"
           onClick={dismiss}
-          aria-label="Dispensar"
-          className="absolute right-3 top-2 rounded p-1 text-ink-faint transition hover:bg-hover hover:text-ink"
+          label="Dispensar"
+          size="xs"
+          className="absolute right-3 top-2 text-ink-faint"
         >
-          <X data-gc="servidor.invite-friends-card.x" size={14} weight="bold" />
-        </button>
+          <X data-gc="servidor.invite-friends-card.x" weight="bold" />
+        </IconButton>
 
         <LottieArt data-gc="servidor.invite-friends-card.lottie-art"
           name="add-friend"

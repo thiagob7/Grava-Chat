@@ -87,7 +87,10 @@ export async function friendRoutes(app: FastifyInstance) {
     const result = await friendshipService.replyRequest(req.userId, channelId, action);
 
     io().to(rooms.user(req.userId)).emit("dm:pedido", { channelId });
-    if (result.accepted) io().to(rooms.user(req.userId)).emit("dm:created", { channelId });
+    if (result.accepted) {
+      io().in(rooms.user(req.userId)).socketsJoin(rooms.channel(channelId));
+      io().to(rooms.user(req.userId)).emit("dm:created", { channelId });
+    }
 
     return result;
   });

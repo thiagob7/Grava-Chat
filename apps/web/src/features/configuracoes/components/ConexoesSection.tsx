@@ -11,7 +11,7 @@ import {
 
 import { useUpdateProfile } from "~/@core/application/queries/auth/use-update-profile";
 import type { SelfUserModel } from "~/@core/domain/models/user-model";
-import { Button } from "~/components/ui/button";
+import { Button, IconButton } from "~/components/ui/button";
 import { Input } from "~/components/ui/input";
 import { SelectField } from "~/components/ui/select";
 import { ConfigSection as Section } from "~/features/configuracoes/components/SecaoDeConfig";
@@ -88,18 +88,17 @@ export const ConnectionsSection: React.FC<{ user: SelfUserModel }> = ({
                     </a>
                   )}
 
-                  <button data-gc="configuracoes.conexoes-section.button"
-                    type="button"
+                  <IconButton data-gc="configuracoes.conexoes-section.icon-button"
                     onClick={() =>
                       record(connections.filter((_, i) => i !== index))
                     }
                     disabled={save.isPending}
                     title="Remover"
-                    aria-label={`Remover ${SERVICES_NAMES[connection.service]}`}
-                    className="shrink-0 rounded p-1.5 text-ink-faint transition hover:text-danger disabled:opacity-40"
+                    label={`Remover ${SERVICES_NAMES[connection.service]}`}
+                    className="size-[26px] rounded text-ink-faint hover:bg-transparent hover:text-danger disabled:opacity-40 [&_svg]:size-3.5"
                   >
-                    <Trash2 data-gc="configuracoes.conexoes-section.trash2" size={14} />
-                  </button>
+                    <Trash2 data-gc="configuracoes.conexoes-section.trash2" />
+                  </IconButton>
                 </div>
               );
             })}

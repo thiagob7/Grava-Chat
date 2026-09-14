@@ -65,8 +65,8 @@ export const ReportsSection: React.FC = () => {
 
           {queue.hasNextPage && (
             <div data-gc="configuracoes.denuncias-section.div--5" className="flex justify-center">
-              <Button data-gc="configuracoes.denuncias-section.button" variant="surface" disabled={queue.isFetchingNextPage} onClick={() => void queue.fetchNextPage()}>
-                {queue.isFetchingNextPage ? "Carregando…" : "Carregar mais"}
+              <Button data-gc="configuracoes.denuncias-section.button" variant="surface" loading={queue.isFetchingNextPage} onClick={() => void queue.fetchNextPage()}>
+                Carregar mais
               </Button>
             </div>
           )}

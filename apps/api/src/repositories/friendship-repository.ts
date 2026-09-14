@@ -138,6 +138,10 @@ export const dmRepositoryRequest = {
     return prisma.dmRequest.update({ where: { channelId }, data: { status: "ACCEPTED" } });
   },
 
+  silence(channelId: string) {
+    return prisma.dmRequest.update({ where: { channelId }, data: { status: "UNDELIVERED" } });
+  },
+
   ignore(channelId: string, spam: boolean) {
     return prisma.dmRequest.update({
       where: { channelId },

@@ -20,7 +20,9 @@ import {
 import { useFindFriends } from "~/@core/application/queries/friend/use-find-friends";
 import { useLogout } from "~/@core/application/queries/auth/use-logout";
 import { useSession } from "~/contexts/session-context";
-import { bareField, fieldGroup } from "~/components/ui/input";
+import { BareInput, FieldGroup } from "~/components/ui/input";
+import { Button, IconButton } from "~/components/ui/button";
+import { TabButton } from "~/components/ui/nav-item";
 import { WidthHandle, useResizableWidth } from "~/components/ui/resizable";
 import { Sheet, SheetContent, SheetTitle } from "~/components/ui/sheet";
 import { Skeleton } from "~/components/ui/skeleton";
@@ -169,24 +171,26 @@ export const Explore: React.FC = () => {
             {...flx("topChannelCore", "flex h-full w-full items-center gap-3 px-4")}
           >
             {screenNarrow && (
-              <button data-gc="descoberta.explorar.button--2"
+              <IconButton data-gc="descoberta.explorar.icon-button"
                 onClick={() => setMenuIsOpen(true)}
-                aria-label="Abrir o Explorar"
-                className="rounded p-1 text-ink-faint transition hover:text-ink"
+                label="Abrir o Explorar"
+                className="rounded text-ink-faint [&_svg]:size-5"
               >
-                <Menu data-gc="descoberta.explorar.menu" size={20} />
-              </button>
+                <Menu data-gc="descoberta.explorar.menu" />
+              </IconButton>
             )}
 
             <div data-gc="descoberta.explorar.div--8" className="regiao-sem-arrasto flex min-w-0 flex-1 items-center gap-1 overflow-x-auto">
               {botId && (
-                <button data-gc="descoberta.explorar.button--3"
+                <Button data-gc="descoberta.explorar.button--2"
                   type="button"
+                  variant="ghost"
+                  size="xs"
                   onClick={() => navigate("/explorar")}
-                  className="flex shrink-0 items-center gap-1.5 rounded px-2 py-1 text-sm text-ink-muted transition hover:bg-surface-3 hover:text-ink"
+                  className="gap-1.5 rounded px-2 text-sm font-normal"
                 >
                   <ArrowLeft data-gc="descoberta.explorar.arrow-left" size={16} /> {t("servidor.descoberta.voltarParaExplorar")}
-                </button>
+                </Button>
               )}
 
               {!botId && tab === "comunidades" && (
@@ -229,17 +233,17 @@ export const Explore: React.FC = () => {
             </div>
 
             {!botId && (
-            <div data-gc="descoberta.explorar.div--9" className={cn(fieldGroup, "regiao-sem-arrasto h-8 w-56 shrink-0")}>
+            <FieldGroup data-gc="descoberta.explorar.field-group" className="regiao-sem-arrasto h-8 w-56 shrink-0">
               <Search data-gc="descoberta.explorar.search" size={14} className="shrink-0 text-ink-faint" />
-              <input data-gc="descoberta.explorar.input"
+              <BareInput data-gc="descoberta.explorar.bare-input"
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
                 placeholder={LOOKUP[tab]}
                 aria-label={LOOKUP[tab]}
-                className={cn(bareField, flxCls("discoveryField"))}
+                className={flxCls("discoveryField")}
               />
               {search && (
-                <button data-gc="descoberta.explorar.button--4"
+                <button data-gc="descoberta.explorar.button--3"
                   type="button"
                   onClick={() => setSearch("")}
                   aria-label="Limpar a busca"
@@ -248,14 +252,14 @@ export const Explore: React.FC = () => {
                   <X data-gc="descoberta.explorar.x" size={14} />
                 </button>
               )}
-            </div>
+            </FieldGroup>
             )}
           </div>
         </header>
 
-        <div data-gc="descoberta.explorar.div--10" className="min-h-0 flex-1 overflow-y-auto bg-surface-0">
+        <div data-gc="descoberta.explorar.div--9" className="min-h-0 flex-1 overflow-y-auto bg-surface-0">
           {botId ? (
-            <div data-gc="descoberta.explorar.div--11" className="p-5">
+            <div data-gc="descoberta.explorar.div--10" className="p-5">
               <AppPublic data-gc="descoberta.explorar.app-public" botId={botId} />
             </div>
           ) : tab === "aplicativos" ? (
@@ -264,7 +268,7 @@ export const Explore: React.FC = () => {
             tab === "comunidades" ? (
               <Communities data-gc="descoberta.explorar.communities" category={category} search={search} />
             ) : (
-              <div data-gc="descoberta.explorar.div--12" className="p-5">
+              <div data-gc="descoberta.explorar.div--11" className="p-5">
                 <Themes data-gc="descoberta.explorar.themes" search={search} />
               </div>
             )
@@ -280,26 +284,19 @@ const Filter: React.FC<{ active: boolean; name: string; onPick: () => void }> = 
   name,
   onPick,
 }) => (
-  <button data-gc="descoberta.explorar.button.on-pick"
-    type="button"
-    onClick={onPick}
-    className={cn(
-      "shrink-0 rounded px-3 py-1.5 text-sm font-medium transition",
-      active ? "bg-selecionado text-ink" : "text-ink-muted hover:bg-hover hover:text-ink",
-    )}
-  >
+  <TabButton data-gc="descoberta.explorar.tab-button.on-pick" active={active} onClick={onPick} className="rounded px-3 py-1.5">
     {name}
-  </button>
+  </TabButton>
 );
 
 const CommunitiesHero: React.FC<{ title?: string }> = ({ title }) => {
   const { t } = useTranslation();
 
   return (
-    <div data-gc="descoberta.explorar.div--13" className="relative isolate overflow-hidden">
+    <div data-gc="descoberta.explorar.div--12" className="relative isolate overflow-hidden">
       <BrandBackground data-gc="descoberta.explorar.brand-background" className="pointer-events-none absolute inset-0" />
 
-      <div data-gc="descoberta.explorar.div--14"
+      <div data-gc="descoberta.explorar.div--13"
         aria-hidden
         className="pointer-events-none absolute inset-0"
         style={{
@@ -308,7 +305,7 @@ const CommunitiesHero: React.FC<{ title?: string }> = ({ title }) => {
         }}
       />
 
-      <div data-gc="descoberta.explorar.div--15" className="relative px-6 py-11 sm:px-10 sm:py-14">
+      <div data-gc="descoberta.explorar.div--14" className="relative px-6 py-11 sm:px-10 sm:py-14">
         <h2 data-gc="descoberta.explorar.h2" className="max-w-xl text-[1.75rem] font-black uppercase leading-[1.05] tracking-tight text-sobre-marca sm:text-[2.125rem]">
           {title ?? t("servidor.descoberta.heroComunidades")}
         </h2>
@@ -405,7 +402,7 @@ const Communities: React.FC<{ category: CommunityCategory | null; search: string
 
   if (isLoading || !communities)
     return (
-      <div data-gc="descoberta.explorar.div--16" className="p-5">
+      <div data-gc="descoberta.explorar.div--15" className="p-5">
         <AppsGrid data-gc="descoberta.explorar.apps-grid--2">
           {Array.from({ length: 8 }).map((_, i) => (
             <Skeleton data-gc="descoberta.explorar.skeleton" key={i} className="h-60 rounded-xl" />
@@ -419,9 +416,9 @@ const Communities: React.FC<{ category: CommunityCategory | null; search: string
       <>
         {!term && <CommunitiesHero data-gc="descoberta.explorar.communities-hero" title={heroTitle} />}
 
-        <div data-gc="descoberta.explorar.div--17" className="flex flex-col items-center gap-3 py-20 text-center">
+        <div data-gc="descoberta.explorar.div--16" className="flex flex-col items-center gap-3 py-20 text-center">
           <Compass data-gc="descoberta.explorar.compass" size={36} className="text-ink-faint" />
-          <div data-gc="descoberta.explorar.div--18">
+          <div data-gc="descoberta.explorar.div--17">
             <p data-gc="descoberta.explorar.p--2" className="text-sm font-medium">
               {term ? "Nenhuma comunidade com esse nome" : "Ainda não há o que explorar"}
             </p>
@@ -441,7 +438,7 @@ const Communities: React.FC<{ category: CommunityCategory | null; search: string
     <>
       {!term && <CommunitiesHero data-gc="descoberta.explorar.communities-hero--2" title={heroTitle} />}
 
-      <div data-gc="descoberta.explorar.div--19" className="flex flex-col gap-10 p-5">
+      <div data-gc="descoberta.explorar.div--18" className="flex flex-col gap-10 p-5">
         {filtering ? (
           <CommunitiesTrack data-gc="descoberta.explorar.communities-track.set-picked"
             title={null}
@@ -476,7 +473,7 @@ const Communities: React.FC<{ category: CommunityCategory | null; search: string
 };
 
 const Grid: React.FC<{ children: React.ReactNode }> = ({ children }) => (
-  <div data-gc="descoberta.explorar.div--20" className="grid grid-cols-[repeat(auto-fill,minmax(15rem,1fr))] gap-4">{children}</div>
+  <div data-gc="descoberta.explorar.div--19" className="grid grid-cols-[repeat(auto-fill,minmax(15rem,1fr))] gap-4">{children}</div>
 );
 
 const Empty: React.FC<{ icon: React.ElementType; title: string; detail: string }> = ({
@@ -484,9 +481,9 @@ const Empty: React.FC<{ icon: React.ElementType; title: string; detail: string }
   title,
   detail,
 }) => (
-  <div data-gc="descoberta.explorar.div--21" className="flex flex-col items-center gap-3 py-20 text-center">
+  <div data-gc="descoberta.explorar.div--20" className="flex flex-col items-center gap-3 py-20 text-center">
     <Icon data-gc="descoberta.explorar.icon" size={36} className="text-ink-faint" />
-    <div data-gc="descoberta.explorar.div--22">
+    <div data-gc="descoberta.explorar.div--21">
       <p data-gc="descoberta.explorar.p--4" className="text-sm font-medium">{title}</p>
       <p data-gc="descoberta.explorar.p--5" className="mt-1 max-w-sm text-xs text-ink-faint">{detail}</p>
     </div>
@@ -535,7 +532,7 @@ const Themes: React.FC<{ search: string }> = ({ search }) => {
 };
 
 const AppsGrid: React.FC<{ children: React.ReactNode }> = ({ children }) => (
-  <div data-gc="descoberta.explorar.div--23" className="grid grid-cols-[repeat(auto-fill,minmax(16rem,1fr))] gap-4">
+  <div data-gc="descoberta.explorar.div--22" className="grid grid-cols-[repeat(auto-fill,minmax(16rem,1fr))] gap-4">
     {children}
   </div>
 );
@@ -544,10 +541,10 @@ const HeroDeApps: React.FC<{ title?: string }> = ({ title }) => {
   const { t } = useTranslation();
 
   return (
-    <div data-gc="descoberta.explorar.div--24" className="relative isolate overflow-hidden">
+    <div data-gc="descoberta.explorar.div--23" className="relative isolate overflow-hidden">
       <BrandBackground data-gc="descoberta.explorar.brand-background--2" className="pointer-events-none absolute inset-0" />
 
-      <div data-gc="descoberta.explorar.div--25"
+      <div data-gc="descoberta.explorar.div--24"
         aria-hidden
         className="pointer-events-none absolute inset-0"
         style={{
@@ -556,7 +553,7 @@ const HeroDeApps: React.FC<{ title?: string }> = ({ title }) => {
         }}
       />
 
-      <div data-gc="descoberta.explorar.div--26" className="relative px-6 py-11 sm:px-10 sm:py-14">
+      <div data-gc="descoberta.explorar.div--25" className="relative px-6 py-11 sm:px-10 sm:py-14">
         <h2 data-gc="descoberta.explorar.h2--2" className="max-w-xl text-[1.75rem] font-black uppercase leading-[1.05] tracking-tight text-sobre-marca sm:text-[2.125rem]">
           {title ?? t("servidor.descoberta.heroTitulo")}
         </h2>
@@ -631,7 +628,7 @@ const Apps: React.FC<{ search: string; category: string | null }> = ({
 
   if (isLoading || !apps) {
     return (
-      <div data-gc="descoberta.explorar.div--27" className="p-5">
+      <div data-gc="descoberta.explorar.div--26" className="p-5">
         <AppsGrid data-gc="descoberta.explorar.apps-grid--4">
           {Array.from({ length: 8 }).map((_, i) => (
             <Skeleton data-gc="descoberta.explorar.skeleton--3" key={i} className="h-60 rounded-xl" />
@@ -661,7 +658,7 @@ const Apps: React.FC<{ search: string; category: string | null }> = ({
     <>
       {!term && <HeroDeApps data-gc="descoberta.explorar.hero-de-apps--2" title={heroTitle} />}
 
-      <div data-gc="descoberta.explorar.div--28" className="flex flex-col gap-10 p-5">
+      <div data-gc="descoberta.explorar.div--27" className="flex flex-col gap-10 p-5">
         {filtering ? (
           <AppsGrid data-gc="descoberta.explorar.apps-grid--5">
             {apps.map((app) => (

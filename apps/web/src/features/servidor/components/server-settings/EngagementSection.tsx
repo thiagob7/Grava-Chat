@@ -5,6 +5,7 @@ import { useUpdateGuild } from "~/@core/application/queries/guild/use-update-gui
 import { useSession } from "~/contexts/session-context";
 import type { GuildModel } from "~/@core/domain/models/guild-model";
 import { UnsavedBar } from "~/components/ui/unsaved-bar";
+import { Button } from "~/components/ui/button";
 import { Textarea } from "~/components/ui/input";
 import { RadioIndicator } from "~/components/ui/radio-group";
 import { SelectField } from "~/components/ui/select";
@@ -129,15 +130,17 @@ export const EngagementSection: React.FC<EngagementSectionProps> = ({
 
             <div data-gc="servidor.server-settings.engagement-section.div--2" className="mt-2 flex flex-wrap gap-1.5">
               {VARIABLES.map((v) => (
-                <button data-gc="servidor.server-settings.engagement-section.button"
+                <Button data-gc="servidor.server-settings.engagement-section.button"
                   key={v.key}
                   type="button"
+                  variant="surface"
+                  size="xs"
                   onClick={() => set("text", `${form.text}${v.key}`)}
                   title={v.explains}
-                  className="rounded bg-surface-3 px-1.5 py-0.5 font-mono text-xs text-ink-muted transition hover:bg-surface-4 hover:text-ink"
+                  className="rounded px-1.5 py-0.5 font-mono font-normal"
                 >
                   {v.key}
-                </button>
+                </Button>
               ))}
             </div>
 

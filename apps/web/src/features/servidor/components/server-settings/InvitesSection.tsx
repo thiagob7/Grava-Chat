@@ -4,6 +4,7 @@ import { Trash2 } from "lucide-react";
 import { useFindGuildInvites } from "~/@core/application/queries/guild/use-find-guild-invites";
 import { useDeleteInvite } from "~/@core/application/queries/guild/use-delete-invite";
 import { Avatar } from "~/features/perfil/components/Avatar";
+import { IconButton } from "~/components/ui/button";
 import { Tooltip } from "~/components/ui/tooltip";
 import { useConfirm } from "~/components/ui/confirm";
 import { cn } from "~/lib/utils";
@@ -69,7 +70,8 @@ export const InvitesSection: React.FC<{ guildId: string }> = ({ guildId }) => {
               </div>
 
               <Tooltip data-gc="servidor.server-settings.invites-section.tooltip" label={t("servidor.convites.revogar")}>
-                <button data-gc="servidor.server-settings.invites-section.button"
+                <IconButton data-gc="servidor.server-settings.invites-section.icon-button"
+                  label={t("servidor.convites.revogar")}
                   onClick={() =>
                     void confirm({
                       title: t("servidor.convites.revogarTitulo"),
@@ -83,10 +85,11 @@ export const InvitesSection: React.FC<{ guildId: string }> = ({ guildId }) => {
                         deleteInvite.mutate({ guildId, inviteId: invite.id }),
                     )
                   }
-                  className="rounded p-2 text-ink-muted transition hover:bg-surface-0 hover:text-danger"
+                  size="md"
+                  className="rounded hover:bg-surface-0 hover:text-danger [&_svg]:size-[18px]"
                 >
-                  <Trash2 data-gc="servidor.server-settings.invites-section.trash2" size={18} />
-                </button>
+                  <Trash2 data-gc="servidor.server-settings.invites-section.trash2" />
+                </IconButton>
               </Tooltip>
             </div>
           ))}

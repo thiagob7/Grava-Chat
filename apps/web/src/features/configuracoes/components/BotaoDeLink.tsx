@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { Link2 } from "lucide-react";
 
+import { IconButton } from "~/components/ui/button";
 import { Tooltip } from "~/components/ui/tooltip";
 import { copyText } from "~/lib/copiar";
 import { sectionLink } from "~/features/app/lib/link-de-config";
@@ -25,9 +26,9 @@ export const LinkButton: React.FC<LinkPropsButton> = ({
       label={copied ? "Link copiado" : `Copiar link para ${oQue}`}
       side="top"
     >
-      <button data-gc="configuracoes.botao-de-link.button"
-        type="button"
-        aria-label={`Copiar link para ${oQue}`}
+      <IconButton data-gc="configuracoes.botao-de-link.icon-button"
+        size="xs"
+        label={`Copiar link para ${oQue}`}
         onClick={() => {
           void copyText(sectionLink(section, sub)).then((gave) => {
             if (!gave) return;
@@ -37,14 +38,13 @@ export const LinkButton: React.FC<LinkPropsButton> = ({
           });
         }}
         className={cn(
-          "shrink-0 rounded p-1 text-ink-faint opacity-0 transition",
-          "hover:bg-hover hover:text-ink focus-visible:opacity-100 focus-visible:outline-none",
-          "focus-visible:ring-2 focus-visible:ring-foco-anel group-hover/titulo:opacity-100",
+          "rounded text-ink-faint opacity-0 [&_svg]:size-[15px]",
+          "focus-visible:opacity-100 group-hover/titulo:opacity-100",
           copied && "text-online opacity-100",
         )}
       >
-        <Link2 data-gc="configuracoes.botao-de-link.link2" size={15} />
-      </button>
+        <Link2 data-gc="configuracoes.botao-de-link.link2" />
+      </IconButton>
     </Tooltip>
   );
 };

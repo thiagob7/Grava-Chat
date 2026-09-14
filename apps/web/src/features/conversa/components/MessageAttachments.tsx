@@ -3,6 +3,7 @@ import { ArrowsOut, Pause, Play, SpeakerHigh, SpeakerSlash } from "@phosphor-ico
 import { Download, EyeOff, FileText, Trash2 } from "lucide-react";
 import type { Attachment } from "@gravae/shared";
 
+import { IconButton } from "~/components/ui/button";
 import { formatBytes, isImageType, MAX_IMAGE_H, MAX_IMAGE_W } from "~/lib/image";
 import { VoiceMessage } from "~/features/conversa/components/MensagemDeVoz";
 import { TextPreview } from "~/features/conversa/components/PreviaDeTexto";
@@ -108,15 +109,14 @@ export const MessageAttachments: React.FC<MessageAttachmentsProps> = ({
           </WithSpoiler>
 
           {onRemove && (
-            <button data-gc="conversa.message-attachments.button"
-              type="button"
+            <IconButton data-gc="conversa.message-attachments.icon-button"
               onClick={() => onRemove(attachment)}
-              aria-label={t("conversa.anexos.excluirTitulo")}
+              label={t("conversa.anexos.excluirTitulo")}
               title={t("conversa.anexos.excluirTitulo")}
-              className="mt-1 flex size-7 shrink-0 items-center justify-center rounded text-ink-faint opacity-0 transition hover:bg-surface-3 hover:text-danger focus-visible:opacity-100 group-hover/anexo:opacity-100"
+              className="mt-1 size-7 rounded text-ink-faint opacity-0 hover:bg-surface-3 hover:text-danger focus-visible:opacity-100 group-hover/anexo:opacity-100"
             >
-              <Trash2 data-gc="conversa.message-attachments.trash2" size={16} />
-            </button>
+              <Trash2 data-gc="conversa.message-attachments.trash2" />
+            </IconButton>
           )}
         </div>
       ))}
@@ -135,7 +135,7 @@ const WithSpoiler: React.FC<{ attachment: Attachment; children: React.ReactNode 
   if (!attachment.spoiler || isOpen || when === "sempre") return <>{children}</>;
 
   return (
-    <button data-gc="conversa.message-attachments.button--2"
+    <button data-gc="conversa.message-attachments.button"
       onClick={() => setIsOpen(true)}
       className={cn("group relative overflow-hidden rounded-lg", flxCls("spoilerWrapper"))}
       aria-label={t("conversa.anexos.mostrarSpoiler", { arquivo: attachment.filename })}
@@ -174,7 +174,7 @@ const ImageAttachment: React.FC<{ attachment: Attachment }> = ({ attachment }) =
 
   return (
     <ImageMenu data-gc="conversa.message-attachments.image-menu" attachment={attachment}>
-      <button data-gc="conversa.message-attachments.button--3"
+      <button data-gc="conversa.message-attachments.button--2"
         onClick={() => open(attachment.url, attachment.description || attachment.filename, { name: attachment.filename, size: attachment.size })}
         aria-label={t("conversa.anexos.ver", { arquivo: attachment.filename })}
         className="block max-w-full overflow-hidden rounded-lg transition hover:brightness-110"
@@ -199,7 +199,7 @@ const GridImage: React.FC<{ attachment: Attachment }> = ({ attachment }) => {
 
   return (
     <ImageMenu data-gc="conversa.message-attachments.image-menu--2" attachment={attachment}>
-      <button data-gc="conversa.message-attachments.button--4"
+      <button data-gc="conversa.message-attachments.button--3"
         type="button"
         onClick={() => open(attachment.url, attachment.description || attachment.filename)}
         aria-label={t("conversa.anexos.ver", { arquivo: attachment.filename })}
@@ -286,11 +286,11 @@ const VideoAttachment: React.FC<{ attachment: Attachment }> = ({ attachment }) =
           className="h-1 flex-1 cursor-pointer accent-sobre-marca"
         />
 
-        <button data-gc="conversa.message-attachments.button--5" type="button" onClick={() => setMuted((v) => !v)} aria-label={isMuted ? "Ligar o som" : "Silenciar"} className="rounded p-1 hover:bg-sobre-midia">
+        <button data-gc="conversa.message-attachments.button--4" type="button" onClick={() => setMuted((v) => !v)} aria-label={isMuted ? "Ligar o som" : "Silenciar"} className="rounded p-1 hover:bg-sobre-midia">
           {isMuted ? <SpeakerSlash data-gc="conversa.message-attachments.speaker-slash" size={14} weight="fill" /> : <SpeakerHigh data-gc="conversa.message-attachments.speaker-high" size={14} weight="fill" />}
         </button>
 
-        <button data-gc="conversa.message-attachments.button--6" type="button" onClick={() => void video.current?.requestFullscreen()} aria-label="Tela cheia" className="rounded p-1 hover:bg-sobre-midia">
+        <button data-gc="conversa.message-attachments.button--5" type="button" onClick={() => void video.current?.requestFullscreen()} aria-label="Tela cheia" className="rounded p-1 hover:bg-sobre-midia">
           <ArrowsOut data-gc="conversa.message-attachments.arrows-out" size={14} weight="bold" />
         </button>
       </div>
