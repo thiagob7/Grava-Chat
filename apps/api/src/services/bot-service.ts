@@ -1,4 +1,4 @@
-import { randomBytes } from "node:crypto";
+import { createHash, randomBytes } from "node:crypto";
 
 import {
   PERMISSIONS,
@@ -30,6 +30,7 @@ const DEFAULT_REQUEST: Permission[] = [
 ];
 
 const newToken = () => randomBytes(32).toString("base64url");
+const tokenHash = (raw: string) => createHash("sha256").update(raw).digest("hex");
 
 type BotWithUser = NonNullable<Awaited<ReturnType<typeof botRepository.findById>>>;
 
@@ -144,7 +145,7 @@ export const botService = {
     const bot = await botRepository.create({
       ownerId,
       botUserId: user.id,
-      token,
+      token: tokenHash(token),
       clientSecret: randomBytes(32).toString("base64url"),
       permissionsRequested: DEFAULT_REQUEST,
     });
@@ -205,7 +206,7 @@ export const botService = {
     await botService.myBot(ownerId, botId);
 
     const token = newToken();
-    const bot = await botRepository.updateToken(botId, token);
+    const bot = await botRepository.updateToken(botId, tokenHash(token));
 
     return forOwner(bot, token);
   },
@@ -431,8 +432,16 @@ export const botService = {
   },
 
   async resolveToken(token: string) {
-    const bot = await botRepository.findByToken(token);
-    if (!bot) return null;
+    let bot = await botRepository.findByToken(tokenHash(token));
+
+    if (!bot) {
+      if (/^[a-f0-9]{64}$/.test(token)) return null;
+
+      bot = await botRepository.findByToken(token);
+      if (!bot) return null;
+
+      await botRepository.updateToken(bot.id, tokenHash(token));
+    }
 
     return { botId: bot.id, userId: bot.botUserId };
   },

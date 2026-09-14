@@ -37,6 +37,7 @@ export const AuthorizeApp: React.FC = () => {
   const redirectUri = params.get("redirect_uri") ?? "";
   const scope = params.get("scope") ?? "identify";
   const state = params.get("state") ?? "";
+  const codeChallenge = params.get("code_challenge") ?? "";
 
   const request = useQuery({
     queryKey: ["oauth-pedido", clientId, redirectUri, scope],
@@ -79,6 +80,7 @@ export const AuthorizeApp: React.FC = () => {
         redirect_uri: redirectUri,
         scope: [...on].join(" "),
         ...(withBot ? { guild_id: guildId, permissions: [...permissions] } : {}),
+        ...(codeChallenge ? { code_challenge: codeChallenge, code_challenge_method: "S256" } : {}),
       });
 
       const destination = new URL(data.redirectUri);

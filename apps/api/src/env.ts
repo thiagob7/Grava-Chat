@@ -4,7 +4,7 @@ const schema = z.object({
   NODE_ENV: z.enum(["development", "production", "test"]).default("production"),
 
   API_PORT: z.coerce.number().int().default(3333),
-  API_HOST: z.string().default("0.0.0.0"),
+  API_HOST: z.string().default("127.0.0.1"),
   API_PUBLIC_URL: z.url().default("http://localhost:3333"),
   WEB_ORIGIN: z.string().default("http://localhost:5173"),
 

@@ -49,6 +49,7 @@ export const keys = {
   voiceChannel: (channelId: string) => `voice:channel:${channelId}`,
   sessions: (userId: string) => `sessions:${userId}`,
   accessValidAfter: (userId: string) => `auth:valido-apos:${userId}`,
+  loginFailures: (emailHash: string) => `auth:falhas:${emailHash}`,
   idle: (userId: string) => `idle:${userId}`,
   webhookRate: (webhookId: string) => `webhook:rate:${webhookId}`,
   slowmode: (channelId: string, userId: string) => `slow:${channelId}:${userId}`,

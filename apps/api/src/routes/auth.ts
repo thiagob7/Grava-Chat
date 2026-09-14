@@ -2,6 +2,7 @@ import type { FastifyInstance, FastifyReply, FastifyRequest } from "fastify";
 import oauth2, { type OAuth2Namespace } from "@fastify/oauth2";
 import { z } from "zod";
 import { env, isDev } from "~/env.js";
+import { loginAttempts } from "~/lib/tentativas-de-login.js";
 import { googleService } from "~/services/google-service.js";
 import { authService, REFRESH_COOKIE } from "~/services/auth-service.js";
 import { desktopLoginService } from "~/services/desktop-login-service.js";
@@ -100,7 +101,15 @@ export async function authRoutes(app: FastifyInstance) {
   });
 
   app.post("/auth/entrar", { config: { rateLimit: { max: 10, timeWindow: "1 minute" } } }, async (req, reply) => {
-    const user = await authService.joinWithPassword(joinInput.parse(req.body));
+    const input = joinInput.parse(req.body);
+    await loginAttempts.require(input.email);
+
+    const user = await authService.joinWithPassword(input).catch(async (err: unknown) => {
+      await loginAttempts.fail(input.email);
+      throw err;
+    });
+
+    await loginAttempts.clear(input.email);
     return openSession(req, reply, user);
   });
 

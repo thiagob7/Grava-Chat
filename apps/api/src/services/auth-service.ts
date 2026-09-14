@@ -36,7 +36,12 @@ export const authService = {
 
     if (existing.supersededAt) {
       const age = Date.now() - existing.supersededAt.getTime();
-      if (age > ROTATION_GRACE_MS) return null;
+
+      if (age > ROTATION_GRACE_MS) {
+        await sessionRepository.revokeAllForUser(existing.userId);
+        await revokeAccess(existing.userId);
+        return null;
+      }
 
       return { userId: existing.userId, ...(await authService.issueRefreshToken(existing.userId, meta)) };
     }
