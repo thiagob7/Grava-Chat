@@ -92,11 +92,40 @@ async function statesInVoice(): Promise<VoiceState[]> {
     .map((v) => hydrate(JSON.parse(v) as VoiceState));
 }
 
+export const slotFor = (userId: string, guildId: string | null, isBot = false) =>
+  isBot && guildId ? `${userId}@${guildId}` : userId;
+
+async function slotOfState(state: VoiceState) {
+  if (!state.guildId) return state.userId;
+
+  const botSlot = `${state.userId}@${state.guildId}`;
+  return (await redis.sismember(keys.voiceSlots(state.userId), botSlot)) ? botSlot : state.userId;
+}
+
 async function writeState(state: VoiceState) {
   const raw = JSON.stringify(state);
+  const slot = await slotOfState(state);
 
-  if (state.orphanedAt) await redis.set(keys.voiceState(state.userId), raw, "KEEPTTL");
-  else await redis.set(keys.voiceState(state.userId), raw, "EX", STATE_S_TTL);
+  if (state.orphanedAt) await redis.set(keys.voiceState(slot), raw, "KEEPTTL");
+  else await redis.set(keys.voiceState(slot), raw, "EX", STATE_S_TTL);
+}
+
+async function leaveSlot(slot: string, onlyIfSocket?: string): Promise<VoiceState | null> {
+  const raw = await redis.get(keys.voiceState(slot));
+  if (!raw) return null;
+
+  const state = hydrate(JSON.parse(raw) as VoiceState);
+  if (onlyIfSocket && state.socketId !== onlyIfSocket) return null;
+
+  await redis
+    .multi()
+    .del(keys.voiceState(slot))
+    .srem(keys.voiceChannel(state.channelId), slot)
+    .srem(keys.voicePeople, slot)
+    .srem(keys.voiceSlots(state.userId), slot)
+    .exec();
+
+  return state;
 }
 
 async function liveMembers(channelId: string): Promise<string[]> {
@@ -249,14 +278,11 @@ export const voiceService = {
   },
 
   async moderate(
-    targetId: string,
+    state: VoiceState,
     patch: { serverMute?: boolean; serverDeaf?: boolean },
   ): Promise<VoiceState | null> {
-    const state = await voiceService.get(targetId);
-    if (!state) return null;
-
     if (patch.serverMute !== undefined) {
-      await voiceService.muteSfu(state.channelId, targetId, patch.serverMute);
+      await voiceService.muteSfu(state.channelId, state.userId, patch.serverMute);
     }
 
     const next: VoiceState = { ...state, ...patch };
@@ -290,9 +316,9 @@ export const voiceService = {
       .catch(() => undefined);
   },
 
-  async issueToken(userId: string, channelId: string) {
+  async issueToken(userId: string, channelId: string, isBot = false) {
     const { channel, context } = await accessService.requireChannelAccess(userId, channelId);
-    const anterior = await voiceService.get(userId);
+    const anterior = await voiceService.get(userId, { guildId: channel.guildId, isBot });
 
     if (channel.type !== "VOICE" && !isPrivateCall(channel)) {
       throw new AppError("Este canal não é de voz");
@@ -349,6 +375,7 @@ export const voiceService = {
     resume = false,
     clientId: string | null = null,
     device: VoiceDevice | null = null,
+    isBot = false,
   ) {
     const { channel, context } = await accessService.requireChannelAccess(userId, channelId);
     if (channel.type !== "VOICE" && !isPrivateCall(channel)) {
@@ -358,7 +385,8 @@ export const voiceService = {
       throw new ForbiddenError("Você não pode entrar neste canal de voz");
     }
 
-    const previous = await voiceService.get(userId);
+    const slot = slotFor(userId, channel.guildId, isBot);
+    const previous = await voiceService.get(userId, { guildId: channel.guildId, isBot });
 
     if (channel.userLimit > 0 && previous?.channelId !== channelId) {
       const inside = await liveMembers(channelId);
@@ -369,7 +397,7 @@ export const voiceService = {
       throw new AppError("Outra aba está nesta chamada");
     }
 
-    const left = previous && previous.channelId !== channelId ? await voiceService.leave(userId) : null;
+    const left = previous && previous.channelId !== channelId ? await leaveSlot(slot) : null;
 
     const state: VoiceState = {
       userId,
@@ -387,45 +415,48 @@ export const voiceService = {
       device: device ?? previous?.device ?? null,
     };
 
-    await redis
+    const multi = redis
       .multi()
-      .set(keys.voiceState(userId), JSON.stringify(state), "EX", STATE_S_TTL)
-      .sadd(keys.voiceChannel(channelId), userId)
-      .sadd(keys.voicePeople, userId)
-      .exec();
+      .set(keys.voiceState(slot), JSON.stringify(state), "EX", STATE_S_TTL)
+      .sadd(keys.voiceChannel(channelId), slot)
+      .sadd(keys.voicePeople, slot);
+
+    if (slot !== userId) multi.sadd(keys.voiceSlots(userId), slot).expire(keys.voiceSlots(userId), STATE_S_TTL);
+
+    await multi.exec();
 
     return { state, left };
   },
 
-  async orphan(userId: string, socketId: string): Promise<VoiceState | null> {
-    const state = await voiceService.get(userId);
-    if (!state || state.socketId !== socketId || state.orphanedAt) return null;
+  async orphan(userId: string, socketId: string): Promise<VoiceState[]> {
+    const states = (await voiceService.statesOf(userId)).filter((s) => s.socketId === socketId && !s.orphanedAt);
 
-    const orphaned = { ...state, orphanedAt: Date.now() };
-    await redis.set(keys.voiceState(userId), JSON.stringify(orphaned), "PX", ORPHAN_MS_TTL);
-    return orphaned;
+    return Promise.all(
+      states.map(async (state) => {
+        const orphaned = { ...state, orphanedAt: Date.now() };
+        await redis.set(keys.voiceState(await slotOfState(state)), JSON.stringify(orphaned), "PX", ORPHAN_MS_TTL);
+        return orphaned;
+      }),
+    );
   },
 
-  async reapOrphan(userId: string, socketId: string): Promise<VoiceState | null> {
-    const state = await voiceService.get(userId);
-    if (!state || state.socketId !== socketId || !state.orphanedAt) return null;
+  async reapOrphan(userId: string, socketId: string): Promise<VoiceState[]> {
+    const states = (await voiceService.statesOf(userId)).filter((s) => s.socketId === socketId && s.orphanedAt);
+    const left = await Promise.all(states.map(async (state) => leaveSlot(await slotOfState(state), socketId)));
 
-    return voiceService.leave(userId, socketId);
+    return left.filter((s): s is VoiceState => Boolean(s));
   },
 
-  async leave(userId: string, onlyIfSocket?: string): Promise<VoiceState | null> {
-    const state = await voiceService.get(userId);
-    if (!state) return null;
-    if (onlyIfSocket && state.socketId !== onlyIfSocket) return null;
+  async leave(
+    userId: string,
+    onlyIfSocket?: string,
+    scope?: { guildId: string | null; isBot?: boolean },
+  ): Promise<VoiceState | null> {
+    return leaveSlot(slotFor(userId, scope?.guildId ?? null, scope?.isBot), onlyIfSocket);
+  },
 
-    await redis
-      .multi()
-      .del(keys.voiceState(userId))
-      .srem(keys.voiceChannel(state.channelId), userId)
-      .srem(keys.voicePeople, userId)
-      .exec();
-
-    return state;
+  async leaveState(state: VoiceState): Promise<VoiceState | null> {
+    return leaveSlot(await slotOfState(state));
   },
 
   async update(
@@ -440,9 +471,16 @@ export const voiceService = {
     return next;
   },
 
-  async get(userId: string): Promise<VoiceState | null> {
-    const raw = await redis.get(keys.voiceState(userId));
+  async get(userId: string, scope?: { guildId: string | null; isBot?: boolean }): Promise<VoiceState | null> {
+    const raw = await redis.get(keys.voiceState(slotFor(userId, scope?.guildId ?? null, scope?.isBot)));
     return raw ? hydrate(JSON.parse(raw) as VoiceState) : null;
+  },
+
+  async statesOf(userId: string): Promise<VoiceState[]> {
+    const slots = [userId, ...(await redis.smembers(keys.voiceSlots(userId)))];
+    const raw = await redis.mget(slots.map((slot) => keys.voiceState(slot)));
+
+    return raw.filter((v): v is string => Boolean(v)).map((v) => hydrate(JSON.parse(v) as VoiceState));
   },
 
   async statesForChannels(channelIds: string[]): Promise<Record<string, VoiceState[]>> {
@@ -540,7 +578,7 @@ export const voiceService = {
       (e) => now - e.joinedAt > SFU_MS_GRACE && !inSfu.has(`${e.channelId}:${e.userId}`),
     );
 
-    const fromRedis = (await Promise.all(orphans.map((e) => voiceService.leave(e.userId)))).filter(
+    const fromRedis = (await Promise.all(orphans.map((e) => voiceService.leaveState(e)))).filter(
       (e): e is VoiceState => Boolean(e),
     );
 

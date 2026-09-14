@@ -21,6 +21,7 @@ export const keys = {
   legacyPresence: (userId: string) => `presence:${userId}`,
   voiceState: (userId: string) => `voice:user:${userId}`,
   voiceChannel: (channelId: string) => `voice:channel:${channelId}`,
+  voiceSlots: (userId: string) => `voice:slots:${userId}`,
   sessions: (userId: string) => `sessions:${userId}`,
   accessValidAfter: (userId: string) => `auth:valido-apos:${userId}`,
   loginFailures: (emailHash: string) => `auth:falhas:${emailHash}`,
