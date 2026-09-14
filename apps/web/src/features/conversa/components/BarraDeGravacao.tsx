@@ -35,7 +35,7 @@ export const RecordingBar: React.FC<{
   const near = ms > LIMIT_MS - 15_000;
 
   return (
-    <div data-gc="conversa.barra-de-gravacao.div" className="flex flex-1 items-center gap-3 px-2">
+    <div data-gc="conversa.barra-de-gravacao.div" className="flex min-w-0 flex-1 items-center gap-3 px-2">
       <IconButton data-gc="conversa.barra-de-gravacao.icon-button"
         onClick={() => void end(false)}
         label={t("conversa.recado.descartar")}
