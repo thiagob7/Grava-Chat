@@ -10,6 +10,7 @@ import type { GuildModel } from "~/@core/domain/models/guild-model";
 import { ImageEditor } from "~/components/EditorDeImagem";
 import { ImagePicker } from "~/components/SeletorDeImagem";
 import { Button } from "~/components/ui/button";
+import { UnsavedBar } from "~/components/ui/unsaved-bar";
 import { Input, Label, Textarea } from "~/components/ui/input";
 import { avatarColor, initials } from "~/lib/format";
 import { cn } from "~/lib/utils";
@@ -309,19 +310,13 @@ export const ServerProfileSection: React.FC<{ guild: GuildModel }> = ({ guild })
         }}
       />
 
-      {changed && (
-        <div data-gc="servidor.server-settings.server-profile-section.div--8" className="sticky bottom-4 mt-6 flex items-center justify-between gap-3 rounded-xl border border-line-sutil bg-surface-0/95 px-4 py-3 shadow-2xl backdrop-blur">
-          <p data-gc="servidor.server-settings.server-profile-section.p--4" className="text-sm text-ink-muted">{t("comum.naoSalvo")}</p>
-          <div data-gc="servidor.server-settings.server-profile-section.div--9" className="flex gap-2">
-            <Button data-gc="servidor.server-settings.server-profile-section.button.reset" variant="ghost" size="sm" onClick={reset}>
-              {t("comum.descartar")}
-            </Button>
-            <Button data-gc="servidor.server-settings.server-profile-section.button.save" size="sm" onClick={save} disabled={!name.trim()} loading={updateGuild.isPending}>
-              Salvar
-            </Button>
-          </div>
-        </div>
-      )}
+      <UnsavedBar data-gc="servidor.server-settings.server-profile-section.unsaved-bar.reset"
+        visible={changed}
+        saving={updateGuild.isPending}
+        saveDisabled={!name.trim()}
+        onDiscard={reset}
+        onSave={save}
+      />
     </div>
   );
 };
@@ -329,8 +324,8 @@ export const ServerProfileSection: React.FC<{ guild: GuildModel }> = ({ guild })
 const Block: React.FC<{ title: string; description?: string; children: React.ReactNode }> = ({ title, description, children }) => (
   <section data-gc="servidor.server-settings.server-profile-section.section" className="mt-8 border-t border-line pt-6">
     <h3 data-gc="servidor.server-settings.server-profile-section.h3" className="text-base font-semibold">{title}</h3>
-    {description && <p data-gc="servidor.server-settings.server-profile-section.p--5" className="mt-0.5 text-sm text-ink-muted">{description}</p>}
-    <div data-gc="servidor.server-settings.server-profile-section.div--10" className="mt-5 space-y-6">{children}</div>
+    {description && <p data-gc="servidor.server-settings.server-profile-section.p--4" className="mt-0.5 text-sm text-ink-muted">{description}</p>}
+    <div data-gc="servidor.server-settings.server-profile-section.div--8" className="mt-5 space-y-6">{children}</div>
   </section>
 );
 
@@ -340,11 +335,11 @@ const Field: React.FC<{ label: string; hint?: string; htmlFor?: string; children
   htmlFor,
   children,
 }) => (
-  <div data-gc="servidor.server-settings.server-profile-section.div--11">
+  <div data-gc="servidor.server-settings.server-profile-section.div--9">
     <Label data-gc="servidor.server-settings.server-profile-section.label" htmlFor={htmlFor} className="mb-2 block text-sm font-semibold normal-case text-ink">
       {label}
     </Label>
     {children}
-    {hint && <p data-gc="servidor.server-settings.server-profile-section.p--6" className="mt-2 text-xs text-ink-faint">{hint}</p>}
+    {hint && <p data-gc="servidor.server-settings.server-profile-section.p--5" className="mt-2 text-xs text-ink-faint">{hint}</p>}
   </div>
 );

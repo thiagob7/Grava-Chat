@@ -1,5 +1,5 @@
 import type { Server } from "socket.io";
-import type { ClientToServerEvents, ServerToClientEvents } from "@gravae/shared";
+import type { ClientToServerEvents, PresenceStatus, ServerToClientEvents } from "@gravae/shared";
 
 export type GravaeServer = Server<ClientToServerEvents, ServerToClientEvents, Record<string, never>, SocketData>;
 
@@ -8,6 +8,7 @@ export type SocketData = {
   guildIds: string[];
   voiceChannelId: string | null;
   isBot?: boolean;
+  presenceOnConnect?: PresenceStatus | null;
 };
 
 let instance: GravaeServer | null = null;
