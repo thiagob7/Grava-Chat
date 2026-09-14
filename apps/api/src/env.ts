@@ -37,7 +37,6 @@ const schema = z.object({
 
   ADMIN_EMAILS: z.string().default(""),
 
-  /* Token fine-grained do GitHub, só deste repositório: Actions (ler) e Deployments (ler e escrever). */
   GITHUB_TOKEN: z.string().default(""),
   GITHUB_REPOSITORY: z.string().default("thiagob7/Grava-Chat"),
 

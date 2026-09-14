@@ -12,19 +12,6 @@ import {
   whenIn,
 } from "./cache-regras.js";
 
-/*
-  O cache local de conversa.
-
-  Ele NÃO é fonte da verdade. O servidor é. Aqui mora uma cópia do que já foi
-  baixado, para a janela abrir mostrando a conversa em vez de abrir em esqueleto
-  esperando a rede. Apagar este arquivo, formatar a máquina ou desinstalar o
-  aplicativo não perde conversa nenhuma: na próxima abertura ele se reconstrói
-  sozinho a partir da API.
-
-  Roda no processo principal de propósito. A janela nunca toca no arquivo — ela
-  pede pela ponte, e quem abre o banco é este módulo.
-*/
-
 export interface CachedMessage {
   id: string;
   channelId: string;
@@ -72,20 +59,6 @@ const SCHEMA = `
   CREATE INDEX IF NOT EXISTS pendente_por_idade ON pendente (criada_em);
 `;
 
-/*
-  O SQLite entra por `getBuiltinModule`, e não por `import`, por causa do
-  empacotador.
-
-  Ao gerar o pacote, o esbuild reescreve `require("node:sqlite")` como
-  `require("sqlite")` — ele tira o prefixo dos embutidos do Node, porque para
-  quase todos os dois nomes funcionam. Este é a exceção: `sqlite` não existe
-  como módulo, só `node:sqlite`. O build passava, o aplicativo abria, e o cache
-  morria com "Cannot find module 'sqlite'" na primeira conversa. Nem tipo nem
-  teste de unidade pegam isso, porque só aparece no código empacotado.
-
-  Pôr em `external` não resolve: a reescrita acontece de todo jeito. Passando o
-  nome como texto para uma função, não há o que reescrever.
-*/
 const { DatabaseSync } = process.getBuiltinModule("node:sqlite");
 
 let db: SqliteDatabase | null = null;
@@ -96,14 +69,6 @@ function need(): SqliteDatabase {
   return db;
 }
 
-/*
-  `corpo` guarda o JSON da mensagem inteiro, e não uma coluna por campo.
-
-  O modelo de mensagem tem mais de vinte campos e ganha campo novo direto.
-  Espelhar cada um em coluna faria o cache quebrar a cada mudança do schema, e
-  cache que quebra a cada versão não serve para nada. Assim só existe coluna do
-  que a gente CONSULTA: por canal e por data. O resto viaja junto no texto.
-*/
 export function openCache(userDataDir: string, accountId: string): boolean {
   const file = accountFile(accountId);
   if (!file) return false;
@@ -117,12 +82,6 @@ export function openCache(userDataDir: string, accountId: string): boolean {
 
   const opened = new DatabaseSync(path.join(folder, file));
 
-  /*
-    WAL deixa ler enquanto escreve, que é o caso normal aqui: a conversa pinta
-    da leitura enquanto a resposta da API vai entrando. `NORMAL` não espera o
-    disco confirmar cada escrita — num banco que é fonte da verdade isso seria
-    imprudente, num cache descartável é só velocidade de graça.
-  */
   opened.exec("PRAGMA journal_mode = WAL");
   opened.exec("PRAGMA synchronous = NORMAL");
   opened.exec(SCHEMA);
@@ -147,11 +106,6 @@ export function writeMessages(channelId: string, messages: CachedMessage[]): num
     "INSERT OR REPLACE INTO mensagem (id, canal_id, criada_em, corpo) VALUES (?, ?, ?, ?)",
   );
 
-  /*
-    Uma transação para a página inteira. Sem ela, o SQLite trata cada linha
-    como uma escrita própria, e cinquenta mensagens viram cinquenta idas ao
-    disco em vez de uma.
-  */
   banco.exec("BEGIN");
 
   try {
@@ -177,7 +131,6 @@ export function writeMessages(channelId: string, messages: CachedMessage[]): num
   return messages.length;
 }
 
-/* Da mais velha para a mais nova, que é a ordem em que a conversa desenha. */
 export function readChannel(channelId: string, limit?: number): CachedMessage[] {
   const rows = need()
     .prepare(
@@ -198,11 +151,6 @@ export function forgetChannel(channelId: string): void {
   banco.prepare("DELETE FROM canal WHERE id = ?").run(channelId);
 }
 
-/*
-  A poda tem dois limites porque um só não basta. O de idade sozinho deixa um
-  servidor movimentado encher o disco em uma semana; o de quantidade sozinho
-  guarda para sempre conversa de dois anos atrás num servidor parado.
-*/
 export function prune(now = Date.now()): number {
   const banco = need();
 
@@ -241,14 +189,6 @@ export interface QueuedSend {
   payload: unknown;
 }
 
-/*
-  Põe na prateleira, ou atualiza o que já está lá.
-
-  Enfileirar duas vezes o mesmo `nonce` não cria duas linhas: é a mesma
-  mensagem tentando de novo. E a contagem de tentativas NÃO se perde nessa
-  troca, senão uma mensagem condenada ficaria voltando para o fim da fila para
-  sempre.
-*/
 export function queueSend(nonce: string, channelId: string, payload: unknown): void {
   need()
     .prepare(
@@ -258,7 +198,6 @@ export function queueSend(nonce: string, channelId: string, payload: unknown): v
     .run(nonce, channelId, Date.now(), JSON.stringify(payload));
 }
 
-/* Da mais antiga para a mais nova: quem escreveu primeiro chega primeiro. */
 export function queuedSends(): QueuedSend[] {
   const rows = need()
     .prepare(
@@ -279,7 +218,6 @@ export function dequeueSend(nonce: string): void {
   need().prepare("DELETE FROM pendente WHERE nonce = ?").run(nonce);
 }
 
-/* Devolve quantas tentativas esta mensagem já levou, contando a que acabou de falhar. */
 export function markSendTried(nonce: string): number {
   const banco = need();
   banco.prepare("UPDATE pendente SET tentativas = tentativas + 1 WHERE nonce = ?").run(nonce);
@@ -291,11 +229,6 @@ export function markSendTried(nonce: string): number {
   return Number(row?.tentativas ?? 0);
 }
 
-/*
-  Tira da fila o que não vai mais sair: o que estourou o teto de tentativas e o
-  que envelheceu demais. Devolve o que foi descartado, para quem chamou poder
-  avisar na tela em vez de sumir em silêncio.
-*/
 export function pruneQueue(now = Date.now()): QueuedSend[] {
   const banco = need();
 

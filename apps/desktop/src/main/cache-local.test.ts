@@ -209,7 +209,6 @@ describe("prateleira de saída", () => {
     const agora = Date.parse("2026-09-13T00:00:00Z");
     queueSend("velha", CANAL, escrita("velha"));
 
-    /* Empurra a data para além da semana sem mexer na contagem. */
     expect(pruneQueue(agora + (QUEUE_KEEP_DAYS + 1) * 86_400_000).map((q) => q.nonce)).toEqual([
       "velha",
     ]);

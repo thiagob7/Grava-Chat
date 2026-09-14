@@ -427,7 +427,6 @@ export const guildService = {
     return guildService.communityState(userId, guildId);
   },
 
-  /* Quem pode verificar é decidido na rota, pela área "comunidades" do painel. */
   async verify(guildId: string, verified: boolean) {
 
     await guildRepository.findByIdOrThrow(guildId);

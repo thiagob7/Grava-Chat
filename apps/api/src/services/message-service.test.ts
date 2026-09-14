@@ -83,7 +83,6 @@ vi.mock("~/services/forum-service.js", () => ({
 }));
 
 vi.mock("~/lib/redis.js", () => {
-  /* O `multi` devolve a si mesmo até o `exec`, que responde no feitio do ioredis. */
   const chain: Record<string, unknown> = {
     incr: () => chain,
     expire: () => chain,

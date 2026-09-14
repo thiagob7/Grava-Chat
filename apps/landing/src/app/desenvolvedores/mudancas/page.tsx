@@ -13,11 +13,6 @@ type Entry = {
   items: { kind: "novo" | "mudou" | "quebra"; text: string }[];
 };
 
-/*
-  Escrito à mão de propósito, ao contrário do resto da referência. O gerador
-  sabe o que a API tem HOJE; só uma pessoa sabe o que mudou e o que isso quebra
-  para quem já integrou.
-*/
 const CHANGES: Entry[] = [
   {
     data: "9 de setembro de 2026",

@@ -1,15 +1,3 @@
-/**
- * Bot de música do Gravaê.
- *
- * Roda fora do app, como qualquer bot daqui: conecta ao gateway com o token,
- * ouve os comandos no chat e toca no canal de voz.
- *
- *   GRAVAE_BOT_TOKEN=<token> node bot.mjs
- *
- * Comandos: !play <busca ou link>, !skip, !stop, !fila
- *
- * Precisa de `yt-dlp` e `ffmpeg` no PATH (brew install yt-dlp ffmpeg).
- */
 import { execFile, spawn } from "node:child_process";
 import { promisify } from "node:util";
 
@@ -27,14 +15,10 @@ import yts from "yt-search";
 
 import { instanciaUnica } from "../instancia-unica.mjs";
 
-/// Antes de qualquer coisa: um bot de música só. Dois tocam a mesma
-/// música em cima da outra no mesmo canal de voz.
 instanciaUnica("bot-musica");
 
 const TOKEN = process.env.GRAVAE_BOT_TOKEN;
 const SERVIDOR = process.env.GRAVAE_URL ?? "http://localhost:3333";
-/// O painel do dev. É de lá que vêm prefixo, volume, canal e boas-vindas —
-/// nada disso mora no Gravaê, e é justamente esse o ponto.
 const PAINEL = process.env.GRAVAE_PAINEL ?? "http://localhost:8080";
 
 if (!TOKEN) {
@@ -42,13 +26,6 @@ if (!TOKEN) {
   process.exit(1);
 }
 
-/*
-  O SFU quer PCM cru: 48 kHz, dois canais, inteiros de 16 bits com sinal. É
-  para isso que o ffmpeg converte, e é isso que o AudioSource espera receber.
-
-  O quadro de 20 ms é a medida do WebRTC. Mandar pedaços maiores engasga o
-  áudio do outro lado; menores, gastam CPU à toa.
-*/
 const TAXA = 48_000;
 const CANAIS = 2;
 const AMOSTRAS_POR_QUADRO = TAXA / 50;
@@ -56,12 +33,6 @@ const BYTES_POR_QUADRO = AMOSTRAS_POR_QUADRO * CANAIS * 2;
 
 const rodar = promisify(execFile);
 
-/*
-  Conferir yt-dlp e ffmpeg ANTES de entrar no ar.
-
-  Sem isso, a ausência de um dos dois só aparece quando alguém pede a primeira
-  música — e aparece como silêncio, não como erro. Melhor recusar a subir.
-*/
 async function versaoDe(programa, argumento) {
   const { stdout } = await rodar(programa, [argumento]);
   return stdout.trim().split("\n")[0];
@@ -81,12 +52,6 @@ async function conferirFerramentas() {
 
   console.log(`yt-dlp ${ytdlp}`);
 
-  /*
-    A versão do yt-dlp é a data em que saiu (2026.8.19). Quando o YouTube muda
-    a proteção, é a cópia velha que começa a dar 403 — e o sintoma é a música
-    "acabar" no mesmo segundo em que começa, sem erro nenhum. Dois meses é o
-    ponto em que já vale desconfiar.
-  */
   const [ano, mes, dia] = ytdlp.split(".").map(Number);
 
   if (Number.isInteger(ano) && Number.isInteger(mes) && Number.isInteger(dia)) {
@@ -99,12 +64,6 @@ async function conferirFerramentas() {
 
 await conferirFerramentas();
 
-/**
- * O que dizer a quem pediu a música, quando o yt-dlp desistiu.
- *
- * O erro dele é uma parede de texto no log, e ninguém no chat vai ler o log.
- * Cada caso aqui vira uma frase com o próximo passo dentro.
- */
 function diagnosticar(erro) {
   const texto = erro.toLowerCase();
 
@@ -136,23 +95,9 @@ const PADRAO = {
   boasVindasTexto: "",
 };
 
-/*
-  A configuração de cada servidor, com um cache curto.
-
-  Curto porque quem mexe no painel espera ver efeito em segundos, e não no
-  próximo reinício do bot. Mas existe porque sem ele seria uma ida à rede por
-  MENSAGEM lida — e o bot lê todas.
-*/
 const cacheDeConfig = new Map();
 const CACHE_MS = 15_000;
 
-/**
- * De qual servidor é este canal.
- *
- * A mensagem traz só o `channelId`, e a configuração é POR SERVIDOR. O mapa é
- * montado uma vez, com a API do bot, e só é refeito quando aparece um canal
- * desconhecido — canal novo criado depois que o bot subiu.
- */
 const guildDoCanal = new Map();
 let mapeando = null;
 
@@ -168,8 +113,6 @@ async function mapearCanais() {
 async function servidorDe(channelId) {
   if (guildDoCanal.has(channelId)) return guildDoCanal.get(channelId);
 
-  /// Uma remapeada de cada vez: sem isto, uma rajada de mensagens em canais
-  /// novos dispararia dezenas de varreduras ao mesmo tempo.
   mapeando ??= mapearCanais().finally(() => (mapeando = null));
   await mapeando;
 
@@ -198,19 +141,14 @@ async function configDe(guildId) {
 
   const valor = await fetch(`${PAINEL}/api/config/${guildId}`)
     .then((r) => (r.ok ? r.json() : PADRAO))
-    /// Painel fora do ar não pode derrubar o bot: ele cai no padrão e segue
-    /// respondendo, só que sem as personalizações daquele servidor.
     .catch(() => PADRAO);
 
   cacheDeConfig.set(guildId, { em: Date.now(), valor });
   return valor;
 }
 
-/// Uma fila por canal de voz. Duas salas tocando ao mesmo tempo não se
-/// atrapalham, e cada uma sabe como se desmontar.
 const filas = new Map();
 
-/// O gateway responde tudo como { ok, data } ou { ok: false, error }.
 const pedir = (evento, dados) =>
   new Promise((ok, falha) =>
     socket.emit(evento, dados, (resposta) =>
@@ -218,31 +156,11 @@ const pedir = (evento, dados) =>
     ),
   );
 
-/*
-  Ouvir pelo socket, agir por HTTP.
-
-  É a divisão que o Discord faz, e a razão é prática: o gateway existe para
-  saber o que ACONTECEU, e um POST devolve o que foi criado, com o id e o
-  status do que deu errado. Pelo socket, mandar era um `emit` no escuro.
-
-  Continua sem `await` de propósito — o bot não tem o que fazer com a
-  mensagem depois de mandada, e esperar a resposta atrasaria a música. Mas o
-  erro agora aparece no log em vez de sumir.
-*/
 const falar = (channelId, content) =>
   pedirHttp(`/bot/canais/${channelId}/mensagens`, { metodo: "POST", corpo: { content } }).catch(
     (erro) => console.error("[falar]", erro.message),
   );
 
-/**
- * Baixa e converte, em dois processos ligados por um cano.
- *
- * O yt-dlp entrega os bytes no stdout e o ffmpeg lê do stdin. É de propósito:
- * pedir só a URL (`yt-dlp -g`) e mandar o ffmpeg baixar dá 403, porque o
- * YouTube só aceita aquela URL com os mesmos cabeçalhos que o yt-dlp usou
- * para consegui-la. Quem sabe negociar com o YouTube é o yt-dlp; o ffmpeg só
- * converte o que já chegou.
- */
 function abrirAudio(paginaDoVideo, aoFalhar) {
   const ytdlp = spawn("yt-dlp", [
     "-f", "bestaudio",
@@ -265,11 +183,6 @@ function abrirAudio(paginaDoVideo, aoFalhar) {
 
   ytdlp.stdout.pipe(ffmpeg.stdin);
 
-  /// Sem isto, o erro morre calado e a música "acaba" em silêncio no mesmo
-  /// segundo em que começou — foi assim que este bug se escondeu da primeira vez.
-  ///
-  /// Guardado também em memória, e não só no console: quem pediu a música está
-  /// no chat, e é lá que a explicação precisa aparecer.
   let reclamacao = "";
 
   const relatar = (quem) => (dados) => {
@@ -277,7 +190,6 @@ function abrirAudio(paginaDoVideo, aoFalhar) {
     if (!texto) return;
 
     console.error(`[${quem}]`, texto);
-    /// Um teto, porque o ffmpeg sabe repetir a mesma linha por minutos.
     if (reclamacao.length < 4_000) reclamacao += `${texto}\n`;
   };
 
@@ -287,7 +199,6 @@ function abrirAudio(paginaDoVideo, aoFalhar) {
   ytdlp.on("error", aoFalhar);
   ffmpeg.on("error", aoFalhar);
 
-  /// O cano quebra quando o ffmpeg é morto pelo !skip. Não é erro nosso.
   ytdlp.stdin?.on("error", () => undefined);
   ffmpeg.stdin.on("error", () => undefined);
 
@@ -304,15 +215,6 @@ function abrirAudio(paginaDoVideo, aoFalhar) {
 async function entrarNaVoz(channelId) {
   const jaEsta = filas.get(channelId);
 
-  /*
-    A fila guardada só vale se a sala ainda estiver de pé.
-
-    Quando alguém clica em "Desconectar" no menu do bot, quem derruba a
-    conexão é o servidor — e o bot não ficava sabendo de nada. A fila
-    continuava no mapa apontando para uma sala morta, então o `/play` seguinte
-    empilhava música numa fila que nunca ia tocar: "entrou na fila (posição
-    1)", "(posição 2)", e silêncio. Só reiniciando o processo ele voltava.
-  */
   if (jaEsta?.sala.isConnected) return jaEsta;
 
   if (jaEsta) {
@@ -324,9 +226,6 @@ async function entrarNaVoz(channelId) {
 
   const sala = new Room();
 
-  /// A queda pode vir de qualquer lado: desconexão pelo app, servidor de voz
-  /// reiniciando, internet caindo. Em todas o remédio é o mesmo — esquecer
-  /// esta fila, para a próxima música começar do zero.
   sala.on(RoomEvent.Disconnected, () => {
     const atual = filas.get(channelId);
     if (atual?.sala !== sala) return;
@@ -345,8 +244,6 @@ async function entrarNaVoz(channelId) {
   opcoes.source = TrackSource.SOURCE_MICROPHONE;
   await sala.localParticipant.publishTrack(track, opcoes);
 
-  /// Aparecer na lista de quem está na chamada. Sem isto o bot toca, mas
-  /// ninguém vê que ele está ali.
   await pedir("voice:join", { channelId });
 
   const fila = {
@@ -357,8 +254,6 @@ async function entrarNaVoz(channelId) {
     tocando: null,
     audio: null,
     parando: false,
-    /// o canal de texto do último comando: é para lá que vai o aviso se a
-    /// chamada cair, porque a fila morre junto e ninguém entenderia o silêncio
     canalDeAviso: null,
   };
   filas.set(channelId, fila);
@@ -366,13 +261,6 @@ async function entrarNaVoz(channelId) {
   return fila;
 }
 
-/**
- * O recado de que a fila morreu.
- *
- * Sem ele, quem desconectou o bot (ou perdeu a internet) vê as músicas
- * simplesmente pararem e o próximo `/play` começar do nada — sem entender
- * para onde foi o resto da fila.
- */
 function avisarQueCaiu(fila) {
   if (!fila.canalDeAviso || !fila.tocando) return;
 
@@ -382,8 +270,6 @@ function avisarQueCaiu(fila) {
   falar(fila.canalDeAviso, `🔌 Saí da chamada.${resto} Chame de novo com \`/play\` quando quiser.`);
 }
 
-/// Esquecer a fila, sem falar com o servidor — é o que serve quando quem
-/// mandou o bot sair foi o próprio servidor.
 function largarFila(fila) {
   fila.parando = true;
   fila.audio?.matar();
@@ -397,13 +283,6 @@ async function sairDaVoz(fila) {
   await fila.sala.disconnect().catch(() => undefined);
 }
 
-/**
- * Toca a primeira da fila e segue para a próxima quando acabar.
- *
- * O ritmo vem de um relógio nosso, e não da velocidade com que o ffmpeg
- * entrega os bytes: ele converte muito mais rápido que o tempo real, e sem
- * segurar o passo a música inteira iria embora em poucos segundos.
- */
 async function tocarProxima(fila, avisarEm) {
   const musica = fila.musicas[0];
 
@@ -415,15 +294,6 @@ async function tocarProxima(fila, avisarEm) {
   }
 
   fila.tocando = musica;
-  /*
-    O endereço vai junto do título.
-
-    O Gravaê monta o cartão de qualquer link que apareça numa mensagem — capa,
-    canal e botão de tocar. Só que o cartão precisa do LINK, e o bot vinha
-    anunciando só o nome: "Tocando **MC Menor do Chapa**" não dizia de onde
-    saiu nem mostrava a capa. Com a URL na mesma linha, o anúncio do que está
-    tocando passa a ter a cara do vídeo.
-  */
   if (avisarEm) {
     falar(avisarEm, `▶️ Tocando **${musica.titulo}** (${musica.duracao})\n${musica.url}`);
   }
@@ -461,36 +331,20 @@ async function tocarProxima(fila, avisarEm) {
 
   audio.matar();
 
-  /// Nenhum byte é sintoma de falha lá atrás (vídeo indisponível, região
-  /// bloqueada, yt-dlp velho) — e não de uma música que simplesmente acabou.
   if (!veioAlgo && avisarEm) {
     const motivo = audio.motivo() ?? "O log do bot tem o motivo.";
     falar(avisarEm, `Não consegui tocar **${musica.titulo}**. ${motivo}`);
   }
 
-  /// Só tira da fila agora: enquanto tocava, ela precisava estar lá para o
-  /// "!fila" mostrar o que está no ar.
   fila.musicas.shift();
   return tocarProxima(fila, avisarEm);
 }
 
-/*
-  De onde vem a música.
-
-  O YouTube recusa requisição vinda de IP de datacenter — "Sign in to confirm
-  you're not a bot" — então um bot hospedado em nuvem não consegue tocar de lá
-  sem cookies de uma conta Google, que expiram e põem a conta em risco. O
-  SoundCloud não faz esse bloqueio.
-
-  Por isso a fonte é configurável: em casa (IP residencial) o YouTube funciona e
-  tem catálogo maior; na VM, SoundCloud. `GRAVAE_FONTE=youtube|soundcloud`.
-*/
 const FONTE = process.env.GRAVAE_FONTE ?? "youtube";
 
 async function procurar(busca) {
   const link = /^https?:\/\//.test(busca);
 
-  /// Link colado toca direto, seja de onde for: quem mandou já escolheu a fonte.
   if (link) return { title: busca, url: busca, timestamp: null };
 
   if (FONTE === "soundcloud") {
@@ -532,8 +386,6 @@ async function comandoPlay(mensagem, busca, config) {
   const musica = { titulo: video.title, url: video.url, duracao: video.timestamp };
   fila.musicas.push(musica);
 
-  /// `anunciarMusica` desligado silencia o "tocando agora", mas nunca as
-  /// respostas a um comando: quem escreveu espera retorno.
   const avisarEm = config.anunciarMusica ? mensagem.channelId : null;
 
   if (fila.tocando) {
@@ -546,8 +398,6 @@ async function comandoPlay(mensagem, busca, config) {
   }
 }
 
-/// Boas-vindas do BOT — diferente das do servidor. Esta é invenção do dev, e
-/// só existe porque alguém a configurou no painel dele.
 socket.on("member:joined", async (membro) => {
   const config = await configDe(membro?.guildId);
 
@@ -564,39 +414,22 @@ socket.on("member:joined", async (membro) => {
 });
 
 function filaDoAutor(mensagem) {
-  /// O comando vem do chat, que pode não ser o canal de voz. Com uma sala só
-  /// tocando, é ela; com várias, some pelo autor.
   return [...filas.values()][0] ?? null;
 }
 
-/*
-  O que o bot declara saber fazer.
-
-  A mesma lista que o app desenha quando alguém digita "/" — nome, para que
-  serve e o que ele espera. É o que troca "descobrir o comando pelo README"
-  por "escolher da lista".
-*/
 const COMANDOS = [
   {
-    nome: "play",
-    descricao: "Toca uma música do YouTube",
-    opcoes: [
-      { nome: "busca", descricao: "Nome da música ou link", tipo: "texto", obrigatoria: true },
+    name: "play",
+    description: "Toca uma música do YouTube",
+    options: [
+      { name: "busca", description: "Nome da música ou link", kind: "texto", required: true },
     ],
   },
-  { nome: "skip", descricao: "Pula a música atual" },
-  { nome: "stop", descricao: "Para tudo e sai do canal de voz" },
-  { nome: "fila", descricao: "Mostra o que vem por aí" },
+  { name: "skip", description: "Pula a música atual" },
+  { name: "stop", description: "Para tudo e sai do canal de voz" },
+  { name: "fila", description: "Mostra o que vem por aí" },
 ];
 
-/**
- * Um comando, venha de onde vier.
- *
- * `de` é só o que os comandos precisam saber de quem pediu: em que canal
- * responder e quem foi. Vem da mensagem quando alguém digita "!play", e do
- * evento quando alguém escolhe "/play" na lista — daí valer a pena o mesmo
- * corpo para os dois, em vez de duas cópias que um dia divergem.
- */
 async function executar(de, comando, argumento, config) {
   try {
     if (comando === "play") {
@@ -626,8 +459,6 @@ async function executar(de, comando, argumento, config) {
       if (!fila?.musicas.length) return falar(de.channelId, "A fila está vazia.");
 
       const lista = fila.musicas
-        /// A fila não leva link: seriam cinco cartões um embaixo do outro,
-        /// e o que se quer dali é a ordem, não a capa de cada um.
         .map((m, i) => (i === 0 ? `▶️ ${m.titulo}` : `${i}. ${m.titulo}`))
         .join("\n");
 
@@ -643,22 +474,12 @@ socket.on("connect", async () => {
   console.log(`no ar. Configuração vem de ${PAINEL}`);
   await mapearCanais().catch(() => undefined);
 
-  /// A cada partida, e a lista inteira: o que sumir daqui some do app, sem o
-  /// bot precisar lembrar o que registrou da última vez.
-  await pedirHttp("/bot/comandos", { metodo: "PUT", corpo: { comandos: COMANDOS } })
+  await pedirHttp("/bot/comandos", { metodo: "PUT", corpo: { commands: COMANDOS } })
     .then(() => console.log(`${COMANDOS.length} comandos de barra registrados`))
     .catch((erro) => console.error("[comandos]", erro.message));
 });
 socket.on("connect_error", (e) => console.error("não entrou:", e.message));
 
-/*
-  Desconectado ou movido pelo app.
-
-  O servidor manda `voice:move` com o canal vazio quando alguém desconecta o
-  bot pelo menu, e com outro canal quando o move. Nos dois casos a sala atual
-  não vale mais: o bot larga a fila e fica pronto para o próximo `/play` —
-  que entra de novo, no canal de quem pediu.
-*/
 socket.on("voice:move", async ({ channelId }) => {
   for (const fila of [...filas.values()]) {
     avisarQueCaiu(fila);
@@ -669,29 +490,14 @@ socket.on("voice:move", async ({ channelId }) => {
   console.log(channelId ? `me moveram para ${channelId}` : "me desconectaram da chamada");
 });
 
-/*
-  O comando de barra chegando.
-
-  Repare no que NÃO está aqui: nada de achar o prefixo, cortar a string,
-  conferir se veio argumento. O servidor já validou contra o que este bot
-  declarou, e `opcoes` chega separado e no tipo certo.
-*/
-socket.on("command:invoked", async ({ channelId, comando, opcoes, usuario }) => {
+socket.on("command:invoked", async ({ channelId, command, options, user }) => {
   const config = await configDe(await servidorDe(channelId));
 
-  /*
-    O "Canal dos comandos" do painel vale aqui também.
-
-    Mas com resposta, e não com silêncio: o comando aparece na lista em todo
-    canal, então quem escolheu num canal errado precisa saber por que nada
-    aconteceu. No caminho do texto, ignorar é certo — ali a pessoa nem sabia
-    que estava falando com o bot.
-  */
   if (config.canalDeComandos && config.canalDeComandos !== channelId) {
     return falar(channelId, `Meus comandos são no <#${config.canalDeComandos}>.`);
   }
 
-  await executar({ channelId, author: usuario }, comando, opcoes.busca ?? "", config);
+  await executar({ channelId, author: user }, command, options.busca ?? "", config);
 });
 
 socket.on("message:created", async (mensagem) => {
@@ -699,14 +505,12 @@ socket.on("message:created", async (mensagem) => {
 
   const config = await configDe(await servidorDe(mensagem.channelId));
 
-  /// Preso a um canal? Então é só ali. É o "Canal dos comandos" do painel.
   if (config.canalDeComandos && config.canalDeComandos !== mensagem.channelId) return;
 
   const texto = (mensagem.content ?? "").trim();
   const [bruto, ...resto] = texto.split(/\s+/);
   const argumento = resto.join(" ");
 
-  /// O prefixo vem do painel: com "+" configurado, o comando é "+play".
   if (!bruto?.startsWith(config.prefixo)) return;
 
   await executar(mensagem, bruto.slice(config.prefixo.length), argumento, config);

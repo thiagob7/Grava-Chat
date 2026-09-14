@@ -27,7 +27,7 @@ import {
   invokeCommand,
   react,
 } from "./difusao.js";
-import { io, type SocketData } from "./io.js";
+import { io, ioIfReady, type SocketData } from "./io.js";
 
 type GravaeSocket = Socket<ClientToServerEvents, ServerToClientEvents, Record<string, never>, SocketData>;
 
@@ -353,8 +353,10 @@ function waitingForPlay(userId: string): boolean {
 }
 
 async function announceLeave(guildId: string | null, channelId: string, userId: string) {
+  if (!ioIfReady()) return;
+
   const destinations = await voiceRecipients({ guildId, channelId });
-  io().to(destinations).emit("voice:left", { channelId, userId });
+  ioIfReady()?.to(destinations).emit("voice:left", { channelId, userId });
 }
 
 const SWEEP_MS_INTERVAL = 30_000;
@@ -379,11 +381,13 @@ export function watchCallsGhost(onFail: (err: unknown) => void) {
 }
 
 export async function broadcastPresence(userId: string, status?: PresenceStatus) {
+  if (!ioIfReady()) return;
+
   const projected = status ?? (await presenceService.mapFor([userId]))[userId] ?? "OFFLINE";
   const memberships = await memberRepository.guildIdsOf(userId);
 
-  io()
-    .to(memberships.map((m) => rooms.guild(m.guildId)))
+  ioIfReady()
+    ?.to(memberships.map((m) => rooms.guild(m.guildId)))
     .emit("presence:changed", { userId, status: projected });
 }
 

@@ -64,11 +64,6 @@ export const updateProfileInput = z.object({
 });
 export type UpdateProfileInput = z.infer<typeof updateProfileInput>;
 
-/*
-  `desafio` é o nome que a casca de antes da virada para o inglês manda, e ela
-  segue instalada na máquina de quem não reconstruiu. Sai daqui quando não
-  restar nenhuma.
-*/
 const challenge = z.string().min(20).max(200);
 
 export const desktopStartInput = z.union([

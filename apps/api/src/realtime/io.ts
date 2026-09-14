@@ -16,6 +16,10 @@ export function setIo(server: GravaeServer) {
   instance = server;
 }
 
+export function ioIfReady(): GravaeServer | null {
+  return instance;
+}
+
 export function io(): GravaeServer {
   if (!instance) throw new Error("Socket.IO ainda não foi inicializado");
   return instance;

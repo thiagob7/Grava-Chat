@@ -10,11 +10,6 @@ export class ApiError extends Error {
     this.name = "ErroDaApi";
   }
 
-  /*
-    A pergunta que todo cliente faz e quase nenhum responde direito. Insistir em
-    403 não muda nada até alguém mexer no cargo do bot; insistir em 429 e 5xx
-    resolve sozinho.
-  */
   get helpsInsist() {
     return this.status === 429 || this.status >= 500;
   }
@@ -23,7 +18,6 @@ export class ApiError extends Error {
 export interface ClientOptions {
   token: string;
   base?: string;
-  /** Quantas vezes repetir quando a falha for passageira. Zero desliga. */
   attempts?: number;
 }
 
@@ -51,10 +45,6 @@ export class Rest {
 
         last = error;
 
-        /*
-          Espera crescente, com um teto. Sem o teto, uma API fora do ar por
-          meia hora vira um bot que dorme meia hora depois que ela volta.
-        */
         await wait(Math.min(2 ** attempt * 500, 8000));
       }
     }

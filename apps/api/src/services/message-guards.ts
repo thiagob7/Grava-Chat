@@ -53,18 +53,6 @@ export async function verifiedRequireEmail(
   ).having("recusada");
 }
 
-/*
-  Os dois comandos vão juntos de propósito.
-
-  Separados, existia uma janela entre o `incr` e o `expire` em que a API podia
-  morrer. A chave ficava sem prazo, o contador nunca zerava, e como o teste é
-  "usos acima do limite" a pessoa levava 429 em toda mensagem PARA SEMPRE — com
-  a tela dizendo "espere 1s", porque o tempo restante voltava como -1.
-
-  O `NX` é o que mantém a janela fixa: só põe prazo em chave que ainda não tem,
-  então contar de novo não empurra o fim da janela para a frente. É o mesmo
-  feitio que a cota de upload já usava.
-*/
 export async function ensureFlow(userId: string) {
   const key = keys.messagesFlow(userId);
 

@@ -63,12 +63,6 @@ export const userRepository = {
       });
   },
 
-  /*
-    O status escolhido vive aqui, e não no Redis, porque é escolha da pessoa e
-    não cache: tem que continuar valendo depois de um Redis reiniciado ou
-    limpo. O que o Redis guarda de presença é só o que é descartável — quantas
-    abas estão conectadas e se o teclado parou.
-  */
   async desiredOf(id: string): Promise<DesiredStatus> {
     const found = await prisma.user.findUnique({
       where: { id },
