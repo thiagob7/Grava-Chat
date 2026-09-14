@@ -60,6 +60,10 @@ export async function createGateway(app: FastifyInstance) {
     try {
       const memberships = await memberRepository.guildIdsOf(socket.data.userId);
       socket.data.guildIds = memberships.map((m) => m.guildId);
+      socket.data.presenceOnConnect = await presenceService.onConnect(socket.data.userId).catch((err) => {
+        app.log.error({ err, userId: socket.data.userId }, "falha ao registrar presença");
+        return null;
+      });
       next();
     } catch (err) {
       next(err as Error);
@@ -88,10 +92,10 @@ export async function createGateway(app: FastifyInstance) {
       app.log.error({ err, userId }, "falha ao inscrever nos canais"),
     );
 
-    presenceService
-      .onConnect(userId)
-      .then((status) => (status ? broadcastPresence(userId, status) : undefined))
-      .catch((err) => app.log.error({ err, userId }, "falha ao registrar presença"));
+    const status = socket.data.presenceOnConnect;
+    if (status) {
+      broadcastPresence(userId, status).catch((err) => app.log.error({ err, userId }, "falha ao avisar presença"));
+    }
   });
 
   setIo(server);
