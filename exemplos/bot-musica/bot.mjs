@@ -162,8 +162,13 @@ const falar = (channelId, content) =>
   );
 
 function abrirAudio(paginaDoVideo, aoFalhar) {
+  const doYoutube = /^https?:\/\/(www\.|m\.)?(youtube\.com|youtu\.be)\//.test(paginaDoVideo);
+  const acesso = doYoutube && COOKIES_YOUTUBE
+    ? ["--cookies", COOKIES_YOUTUBE, "--js-runtimes", "node", "-f", "bestaudio/18"]
+    : ["-f", "bestaudio"];
+
   const ytdlp = spawn("yt-dlp", [
-    "-f", "bestaudio",
+    ...acesso,
     "--no-playlist",
     "--quiet",
     "--no-warnings",
@@ -355,6 +360,16 @@ async function tocarProxima(fila, avisarEm) {
 
   audio.matar();
 
+  if (!veioAlgo && !musica.reserva && /youtu\.?be/.test(musica.url)) {
+    const reserva = await procurarNoSoundcloud(musica.titulo).catch(() => null);
+
+    if (reserva && !fila.parando) {
+      if (avisarEm) falar(avisarEm, `O YouTube não deixou tocar agora; peguei **${reserva.title}** do SoundCloud.`);
+      fila.musicas[0] = { titulo: reserva.title, url: reserva.url, duracao: reserva.timestamp, reserva: true };
+      return tocarProxima(fila, null);
+    }
+  }
+
   if (!veioAlgo && avisarEm) {
     const motivo = audio.motivo() ?? "O log do bot tem o motivo.";
     falar(avisarEm, `Não consegui tocar **${musica.titulo}**. ${motivo}`);
@@ -365,6 +380,7 @@ async function tocarProxima(fila, avisarEm) {
 }
 
 const FONTE = process.env.GRAVAE_FONTE ?? "youtube";
+const COOKIES_YOUTUBE = process.env.GRAVAE_YOUTUBE_COOKIES ?? null;
 const PREVIA_SEGUNDOS = 31;
 
 async function procurar(busca) {
@@ -372,35 +388,40 @@ async function procurar(busca) {
 
   if (link) return { title: busca, url: busca, timestamp: null };
 
-  if (FONTE === "soundcloud") {
-    const achado = await rodar("yt-dlp", [
-      "scsearch8:" + busca,
-      "--flat-playlist",
-      "--print", "%(duration)s\t%(webpage_url)s\t%(title)s",
-      "--no-warnings",
-    ]).catch(() => null);
-
-    if (!achado) return null;
-
-    const musicas = achado.stdout
-      .trim()
-      .split("\n")
-      .map((linha) => {
-        const [duracao, url, ...titulo] = linha.split("\t");
-        return { segundos: Number(duracao), url, title: titulo.join("\t") };
-      })
-      .filter((m) => m.url?.startsWith("https://soundcloud.com/") && m.title);
-
-    const inteira = musicas.find((m) => m.segundos > PREVIA_SEGUNDOS) ?? null;
-    if (!inteira) return null;
-
-    const minutos = Math.floor(inteira.segundos / 60);
-    const segundos = String(Math.floor(inteira.segundos % 60)).padStart(2, "0");
-    return { title: inteira.title, url: inteira.url, timestamp: `${minutos}:${segundos}` };
+  if (FONTE !== "soundcloud") {
+    const resultado = await yts(busca).catch(() => null);
+    const video = resultado?.videos?.[0];
+    if (video) return video;
   }
 
-  const resultado = await yts(busca);
-  return resultado.videos?.[0] ?? null;
+  return procurarNoSoundcloud(busca);
+}
+
+async function procurarNoSoundcloud(busca) {
+  const achado = await rodar("yt-dlp", [
+    "scsearch8:" + busca,
+    "--flat-playlist",
+    "--print", "%(duration)s\t%(webpage_url)s\t%(title)s",
+    "--no-warnings",
+  ]).catch(() => null);
+
+  if (!achado) return null;
+
+  const musicas = achado.stdout
+    .trim()
+    .split("\n")
+    .map((linha) => {
+      const [duracao, url, ...titulo] = linha.split("\t");
+      return { segundos: Number(duracao), url, title: titulo.join("\t") };
+    })
+    .filter((m) => m.url?.startsWith("https://soundcloud.com/") && m.title);
+
+  const inteira = musicas.find((m) => m.segundos > PREVIA_SEGUNDOS) ?? null;
+  if (!inteira) return null;
+
+  const minutos = Math.floor(inteira.segundos / 60);
+  const segundos = String(Math.floor(inteira.segundos % 60)).padStart(2, "0");
+  return { title: inteira.title, url: inteira.url, timestamp: `${minutos}:${segundos}` };
 }
 
 async function comandoPlay(mensagem, busca, config) {
