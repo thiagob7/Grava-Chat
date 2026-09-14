@@ -81,7 +81,7 @@ function readVoiceMachine(data: Record<string, unknown>): Omit<VoiceMachine, "ms
 
   return {
     host: typeof data.host === "string" ? data.host : "voz",
-    cores: numberFrom(data.cores) || 1,
+    cores: numberFrom(data.cores, data.nucleos) || 1,
     carga: {
       um: numberFrom(load.um, load.one),
       five: numberFrom(load.five, load.cinco),
