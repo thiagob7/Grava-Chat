@@ -43,7 +43,7 @@ async function sendDirect(
   const reply = await fetch(uploadUrl, {
     method: "PUT",
     body: prepared.file,
-    headers: { "Content-Type": kind },
+    headers: { "Content-Type": attachment.contentType },
   });
 
   if (!reply.ok) throw new Error(`storage respondeu ${reply.status}`);
@@ -64,7 +64,7 @@ export async function sendFile(file: File): Promise<Attachment> {
   const reply = await fetch(uploadUrl, {
     method: "PUT",
     body: file,
-    headers: { "Content-Type": kind },
+    headers: { "Content-Type": attachment.contentType },
   });
 
   if (!reply.ok) throw new Error(`storage respondeu ${reply.status}`);

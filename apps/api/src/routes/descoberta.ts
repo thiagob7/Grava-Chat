@@ -3,6 +3,7 @@ import { z } from "zod";
 import { APP_CATEGORIES, rooms } from "@gravae/shared";
 
 import { io } from "~/realtime/io.js";
+import { syncGuildRooms } from "~/realtime/room-sync.js";
 import { botService } from "~/services/bot-service.js";
 import {
   reportService,
@@ -67,6 +68,7 @@ export async function discoveryRoutes(app: FastifyInstance) {
     if (result.member) {
       io().to(rooms.guild(guildId)).emit("member:joined", result.member);
       io().in(rooms.user(req.userId)).socketsJoin(rooms.guild(guildId));
+      await syncGuildRooms(guildId, [req.userId]).catch(() => undefined);
 
       const greeting = await guildService.goodWelcome(guildId, req.userId);
       if (greeting) io().to(rooms.channel(greeting.channelId)).emit("message:created", greeting);

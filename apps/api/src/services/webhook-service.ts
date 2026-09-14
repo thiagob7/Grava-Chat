@@ -1,4 +1,4 @@
-import { randomBytes } from "node:crypto";
+import { randomBytes, timingSafeEqual } from "node:crypto";
 import { AppError, NotFoundError, UnauthorizedError } from "~/lib/http.js";
 import { redis, keys } from "~/lib/redis.js";
 import { toMessage, toPublicUser } from "~/lib/serialize.js";
@@ -13,6 +13,12 @@ import type {
   ExecuteWebhookInput,
   UpdateWebhookInput,
 } from "~/validations/webhook.js";
+
+const sameToken = (expected: string, given: string) => {
+  const a = Buffer.from(expected);
+  const b = Buffer.from(given);
+  return a.length === b.length && timingSafeEqual(a, b);
+};
 
 const LIMIT_BY_WINDOW = 5;
 const WINDOW_S = 5;
@@ -37,8 +43,9 @@ export const webhookService = {
   async list(userId: string, guildId: string, baseUrl: string) {
     await accessService.requirePermission(userId, guildId, "MANAGE_WEBHOOKS");
 
+    const readable = new Set(await accessService.readableChannels(userId, guildId, { withHistory: false }));
     const webhooks = await webhookRepository.findManyByGuild(guildId);
-    return webhooks.map((w) => isPublic(w, baseUrl));
+    return webhooks.filter((w) => readable.has(w.channelId)).map((w) => isPublic(w, baseUrl));
   },
 
   async create(userId: string, guildId: string, input: CreateWebhookInput, baseUrl: string) {
@@ -76,12 +83,14 @@ export const webhookService = {
     input: UpdateWebhookInput,
     baseUrl: string,
   ) {
-    await accessService.requirePermission(userId, guildId, "MANAGE_WEBHOOKS");
-
     const current = await webhookRepository.findById(webhookId);
     if (!current || current.guildId !== guildId) throw new NotFoundError("Webhook não encontrado");
 
+    await accessService.requirePermission(userId, guildId, "MANAGE_WEBHOOKS", current.channelId);
+
     if (input.channelId) {
+      await accessService.requirePermission(userId, guildId, "MANAGE_WEBHOOKS", input.channelId);
+
       const channel = await channelRepository.findById(input.channelId);
       if (!channel || channel.guildId !== guildId) throw new NotFoundError("Canal não encontrado");
       if (channel.type !== "TEXT" && channel.type !== "FORUM") {
@@ -100,10 +109,10 @@ export const webhookService = {
   },
 
   async remove(userId: string, guildId: string, webhookId: string) {
-    await accessService.requirePermission(userId, guildId, "MANAGE_WEBHOOKS");
-
     const webhook = await webhookRepository.findById(webhookId);
     if (!webhook || webhook.guildId !== guildId) throw new NotFoundError("Webhook não encontrado");
+
+    await accessService.requirePermission(userId, guildId, "MANAGE_WEBHOOKS", webhook.channelId);
 
     await webhookRepository.remove(webhookId);
 
@@ -116,7 +125,7 @@ export const webhookService = {
     const webhook = await webhookRepository.findById(webhookId);
 
     if (!webhook) throw new NotFoundError("Webhook não encontrado");
-    if (webhook.token !== token) throw new UnauthorizedError("Token inválido");
+    if (!sameToken(webhook.token, token)) throw new UnauthorizedError("Token inválido");
 
     const content = (input.content ?? "").trim();
     if (!content) throw new AppError("Mensagem vazia");

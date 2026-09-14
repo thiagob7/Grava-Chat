@@ -14,6 +14,8 @@ const request = z.object({
 const authorization = request.extend({
   guild_id: objectId.optional(),
   permissions: z.array(z.string().max(64)).max(64).optional(),
+  code_challenge: z.string().regex(/^[\w-]{43}$/).optional(),
+  code_challenge_method: z.literal("S256").optional(),
 });
 
 const swap = z.object({
@@ -21,6 +23,7 @@ const swap = z.object({
   client_id: objectId,
   client_secret: z.string().min(1).max(200),
   redirect_uri: z.string().url(),
+  code_verifier: z.string().min(43).max(128).optional(),
 });
 
 async function applicationSession(req: FastifyRequest) {
@@ -42,7 +45,7 @@ export async function oauthRoutes(app: FastifyInstance) {
   });
 
   app.post("/oauth2/autorizar", { preHandler: [app.authenticate] }, (req) => {
-    const { client_id, redirect_uri, scope, guild_id, permissions } = authorization.parse(req.body);
+    const { client_id, redirect_uri, scope, guild_id, permissions, code_challenge } = authorization.parse(req.body);
 
     return oauthService.emitCode(req.userId, {
       botId: client_id,
@@ -50,6 +53,7 @@ export async function oauthRoutes(app: FastifyInstance) {
       scopes: scope.split(/[\s+]+/).filter(Boolean),
       guildId: guild_id,
       permissions: permissions,
+      codeChallenge: code_challenge,
     });
   });
 
@@ -61,6 +65,7 @@ export async function oauthRoutes(app: FastifyInstance) {
       clientId: data.client_id,
       clientSecret: data.client_secret,
       redirectUri: data.redirect_uri,
+      codeVerifier: data.code_verifier,
     });
   });
 

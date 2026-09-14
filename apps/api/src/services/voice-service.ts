@@ -25,7 +25,7 @@ export async function voiceRecipients(state: {
   guildId: string | null;
   channelId: string;
 }): Promise<string[]> {
-  if (state.guildId) return [rooms.guild(state.guildId)];
+  if (state.guildId) return [rooms.channel(state.channelId)];
 
   const channel = await channelRepository.findById(state.channelId);
   return (channel?.recipients ?? []).map(rooms.user);
@@ -338,6 +338,11 @@ export const voiceService = {
       throw new ForbiddenError("Você não pode entrar neste canal de voz");
     }
 
+    if (channel.userLimit > 0 && anterior?.channelId !== channelId) {
+      const inside = await liveMembers(channelId);
+      if (inside.length >= channel.userLimit) throw new AppError("Este canal de voz está cheio", 403);
+    }
+
     const user = await userRepository.findByIdOrThrow(userId);
 
     const token = new AccessToken(env.LIVEKIT_API_KEY, env.LIVEKIT_API_SECRET, {
@@ -392,9 +397,12 @@ export const voiceService = {
     clientId: string | null = null,
     device: VoiceDevice | null = null,
   ) {
-    const { channel } = await accessService.requireChannelAccess(userId, channelId);
+    const { channel, context } = await accessService.requireChannelAccess(userId, channelId);
     if (channel.type !== "VOICE" && !isPrivateCall(channel)) {
       throw new AppError("Este canal não é de voz");
+    }
+    if (context && !has(context.permissions, "CONNECT")) {
+      throw new ForbiddenError("Você não pode entrar neste canal de voz");
     }
 
     const previous = await voiceService.get(userId);
@@ -514,7 +522,8 @@ export const voiceService = {
     const guildIds = members.map((m) => m.guildId);
     if (!guildIds.length) return {};
 
-    const channels = await channelRepository.voiceChannelsOfGuilds(guildIds);
+    const visible = new Set(await accessService.listenableChannels(userId, guildIds));
+    const channels = (await channelRepository.voiceChannelsOfGuilds(guildIds)).filter((c) => visible.has(c.id));
     if (!channels.length) return {};
 
     const states = await voiceService.statesForChannels(channels.map((c) => c.id));

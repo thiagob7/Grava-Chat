@@ -1,10 +1,10 @@
 import { z } from "zod";
 
 const schema = z.object({
-  NODE_ENV: z.enum(["development", "production", "test"]).default("development"),
+  NODE_ENV: z.enum(["development", "production", "test"]).default("production"),
 
   API_PORT: z.coerce.number().int().default(3333),
-  API_HOST: z.string().default("0.0.0.0"),
+  API_HOST: z.string().default("127.0.0.1"),
   API_PUBLIC_URL: z.url().default("http://localhost:3333"),
   WEB_ORIGIN: z.string().default("http://localhost:5173"),
 
@@ -44,6 +44,8 @@ const schema = z.object({
   COOKIE_BETWEEN_SITES: z.stringbool().default(false),
 
   ACCEPT_PREVIEWS_VERCEL: z.stringbool().default(false),
+  VERCEL_PREVIEW_SCOPE: z.string().default(""),
+  EDGE_SECRET: z.string().refine((v) => !v || v.length >= 32, "EDGE_SECRET precisa de 32 caracteres ou mais").default(""),
 
   RESEND_API_KEY: z.string().default(""),
   EMAIL_SENDER: z.string().default("Gravaê <onboarding@resend.dev>"),

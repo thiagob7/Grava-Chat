@@ -341,6 +341,26 @@ describe("enviar", () => {
     vi.mocked(guildRepository.findById).mockReset();
   });
 
+  it("recusa anexo cuja chave é de outra pessoa", async () => {
+    await expect(
+      messageService.send(AUTHOR, {
+        channelId: CHANNEL,
+        content: "",
+        attachments: [
+          {
+            id: "gravae-chat/outra-pessoa/a1/avatar.png",
+            url: "https://exemplo/avatar.png",
+            filename: "avatar.png",
+            contentType: "image/png",
+            size: 10,
+          },
+        ],
+      }),
+    ).rejects.toThrow("não foi enviado por você");
+
+    expect(createMessage).not.toHaveBeenCalled();
+  });
+
   it("com o filtro de mídia ligado, a imagem chega escondida", async () => {
     const { guildRepository } = await import("~/repositories/guild-repository.js");
     vi.mocked(guildRepository.findById).mockResolvedValue({
@@ -348,12 +368,14 @@ describe("enviar", () => {
     } as never);
     createMessage.mockResolvedValue(messageRow);
 
+    const { env } = await import("~/env.js");
+
     await messageService.send(AUTHOR, {
       channelId: CHANNEL,
       content: "",
       attachments: [
         {
-          id: "a1",
+          id: [env.R2_PREFIX, AUTHOR, "a1", "foto.png"].filter(Boolean).join("/"),
           url: "https://exemplo/foto.png",
           filename: "foto.png",
           contentType: "image/png",

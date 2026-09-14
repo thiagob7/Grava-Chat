@@ -63,15 +63,57 @@ async function canSearch(target: URL): Promise<boolean> {
     .catch(() => false);
 }
 
+const REDIRECTS_MAX = 5;
+
 async function search(url: string, accept: string) {
   const control = new AbortController();
   const clock = setTimeout(() => control.abort(), TEMPO_LIMIT);
 
-  return fetch(url, {
-    signal: control.signal,
-    redirect: "follow",
-    headers: { "user-agent": UA, accept, "accept-language": "pt-BR,pt;q=0.9,en;q=0.8" },
-  }).finally(() => clearTimeout(clock));
+  try {
+    let current = new URL(url);
+
+    for (let hop = 0; hop <= REDIRECTS_MAX; hop++) {
+      if (!(await canSearch(current))) throw new Error("endereço recusado");
+
+      const reply = await fetch(current, {
+        signal: control.signal,
+        redirect: "manual",
+        headers: { "user-agent": UA, accept, "accept-language": "pt-BR,pt;q=0.9,en;q=0.8" },
+      });
+
+      const location = reply.headers.get("location");
+      if (reply.status < 300 || reply.status >= 400 || !location) return reply;
+
+      await reply.body?.cancel().catch(() => undefined);
+      current = new URL(location, current);
+    }
+
+    throw new Error("redirecionamentos demais");
+  } finally {
+    clearTimeout(clock);
+  }
+}
+
+const PLAYER_HOSTS = [
+  "www.youtube-nocookie.com",
+  "www.youtube.com",
+  "player.vimeo.com",
+  "player.twitch.tv",
+  "clips.twitch.tv",
+  "open.spotify.com",
+  "w.soundcloud.com",
+  "streamable.com",
+];
+
+function trustedPlayer(value: string | null): string | null {
+  if (!value) return null;
+
+  try {
+    const url = new URL(value);
+    return url.protocol === "https:" && PLAYER_HOSTS.includes(url.hostname) ? url.href : null;
+  } catch {
+    return null;
+  }
 }
 
 async function readStart(reply: Response): Promise<string> {
@@ -287,7 +329,8 @@ async function pageCard(url: string, target: URL): Promise<Embed | null> {
     (tagTitle ? unescape(tagTitle.trim()) : null);
 
   const image = first("og:image:secure_url", "og:image:url", "og:image", "twitter:image", "twitter:image:src");
-  const player = first("og:video:secure_url", "og:video:url", "og:video", "twitter:player");
+  const playerFound = first("og:video:secure_url", "og:video:url", "og:video", "twitter:player");
+  const player = playerFound ? trustedPlayer(absolute(playerFound, base)) : null;
   const description = first("og:description", "twitter:description", "description");
 
   if (!title && !description && !image) return null;
@@ -301,7 +344,7 @@ async function pageCard(url: string, target: URL): Promise<Embed | null> {
     image: image ? absolute(image, base) : null,
     favicon: pageIcon(html, base),
     author: first("article:author", "twitter:creator", "author"),
-    player: player ? absolute(player, base) : null,
+    player,
     color: themeColor(first("theme-color", "msapplication-TileColor")),
     width: number(first("og:image:width") ?? undefined),
     height: number(first("og:image:height") ?? undefined),

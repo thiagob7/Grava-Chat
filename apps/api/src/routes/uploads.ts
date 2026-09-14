@@ -34,10 +34,10 @@ export async function uploadRoutes(app: FastifyInstance) {
       throw new AppError(`Passa do limite de ${Math.round(ceiling / 1024)} KB para ${purpose}`, 413);
     }
 
-    return uploadService.upload(req.userId, {
-      filename: file.filename,
-      contentType: file.mimetype || "application/octet-stream",
-      body,
-    });
+    return uploadService.upload(
+      req.userId,
+      { filename: file.filename, contentType: file.mimetype || "application/octet-stream", body },
+      purpose,
+    );
   });
 }

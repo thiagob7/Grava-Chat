@@ -113,7 +113,7 @@ export function createWindow() {
     })();
 
     if (!our) {
-      if (url.startsWith("http")) void shell.openExternal(url);
+      if (/^https?:\/\//i.test(url)) void shell.openExternal(url);
       return { action: "deny" };
     }
 
@@ -139,9 +139,20 @@ export function createWindow() {
   });
 
   appWindow.webContents.on("will-navigate", (event, url) => {
-    if (new URL(url).origin === APP_ORIGIN) return;
+    const target = (() => {
+      try {
+        return new URL(url);
+      } catch {
+        return null;
+      }
+    })();
+
+    if (target?.origin === APP_ORIGIN) return;
     event.preventDefault();
-    void shell.openExternal(url);
+
+    if (target && (target.protocol === "https:" || target.protocol === "http:")) {
+      void shell.openExternal(target.href);
+    }
   });
 
   appWindow.webContents.session.setPermissionRequestHandler((who, permission, allow, details) => {

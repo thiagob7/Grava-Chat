@@ -8,8 +8,10 @@ import {
 } from "@gravae/shared";
 
 import { io } from "~/realtime/io.js";
+import { syncGuildRooms } from "~/realtime/room-sync.js";
 import { botService } from "~/services/bot-service.js";
 import { objectId } from "~/validations/common.js";
+import { r2Url } from "~/validations/auth.js";
 
 const botParams = z.object({ botId: objectId });
 const botServer = z.object({ botId: objectId, guildId: objectId });
@@ -18,8 +20,8 @@ const createBody = z.object({ name: z.string().trim().min(2).max(32) });
 const editBody = z.object({
   name: z.string().trim().min(2).max(32).optional(),
   description: z.string().trim().max(300).nullable().optional(),
-  avatarUrl: z.string().url().nullable().optional(),
-  coverUrl: z.string().url().nullable().optional(),
+  avatarUrl: r2Url.nullable().optional(),
+  coverUrl: r2Url.nullable().optional(),
   categories: z.array(z.enum(APP_CATEGORIES)).max(CATEGORIES_LIMIT).optional(),
   languages: z.array(z.string().max(10)).max(LANGUAGES_LIMIT).optional(),
   termsUrl: z.string().url().nullable().optional(),
@@ -59,7 +61,7 @@ export async function botRoutes(app: FastifyInstance) {
   );
 
   app.get("/bots/:botId/servidores", (req) =>
-    botService.servers(botParams.parse(req.params).botId),
+    botService.serversSeenBy(req.userId, botParams.parse(req.params).botId),
   );
 
   const notifyCommands = (guildId: string) =>
@@ -75,7 +77,8 @@ export async function botRoutes(app: FastifyInstance) {
 
   app.delete("/bots/:botId/servidores/:guildId", async (req, reply) => {
     const { botId, guildId } = botServer.parse(req.params);
-    await botService.removeServer(req.userId, botId, guildId);
+    const botUserId = await botService.removeServer(req.userId, botId, guildId);
+    await syncGuildRooms(guildId, [botUserId]).catch(() => undefined);
 
     notifyCommands(guildId);
     return reply.status(204).send();

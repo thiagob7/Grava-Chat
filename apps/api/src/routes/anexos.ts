@@ -1,7 +1,7 @@
 import type { FastifyInstance } from "fastify";
 import { z } from "zod";
 
-import { env } from "~/env.js";
+import { isR2Url } from "~/lib/r2-url.js";
 import { AppError } from "~/lib/http.js";
 
 const LARGER_TEXT = 512 * 1024;
@@ -14,12 +14,12 @@ export async function attachmentRoutes(app: FastifyInstance) {
   app.get("/anexos/texto", async (req) => {
     const { url } = query.parse(req.query);
 
-    if (!url.startsWith(env.R2_PUBLIC_URL)) {
+    if (!isR2Url(url)) {
       throw new AppError("Esse arquivo não é daqui", 400);
     }
 
-    const reply = await fetch(url);
-    if (!reply.ok) throw new AppError("Não consegui ler o arquivo", 502);
+    const reply = await fetch(url, { redirect: "error", signal: AbortSignal.timeout(10_000) }).catch(() => null);
+    if (!reply?.ok) throw new AppError("Não consegui ler o arquivo", 502);
 
     const size = Number(reply.headers.get("content-length") ?? 0);
     if (size > LARGER_TEXT) throw new AppError("Arquivo grande demais para prévia", 413);

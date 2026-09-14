@@ -45,7 +45,14 @@ export async function buildApp() {
     logger: isDev
       ? { transport: { target: "pino-pretty", options: { translateTime: "HH:MM:ss", ignore: "pid,hostname" } } }
       : true,
-    trustProxy: true,
+    trustProxy: ["127.0.0.1", "::1"],
+  });
+
+  app.addHook("onSend", async (_req, reply) => {
+    reply.header("X-Content-Type-Options", "nosniff");
+    reply.header("X-Frame-Options", "DENY");
+    reply.header("Referrer-Policy", "strict-origin-when-cross-origin");
+    if (!isDev) reply.header("Strict-Transport-Security", "max-age=31536000; includeSubDomains");
   });
 
   await app.register(sensible);

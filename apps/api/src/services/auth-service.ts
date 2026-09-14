@@ -5,6 +5,7 @@ import { checkPassword, generateHash } from "~/lib/senha.js";
 import { userRepository } from "~/repositories/user-repository.js";
 import { sessionRepository } from "~/repositories/session-repository.js";
 import { accountRepository } from "~/repositories/account-repository.js";
+import { revokeAccess } from "~/lib/token-revocation.js";
 
 export const REFRESH_COOKIE = "gravae_rt";
 export const ACCESS_TTL = "15m";
@@ -35,7 +36,12 @@ export const authService = {
 
     if (existing.supersededAt) {
       const age = Date.now() - existing.supersededAt.getTime();
-      if (age > ROTATION_GRACE_MS) return null;
+
+      if (age > ROTATION_GRACE_MS) {
+        await sessionRepository.revokeAllForUser(existing.userId);
+        await revokeAccess(existing.userId);
+        return null;
+      }
 
       return { userId: existing.userId, ...(await authService.issueRefreshToken(existing.userId, meta)) };
     }
@@ -80,6 +86,7 @@ export const authService = {
 
   async revokeAll(userId: string) {
     await sessionRepository.revokeAllForUser(userId);
+    await revokeAccess(userId);
   },
 
   async requireUser(userId: string) {
@@ -162,6 +169,8 @@ export const authService = {
     }
 
     await userRepository.update(userId, { passwordHash: await generateHash(params.fresh) });
+    await sessionRepository.revokeAllForUser(userId);
+    await revokeAccess(userId);
 
     const accounts = await accountRepository.findManyByUser(userId);
     if (!accounts.some((c) => c.provider === "senha")) {
@@ -181,11 +190,21 @@ export const authService = {
     const linked = await accountRepository.findByProvider(params.provider, params.providerAccountId);
     if (linked) return linked.user;
 
-    const user = await authService.findOrCreateUser({
+    let user = await authService.findOrCreateUser({
       email: params.email,
       displayName: params.displayName,
       avatarUrl: params.avatarUrl,
     });
+
+    if (!user.emailVerifiedAt) {
+      if (user.passwordHash) {
+        await accountRepository.removeProvider(user.id, "senha");
+        await sessionRepository.revokeAllForUser(user.id);
+        await revokeAccess(user.id);
+      }
+
+      user = await userRepository.update(user.id, { emailVerifiedAt: new Date(), passwordHash: null });
+    }
 
     await accountRepository.create({
       userId: user.id,

@@ -1,4 +1,4 @@
-import { randomBytes, timingSafeEqual } from "node:crypto";
+import { createHash, randomBytes, timingSafeEqual } from "node:crypto";
 
 import { SCOPES, has, type ScopeAuth, type Permission } from "@gravae/shared";
 import { AppError, ForbiddenError, NotFoundError, UnauthorizedError } from "~/lib/http.js";
@@ -16,6 +16,7 @@ const TOKEN_TTL = 7 * 24 * 60 * 60;
 type Scope = ScopeAuth;
 
 interface Code {
+  codeChallenge?: string;
   userId: string;
   botId: string;
   scopes: Scope[];
@@ -65,7 +66,14 @@ export const oauthService = {
 
   async emitCode(
     userId: string,
-    params: { botId: string; redirectUri: string; scopes: string[]; guildId?: string; permissions?: string[] },
+    params: {
+      botId: string;
+      redirectUri: string;
+      scopes: string[];
+      guildId?: string;
+      permissions?: string[];
+      codeChallenge?: string;
+    },
   ) {
     const request = await oauthService.describeRequest(params);
 
@@ -83,6 +91,7 @@ export const oauthService = {
       botId: request.bot.id,
       scopes: request.scopes,
       redirectUri: params.redirectUri,
+      ...(params.codeChallenge ? { codeChallenge: params.codeChallenge } : {}),
     };
 
     await redis.set(keys.oauthCode(code), JSON.stringify(data), "EX", CODE_TTL);
@@ -95,6 +104,7 @@ export const oauthService = {
     clientId: string;
     clientSecret: string;
     redirectUri: string;
+    codeVerifier?: string;
   }) {
     const bot = await botRepository.findById(params.clientId);
     if (!bot || !equal(bot.clientSecret, params.clientSecret)) {
@@ -108,6 +118,14 @@ export const oauthService = {
 
     if (code.botId !== params.clientId || code.redirectUri !== params.redirectUri) {
       throw new UnauthorizedError("Código não confere com a aplicação");
+    }
+
+    if (code.codeChallenge) {
+      const derived = params.codeVerifier
+        ? createHash("sha256").update(params.codeVerifier).digest("base64url")
+        : "";
+
+      if (!equal(code.codeChallenge, derived)) throw new UnauthorizedError("code_verifier não confere");
     }
 
     const token = randomBytes(32).toString("base64url");

@@ -5,12 +5,12 @@ import {
   LIMITS,
   statusCustomSchema,
 } from "@gravae/shared";
-import { env } from "~/env.js";
+import { isR2Url } from "~/lib/r2-url.js";
 
 export const r2Url = z
   .url()
   .refine(
-    (u) => u.startsWith(env.R2_PUBLIC_URL),
+    (u) => isR2Url(u),
     "A imagem precisa ter sido enviada aqui",
   );
 

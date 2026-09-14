@@ -9,6 +9,7 @@ import { guildService } from "~/services/guild-service.js";
 import { messageService } from "~/services/message-service.js";
 import { badgeService } from "~/services/emblema-service.js";
 import { io } from "~/realtime/io.js";
+import { syncGuildRooms } from "~/realtime/room-sync.js";
 import {
   guildParams,
   guildChannelParams,
@@ -197,6 +198,7 @@ export async function guildRoutes(app: FastifyInstance) {
       createChannelInput.parse(req.body),
     );
 
+    void syncGuildRooms(guildId).catch((err) => req.log.error({ err }, "falha ao ressincronizar salas"));
     io().to(rooms.guild(guildId)).emit("channel:created", channel);
     return reply.code(201).send(channel);
   });
@@ -211,6 +213,7 @@ export async function guildRoutes(app: FastifyInstance) {
     );
 
     io().to(rooms.guild(guildId)).emit("channel:updated", channel);
+    void syncGuildRooms(guildId).catch((err) => req.log.error({ err }, "falha ao ressincronizar salas"));
     return channel;
   });
 
@@ -328,7 +331,7 @@ export async function guildRoutes(app: FastifyInstance) {
     await guildService.removeMember(req.userId, guildId, userId);
 
     io().to(rooms.guild(guildId)).emit("member:left", { guildId, userId });
-    io().in(rooms.user(userId)).socketsLeave(rooms.guild(guildId));
+    await syncGuildRooms(guildId, [userId]);
 
     return reply.code(204).send();
   });

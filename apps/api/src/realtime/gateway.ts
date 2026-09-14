@@ -6,6 +6,7 @@ import { rooms } from "@gravae/shared";
 import { env } from "~/env.js";
 import { watch } from "~/lib/redis.js";
 import { corsOrigin } from "~/lib/origins.js";
+import { accessRevoked } from "~/lib/token-revocation.js";
 import { channelRepository, memberRepository } from "~/repositories/guild-repository.js";
 import { accessService } from "~/services/access-service.js";
 import { setIo, type GravaeServer } from "./io.js";
@@ -56,7 +57,8 @@ export async function createGateway(app: FastifyInstance) {
       socket.data.isBot = true;
     } else {
       try {
-        const payload = app.jwt.verify<{ sub: string }>(token);
+        const payload = app.jwt.verify<{ sub: string; iat?: number }>(token);
+        if (await accessRevoked(payload.sub, payload.iat)) return next(new Error("Token inválido ou expirado"));
         socket.data.userId = payload.sub;
         socket.data.voiceChannelId = null;
       } catch {

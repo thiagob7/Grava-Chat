@@ -12,6 +12,7 @@ export const autoModCrud = {
 
   async create(userId: string, guildId: string, input: AutoModRuleInput) {
     await accessService.requirePermission(userId, guildId, "MANAGE_GUILD");
+    await accessService.requireChannelsOfGuild(guildId, [input.alertChannelId]);
 
     const rule = await autoModRepository.create({
       guildId,
@@ -43,6 +44,8 @@ export const autoModCrud = {
 
     const rule = await autoModRepository.findById(ruleId);
     if (!rule || rule.guildId !== guildId) throw new NotFoundError("Regra não encontrada");
+
+    await accessService.requireChannelsOfGuild(guildId, [input.alertChannelId]);
 
     const updated = await autoModRepository.update(ruleId, {
       ...input,

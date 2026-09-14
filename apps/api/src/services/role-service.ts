@@ -3,7 +3,7 @@ import { AppError, ForbiddenError, NotFoundError } from "~/lib/http.js";
 import { toMember, toRole } from "~/lib/serialize.js";
 import { memberRepository, channelRepository } from "~/repositories/guild-repository.js";
 import { roleRepository, overwriteRepository } from "~/repositories/role-repository.js";
-import { accessService, type Context } from "./access-service.js";
+import { accessService, requireGrantable } from "./access-service.js";
 import { auditService, difference } from "./audit-service.js";
 import type {
   CreateRoleInput,
@@ -12,15 +12,6 @@ import type {
   SetOverwriteInput,
   UpdateRoleInput,
 } from "~/validations/role.js";
-
-function requireGrantable(context: Context, permissions: Permission[]) {
-  if (context.isOwner || context.permissions.has("ADMINISTRATOR")) return;
-
-  const missing = permissions.filter((p) => !context.permissions.has(p));
-  if (missing.length) {
-    throw new ForbiddenError(`Você não pode conceder permissões que não tem: ${missing.join(", ")}`);
-  }
-}
 
 async function roleDoGuild(guildId: string, roleId: string) {
   const role = await roleRepository.findById(roleId);
@@ -258,6 +249,8 @@ export const roleService = {
       }
     } else if (!(await memberRepository.find(guildId, targetId))) {
       throw new NotFoundError("Membro não encontrado");
+    } else if (targetId !== userId) {
+      await accessService.targetRequireAbove(context, guildId, targetId);
     }
 
     if (!input.allow.length && !input.deny.length) {
