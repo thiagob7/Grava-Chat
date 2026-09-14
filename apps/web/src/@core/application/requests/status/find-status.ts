@@ -35,6 +35,13 @@ export interface CheckService {
   ms: number;
 }
 
+export interface MonthlyTraffic {
+  month: string;
+  sent: number;
+  received: number;
+  since: string | null;
+}
+
 export interface VoiceMachine {
   unavailable?: false;
   host: string;
@@ -44,6 +51,7 @@ export interface VoiceMachine {
   disk: { total: number; livre: number };
   machineUptime: number;
   livekit: { inAr: boolean; resident: number };
+  traffic?: MonthlyTraffic | null;
   ms: number;
 }
 
@@ -59,6 +67,7 @@ export interface ServerStatus {
     processUptime: number;
     machineUptime: number;
     node: string;
+    traffic?: MonthlyTraffic | null;
   };
   gateway: { connections: number; people: number; bots: number } | null;
   voice: VoiceMachine | { unavailable: true } | null;

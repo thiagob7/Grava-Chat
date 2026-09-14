@@ -4,6 +4,7 @@ import type { FastifyInstance } from "fastify";
 
 import { env } from "~/env.js";
 import { prisma } from "~/lib/prisma.js";
+import { monthlyTraffic, type MonthlyTraffic } from "~/lib/network-traffic.js";
 import { redis } from "~/lib/redis.js";
 import { io } from "~/realtime/io.js";
 import { adminService } from "~/services/admin-service.js";
@@ -78,6 +79,7 @@ function readVoiceMachine(data: Record<string, unknown>): Omit<VoiceMachine, "ms
   const memory = objectFrom(data.memoria);
   const disk = objectFrom(data.disk ?? data.disco);
   const livekit = objectFrom(data.livekit);
+  const traffic = data.trafego && typeof data.trafego === "object" ? objectFrom(data.trafego) : null;
 
   return {
     host: typeof data.host === "string" ? data.host : "voz",
@@ -98,6 +100,14 @@ function readVoiceMachine(data: Record<string, unknown>): Omit<VoiceMachine, "ms
       inAr: Boolean(livekit.inAr ?? livekit.noAr),
       resident: numberFrom(livekit.resident, livekit.residente),
     },
+    traffic: traffic
+      ? {
+          month: typeof traffic.mes === "string" ? traffic.mes : "",
+          sent: numberFrom(traffic.enviado),
+          received: numberFrom(traffic.recebido),
+          since: typeof traffic.desde === "string" ? traffic.desde : null,
+        }
+      : null,
   };
 }
 
@@ -109,6 +119,7 @@ interface VoiceMachine {
   disk: { total: number; livre: number };
   machineUptime: number;
   livekit: { inAr: boolean; resident: number };
+  traffic: MonthlyTraffic | null;
   ms: number;
 }
 
@@ -134,13 +145,14 @@ export async function statusRoutes(app: FastifyInstance) {
     const token = req.headers["x-gravae-admin"];
     await adminService.require(req.userId, typeof token === "string" ? token : undefined, "servidor");
 
-    const [db, cache, rooms, ram, hd, voice] = await Promise.all([
+    const [db, cache, rooms, ram, hd, voice, traffic] = await Promise.all([
       measure("mongo", () => prisma.$runCommandRaw({ ping: 1 })),
       measure("redis", () => redis.ping()),
       voiceService.sfuState().catch(() => null),
       memoria(),
       disk(),
       voiceMachine(),
+      monthlyTraffic(),
     ]);
 
     const [c1, c5, c15] = os.loadavg();
@@ -157,6 +169,7 @@ export async function statusRoutes(app: FastifyInstance) {
         processUptime: Math.round(process.uptime()),
         machineUptime: Math.round(os.uptime()),
         node: process.version,
+        traffic,
       },
       gateway: gateway(),
       voice,

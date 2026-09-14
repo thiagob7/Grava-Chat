@@ -15,6 +15,7 @@ import {
   Mic,
   MicOff,
   MonitorUp,
+  Network,
   Plug,
   Radio,
   RefreshCw,
@@ -25,6 +26,7 @@ import {
 
 import type {
   CheckService,
+  MonthlyTraffic,
   VoiceGhost,
   RoomParticipant,
 } from "~/@core/application/requests/status/find-status";
@@ -42,6 +44,14 @@ import {
 import { IconButton } from "~/components/ui/button";
 import { Tooltip } from "~/components/ui/tooltip";
 import { copyText } from "~/lib/copiar";
+
+const FREE_EGRESS_BYTES = 10 * 1024 ** 4;
+
+const MONTHS = ["janeiro", "fevereiro", "março", "abril", "maio", "junho", "julho", "agosto", "setembro", "outubro", "novembro", "dezembro"];
+
+const monthName = (month: string) => MONTHS[Number(month.split("-")[1]) - 1] ?? month;
+
+const dayMonth = (date: string | null) => (date ? date.split("-").reverse().slice(0, 2).join("/") : null);
 
 const duration = (s: number) => {
   const days = Math.floor(s / 86400);
@@ -61,6 +71,7 @@ const size = (bytes: number) => {
   if (!Number.isFinite(bytes)) return "—";
   const mb = bytes / 1024 / 1024;
 
+  if (mb >= 1024 * 1024) return `${(mb / 1024 / 1024).toFixed(2)} TB`;
   if (mb >= 1024) return `${(mb / 1024).toFixed(1)} GB`;
   if (mb >= 1) return `${mb.toFixed(mb >= 100 ? 0 : 1)} MB`;
   return `${Math.round(bytes / 1024)} KB`;
@@ -145,6 +156,10 @@ export const ServerSection: React.FC = () => {
 
       <section data-gc="configuracoes.servidor-section.section--2">
         <Heading data-gc="configuracoes.servidor-section.heading--2" icon={<Cpu data-gc="configuracoes.servidor-section.cpu" size={14} />}>Máquinas</Heading>
+        <EgressSummary data-gc="configuracoes.servidor-section.egress-summary"
+          api={data.api.traffic ?? null}
+          voice={data.voice && data.voice.unavailable !== true ? (data.voice.traffic ?? null) : null}
+        />
         <div data-gc="configuracoes.servidor-section.div--5" className="grid items-start gap-4 2xl:grid-cols-2">
           <Machine data-gc="configuracoes.servidor-section.machine"
             box={{
@@ -156,6 +171,7 @@ export const ServerSection: React.FC = () => {
               memoria: data.api.memoria,
               disk: data.api.disk,
               resident: { label: "API", bytes: data.api.resident },
+              traffic: data.api.traffic ?? null,
             }}
           />
 
@@ -177,6 +193,7 @@ export const ServerSection: React.FC = () => {
                   memoria: data.voice.memoria,
                   disk: data.voice.disk ?? (data.voice as { disco?: Box["disk"] }).disco ?? null,
                   resident: { label: "LiveKit", bytes: data.voice.livekit?.resident ?? (data.voice.livekit as { residente?: number } | undefined)?.residente ?? 0 },
+                  traffic: data.voice.traffic ?? null,
                 }}
               />
             )
@@ -400,6 +417,7 @@ interface Box {
   memoria: { total: number; livre: number; available: number };
   disk: { total: number; livre: number } | null;
   resident: { label: string; bytes: number };
+  traffic: MonthlyTraffic | null;
 }
 
 const Machine: React.FC<{ box: Box }> = ({ box }) => {
@@ -419,7 +437,7 @@ const Machine: React.FC<{ box: Box }> = ({ box }) => {
         </>
       }
     >
-      <div data-gc="configuracoes.servidor-section.div--14" className="grid gap-3 sm:grid-cols-3">
+      <div data-gc="configuracoes.servidor-section.div--14" className="grid gap-3 sm:grid-cols-2">
         <StatTile inset data-gc="configuracoes.servidor-section.stat-tile--5"
           icon={<Cpu data-gc="configuracoes.servidor-section.cpu--2" size={15} />}
           label="CPU"
@@ -445,7 +463,41 @@ const Machine: React.FC<{ box: Box }> = ({ box }) => {
         ) : (
           <StatTile inset data-gc="configuracoes.servidor-section.stat-tile--8" icon={<HardDrive data-gc="configuracoes.servidor-section.hard-drive--2" size={15} />} label="Disco" value="—" detail="não deu pra medir aqui" />
         )}
+        <StatTile inset data-gc="configuracoes.servidor-section.stat-tile--9"
+          icon={<Network data-gc="configuracoes.servidor-section.network" size={15} />}
+          label={box.traffic ? `Saída em ${monthName(box.traffic.month)}` : "Saída no mês"}
+          value={box.traffic ? size(box.traffic.sent) : "—"}
+          detail={
+            box.traffic
+              ? `entrada ${size(box.traffic.received)}${box.traffic.since ? ` · contando desde ${dayMonth(box.traffic.since)}` : ""}`
+              : "contador de tráfego não respondeu"
+          }
+        />
       </div>
     </Panel>
+  );
+};
+
+const EgressSummary: React.FC<{ api: MonthlyTraffic | null; voice: MonthlyTraffic | null }> = ({ api, voice }) => {
+  if (!api && !voice) return null;
+
+  const sent = (api?.sent ?? 0) + (voice?.sent ?? 0);
+  const ratio = sent / FREE_EGRESS_BYTES;
+  const month = api?.month ?? voice?.month ?? "";
+
+  return (
+    <div data-gc="configuracoes.servidor-section.div--15" className="mb-4">
+      <StatTile data-gc="configuracoes.servidor-section.stat-tile--10"
+        icon={<Network data-gc="configuracoes.servidor-section.network--2" size={15} />}
+        label={`Saída de dados em ${monthName(month)} · as duas máquinas`}
+        value={`${size(sent)} de 10 TB grátis`}
+        ratio={Math.min(ratio, 1)}
+        detail={
+          ratio >= 1
+            ? "passou da franquia grátis: a Oracle cobra o que exceder"
+            : `${(ratio * 100).toFixed(ratio < 0.01 ? 2 : 1)}% da franquia · API ${size(api?.sent ?? 0)} · Voz ${size(voice?.sent ?? 0)}`
+        }
+      />
+    </div>
   );
 };
