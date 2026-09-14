@@ -341,6 +341,7 @@ async function tocarProxima(fila, avisarEm) {
 }
 
 const FONTE = process.env.GRAVAE_FONTE ?? "youtube";
+const PREVIA_SEGUNDOS = 31;
 
 async function procurar(busca) {
   const link = /^https?:\/\//.test(busca);
@@ -349,15 +350,29 @@ async function procurar(busca) {
 
   if (FONTE === "soundcloud") {
     const achado = await rodar("yt-dlp", [
-      "scsearch1:" + busca,
-      "--print", "%(title)s\n%(webpage_url)s\n%(duration_string)s",
+      "scsearch8:" + busca,
+      "--flat-playlist",
+      "--print", "%(duration)s\t%(webpage_url)s\t%(title)s",
       "--no-warnings",
     ]).catch(() => null);
 
     if (!achado) return null;
 
-    const [title, url, timestamp] = achado.stdout.trim().split("\n");
-    return title && url ? { title, url, timestamp } : null;
+    const musicas = achado.stdout
+      .trim()
+      .split("\n")
+      .map((linha) => {
+        const [duracao, url, ...titulo] = linha.split("\t");
+        return { segundos: Number(duracao), url, title: titulo.join("\t") };
+      })
+      .filter((m) => m.url?.startsWith("https://soundcloud.com/") && m.title);
+
+    const inteira = musicas.find((m) => m.segundos > PREVIA_SEGUNDOS) ?? null;
+    if (!inteira) return null;
+
+    const minutos = Math.floor(inteira.segundos / 60);
+    const segundos = String(Math.floor(inteira.segundos % 60)).padStart(2, "0");
+    return { title: inteira.title, url: inteira.url, timestamp: `${minutos}:${segundos}` };
   }
 
   const resultado = await yts(busca);
