@@ -43,6 +43,7 @@ export const perfil = {
     falhou: "没能发送。试试从会话里发。",
   },
   cartao: {
+    equipe: "Gravaê 团队",
     trocarFaixa: "更换卡片横幅",
     trocarFaixaCurto: "更换横幅",
     trocarFoto: "更换头像",

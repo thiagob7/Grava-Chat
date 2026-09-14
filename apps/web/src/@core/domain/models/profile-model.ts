@@ -15,6 +15,7 @@ export interface ProfileModel extends PublicUser {
   serverTag: { guildId: string; tag: string; tagIcon: string | null } | null;
   customStatus: CustomStatus | null;
   botId: string | null;
+  staff?: boolean;
   createdAt: string;
   friendship: ProfileFriendship;
   friendshipId: string | null;

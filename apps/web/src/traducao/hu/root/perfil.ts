@@ -43,6 +43,7 @@ export const perfil = {
     falhou: "Nem sikerült elküldeni. Próbáld a beszélgetésből.",
   },
   cartao: {
+    equipe: "Gravaê csapat",
     trocarFaixa: "Kártya fejlécképének cseréje",
     trocarFaixaCurto: "Fejléckép cseréje",
     trocarFoto: "Profilkép cseréje",

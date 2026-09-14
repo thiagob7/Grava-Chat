@@ -43,6 +43,7 @@ export const perfil = {
     falhou: "Không gửi được. Thử từ cuộc trò chuyện.",
   },
   cartao: {
+    equipe: "Đội ngũ Gravaê",
     trocarFaixa: "Đổi ảnh bìa của thẻ",
     trocarFaixaCurto: "Đổi ảnh bìa",
     trocarFoto: "Đổi ảnh đại diện",

@@ -419,7 +419,7 @@ export const VoiceSection: React.FC<{ part?: "audio" | "video" }> = ({
                 </p>
                 <p data-gc="configuracoes.voice-section.p--14" className="mt-0.5 text-xs text-ink-faint">
                   {noiseFilterAvailable
-                    ? "Remove ventilador, teclado e obra na rua. RNNoise, rodando aqui no seu aparelho."
+                    ? "Remove ventilador, teclado, conversa ao fundo e obra na rua. DeepFilterNet, rodando aqui no seu aparelho."
                     : "Indisponível neste navegador — segue valendo a supressão do próprio navegador."}
                 </p>
               </div>

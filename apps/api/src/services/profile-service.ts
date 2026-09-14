@@ -10,6 +10,7 @@ import {
   mutualRepository,
 } from "~/repositories/friendship-repository.js";
 import { currentStatus, toPublicUser } from "~/lib/serialize.js";
+import { adminService } from "./admin-service.js";
 import { presenceService } from "./presence-service.js";
 
 export type ProfileFriendship = "SELF" | "NONE" | "ACCEPTED" | "PENDING_IN" | "PENDING_OUT" | "BLOCKED";
@@ -41,13 +42,14 @@ export const profileService = {
 
     const picked = (user.profile as { tagGuildId?: string | null } | null)?.tagGuildId ?? null;
 
-    const [presence, friendsCommon, note, tags] = await Promise.all([
+    const [presence, friendsCommon, note, tags, staff] = await Promise.all([
       presenceService.mapFor([userId]),
       viewerId === userId
         ? Promise.resolve([] as string[])
         : mutualRepository.friendIdsInCommon(viewerId, userId),
       viewerId === userId ? Promise.resolve(null) : noteRepository.find(viewerId, userId),
       tagRepository.resolveMany(picked ? [picked] : []),
+      user.system === true ? Promise.resolve(true) : adminService.hasAccess(userId).catch(() => false),
     ]);
 
     const serverTag = picked && tags.get(picked);
@@ -64,6 +66,7 @@ export const profileService = {
     return {
       ...toPublicUser(user),
       botId,
+      staff,
       status: presence[userId] ?? "OFFLINE",
       bio: user.bio,
       pronouns: user.pronouns,

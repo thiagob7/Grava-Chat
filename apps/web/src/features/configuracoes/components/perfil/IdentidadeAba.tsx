@@ -1,17 +1,14 @@
-import React, { useRef, useState } from "react";
+import React from "react";
 import { ImageUp, Upload, X } from "lucide-react";
 import { LIMITS } from "@gravae/shared";
 
-import { importImage } from "~/@core/application/requests/upload/importar-imagem";
 import { useImageProfileSending } from "~/features/perfil/hooks/use-envio-de-imagem-de-perfil";
-import { ImagePicker } from "~/components/SeletorDeImagem";
-import { ProfileImageFraming } from "~/features/perfil/components/EnquadrarImagemDePerfil";
+import { ProfileImageChooser } from "~/features/perfil/components/EnquadrarImagemDePerfil";
 import { Avatar } from "~/features/perfil/components/Avatar";
 import { Button } from "~/components/ui/button";
 import { Input, Label, Textarea } from "~/components/ui/input";
 import { ColorField } from "~/features/configuracoes/components/perfil/campos";
 import type { ProfileDraft } from "~/features/configuracoes/components/perfil/rascunho";
-import { toast } from "react-toastify";
 
 interface IdentityTabProps {
   id: string;
@@ -21,32 +18,12 @@ interface IdentityTabProps {
 }
 
 export const IdentityTab: React.FC<IdentityTabProps> = ({ id, username, draft, set }) => {
-  const { send, framing, cancelFrame, applyFrame, saving, sending } =
-    useImageProfileSending((field, url) => set(field, url));
-  const pickPhoto = useRef<HTMLInputElement>(null);
-  const pickBanner = useRef<HTMLInputElement>(null);
-  const [pickingTrack, setPickingTrack] = useState(false);
-  const [importing, setImporting] = useState(false);
-
-  const useGif = async (url: string) => {
-    setImporting(true);
-    const attachment = await importImage(url, "banner")
-      .catch(() => {
-        toast.error("Não consegui trazer esse GIF.");
-        return null;
-      })
-      .finally(() => setImporting(false));
-
-    if (attachment) set("bannerUrl", attachment.url);
-  };
+  const image = useImageProfileSending((field, url) => set(field, url));
+  const { saving, sending } = image;
 
   return (
     <div data-gc="configuracoes.perfil.identidade-aba.div" className="space-y-6">
-      <ProfileImageFraming data-gc="configuracoes.perfil.identidade-aba.profile-image-framing.cancel-frame"
-        framing={framing}
-        onCancel={cancelFrame}
-        onApply={(cut) => void applyFrame(cut)}
-      />
+      <ProfileImageChooser data-gc="configuracoes.perfil.identidade-aba.profile-image-chooser" image={image} />
 
       <div data-gc="configuracoes.perfil.identidade-aba.div--2" className="flex items-center gap-4">
         <Avatar data-gc="configuracoes.perfil.identidade-aba.avatar"
@@ -62,7 +39,7 @@ export const IdentityTab: React.FC<IdentityTabProps> = ({ id, username, draft, s
           <Button data-gc="configuracoes.perfil.identidade-aba.button"
             variant="surface"
             size="sm"
-            onClick={() => pickPhoto.current?.click()}
+            onClick={() => image.choose("avatarUrl")}
             loading={sending}
           >
             <Upload data-gc="configuracoes.perfil.identidade-aba.upload" size={14} />
@@ -72,22 +49,16 @@ export const IdentityTab: React.FC<IdentityTabProps> = ({ id, username, draft, s
           <p data-gc="configuracoes.perfil.identidade-aba.p" className="mt-1.5 text-xs text-ink-faint">
             {saving
               ? `Comprimida antes de subir: ${saving}`
-              : "Você enquadra a foto antes de ela subir."}
+              : "Imagem ou GIF do Klipy, e você enquadra antes de subir."}
           </p>
 
-          <input data-gc="configuracoes.perfil.identidade-aba.input"
-            ref={pickPhoto}
-            type="file"
-            accept="image/png,image/jpeg,image/webp,image/gif"
-            onChange={(e) => void send(e, "avatarUrl")}
-            className="hidden"
-          />
+
         </div>
       </div>
 
       <div data-gc="configuracoes.perfil.identidade-aba.div--4">
         <Label data-gc="configuracoes.perfil.identidade-aba.label" htmlFor="display-name">Nome de exibição</Label>
-        <Input data-gc="configuracoes.perfil.identidade-aba.input--2"
+        <Input data-gc="configuracoes.perfil.identidade-aba.input"
           id="display-name"
           value={draft.displayName}
           onChange={(e) => set("displayName", e.target.value)}
@@ -97,7 +68,7 @@ export const IdentityTab: React.FC<IdentityTabProps> = ({ id, username, draft, s
 
       <div data-gc="configuracoes.perfil.identidade-aba.div--5">
         <Label data-gc="configuracoes.perfil.identidade-aba.label--2" htmlFor="username">Nome de usuário</Label>
-        <Input data-gc="configuracoes.perfil.identidade-aba.input--3" id="username" value={`@${username}`} readOnly className="text-ink-faint" />
+        <Input data-gc="configuracoes.perfil.identidade-aba.input--2" id="username" value={`@${username}`} readOnly className="text-ink-faint" />
         <p data-gc="configuracoes.perfil.identidade-aba.p--2" className="mt-1 text-xs text-ink-faint">
           É por aqui que seus amigos te encontram. Ainda não dá pra trocar.
         </p>
@@ -123,9 +94,8 @@ export const IdentityTab: React.FC<IdentityTabProps> = ({ id, username, draft, s
           <Button data-gc="configuracoes.perfil.identidade-aba.button--2"
             variant="surface"
             size="sm"
-            onClick={() => setPickingTrack(true)}
-            disabled={sending}
-            loading={importing}
+            onClick={() => image.choose("bannerUrl")}
+            loading={sending}
           >
             <ImageUp data-gc="configuracoes.perfil.identidade-aba.image-up" size={14} />
             Escolher imagem ou GIF
@@ -138,13 +108,7 @@ export const IdentityTab: React.FC<IdentityTabProps> = ({ id, username, draft, s
           )}
         </div>
 
-        <input data-gc="configuracoes.perfil.identidade-aba.input--4"
-          ref={pickBanner}
-          type="file"
-          accept="image/png,image/jpeg,image/webp,image/gif"
-          onChange={(e) => void send(e, "bannerUrl")}
-          className="hidden"
-        />
+
 
         <p data-gc="configuracoes.perfil.identidade-aba.p--3" className="mt-1.5 text-xs text-ink-faint">
           PNG, JPG ou GIF até {Math.round(LIMITS.bannerBytes / 1024 / 1024)} MB. Sem imagem, vale a
@@ -152,17 +116,7 @@ export const IdentityTab: React.FC<IdentityTabProps> = ({ id, username, draft, s
         </p>
       </div>
 
-      <ImagePicker data-gc="configuracoes.perfil.identidade-aba.image-picker"
-        open={pickingTrack}
-        onClose={() => setPickingTrack(false)}
-        onFile={() => {
-          setPickingTrack(false);
-          pickBanner.current?.click();
-        }}
-        onGif={(gif) => void useGif(gif.url)}
-        title="Faixa do perfil"
-        footer={`PNG, JPG ou GIF até ${Math.round(LIMITS.bannerBytes / 1024 / 1024)} MB. O GIF continua animado — ele não passa pelo redimensionador.`}
-      />
+
 
       <ColorField data-gc="configuracoes.perfil.identidade-aba.color-field"
         label="Cor da faixa"
