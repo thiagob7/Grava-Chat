@@ -1,6 +1,8 @@
 import type { FastifyRequest } from "fastify";
 import type { RateLimitOptions } from "@fastify/rate-limit";
 
+import { clientIp } from "~/lib/ip-do-cliente.js";
+
 const CEILING_BY_MINUTE = 300;
 
 export const throughputPolicy = {
@@ -11,7 +13,20 @@ export const throughputPolicy = {
 
   allowList: (req: FastifyRequest) => req.url === "/api/health",
 
-  keyGenerator: (req: FastifyRequest) => req.ip,
+  keyGenerator: (req: FastifyRequest) => {
+    const authorization = req.headers.authorization;
+
+    if (authorization?.startsWith("Bearer ")) {
+      try {
+        const { sub } = req.server.jwt.verify<{ sub: string }>(authorization.slice(7));
+        return `usuario:${sub}`;
+      } catch {
+        return clientIp(req);
+      }
+    }
+
+    return clientIp(req);
+  },
 
   errorResponseBuilder: (_req: FastifyRequest, ctx: { ttl: number }) => ({
     statusCode: 429,

@@ -3,6 +3,7 @@ import oauth2, { type OAuth2Namespace } from "@fastify/oauth2";
 import { z } from "zod";
 import { env, isDev } from "~/env.js";
 import { loginAttempts } from "~/lib/tentativas-de-login.js";
+import { clientIp } from "~/lib/ip-do-cliente.js";
 import { googleService } from "~/services/google-service.js";
 import { authService, REFRESH_COOKIE } from "~/services/auth-service.js";
 import { desktopLoginService } from "~/services/desktop-login-service.js";
@@ -66,9 +67,9 @@ function webAppUrl(req: FastifyRequest, path = "/") {
 }
 
 export async function authRoutes(app: FastifyInstance) {
-  const metaOf = (req: { headers: Record<string, unknown>; ip: string }) => ({
+  const metaOf = (req: FastifyRequest) => ({
     userAgent: typeof req.headers["user-agent"] === "string" ? req.headers["user-agent"] : undefined,
-    ip: req.ip,
+    ip: clientIp(req),
   });
 
   if (isDev) {

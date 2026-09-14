@@ -1,4 +1,4 @@
-import { routes, type VercelConfig } from "@vercel/config/v1";
+import { deploymentEnv, routes, type VercelConfig } from "@vercel/config/v1";
 
 const API = {
   production: "https://gravaechat-api.duckdns.org",
@@ -24,7 +24,9 @@ export const config: VercelConfig = {
   ],
 
   rewrites: [
-    routes.rewrite("/api/:path*", `${destination}/api/:path*`),
+    routes.rewrite("/api/:path*", `${destination}/api/:path*`, () => ({
+      requestHeaders: { "x-gravae-borda": deploymentEnv("EDGE_SECRET") },
+    })),
     routes.rewrite("/(.*)", "/index.html"),
   ],
 };
