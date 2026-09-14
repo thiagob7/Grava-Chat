@@ -401,7 +401,13 @@ export const MessageList: React.FC<MessageListProps> = ({
             )}
             <MessageItem data-gc="conversa.message-list.message-item.retry"
               message={message}
-              compact={!isNewDay && message.id !== firstFreshId && shouldGroup(messages[index - 1], message)}
+              compact={
+                !isNewDay &&
+                message.id !== firstFreshId &&
+                !(message as PendingMessageModel).failed &&
+                !(messages[index - 1] as PendingMessageModel | undefined)?.failed &&
+                shouldGroup(messages[index - 1], message)
+              }
               isOwn={message.author.id === currentUserId}
               currentUserId={currentUserId}
               guildId={guildId}
