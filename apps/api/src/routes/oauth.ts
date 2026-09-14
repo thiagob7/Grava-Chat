@@ -1,7 +1,11 @@
 import type { FastifyInstance, FastifyRequest } from "fastify";
 import { z } from "zod";
 
+import { rooms } from "@gravae/shared";
+
 import { UnauthorizedError } from "~/lib/http.js";
+import { io } from "~/realtime/io.js";
+import { announceBotJoined } from "~/realtime/room-sync.js";
 import { oauthService } from "~/services/oauth-service.js";
 import { objectId } from "~/validations/common.js";
 
@@ -44,10 +48,10 @@ export async function oauthRoutes(app: FastifyInstance) {
     });
   });
 
-  app.post("/oauth2/autorizar", { preHandler: [app.authenticate] }, (req) => {
+  app.post("/oauth2/autorizar", { preHandler: [app.authenticate] }, async (req) => {
     const { client_id, redirect_uri, scope, guild_id, permissions, code_challenge } = authorization.parse(req.body);
 
-    return oauthService.emitCode(req.userId, {
+    const { botAdded, ...answer } = await oauthService.emitCode(req.userId, {
       botId: client_id,
       redirectUri: redirect_uri,
       scopes: scope.split(/[\s+]+/).filter(Boolean),
@@ -55,6 +59,15 @@ export async function oauthRoutes(app: FastifyInstance) {
       permissions: permissions,
       codeChallenge: code_challenge,
     });
+
+    if (botAdded) {
+      await announceBotJoined(botAdded.guildId, botAdded.botUserId, botAdded.member).catch((err) =>
+        req.log.error({ err }, "falha ao avisar a entrada do bot"),
+      );
+      io().to(rooms.guild(botAdded.guildId)).emit("commands:changed", { guildId: botAdded.guildId });
+    }
+
+    return answer;
   });
 
   app.post("/oauth2/token", (req) => {

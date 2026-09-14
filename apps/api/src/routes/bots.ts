@@ -8,7 +8,7 @@ import {
 } from "@gravae/shared";
 
 import { io } from "~/realtime/io.js";
-import { syncGuildRooms } from "~/realtime/room-sync.js";
+import { announceBotJoined, syncGuildRooms } from "~/realtime/room-sync.js";
 import { botService } from "~/services/bot-service.js";
 import { objectId } from "~/validations/common.js";
 import { r2Url } from "~/validations/auth.js";
@@ -69,7 +69,8 @@ export async function botRoutes(app: FastifyInstance) {
 
   app.put("/bots/:botId/servidores/:guildId", async (req) => {
     const { botId, guildId } = botServer.parse(req.params);
-    const entry = await botService.addServer(req.userId, botId, guildId);
+    const { botUserId, member, ...entry } = await botService.addServer(req.userId, botId, guildId);
+    await announceBotJoined(guildId, botUserId, member).catch((err) => req.log.error({ err }, "falha ao avisar a entrada do bot"));
 
     notifyCommands(guildId);
     return entry;

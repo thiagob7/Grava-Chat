@@ -49,7 +49,7 @@ export const clientEventSchemas = {
     client: z.string().min(1).max(64).optional(),
     device: z.enum(VOICE_DEVICES).optional(),
   }),
-  "voice:leave": z.object({}),
+  "voice:leave": z.object({ channelId: objectId.optional() }),
   "voice:token": z.object({ channelId: objectId }),
   "voice:onde": z.object({ userId: objectId }),
   "voice:sound": z.object({ soundId: objectId }),
@@ -159,7 +159,7 @@ export type ServerToClientEvents = {
 
   "voice:states": (p: { channelId: string; states: z.infer<typeof voiceStateSchema>[] }) => void;
   "voice:sound": (p: { channelId: string; userId: string; url: string; volume: number }) => void;
-  "voice:move": (p: { channelId: string }) => void;
+  "voice:move": (p: { channelId: string; fromChannelId?: string }) => void;
   "voice:joined": (state: z.infer<typeof voiceStateSchema>) => void;
   "voice:left": (p: { channelId: string; userId: string }) => void;
   "voice:updated": (state: z.infer<typeof voiceStateSchema>) => void;

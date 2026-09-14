@@ -161,27 +161,55 @@ const falar = (channelId, content) =>
     (erro) => console.error("[falar]", erro.message),
   );
 
-function abrirAudio(paginaDoVideo, aoFalhar) {
-  const ytdlp = spawn("yt-dlp", [
-    "-f", "bestaudio",
-    "--no-playlist",
-    "--quiet",
-    "--no-warnings",
-    "-o", "-",
-    paginaDoVideo,
-  ]);
+const doYoutube = (url) => /^https?:\/\/(www\.|m\.)?(youtube\.com|youtu\.be)\//.test(url);
+
+const acessoDo = (url) =>
+  doYoutube(url) && COOKIES_YOUTUBE
+    ? ["--cookies", COOKIES_YOUTUBE, "--js-runtimes", "node", "-f", "bestaudio/18"]
+    : ["-f", "bestaudio"];
+
+function prepararMusica(musica) {
+  if (!doYoutube(musica.url) || musica.direta || musica.preparando) return musica.preparando;
+
+  musica.preparando = rodar("nice", ["-n", "15", "yt-dlp", ...acessoDo(musica.url), "-g", "--no-playlist", "--no-warnings", musica.url], {
+    timeout: 90_000,
+  })
+    .then(({ stdout }) => {
+      const direta = stdout.trim().split("\n")[0];
+      if (/^https:\/\//.test(direta)) musica.direta = { url: direta, em: Date.now() };
+    })
+    .catch(() => undefined);
+
+  return musica.preparando;
+}
+
+const DIRETA_VALE_MS = 3 * 60 * 60 * 1000;
+
+function abrirAudio(musica, aoFalhar) {
+  const direta = musica.direta && Date.now() - musica.direta.em < DIRETA_VALE_MS ? musica.direta.url : null;
+
+  const ytdlp = direta
+    ? null
+    : spawn("yt-dlp", [
+      ...acessoDo(musica.url),
+      "--no-playlist",
+      "--quiet",
+      "--no-warnings",
+      "-o", "-",
+      musica.url,
+    ], { detached: true });
 
   const ffmpeg = spawn("ffmpeg", [
-    "-i", "pipe:0",
+    ...(direta ? ["-reconnect", "1", "-reconnect_streamed", "1", "-reconnect_delay_max", "5", "-i", direta] : ["-i", "pipe:0"]),
     "-loglevel", "error",
     "-vn",
     "-ar", String(TAXA),
     "-ac", String(CANAIS),
     "-f", "s16le",
     "pipe:1",
-  ]);
+  ], { detached: true });
 
-  ytdlp.stdout.pipe(ffmpeg.stdin);
+  ytdlp?.stdout.pipe(ffmpeg.stdin);
 
   let reclamacao = "";
 
@@ -193,26 +221,43 @@ function abrirAudio(paginaDoVideo, aoFalhar) {
     if (reclamacao.length < 4_000) reclamacao += `${texto}\n`;
   };
 
-  ytdlp.stderr.on("data", relatar("yt-dlp"));
+  ytdlp?.stderr.on("data", relatar("yt-dlp"));
   ffmpeg.stderr.on("data", relatar("ffmpeg"));
 
-  ytdlp.on("error", aoFalhar);
+  ytdlp?.on("error", aoFalhar);
   ffmpeg.on("error", aoFalhar);
 
-  ytdlp.stdin?.on("error", () => undefined);
+  ytdlp?.stdin?.on("error", () => undefined);
   ffmpeg.stdin.on("error", () => undefined);
 
   return {
+    direta: Boolean(direta),
     saida: ffmpeg.stdout,
     motivo: () => diagnosticar(reclamacao),
     matar: () => {
-      ytdlp.kill("SIGKILL");
-      ffmpeg.kill("SIGKILL");
+      for (const processo of [ytdlp, ffmpeg]) {
+        if (!processo) continue;
+        try {
+          process.kill(-processo.pid, "SIGKILL");
+        } catch {
+          processo.kill("SIGKILL");
+        }
+      }
     },
   };
 }
 
-async function entrarNaVoz(channelId) {
+const entrando = new Map();
+
+function entrarNaVoz(channelId) {
+  if (entrando.has(channelId)) return entrando.get(channelId);
+
+  const pedido = conectarNaVoz(channelId).finally(() => entrando.delete(channelId));
+  entrando.set(channelId, pedido);
+  return pedido;
+}
+
+async function conectarNaVoz(channelId) {
   const jaEsta = filas.get(channelId);
 
   if (jaEsta?.sala.isConnected) return jaEsta;
@@ -225,14 +270,20 @@ async function entrarNaVoz(channelId) {
   const { url, token } = await pedir("voice:token", { channelId });
 
   const sala = new Room();
+  let filaDestaSala = null;
 
   sala.on(RoomEvent.Disconnected, () => {
-    const atual = filas.get(channelId);
-    if (atual?.sala !== sala) return;
+    if (!filaDestaSala) return;
+
+    if (filas.get(channelId) !== filaDestaSala) {
+      filaDestaSala.parando = true;
+      filaDestaSala.audio?.matar();
+      return;
+    }
 
     console.log(`saí da chamada de ${channelId} (a conexão caiu ou me desconectaram)`);
-    avisarQueCaiu(atual);
-    largarFila(atual);
+    avisarQueCaiu(filaDestaSala);
+    largarFila(filaDestaSala);
   });
 
   await sala.connect(url, token, { autoSubscribe: false, dynacast: true });
@@ -256,6 +307,7 @@ async function entrarNaVoz(channelId) {
     parando: false,
     canalDeAviso: null,
   };
+  filaDestaSala = fila;
   filas.set(channelId, fila);
 
   return fila;
@@ -279,11 +331,13 @@ function largarFila(fila) {
 async function sairDaVoz(fila) {
   largarFila(fila);
 
-  socket.emit("voice:leave", {});
+  socket.emit("voice:leave", { channelId: fila.channelId });
   await fila.sala.disconnect().catch(() => undefined);
 }
 
 async function tocarProxima(fila, avisarEm) {
+  if (fila.parando) return;
+
   const musica = fila.musicas[0];
 
   if (!musica) {
@@ -294,20 +348,28 @@ async function tocarProxima(fila, avisarEm) {
   }
 
   fila.tocando = musica;
-  if (avisarEm) {
-    falar(avisarEm, `▶️ Tocando **${musica.titulo}** (${musica.duracao})\n${musica.url}`);
-  }
 
-  const audio = abrirAudio(musica.url, (erro) => console.error("falha ao abrir o áudio:", erro));
+  if (fila.musicas[1]) void prepararMusica(fila.musicas[1]);
+
+  const audio = abrirAudio(musica, (erro) => console.error("falha ao abrir o áudio:", erro));
   fila.audio = audio;
+
+  if (avisarEm && !audio.direta && doYoutube(musica.url)) {
+    falar(avisarEm, `⏳ Preparando **${musica.titulo}**…`);
+  }
 
   let sobra = Buffer.alloc(0);
   let proximoQuadro = Date.now();
   let veioAlgo = false;
 
   for await (const pedaco of audio.saida) {
-    veioAlgo = true;
     if (fila.parando) return;
+
+    if (!veioAlgo) {
+      veioAlgo = true;
+      proximoQuadro = Date.now();
+      if (avisarEm) falar(avisarEm, `▶️ Tocando **${musica.titulo}** (${musica.duracao})\n${musica.url}`);
+    }
 
     sobra = Buffer.concat([sobra, pedaco]);
 
@@ -331,6 +393,22 @@ async function tocarProxima(fila, avisarEm) {
 
   audio.matar();
 
+  if (!veioAlgo && audio.direta && !fila.parando) {
+    musica.direta = null;
+    musica.preparando = null;
+    return tocarProxima(fila, null);
+  }
+
+  if (!veioAlgo && !musica.reserva && /youtu\.?be/.test(musica.url)) {
+    const reserva = await procurarNoSoundcloud(musica.titulo).catch(() => null);
+
+    if (reserva && !fila.parando) {
+      if (avisarEm) falar(avisarEm, `O YouTube não deixou tocar agora; peguei **${reserva.title}** do SoundCloud.`);
+      fila.musicas[0] = { titulo: reserva.title, url: reserva.url, duracao: reserva.timestamp, reserva: true };
+      return tocarProxima(fila, null);
+    }
+  }
+
   if (!veioAlgo && avisarEm) {
     const motivo = audio.motivo() ?? "O log do bot tem o motivo.";
     falar(avisarEm, `Não consegui tocar **${musica.titulo}**. ${motivo}`);
@@ -341,27 +419,48 @@ async function tocarProxima(fila, avisarEm) {
 }
 
 const FONTE = process.env.GRAVAE_FONTE ?? "youtube";
+const COOKIES_YOUTUBE = process.env.GRAVAE_YOUTUBE_COOKIES ?? null;
+const PREVIA_SEGUNDOS = 31;
 
 async function procurar(busca) {
   const link = /^https?:\/\//.test(busca);
 
   if (link) return { title: busca, url: busca, timestamp: null };
 
-  if (FONTE === "soundcloud") {
-    const achado = await rodar("yt-dlp", [
-      "scsearch1:" + busca,
-      "--print", "%(title)s\n%(webpage_url)s\n%(duration_string)s",
-      "--no-warnings",
-    ]).catch(() => null);
-
-    if (!achado) return null;
-
-    const [title, url, timestamp] = achado.stdout.trim().split("\n");
-    return title && url ? { title, url, timestamp } : null;
+  if (FONTE !== "soundcloud") {
+    const resultado = await yts(busca).catch(() => null);
+    const video = resultado?.videos?.[0];
+    if (video) return video;
   }
 
-  const resultado = await yts(busca);
-  return resultado.videos?.[0] ?? null;
+  return procurarNoSoundcloud(busca);
+}
+
+async function procurarNoSoundcloud(busca) {
+  const achado = await rodar("yt-dlp", [
+    "scsearch8:" + busca,
+    "--flat-playlist",
+    "--print", "%(duration)s\t%(webpage_url)s\t%(title)s",
+    "--no-warnings",
+  ]).catch(() => null);
+
+  if (!achado) return null;
+
+  const musicas = achado.stdout
+    .trim()
+    .split("\n")
+    .map((linha) => {
+      const [duracao, url, ...titulo] = linha.split("\t");
+      return { segundos: Number(duracao), url, title: titulo.join("\t") };
+    })
+    .filter((m) => m.url?.startsWith("https://soundcloud.com/") && m.title);
+
+  const inteira = musicas.find((m) => m.segundos > PREVIA_SEGUNDOS) ?? null;
+  if (!inteira) return null;
+
+  const minutos = Math.floor(inteira.segundos / 60);
+  const segundos = String(Math.floor(inteira.segundos % 60)).padStart(2, "0");
+  return { title: inteira.title, url: inteira.url, timestamp: `${minutos}:${segundos}` };
 }
 
 async function comandoPlay(mensagem, busca, config) {
@@ -389,6 +488,8 @@ async function comandoPlay(mensagem, busca, config) {
   const avisarEm = config.anunciarMusica ? mensagem.channelId : null;
 
   if (fila.tocando) {
+    if (fila.musicas[1] === musica) void prepararMusica(musica);
+
     falar(
       mensagem.channelId,
       `➕ **${musica.titulo}** entrou na fila (posição ${fila.musicas.length - 1}).\n${musica.url}`,
@@ -480,8 +581,10 @@ socket.on("connect", async () => {
 });
 socket.on("connect_error", (e) => console.error("não entrou:", e.message));
 
-socket.on("voice:move", async ({ channelId }) => {
-  for (const fila of [...filas.values()]) {
+socket.on("voice:move", async ({ channelId, fromChannelId }) => {
+  const afetadas = [...filas.values()].filter((fila) => !fromChannelId || fila.channelId === fromChannelId);
+
+  for (const fila of afetadas) {
     avisarQueCaiu(fila);
     largarFila(fila);
     await fila.sala.disconnect().catch(() => undefined);
