@@ -249,6 +249,8 @@ export const roleService = {
       }
     } else if (!(await memberRepository.find(guildId, targetId))) {
       throw new NotFoundError("Membro não encontrado");
+    } else if (targetId !== userId) {
+      await accessService.targetRequireAbove(context, guildId, targetId);
     }
 
     if (!input.allow.length && !input.deny.length) {
