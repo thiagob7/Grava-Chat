@@ -25,6 +25,43 @@ async function createRnnoise(ctx: AudioContext): Promise<RnnoiseWorkletNode> {
   return new RnnoiseWorkletNode(ctx, { maxChannels: 2, wasmBinary: binary });
 }
 
+export type SuppressionEngine = "DeepFilterNet" | "RNNoise";
+
+interface Suppressor {
+  engine: SuppressionEngine;
+  node: AudioNode;
+  destroy: () => void;
+}
+
+const DEEP_FILTER_LEVEL = 80;
+
+async function createDeepFilter(ctx: AudioContext): Promise<Suppressor> {
+  if (ctx.sampleRate !== 48_000) throw new Error("DeepFilterNet precisa de 48 kHz");
+
+  const { DeepFilterNet3Core } = await import("deepfilternet3-noise-filter");
+  const core = new DeepFilterNet3Core({
+    sampleRate: 48_000,
+    noiseReductionLevel: DEEP_FILTER_LEVEL,
+    assetConfig: { cdnUrl: `${window.location.origin}/audio/deepfilternet3` },
+  });
+
+  await core.initialize();
+  const node = await core.createAudioWorkletNode(ctx);
+  core.setSuppressionLevel(DEEP_FILTER_LEVEL);
+
+  return { engine: "DeepFilterNet", node, destroy: () => core.destroy() };
+}
+
+async function createSuppressor(ctx: AudioContext): Promise<Suppressor> {
+  try {
+    return await createDeepFilter(ctx);
+  } catch (error) {
+    console.warn("[voz] DeepFilterNet não carregou, usando RNNoise:", error);
+    const rnnoise = await createRnnoise(ctx);
+    return { engine: "RNNoise", node: rnnoise, destroy: () => rnnoise.destroy() };
+  }
+}
+
 export type EntryMode = "voz" | "ptt";
 
 export interface VoiceSettings {
@@ -96,7 +133,7 @@ export class VoiceProcessor implements TrackProcessor<Track.Kind.Audio, AudioPro
   private buffer?: Float32Array<ArrayBuffer>;
   private clock?: ReturnType<typeof setInterval>;
 
-  private rnnoise?: RnnoiseWorkletNode;
+  private suppressor?: Suppressor;
 
   private settings: VoiceSettings;
   private pttPressed = false;
@@ -107,6 +144,8 @@ export class VoiceProcessor implements TrackProcessor<Track.Kind.Audio, AudioPro
   availableSuppression = true;
 
   activeSuppression = false;
+
+  suppressionEngine: SuppressionEngine | null = null;
 
   private queue: Promise<void> = Promise.resolve();
 
@@ -157,31 +196,33 @@ export class VoiceProcessor implements TrackProcessor<Track.Kind.Audio, AudioPro
 
   private async prepareSuppression() {
     const ctx = this.ctx;
-    if (!ctx || !this.settings.noiseSuppression || this.rnnoise) return;
+    if (!ctx || !this.settings.noiseSuppression || this.suppressor) return;
 
     try {
-      this.rnnoise = await createRnnoise(ctx);
+      this.suppressor = await createSuppressor(ctx);
+      this.suppressionEngine = this.suppressor.engine;
       this.availableSuppression = true;
     } catch (error) {
-      console.warn("[voz] RNNoise não carregou:", error);
-      this.rnnoise = undefined;
+      console.warn("[voz] supressão de ruído não carregou:", error);
+      this.suppressor = undefined;
+      this.suppressionEngine = null;
       this.availableSuppression = false;
     }
   }
 
   private turnonEntry() {
-    const { font, passesHigh, rnnoise } = this;
+    const { font, passesHigh, suppressor } = this;
     if (!font || !passesHigh) return;
 
     font.disconnect();
-    rnnoise?.disconnect();
+    suppressor?.node.disconnect();
 
-    const withSuppression = Boolean(this.settings.noiseSuppression && rnnoise);
+    const withSuppression = Boolean(this.settings.noiseSuppression && suppressor);
     this.activeSuppression = withSuppression;
 
-    if (withSuppression && rnnoise) {
-      font.connect(rnnoise);
-      rnnoise.connect(passesHigh);
+    if (withSuppression && suppressor) {
+      font.connect(suppressor.node);
+      suppressor.node.connect(passesHigh);
       return;
     }
 
@@ -277,9 +318,9 @@ export class VoiceProcessor implements TrackProcessor<Track.Kind.Audio, AudioPro
     this.porta?.disconnect();
     this.analyser?.disconnect();
 
-    this.rnnoise?.disconnect();
-    this.rnnoise?.destroy();
-    this.rnnoise = undefined;
+    this.suppressor?.node.disconnect();
+    this.suppressor?.destroy();
+    this.suppressor = undefined;
     this.activeSuppression = false;
     this.processedTrack?.stop();
     this.processedTrack = undefined;
@@ -299,7 +340,7 @@ export async function createTestMeter(deviceId?: string, suppression = true) {
   const ctx = new AudioContext({ sampleRate: 48_000 });
   const font = ctx.createMediaStreamSource(stream);
 
-  const rnnoise = suppression ? await createRnnoise(ctx).catch(() => null) : null;
+  const suppressor = suppression ? await createSuppressor(ctx).catch(() => null) : null;
 
   const passesHigh = ctx.createBiquadFilter();
   passesHigh.type = "highpass";
@@ -313,9 +354,9 @@ export async function createTestMeter(deviceId?: string, suppression = true) {
   const analyser = ctx.createAnalyser();
   analyser.fftSize = 1024;
 
-  if (rnnoise) {
-    font.connect(rnnoise);
-    rnnoise.connect(passesHigh);
+  if (suppressor) {
+    font.connect(suppressor.node);
+    suppressor.node.connect(passesHigh);
   } else {
     font.connect(passesHigh);
   }
@@ -328,11 +369,12 @@ export async function createTestMeter(deviceId?: string, suppression = true) {
 
   return {
     stream: output.stream,
+    engine: suppressor?.engine ?? null,
     read: () => levelFor(analyser, buffer),
     stop: () => {
       font.disconnect();
-      rnnoise?.disconnect();
-      rnnoise?.destroy();
+      suppressor?.node.disconnect();
+      suppressor?.destroy();
       passesHigh.disconnect();
       passesLow.disconnect();
       stream.getTracks().forEach((t) => t.stop());

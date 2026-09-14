@@ -10,6 +10,7 @@ import {
 import { Button } from "~/components/ui/button";
 import { Switch } from "~/components/ui/switch";
 import { useVoiceMeter } from "~/features/voz/hooks/use-voice-meter";
+import { useVoiceStore } from "~/features/voz/stores/voice-store";
 import { cn } from "~/lib/utils";
 import { useTranslation } from "~/traducao";
 
@@ -30,6 +31,7 @@ export const NoisePopoverSuppression: React.FC<Props> = ({
   onToggle,
   onOpenSettings,
 }) => {
+  const engine = useVoiceStore((state) => state.processor?.suppressionEngine) ?? "DeepFilterNet";
   const { t } = useTranslation();
   const [isOpen, setIsOpen] = useState(false);
 
@@ -69,7 +71,7 @@ export const NoisePopoverSuppression: React.FC<Props> = ({
 
         <div data-gc="voz.supressao-de-ruido-popover.div--2" className="mt-4 flex items-center justify-between border-t border-divisor pt-3">
           <span data-gc="voz.supressao-de-ruido-popover.span" className="text-xs text-ink-faint">
-            {t("chamada.ruido.feitoCom")} <span data-gc="voz.supressao-de-ruido-popover.span--2" className="text-ink-muted">RNNoise</span>{t("chamada.ruido.aquiNoAparelho")}
+            {t("chamada.ruido.feitoCom")} <span data-gc="voz.supressao-de-ruido-popover.span--2" className="text-ink-muted">{engine}</span>{t("chamada.ruido.aquiNoAparelho")}
           </span>
 
           <Button data-gc="voz.supressao-de-ruido-popover.button"
