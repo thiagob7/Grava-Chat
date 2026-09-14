@@ -56,12 +56,13 @@ export const clientEventSchemas = {
 
   "voice:moderate": z.object({
     userId: objectId,
+    fromChannelId: objectId.optional(),
     serverMute: z.boolean().optional(),
     serverDeaf: z.boolean().optional(),
   }),
   "voice:recusar": z.object({ channelId: objectId }),
-  "voice:kick": z.object({ userId: objectId }),
-  "voice:moveMember": z.object({ userId: objectId, channelId: objectId }),
+  "voice:kick": z.object({ userId: objectId, fromChannelId: objectId.optional() }),
+  "voice:moveMember": z.object({ userId: objectId, channelId: objectId, fromChannelId: objectId.optional() }),
   "voice:state": z.object({
     selfMute: z.boolean().optional(),
     selfDeaf: z.boolean().optional(),

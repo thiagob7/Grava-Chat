@@ -277,8 +277,8 @@ export function registerHandlers(socket: GravaeSocket) {
     return { id: sound.id };
   });
 
-  on(socket, "voice:moderate", async ({ userId: targetId, serverMute, serverDeaf }) => {
-    const state = await stateToModerate(userId, targetId);
+  on(socket, "voice:moderate", async ({ userId: targetId, fromChannelId, serverMute, serverDeaf }) => {
+    const state = await stateToModerate(userId, targetId, fromChannelId);
     if (!state) throw new NotFoundError("Esta pessoa não está numa chamada");
     if (!state.guildId) throw new AppError("Não há moderação numa chamada de privado");
 
@@ -309,8 +309,8 @@ export function registerHandlers(socket: GravaeSocket) {
     return { channelId };
   });
 
-  on(socket, "voice:kick", async ({ userId: targetId }) => {
-    const state = await stateToModerate(userId, targetId);
+  on(socket, "voice:kick", async ({ userId: targetId, fromChannelId }) => {
+    const state = await stateToModerate(userId, targetId, fromChannelId);
     if (!state) throw new NotFoundError("Esta pessoa não está numa chamada");
     if (!state.guildId) throw new AppError("Não dá pra expulsar de uma chamada de privado");
 
@@ -326,8 +326,8 @@ export function registerHandlers(socket: GravaeSocket) {
     return { userId: targetId };
   });
 
-  on(socket, "voice:moveMember", async ({ userId: targetId, channelId }) => {
-    const state = await stateToModerate(userId, targetId);
+  on(socket, "voice:moveMember", async ({ userId: targetId, channelId, fromChannelId }) => {
+    const state = await stateToModerate(userId, targetId, fromChannelId);
     if (!state) throw new NotFoundError("Esta pessoa não está numa chamada");
     if (!state.guildId) throw new AppError("Não dá pra mover alguém de uma chamada de privado");
 
@@ -416,8 +416,9 @@ export async function cleanupVoiceOnDisconnect(userId: string, socketId: string)
   }, VOICE_GRACE_MS).unref();
 }
 
-async function stateToModerate(actorId: string, targetId: string) {
+async function stateToModerate(actorId: string, targetId: string, fromChannelId?: string) {
   const states = await voiceService.statesOf(targetId);
+  if (fromChannelId) return states.find((s) => s.channelId === fromChannelId) ?? null;
   if (states.length <= 1) return states[0] ?? null;
 
   const actorState = await voiceService.get(actorId);
