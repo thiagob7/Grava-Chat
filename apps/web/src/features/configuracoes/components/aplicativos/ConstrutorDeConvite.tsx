@@ -1,12 +1,12 @@
 import React, { useMemo, useState } from "react";
-import { Check, Search, X } from "lucide-react";
+import { Check } from "lucide-react";
 import {
   PERMISSION_GROUPS,
   PERMISSION_LABELS,
   type Permission,
 } from "@gravae/shared";
 
-import { Label, bareField, fieldGroup } from "~/components/ui/input";
+import { Label, SearchField } from "~/components/ui/input";
 import { SecretField } from "~/features/configuracoes/components/aplicativos/comum";
 import { cn } from "~/lib/utils";
 
@@ -127,41 +127,29 @@ export const InviteBuilder: React.FC<InvitePropsBuilder> = ({
           )}
         </div>
 
-        <div data-gc="configuracoes.aplicativos.construtor-de-convite.div--4" className={cn(fieldGroup, "mt-3")}>
-          <Search data-gc="configuracoes.aplicativos.construtor-de-convite.search" size={14} className="shrink-0 text-ink-faint" />
-          <input data-gc="configuracoes.aplicativos.construtor-de-convite.input"
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            placeholder="Procurar permissão"
-            aria-label="Procurar permissão"
-            className={bareField}
-          />
-          {search && (
-            <button data-gc="configuracoes.aplicativos.construtor-de-convite.button--3"
-              type="button"
-              onClick={() => setSearch("")}
-              aria-label="Limpar a busca"
-              className="shrink-0 rounded p-0.5 text-ink-faint transition hover:text-ink"
-            >
-              <X data-gc="configuracoes.aplicativos.construtor-de-convite.x" size={14} />
-            </button>
-          )}
-        </div>
+        <SearchField data-gc="configuracoes.aplicativos.construtor-de-convite.search-field"
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          onClear={() => setSearch("")}
+          placeholder="Procurar permissão"
+          aria-label="Procurar permissão"
+          className="mt-3"
+        />
 
-        <div data-gc="configuracoes.aplicativos.construtor-de-convite.div--5" className="mt-3 max-h-72 space-y-4 overflow-y-auto pr-1">
+        <div data-gc="configuracoes.aplicativos.construtor-de-convite.div--4" className="mt-3 max-h-72 space-y-4 overflow-y-auto pr-1">
           {groups.map((group) => (
             <section data-gc="configuracoes.aplicativos.construtor-de-convite.section" key={group.label}>
               <p data-gc="configuracoes.aplicativos.construtor-de-convite.p--2" className="mb-1.5 text-xs font-semibold uppercase tracking-wide text-ink-faint">
                 {group.label}
               </p>
 
-              <div data-gc="configuracoes.aplicativos.construtor-de-convite.div--6" className="grid gap-1 sm:grid-cols-2">
+              <div data-gc="configuracoes.aplicativos.construtor-de-convite.div--5" className="grid gap-1 sm:grid-cols-2">
                 {group.permissions.map((permission) => {
                   const marked = picked.includes(permission);
                   const heavy = permission === "ADMINISTRATOR";
 
                   return (
-                    <button data-gc="configuracoes.aplicativos.construtor-de-convite.button--4"
+                    <button data-gc="configuracoes.aplicativos.construtor-de-convite.button--3"
                       key={permission}
                       type="button"
                       onClick={() => toggle(permission)}

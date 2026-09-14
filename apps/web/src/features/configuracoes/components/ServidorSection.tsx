@@ -39,6 +39,7 @@ import {
   StatTile,
   StatusPill,
 } from "~/features/configuracoes/components/painel/PainelUi";
+import { IconButton } from "~/components/ui/button";
 import { Tooltip } from "~/components/ui/tooltip";
 import { copyText } from "~/lib/copiar";
 
@@ -329,17 +330,16 @@ const Identifier: React.FC<{ id: string; oQueE: string }> = ({
   oQueE,
 }) => (
   <Tooltip data-gc="configuracoes.servidor-section.tooltip" label={`${oQueE} ${id} · clique para copiar`}>
-    <button data-gc="configuracoes.servidor-section.button"
-      type="button"
+    <IconButton data-gc="configuracoes.servidor-section.icon-button"
       onClick={() => {
         void copyText(id);
         toast.success("ID copiado.");
       }}
-      className="shrink-0 text-ink-faint transition hover:text-ink"
-      aria-label={`Copiar ID do ${oQueE}`}
+      className="size-auto text-ink-faint hover:bg-transparent [&_svg]:size-3"
+      label={`Copiar ID do ${oQueE}`}
     >
-      <Fingerprint data-gc="configuracoes.servidor-section.fingerprint" size={12} />
-    </button>
+      <Fingerprint data-gc="configuracoes.servidor-section.fingerprint" />
+    </IconButton>
   </Tooltip>
 );
 

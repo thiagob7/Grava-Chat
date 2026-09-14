@@ -36,12 +36,14 @@ export const ForumPostView: React.FC<ForumPostViewProps> = ({
   return (
     <>
       <header data-gc="conversa.forum-post-view.header" className="flex h-12 shrink-0 items-center gap-3 border-b border-divisor px-4 shadow-sm">
-        <button data-gc="conversa.forum-post-view.button.on-back"
+        <Button data-gc="conversa.forum-post-view.button.on-back"
+          variant="ghost"
+          size="sm"
           onClick={onBack}
-          className="flex items-center gap-1.5 text-sm text-ink-muted transition hover:text-ink"
+          className="-ml-2.5 gap-1.5 font-normal"
         >
           <ArrowLeft data-gc="conversa.forum-post-view.arrow-left" size={16} /> Assuntos
-        </button>
+        </Button>
 
         <span data-gc="conversa.forum-post-view.span" className="h-5 w-px bg-line" />
 

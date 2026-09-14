@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { ArrowLeft, Upload } from "lucide-react";
+import { IconButton } from "~/components/ui/button";
 
 import type { GifModel } from "~/@core/application/requests/gif/gifs";
 import { TabGifs } from "~/features/expressao/components/seletor/AbaGifs";
@@ -45,13 +46,13 @@ export const ImagePicker: React.FC<ImagePropsPicker> = ({
       >
         <div data-gc="seletor-de-imagem.div" className="flex items-center gap-2 px-5 pt-5">
           {tab === "gif" && (
-            <button data-gc="seletor-de-imagem.button"
+            <IconButton data-gc="seletor-de-imagem.icon-button"
               onClick={() => setTab("escolha")}
-              aria-label="Voltar"
-              className="rounded p-1 text-ink-muted transition hover:bg-surface-4 hover:text-ink"
+              label="Voltar"
+              className="size-[26px] rounded hover:bg-surface-4 [&_svg]:size-[18px]"
             >
-              <ArrowLeft data-gc="seletor-de-imagem.arrow-left" size={18} />
-            </button>
+              <ArrowLeft data-gc="seletor-de-imagem.arrow-left" />
+            </IconButton>
           )}
           <DialogTitle data-gc="seletor-de-imagem.dialog-title" className="text-lg font-semibold">
             {tab === "gif" ? t("comum.imagem.escolherGif") : (title ?? t("comum.imagem.titulo"))}

@@ -38,8 +38,8 @@ import {
   mustTranslate,
   countRulesDead,
 } from "~/features/configuracoes/lib/normalizar-tema";
-import { Button } from "~/components/ui/button";
-import { Input, Label } from "~/components/ui/input";
+import { Button, IconButton } from "~/components/ui/button";
+import { Input, Label, Textarea } from "~/components/ui/input";
 import { useConfirm } from "~/components/ui/confirm";
 import knobs from "~/features/configuracoes/lib/macanetas.json";
 import {
@@ -197,6 +197,8 @@ const ColorsTab: React.FC = () => {
   );
 };
 
+const resetButton = "size-[26px] rounded text-ink-faint hover:bg-transparent disabled:opacity-25";
+
 const BaseCard: React.FC<{ id: string }> = ({ id }) => {
   const family = COLORS_BASE[id]!;
 
@@ -250,16 +252,16 @@ const BaseCard: React.FC<{ id: string }> = ({ id }) => {
           )}
         />
 
-        <button data-gc="configuracoes.estudio.estudio-de-temas.button--3"
-          type="button"
+        <IconButton data-gc="configuracoes.estudio.estudio-de-temas.icon-button"
+          size="xs"
           onClick={() => setColorBase(id, null)}
           disabled={!picked}
           title="Voltar esta família ao tema base"
-          aria-label={`Voltar ${family.label} ao tema base`}
-          className="shrink-0 rounded p-1.5 text-ink-faint transition hover:text-ink disabled:opacity-25"
+          label={`Voltar ${family.label} ao tema base`}
+          className={resetButton}
         >
-          <RotateCcw data-gc="configuracoes.estudio.estudio-de-temas.rotate-ccw--2" size={14} />
-        </button>
+          <RotateCcw data-gc="configuracoes.estudio.estudio-de-temas.rotate-ccw--2" />
+        </IconButton>
       </div>
 
       <div data-gc="configuracoes.estudio.estudio-de-temas.div--9" className="mt-3 flex flex-wrap gap-1">
@@ -356,7 +358,7 @@ const TokensTab: React.FC<{ theme: string }> = ({ theme }) => {
               key={group.title}
               className="border-b border-divisor last:border-b-0"
             >
-              <button data-gc="configuracoes.estudio.estudio-de-temas.button--4"
+              <button data-gc="configuracoes.estudio.estudio-de-temas.button--3"
                 type="button"
                 onClick={() =>
                   setIsOpen((current) => ({
@@ -421,7 +423,7 @@ const TokenLine: React.FC<{
     <div data-gc="configuracoes.estudio.estudio-de-temas.div--14" className="flex items-center gap-3 border-b border-line px-3 py-2 last:border-b-0">
       <Popover data-gc="configuracoes.estudio.estudio-de-temas.popover--2">
         <PopoverTrigger data-gc="configuracoes.estudio.estudio-de-temas.popover-trigger--2" asChild>
-          <button data-gc="configuracoes.estudio.estudio-de-temas.button--5"
+          <button data-gc="configuracoes.estudio.estudio-de-temas.button--4"
             type="button"
             disabled={!readable}
             aria-label={`Cor de ${token.label}`}
@@ -487,16 +489,16 @@ const TokenLine: React.FC<{
         )}
       />
 
-      <button data-gc="configuracoes.estudio.estudio-de-temas.button--6"
-        type="button"
+      <IconButton data-gc="configuracoes.estudio.estudio-de-temas.icon-button--2"
+        size="xs"
         onClick={() => set(token.name, null)}
         disabled={!manual}
         title="Voltar ao valor do tema"
-        aria-label={`Voltar ${token.label} ao valor do tema`}
-        className="shrink-0 rounded p-1.5 text-ink-faint transition hover:text-ink disabled:opacity-25"
+        label={`Voltar ${token.label} ao valor do tema`}
+        className={resetButton}
       >
-        <RotateCcw data-gc="configuracoes.estudio.estudio-de-temas.rotate-ccw--4" size={14} />
-      </button>
+        <RotateCcw data-gc="configuracoes.estudio.estudio-de-temas.rotate-ccw--4" />
+      </IconButton>
     </div>
   );
 };
@@ -511,7 +513,7 @@ const CssTab: React.FC = () => {
   return (
     <>
       <div data-gc="configuracoes.estudio.estudio-de-temas.div--16" className="flex shrink-0 items-center gap-2 border-b border-line px-6 py-3.5 pr-14">
-        <Button data-gc="configuracoes.estudio.estudio-de-temas.button--7"
+        <Button data-gc="configuracoes.estudio.estudio-de-temas.button--5"
           variant="surface"
           size="sm"
           onClick={() => file.current?.click()}
@@ -530,7 +532,7 @@ const CssTab: React.FC = () => {
           }}
         />
 
-        <Button data-gc="configuracoes.estudio.estudio-de-temas.button--8"
+        <Button data-gc="configuracoes.estudio.estudio-de-temas.button--6"
           variant="surface"
           size="sm"
           onClick={() => download("tema.css", css, "text/css")}
@@ -538,7 +540,7 @@ const CssTab: React.FC = () => {
           <Download data-gc="configuracoes.estudio.estudio-de-temas.download" size={14} /> Baixar
         </Button>
 
-        <Button data-gc="configuracoes.estudio.estudio-de-temas.button--9"
+        <Button data-gc="configuracoes.estudio.estudio-de-temas.button--7"
           variant="surface"
           size="sm"
           onClick={() =>
@@ -550,7 +552,7 @@ const CssTab: React.FC = () => {
 
         <ShareButton data-gc="configuracoes.estudio.estudio-de-temas.share-button" />
 
-        <Button data-gc="configuracoes.estudio.estudio-de-temas.button--10"
+        <Button data-gc="configuracoes.estudio.estudio-de-temas.button--8"
           variant="surface"
           size="sm"
           className="ml-auto text-danger"
@@ -562,13 +564,13 @@ const CssTab: React.FC = () => {
       </div>
 
       <div data-gc="configuracoes.estudio.estudio-de-temas.div--17" className="min-h-0 flex-1 p-4">
-        <textarea data-gc="configuracoes.estudio.estudio-de-temas.textarea"
+        <Textarea data-gc="configuracoes.estudio.estudio-de-temas.textarea"
           value={css}
           onChange={(e) => setCss(e.target.value)}
           spellCheck={false}
           placeholder={"/* Ex.: */\n.lista-de-membros { width: 12rem; }"}
           aria-label="CSS personalizado"
-          className="size-full resize-none rounded-lg border border-line bg-surface-1 p-4 font-mono text-13 leading-relaxed text-ink outline-none placeholder:text-ink-faint focus-visible:border-campo-foco"
+          className="size-full bg-surface-1 p-4 font-mono text-13 leading-relaxed shadow-none focus-visible:border-campo-foco"
         />
       </div>
 
@@ -613,9 +615,10 @@ const ShareButton: React.FC = () => {
   }, [actives, css]);
 
   return (
-    <Button data-gc="configuracoes.estudio.estudio-de-temas.button--11"
+    <Button data-gc="configuracoes.estudio.estudio-de-temas.button--9"
       size="sm"
-      disabled={empty || publish.isPending}
+      disabled={empty}
+      loading={publish.isPending}
       title={empty ? "Mexa em alguma cor ou escreva CSS antes" : undefined}
       onClick={() =>
         publish.mutate(
@@ -634,7 +637,7 @@ const ShareButton: React.FC = () => {
         )
       }
     >
-      <Share2 data-gc="configuracoes.estudio.estudio-de-temas.share2" size={14} /> {publish.isPending ? "Publicando…" : "Compartilhar"}
+      <Share2 data-gc="configuracoes.estudio.estudio-de-temas.share2" size={14} /> Compartilhar
       {forTake.length > 0 && !publish.isPending && (
         <span data-gc="configuracoes.estudio.estudio-de-temas.span--6" className="text-ink-faint">
           · {forTake.length} {forTake.length === 1 ? "arquivo" : "arquivos"}
@@ -724,7 +727,7 @@ const CommentsBroken: React.FC<{
         ))}
       </div>
 
-      <Button data-gc="configuracoes.estudio.estudio-de-temas.button--12"
+      <Button data-gc="configuracoes.estudio.estudio-de-temas.button--10"
         variant="surface"
         size="sm"
         className="mt-2"
@@ -816,7 +819,7 @@ const ThemeImported: React.FC<{ css: string }> = ({ css }) => {
 
   return (
     <div data-gc="configuracoes.estudio.estudio-de-temas.div--21" className="shrink-0 border-t border-line px-6 py-3">
-      <button data-gc="configuracoes.estudio.estudio-de-temas.button--13"
+      <button data-gc="configuracoes.estudio.estudio-de-temas.button--11"
         type="button"
         onClick={() => setIsOpen((v) => !v)}
         className="flex w-full items-center gap-1.5 text-left text-xs font-semibold uppercase tracking-wide text-ink-faint transition hover:text-ink"
@@ -906,7 +909,7 @@ const Recipe: React.FC<{
         {css}
       </pre>
 
-      <Button data-gc="configuracoes.estudio.estudio-de-temas.button--14" variant="surface" size="sm" onClick={() => onUse(css)}>
+      <Button data-gc="configuracoes.estudio.estudio-de-temas.button--12" variant="surface" size="sm" onClick={() => onUse(css)}>
         Usar
       </Button>
     </div>
@@ -934,7 +937,7 @@ const Hooks: React.FC<{ onUse: (snippet: string) => void }> = ({ onUse }) => {
 
   return (
     <div data-gc="configuracoes.estudio.estudio-de-temas.div--26" className="shrink-0 border-t border-line px-6 py-3">
-      <button data-gc="configuracoes.estudio.estudio-de-temas.button--15"
+      <button data-gc="configuracoes.estudio.estudio-de-temas.button--13"
         type="button"
         onClick={() => setIsOpen((v) => !v)}
         className="flex w-full items-center gap-1.5 text-left text-xs font-semibold uppercase tracking-wide text-ink-faint transition hover:text-ink"
@@ -955,7 +958,7 @@ const Hooks: React.FC<{ onUse: (snippet: string) => void }> = ({ onUse }) => {
 
           <div data-gc="configuracoes.estudio.estudio-de-temas.div--27" className="mt-2 flex flex-wrap gap-1.5">
             {HOOKS.map((hook) => (
-              <button data-gc="configuracoes.estudio.estudio-de-temas.button--16"
+              <button data-gc="configuracoes.estudio.estudio-de-temas.button--14"
                 key={hook.cssClass}
                 type="button"
                 title={hook.oQueE}
@@ -995,7 +998,7 @@ const Hooks: React.FC<{ onUse: (snippet: string) => void }> = ({ onUse }) => {
                   <>
                     <div data-gc="configuracoes.estudio.estudio-de-temas.div--30" className="flex max-h-48 flex-col gap-0.5 overflow-y-auto">
                       {show.map((name) => (
-                        <button data-gc="configuracoes.estudio.estudio-de-temas.button--17"
+                        <button data-gc="configuracoes.estudio.estudio-de-temas.button--15"
                           key={name}
                           type="button"
                           onClick={() => onUse(`[data-gc="${name}"] {\n  \n}`)}
@@ -1074,13 +1077,13 @@ const ActiveTab: React.FC = () => {
   return (
     <>
       <div data-gc="configuracoes.estudio.estudio-de-temas.div--31" className="flex shrink-0 items-center gap-2 border-b border-line px-6 py-3.5 pr-14">
-        <Button data-gc="configuracoes.estudio.estudio-de-temas.button--18"
+        <Button data-gc="configuracoes.estudio.estudio-de-temas.button--16"
           variant="surface"
           size="sm"
-          disabled={uploading}
+          loading={uploading}
           onClick={() => file.current?.click()}
         >
-          <Upload data-gc="configuracoes.estudio.estudio-de-temas.upload--2" size={14} /> {uploading ? "Enviando…" : "Carregar arquivo"}
+          <Upload data-gc="configuracoes.estudio.estudio-de-temas.upload--2" size={14} /> Carregar arquivo
         </Button>
         <input data-gc="configuracoes.estudio.estudio-de-temas.input--6"
           ref={file}
@@ -1143,20 +1146,22 @@ const ActiveTab: React.FC = () => {
                   {active.name}
                 </p>
 
-                <button data-gc="configuracoes.estudio.estudio-de-temas.button--19"
+                <IconButton data-gc="configuracoes.estudio.estudio-de-temas.icon-button--3"
+                  size="xs"
                   onClick={() =>
                     void copyText(`gc-ativo("${active.name}")`).then(
                       (ok) => ok && toast.success("Copiado. Cole no CSS."),
                     )
                   }
                   title={`Copiar como gc-ativo("${active.name}") — é assim que o tema viaja para outra máquina`}
-                  aria-label={`Copiar o nome de ${active.name}`}
-                  className="rounded p-1 text-ink-faint transition hover:text-ink"
+                  label={`Copiar o nome de ${active.name}`}
+                  className="size-[22px] rounded text-ink-faint hover:bg-transparent"
                 >
-                  <Copy data-gc="configuracoes.estudio.estudio-de-temas.copy" size={14} />
-                </button>
+                  <Copy data-gc="configuracoes.estudio.estudio-de-temas.copy" />
+                </IconButton>
 
-                <button data-gc="configuracoes.estudio.estudio-de-temas.button--20"
+                <IconButton data-gc="configuracoes.estudio.estudio-de-temas.icon-button--4"
+                  size="xs"
                   onClick={() =>
                     void confirm({
                       title: `Tirar "${active.name}" da lista?`,
@@ -1167,11 +1172,11 @@ const ActiveTab: React.FC = () => {
                       ({ confirmed }) => confirmed && deleteActive(active.id),
                     )
                   }
-                  aria-label={`Tirar ${active.name}`}
-                  className="rounded p-1 text-ink-faint transition hover:text-danger"
+                  label={`Tirar ${active.name}`}
+                  className="size-[22px] rounded text-ink-faint hover:bg-transparent hover:text-danger"
                 >
-                  <Trash2 data-gc="configuracoes.estudio.estudio-de-temas.trash2" size={14} />
-                </button>
+                  <Trash2 data-gc="configuracoes.estudio.estudio-de-temas.trash2" />
+                </IconButton>
               </div>
             </div>
           ))}
@@ -1216,7 +1221,7 @@ const SettingsTab: React.FC = () => {
               Substituições, CSS, ativos e a biblioteca inteira deste aparelho.
             </p>
           </div>
-          <Button data-gc="configuracoes.estudio.estudio-de-temas.button--21"
+          <Button data-gc="configuracoes.estudio.estudio-de-temas.button--17"
             variant="danger"
             size="sm"
             onClick={() =>

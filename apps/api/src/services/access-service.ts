@@ -8,7 +8,7 @@ import {
 import { AppError, NotFoundError, ForbiddenError } from "~/lib/http.js";
 import { memberRepository, channelRepository, guildRepository } from "~/repositories/guild-repository.js";
 import { banRepository } from "~/repositories/ban-repository.js";
-import { dmRepository } from "~/repositories/friendship-repository.js";
+import { dmRepository, dmRepositoryRequest } from "~/repositories/friendship-repository.js";
 import { roleRepository, overwriteRepository } from "~/repositories/role-repository.js";
 
 export interface Context {
@@ -129,8 +129,13 @@ export const accessService = {
     );
 
     const dms = await dmRepository.findManyForUser(userId);
+    const requests = dms.length ? await dmRepositoryRequest.byChannel(dms.map((c) => c.id)) : new Map();
+    const reachable = dms.filter((channel) => {
+      const request = requests.get(channel.id);
+      return !request || request.status === "ACCEPTED" || request.toId !== userId;
+    });
 
-    return [...byServer.flat(), ...dms.map((c) => c.id)];
+    return [...byServer.flat(), ...reachable.map((c) => c.id)];
   },
 
   requireAbove(context: Context, positionTarget: number, message: string) {

@@ -3,6 +3,7 @@ import { PushPin, PushPinSlash } from "@phosphor-icons/react";
 
 import { useFindPins, usePinMessage } from "~/@core/application/queries/message/use-pins";
 import { Avatar } from "~/features/perfil/components/Avatar";
+import { IconButton } from "~/components/ui/button";
 import { Popover, PopoverContent, PopoverTrigger } from "~/components/ui/popover";
 import { Tooltip } from "~/components/ui/tooltip";
 import { formatTimestamp } from "~/lib/format";
@@ -78,13 +79,14 @@ export const PinnedMessagesPanel: React.FC<PinnedMessagesPanelProps> = ({ channe
               </div>
 
               {canManage && (
-                <button data-gc="conversa.pinned-messages-panel.button--2"
+                <IconButton data-gc="conversa.pinned-messages-panel.icon-button"
                   onClick={() => pinMessage.mutate({ messageId: message.id, pin: false })}
+                  label={t("conversa.fixadas.desafixar")}
                   title={t("conversa.fixadas.desafixar")}
-                  className="self-start rounded p-1.5 text-ink-faint opacity-0 transition group-hover:opacity-100 hover:text-danger"
+                  className="size-[26px] self-start rounded text-ink-faint opacity-0 hover:text-danger focus-visible:opacity-100 group-hover:opacity-100 [&_svg]:size-3.5"
                 >
-                  <PushPinSlash data-gc="conversa.pinned-messages-panel.push-pin-slash" weight="fill" size={14} />
-                </button>
+                  <PushPinSlash data-gc="conversa.pinned-messages-panel.push-pin-slash" weight="fill" />
+                </IconButton>
               )}
             </article>
           ))}

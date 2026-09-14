@@ -10,6 +10,7 @@ import {
 } from "~/@core/application/queries/message/use-message-favorites";
 import { Avatar } from "~/features/perfil/components/Avatar";
 import { MessageContent } from "~/features/conversa/components/MessageContent";
+import { IconButton } from "~/components/ui/button";
 import { Popover, PopoverContent, PopoverTrigger } from "~/components/ui/popover";
 import { Tooltip } from "~/components/ui/tooltip";
 import { formatTimestamp } from "~/lib/format";
@@ -51,19 +52,19 @@ export const EntryBox: React.FC = () => {
         <nav data-gc="conversa.caixa-de-entrada.nav" className={cn("flex w-12 shrink-0 flex-col items-center gap-1 border-r border-divisor py-2", flxCls("boxEntrySide"))}>
           {TABS.map((item) => (
             <Tooltip data-gc="conversa.caixa-de-entrada.tooltip--2" key={item.id} label={t(item.label)} side="left">
-              <button data-gc="conversa.caixa-de-entrada.button--2"
+              <IconButton data-gc="conversa.caixa-de-entrada.icon-button"
                 onClick={() => setTab(item.id)}
-                aria-label={t(item.label)}
+                label={t(item.label)}
                 aria-current={tab === item.id}
                 className={cn(
-                  "rounded-lg p-2 transition",
+                  "rounded-lg",
                   tab === item.id
-                    ? "bg-selecionado text-ink"
-                    : "text-ink-faint hover:bg-hover hover:text-ink",
+                    ? "bg-selecionado text-ink hover:bg-selecionado"
+                    : "text-ink-faint",
                 )}
               >
                 {item.icon}
-              </button>
+              </IconButton>
             </Tooltip>
           ))}
         </nav>
@@ -110,7 +111,7 @@ const NotRead: React.FC<{
   return (
     <div data-gc="conversa.caixa-de-entrada.div--3" className="p-2">
       {states.map((state) => (
-        <button data-gc="conversa.caixa-de-entrada.button--3"
+        <button data-gc="conversa.caixa-de-entrada.button--2"
           key={state.channelId}
           onClick={() => {
             navigate(
@@ -184,16 +185,17 @@ const Saved: React.FC<{ active: boolean }> = ({ active }) => {
             </p>
           </div>
 
-          <button data-gc="conversa.caixa-de-entrada.button--4"
+          <IconButton data-gc="conversa.caixa-de-entrada.icon-button--2"
+            size="xs"
             onClick={() => toggle.mutate({ messageId: message.id, favorite: true })}
-            aria-label={t("conversa.entrada.tirarDosSalvos")}
+            label={t("conversa.entrada.tirarDosSalvos")}
             className={cn(
               flxCls("topBoxEntryButton"),
-              "h-fit rounded p-1 text-ink-faint opacity-0 transition hover:text-danger group-hover:opacity-100",
+              "rounded text-ink-faint opacity-0 hover:text-danger focus-visible:opacity-100 group-hover:opacity-100 [&_svg]:size-4",
             )}
           >
-            <BookmarkSimple data-gc="conversa.caixa-de-entrada.bookmark-simple--3" size={16} weight="fill" className="text-danger" />
-          </button>
+            <BookmarkSimple data-gc="conversa.caixa-de-entrada.bookmark-simple--3" weight="fill" className="text-danger" />
+          </IconButton>
         </article>
       ))}
     </div>
@@ -220,7 +222,7 @@ const Mentions: React.FC<{ active: boolean; onIr: () => void }> = ({ active, onI
   return (
     <div data-gc="conversa.caixa-de-entrada.div--6">
       {mentions.map((mention) => (
-        <button data-gc="conversa.caixa-de-entrada.button--5"
+        <button data-gc="conversa.caixa-de-entrada.button--3"
           key={mention.id}
           onClick={() => {
             navigate(

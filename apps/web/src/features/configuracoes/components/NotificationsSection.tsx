@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Bell, BellOff } from "lucide-react";
 
-import { Button } from "~/components/ui/button";
+import { Button, IconButton } from "~/components/ui/button";
 import { Switch } from "~/components/ui/switch";
 import {
   noticeRequestPermission,
@@ -165,14 +165,14 @@ const ListSounds: React.FC = () => {
                   key={sound.name}
                   className="flex items-center gap-3 px-3 py-2.5"
                 >
-                  <button data-gc="configuracoes.notifications-section.button--2"
-                    type="button"
+                  <IconButton data-gc="configuracoes.notifications-section.icon-button"
+                    round
                     onClick={() => playSound(sound.name)}
-                    aria-label={`Ouvir ${sound.label}`}
-                    className="flex size-7 shrink-0 items-center justify-center rounded-full border border-line text-ink-faint transition hover:border-ink-faint hover:text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-foco-anel"
+                    label={`Ouvir ${sound.label}`}
+                    className="size-7 border border-line text-ink-faint hover:border-ink-faint hover:bg-transparent [&_svg]:size-3"
                   >
-                    <Play data-gc="configuracoes.notifications-section.play" size={12} />
-                  </button>
+                    <Play data-gc="configuracoes.notifications-section.play" />
+                  </IconButton>
 
                   <div data-gc="configuracoes.notifications-section.div--12" className="min-w-0 flex-1">
                     <p data-gc="configuracoes.notifications-section.p--9" className="text-sm font-medium">{sound.label}</p>

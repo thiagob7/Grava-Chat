@@ -2,6 +2,8 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router";
 import { X } from "lucide-react";
 
+import { IconButton } from "~/components/ui/button";
+
 import { useFindInvite } from "~/@core/application/queries/invite/use-find-invite";
 
 const INVITE = import.meta.env.OFFICIAL_VITE_INVITE as string | undefined;
@@ -43,13 +45,14 @@ export const CommunityTrack: React.FC = () => {
         Entrar
       </button>
 
-      <button data-gc="servidor.faixa-da-comunidade.button.close"
+      <IconButton data-gc="servidor.faixa-da-comunidade.icon-button.close"
         onClick={close}
-        aria-label="Fechar"
-        className="absolute right-3 rounded p-1 text-palco-ink/80 transition hover:bg-palco-ink/15 hover:text-palco-ink"
+        label="Fechar"
+        size="xs"
+        className="absolute right-3 size-6 text-palco-ink/80 hover:bg-palco-ink/15 hover:text-palco-ink [&_svg]:size-4"
       >
-        <X data-gc="servidor.faixa-da-comunidade.x" size={16} />
-      </button>
+        <X data-gc="servidor.faixa-da-comunidade.x" />
+      </IconButton>
     </div>
   );
 };

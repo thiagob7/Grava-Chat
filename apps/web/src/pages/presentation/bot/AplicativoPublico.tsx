@@ -8,7 +8,7 @@ import {
   useReportApp,
 } from "~/@core/application/queries/descoberta/use-aplicativo";
 import { Avatar } from "~/features/perfil/components/Avatar";
-import { Button } from "~/components/ui/button";
+import { Button, IconButton } from "~/components/ui/button";
 import {
   Dialog,
   DialogBody,
@@ -100,25 +100,27 @@ export const AppPublic: React.FC<{ botId: string }> = ({ botId }) => {
               {t("servidor.descoberta.adicionarApp")}
             </Button>
 
-            <button data-gc="bot.aplicativo-publico.button--4"
-              type="button"
+            <IconButton data-gc="bot.aplicativo-publico.icon-button"
               onClick={() => void copyText(`${window.location.origin}/apps/${app.id}`)}
-              aria-label={t("servidor.descoberta.copiarLink")}
+              label={t("servidor.descoberta.copiarLink")}
               title={t("servidor.descoberta.copiarLink")}
-              className="flex size-9 items-center justify-center rounded-md bg-surface-2 text-ink-muted transition hover:bg-surface-3 hover:text-ink"
+              variant="surface"
+              size="md"
+              className="bg-surface-2 hover:bg-surface-3 [&_svg]:size-4"
             >
-              <Link2 data-gc="bot.aplicativo-publico.link2" size={16} />
-            </button>
+              <Link2 data-gc="bot.aplicativo-publico.link2" />
+            </IconButton>
 
             <DropdownMenu data-gc="bot.aplicativo-publico.dropdown-menu">
               <DropdownMenuTrigger data-gc="bot.aplicativo-publico.dropdown-menu-trigger" asChild>
-                <button data-gc="bot.aplicativo-publico.button--5"
-                  type="button"
-                  aria-label={t("comum.mais")}
-                  className="flex size-9 items-center justify-center rounded-md bg-surface-2 text-ink-muted transition hover:bg-surface-3 hover:text-ink"
+                <IconButton data-gc="bot.aplicativo-publico.icon-button--2"
+                  label={t("comum.mais")}
+                  variant="surface"
+                  size="md"
+                  className="bg-surface-2 hover:bg-surface-3 [&_svg]:size-4"
                 >
-                  <MoreHorizontal data-gc="bot.aplicativo-publico.more-horizontal" size={16} />
-                </button>
+                  <MoreHorizontal data-gc="bot.aplicativo-publico.more-horizontal" />
+                </IconButton>
               </DropdownMenuTrigger>
 
               <DropdownMenuContent data-gc="bot.aplicativo-publico.dropdown-menu-content" align="end">
@@ -234,7 +236,7 @@ export const AppPublic: React.FC<{ botId: string }> = ({ botId }) => {
 
             {app.supportServer && (
               <Dado data-gc="bot.aplicativo-publico.dado--5" title={t("servidor.descoberta.servidorDeSuporte")}>
-                <button data-gc="bot.aplicativo-publico.button--6"
+                <button data-gc="bot.aplicativo-publico.button--4"
                   type="button"
                   onClick={() => navigate(`/channels/${app.supportServer!.id}`)}
                   className="mt-1 flex w-full items-center gap-2.5 rounded-lg border border-line bg-surface-1 p-2.5 text-left transition hover:bg-surface-2"
@@ -374,7 +376,7 @@ const ReportModal: React.FC<{
           <Button data-gc="bot.aplicativo-publico.button.on-close" variant="ghost" onClick={onClose}>
             {t("comum.cancelar")}
           </Button>
-          <Button data-gc="bot.aplicativo-publico.button--7" disabled={report.isPending} onClick={() => void send()}>
+          <Button data-gc="bot.aplicativo-publico.button--5" disabled={report.isPending} onClick={() => void send()}>
             {t("servidor.denuncia.enviar")}
           </Button>
         </DialogFooter>

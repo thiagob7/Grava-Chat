@@ -1,6 +1,7 @@
 import React from "react";
 import { Star } from "@phosphor-icons/react";
 
+import { IconButton } from "~/components/ui/button";
 import { Tooltip } from "~/components/ui/tooltip";
 import { useFavorites } from "~/features/servidor/stores/favoritos";
 import { cn } from "~/lib/utils";
@@ -11,17 +12,17 @@ export const ChannelStar: React.FC<{ channelId: string }> = ({ channelId }) => {
 
   return (
     <Tooltip data-gc="conversa.estrela-do-canal.tooltip" label={favorite ? "Tirar dos favoritos" : "Favoritar"}>
-      <button data-gc="conversa.estrela-do-canal.button"
+      <IconButton data-gc="conversa.estrela-do-canal.icon-button"
         onClick={() => toggle(channelId)}
-        aria-label={favorite ? "Tirar dos favoritos" : "Favoritar"}
+        label={favorite ? "Tirar dos favoritos" : "Favoritar"}
         aria-pressed={favorite}
         className={cn(
-          "gc-icone gc-icone--brilha flex size-8 shrink-0 items-center justify-center rounded-md transition hover:bg-hover",
-          favorite ? "text-idle" : "text-ink-muted hover:text-ink",
+          "gc-icone gc-icone--brilha [&_svg]:size-5",
+          favorite && "text-idle hover:text-idle",
         )}
       >
-        <Star data-gc="conversa.estrela-do-canal.star" size={20} weight={favorite ? "fill" : "regular"} />
-      </button>
+        <Star data-gc="conversa.estrela-do-canal.star" weight={favorite ? "fill" : "regular"} />
+      </IconButton>
     </Tooltip>
   );
 };
