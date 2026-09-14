@@ -3,7 +3,7 @@ import { Plus, X } from "lucide-react";
 import type { CreatePollInput } from "@gravae/shared";
 import { LIMITS } from "@gravae/shared";
 
-import { Button } from "~/components/ui/button";
+import { Button, IconButton } from "~/components/ui/button";
 import { Input, Label } from "~/components/ui/input";
 import { SelectField } from "~/components/ui/select";
 import {
@@ -84,20 +84,20 @@ export const CreatePollModal: React.FC<CreatePollModalProps> = ({ open, onClose,
                     }
                   />
                   {options.length > 2 && (
-                    <button data-gc="conversa.create-poll-modal.button"
+                    <IconButton data-gc="conversa.create-poll-modal.icon-button"
                       onClick={() => setOptions((current) => current.filter((_, i) => i !== index))}
-                      aria-label={t("conversa.enquete.removerOpcao")}
-                      className="rounded p-2 text-ink-muted transition hover:bg-surface-0 hover:text-danger"
+                      label={t("conversa.enquete.removerOpcao")}
+                      className="rounded hover:bg-surface-0 hover:text-danger"
                     >
-                      <X data-gc="conversa.create-poll-modal.x" size={16} />
-                    </button>
+                      <X data-gc="conversa.create-poll-modal.x" />
+                    </IconButton>
                   )}
                 </div>
               ))}
             </div>
 
             {options.length < LIMITS.optionsByPoll && (
-              <Button data-gc="conversa.create-poll-modal.button--2"
+              <Button data-gc="conversa.create-poll-modal.button"
                 variant="ghost"
                 size="sm"
                 className="mt-2"
@@ -136,7 +136,7 @@ export const CreatePollModal: React.FC<CreatePollModalProps> = ({ open, onClose,
           <Button data-gc="conversa.create-poll-modal.button.close" variant="ghost" onClick={close}>
             {t("comum.cancelar")}
           </Button>
-          <Button data-gc="conversa.create-poll-modal.button--3"
+          <Button data-gc="conversa.create-poll-modal.button--2"
             disabled={!can}
             onClick={() =>
               onCreate({

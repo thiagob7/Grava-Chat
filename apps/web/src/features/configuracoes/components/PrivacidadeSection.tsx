@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Download, Loader2, ShieldAlert } from "lucide-react";
+import { Download, ShieldAlert } from "lucide-react";
 import { toast } from "react-toastify";
 
 import type { SelfUserModel } from "~/@core/domain/models/user-model";
@@ -146,14 +146,10 @@ export const PrivacySection: React.FC<PrivacySectionProps> = ({
           <Button data-gc="configuracoes.privacidade-section.button"
             variant="surface"
             onClick={() => void doExport()}
-            disabled={downloading}
+            loading={downloading}
           >
-            {downloading ? (
-              <Loader2 data-gc="configuracoes.privacidade-section.loader2" size={16} className="animate-spin" />
-            ) : (
-              <Download data-gc="configuracoes.privacidade-section.download" size={16} />
-            )}
-            {downloading ? "Gerando…" : "Baixar"}
+            <Download data-gc="configuracoes.privacidade-section.download" size={16} />
+            Baixar
           </Button>
         </div>
       </Section>

@@ -219,8 +219,8 @@ const WaitingCard: React.FC<{ run: WorkflowRun; canApprove: boolean }> = ({ run,
               <Button data-gc="configuracoes.publicacoes-section.button--2" variant="surface" onClick={() => void decide(false)} disabled={review.isPending}>
                 <X data-gc="configuracoes.publicacoes-section.x" size={16} /> Recusar
               </Button>
-              <Button data-gc="configuracoes.publicacoes-section.button--3" onClick={() => void decide(true)} disabled={review.isPending}>
-                {review.isPending ? <Loader2 data-gc="configuracoes.publicacoes-section.loader2" size={16} className="animate-spin" /> : <ShieldCheck data-gc="configuracoes.publicacoes-section.shield-check" size={16} />} Aprovar
+              <Button data-gc="configuracoes.publicacoes-section.button--3" onClick={() => void decide(true)} loading={review.isPending}>
+                <ShieldCheck data-gc="configuracoes.publicacoes-section.shield-check" size={16} /> Aprovar
               </Button>
             </>
           ) : (
@@ -432,5 +432,5 @@ const StateIcon: React.FC<{ state: WorkflowState; size?: number }> = ({ state, s
   if (state === "esperando") return <Hourglass data-gc="configuracoes.publicacoes-section.hourglass--2" size={size} className="shrink-0 text-idle" />;
   if (state === "cancelada") return <CircleDashed data-gc="configuracoes.publicacoes-section.circle-dashed" size={size} className="shrink-0 text-ink-faint" />;
 
-  return <Loader2 data-gc="configuracoes.publicacoes-section.loader2--2" size={size} className="shrink-0 animate-spin text-brand" />;
+  return <Loader2 data-gc="configuracoes.publicacoes-section.loader2" size={size} className="shrink-0 animate-spin text-brand" />;
 };

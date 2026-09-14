@@ -33,6 +33,7 @@ import { useModeration } from "~/features/servidor/stores/moderacao";
 import { useEmbed } from "~/@core/application/queries/embed/use-embed";
 import { copyText } from "~/lib/copiar";
 import { extractLinks } from "~/features/conversa/lib/links";
+import { Button, IconButton } from "~/components/ui/button";
 import { Tooltip } from "~/components/ui/tooltip";
 import { useConfirm } from "~/components/ui/confirm";
 import { useSetMemberRoles } from "~/@core/application/queries/role/use-set-member-roles";
@@ -85,14 +86,14 @@ export const ModeratorView: React.FC<{ roles: Role[] }> = ({ roles }) => {
               <h2 data-gc="servidor.moderator-view.h2" className="truncate text-base font-semibold">{target.displayName}</h2>
               <p data-gc="servidor.moderator-view.p" className="truncate text-xs text-ink-muted">@{target.username}</p>
             </div>
-            <button data-gc="servidor.moderator-view.button.close"
+            <IconButton data-gc="servidor.moderator-view.icon-button.close"
               onClick={close}
-              aria-label={t("comum.fechar")}
+              label={t("comum.fechar")}
               title={t("servidor.moderacao.fecharEsc")}
-              className="shrink-0 rounded p-1 text-ink-faint transition hover:text-ink"
+              className="text-ink-faint [&_svg]:size-5"
             >
-              <X data-gc="servidor.moderator-view.x" size={20} />
-            </button>
+              <X data-gc="servidor.moderator-view.x" />
+            </IconButton>
           </div>
 
           <ActionsBar data-gc="servidor.moderator-view.actions-bar.close"
@@ -316,16 +317,17 @@ const TopAction: React.FC<{
   danger?: boolean;
 }> = ({ children, label, onClick, danger }) => (
   <Tooltip data-gc="servidor.moderator-view.tooltip" label={label}>
-    <button data-gc="servidor.moderator-view.button.on-click"
+    <IconButton data-gc="servidor.moderator-view.icon-button.on-click"
       onClick={onClick}
-      aria-label={label}
+      label={label}
+      variant="surface"
       className={cn(
-        "flex items-center justify-center rounded bg-surface-3 py-2.5 text-ink-muted transition hover:bg-surface-4",
+        "size-auto rounded py-2.5 [&_svg]:size-[18px]",
         danger ? "hover:text-danger" : "hover:text-ink",
       )}
     >
       {children}
-    </button>
+    </IconButton>
   </Tooltip>
 );
 
@@ -348,12 +350,14 @@ const ListMessages: React.FC<{
   return (
     <div data-gc="servidor.moderator-view.div--7">
       <div data-gc="servidor.moderator-view.div--8" className="sticky top-0 z-10 flex items-center justify-between border-b border-divisor bg-surface-2 px-4 py-2.5">
-        <button data-gc="servidor.moderator-view.button.on-back"
+        <Button data-gc="servidor.moderator-view.button.on-back"
+          variant="ghost"
+          size="xs"
           onClick={onBack}
-          className="flex items-center gap-1.5 text-sm font-medium text-ink-muted transition hover:text-ink"
+          className="-ml-2.5 gap-1.5 text-sm font-medium"
         >
           <ArrowLeft data-gc="servidor.moderator-view.arrow-left" size={16} /> {t("servidor.moderacao.voltar")}
-        </button>
+        </Button>
         <span data-gc="servidor.moderator-view.span--3" className="text-xs font-semibold uppercase tracking-wide text-ink-faint">
           {t(TITLES[filter])}
         </span>
@@ -400,12 +404,14 @@ const ListMessage: React.FC<{
         {message.channelName}
       </span>
 
-      <button data-gc="servidor.moderator-view.button.on-ir"
+      <Button data-gc="servidor.moderator-view.button.on-ir"
+        variant="surface"
+        size="xs"
         onClick={onIr}
-        className="rounded bg-surface-3 px-1.5 py-0.5 text-11 opacity-0 transition group-hover/msg:opacity-100 hover:text-ink"
+        className="rounded px-1.5 py-0.5 text-11 font-normal opacity-0 group-hover/msg:opacity-100"
       >
         {t("servidor.moderacao.irParaMensagem")}
-      </button>
+      </Button>
 
       <time data-gc="servidor.moderator-view.time" dateTime={message.createdAt}>
         {new Intl.DateTimeFormat("pt-BR", { dateStyle: "short", timeStyle: "short" }).format(
@@ -544,7 +550,7 @@ const Line: React.FC<LineProps> = ({ icon, label, value, data, alert, onClick })
   if (!onClick) return <div data-gc="servidor.moderator-view.div--13" className={cssClass}>{content}</div>;
 
   return (
-    <button data-gc="servidor.moderator-view.button.on-click--2" onClick={onClick} className={cn(cssClass, "transition hover:bg-surface-3")}>
+    <button data-gc="servidor.moderator-view.button.on-click" onClick={onClick} className={cn(cssClass, "transition hover:bg-surface-3")}>
       {content}
     </button>
   );
@@ -596,13 +602,15 @@ const RolesEditor: React.FC<{
 
       <DropdownMenu data-gc="servidor.moderator-view.dropdown-menu">
         <DropdownMenuTrigger data-gc="servidor.moderator-view.dropdown-menu-trigger" asChild>
-          <button data-gc="servidor.moderator-view.button"
-            aria-label={t("servidor.moderacao.adicionarCargo")}
+          <IconButton data-gc="servidor.moderator-view.icon-button"
+            label={t("servidor.moderacao.adicionarCargo")}
             disabled={setRoles.isPending}
-            className="rounded-full bg-surface-3 p-1 text-ink-muted transition hover:bg-surface-4 hover:text-ink disabled:opacity-50"
+            variant="surface"
+            size="xs"
+            round
           >
-            <Plus data-gc="servidor.moderator-view.plus" size={14} />
-          </button>
+            <Plus data-gc="servidor.moderator-view.plus" />
+          </IconButton>
         </DropdownMenuTrigger>
 
         <DropdownMenuContent data-gc="servidor.moderator-view.dropdown-menu-content" align="start" className="max-h-72 overflow-y-auto">

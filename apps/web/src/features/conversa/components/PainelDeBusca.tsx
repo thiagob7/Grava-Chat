@@ -12,6 +12,7 @@ import { UserName } from "~/features/perfil/components/UserName";
 import { useCharms } from "~/features/perfil/hooks/use-enfeites";
 import { useMentions } from "~/features/conversa/hooks/use-mencoes";
 import { MessageContent } from "~/features/conversa/components/MessageContent";
+import { Button, IconButton } from "~/components/ui/button";
 import { formatTimestamp } from "~/lib/format";
 import type { GuildEmoji } from "@gravae/shared";
 import { useTranslation } from "~/traducao";
@@ -86,13 +87,13 @@ export const SearchPanel: React.FC<SearchPropsPanel> = ({
                 quantos: `${total}${search.hasNextPage ? "+" : ""}`,
               })}
         </h2>
-        <button data-gc="conversa.painel-de-busca.button.on-close"
+        <IconButton data-gc="conversa.painel-de-busca.icon-button.on-close"
           onClick={onClose}
-          aria-label={t("conversa.busca.fechar")}
-          className="text-ink-muted transition hover:text-ink"
+          label={t("conversa.busca.fechar")}
+          className="-mr-2 [&_svg]:size-[18px]"
         >
-          <X data-gc="conversa.painel-de-busca.x" size={18} />
-        </button>
+          <X data-gc="conversa.painel-de-busca.x" />
+        </IconButton>
       </header>
 
       <div data-gc="conversa.painel-de-busca.div" {...flx("searchResults", "min-h-0 flex-1 overflow-y-auto p-3")}>
@@ -120,13 +121,15 @@ export const SearchPanel: React.FC<SearchPropsPanel> = ({
         </div>
 
         {search.hasNextPage && (
-          <button data-gc="conversa.painel-de-busca.button"
+          <Button data-gc="conversa.painel-de-busca.button"
+            variant="surface"
+            size="sm"
             onClick={() => void search.fetchNextPage()}
-            disabled={search.isFetchingNextPage}
-            className="mt-3 w-full rounded bg-surface-3 py-2 text-xs text-ink-muted transition hover:bg-surface-4 hover:text-ink disabled:opacity-50"
+            loading={search.isFetchingNextPage}
+            className="mt-3 w-full rounded text-xs font-normal"
           >
-            {search.isFetchingNextPage ? "Carregando…" : "Mostrar mais"}
-          </button>
+            Mostrar mais
+          </Button>
         )}
       </div>
     </aside>

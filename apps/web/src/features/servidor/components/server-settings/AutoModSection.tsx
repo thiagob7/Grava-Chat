@@ -16,7 +16,7 @@ import {
   useSaveAutoModRule,
 } from "~/@core/application/queries/moderation/use-moderation";
 import type { AutoModRuleModel } from "~/@core/application/requests/moderation/moderation";
-import { Button } from "~/components/ui/button";
+import { Button, IconButton } from "~/components/ui/button";
 import { SelectField } from "~/components/ui/select";
 import { Input, Label } from "~/components/ui/input";
 import { Switch } from "~/components/ui/switch";
@@ -142,7 +142,7 @@ export const AutoModSection: React.FC<AutoModSectionProps> = ({
                     >
                       {t("servidor.automod.definir")}
                     </Button>
-                    <button data-gc="servidor.server-settings.auto-mod-section.button--2"
+                    <IconButton data-gc="servidor.server-settings.auto-mod-section.icon-button"
                       onClick={() =>
                         void confirm({
                           title: t("servidor.automod.excluirTitulo"),
@@ -155,14 +155,15 @@ export const AutoModSection: React.FC<AutoModSectionProps> = ({
                             doDelete.mutate({ guildId, ruleId: existing.id }),
                         )
                       }
+                      label={t("servidor.automod.apagar")}
                       title={t("servidor.automod.apagar")}
-                      className="rounded p-1.5 text-ink-faint transition hover:text-danger"
+                      className="text-ink-faint hover:text-danger"
                     >
-                      <Trash2 data-gc="servidor.server-settings.auto-mod-section.trash2" size={16} />
-                    </button>
+                      <Trash2 data-gc="servidor.server-settings.auto-mod-section.trash2" />
+                    </IconButton>
                   </div>
                 ) : (
-                  <Button data-gc="servidor.server-settings.auto-mod-section.button--3"
+                  <Button data-gc="servidor.server-settings.auto-mod-section.button--2"
                     size="sm"
                     onClick={() =>
                       setEditing({
@@ -274,7 +275,7 @@ const RuleEditor: React.FC<EditorProps> = ({
 
             <div data-gc="servidor.server-settings.auto-mod-section.div--12" className="mt-2 flex flex-wrap gap-1.5">
               {draft.words.map((p) => (
-                <button data-gc="servidor.server-settings.auto-mod-section.button--4"
+                <button data-gc="servidor.server-settings.auto-mod-section.button--3"
                   key={p}
                   onClick={() =>
                     setDraft((current) => ({
@@ -393,7 +394,7 @@ const RuleEditor: React.FC<EditorProps> = ({
                 const exempt = draft.rolesExempt.includes(role.id);
 
                 return (
-                  <button data-gc="servidor.server-settings.auto-mod-section.button--5"
+                  <button data-gc="servidor.server-settings.auto-mod-section.button--4"
                     key={role.id}
                     onClick={() =>
                       setDraft((current) => ({
@@ -425,7 +426,7 @@ const RuleEditor: React.FC<EditorProps> = ({
       </div>
 
       <div data-gc="servidor.server-settings.auto-mod-section.div--20" className="mt-5 flex gap-2">
-        <Button data-gc="servidor.server-settings.auto-mod-section.button--6"
+        <Button data-gc="servidor.server-settings.auto-mod-section.button--5"
           variant="success"
           size="sm"
           disabled={!draft.actions.length}

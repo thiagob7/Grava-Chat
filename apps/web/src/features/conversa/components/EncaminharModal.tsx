@@ -1,5 +1,5 @@
 import React, { useMemo, useState } from "react";
-import { Hash, Search, Send } from "lucide-react";
+import { Hash, Send } from "lucide-react";
 import type { Message } from "@gravae/shared";
 
 import { useSendMessage } from "~/@core/application/queries/message/use-send-message";
@@ -7,7 +7,7 @@ import { useFindDms } from "~/@core/application/queries/friend/use-find-dms";
 import { useFindGuild } from "~/@core/application/queries/guild/use-find-guild";
 import { Avatar } from "~/features/perfil/components/Avatar";
 import { Dialog, DialogBody, DialogContent, DialogTitle } from "~/components/ui/dialog";
-import { bareField, fieldGroup } from "~/components/ui/input";
+import { SearchField } from "~/components/ui/input";
 import { cn } from "~/lib/utils";
 import { useTranslation } from "~/traducao";
 
@@ -79,22 +79,18 @@ export const ForwardModal: React.FC<ForwardModalProps> = ({
         <DialogTitle data-gc="conversa.encaminhar-modal.dialog-title">{t("conversa.encaminhar.titulo")}</DialogTitle>
 
         <DialogBody data-gc="conversa.encaminhar-modal.dialog-body">
-          <div data-gc="conversa.encaminhar-modal.div" className={fieldGroup}>
-            <Search data-gc="conversa.encaminhar-modal.search" size={14} className="shrink-0 text-ink-faint" />
-            <input data-gc="conversa.encaminhar-modal.input"
-              autoFocus
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              placeholder={t("conversa.encaminhar.paraOnde")}
-              className={bareField}
-            />
-          </div>
+          <SearchField data-gc="conversa.encaminhar-modal.search-field"
+            autoFocus
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            placeholder={t("conversa.encaminhar.paraOnde")}
+          />
 
           <p data-gc="conversa.encaminhar-modal.p" className="mt-3 line-clamp-2 rounded bg-surface-0 px-3 py-2 text-xs text-ink-faint">
             {message.content || t("conversa.encaminhar.semTexto")}
           </p>
 
-          <div data-gc="conversa.encaminhar-modal.div--2" className="mt-3 max-h-64 space-y-3 overflow-y-auto">
+          <div data-gc="conversa.encaminhar-modal.div" className="mt-3 max-h-64 space-y-3 overflow-y-auto">
             {empty && (
               <p data-gc="conversa.encaminhar-modal.p--2" className="py-8 text-center text-sm text-ink-faint">
                 {t("conversa.encaminhar.nenhumLugar")}

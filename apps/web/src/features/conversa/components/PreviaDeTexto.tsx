@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState } from "react";
 import { Check, ChevronDown, Copy, Download, Expand, MoreHorizontal } from "lucide-react";
 import type { Attachment } from "@gravae/shared";
 
+import { IconButton } from "~/components/ui/button";
 import { Dialog, DialogContent, DialogTitle } from "~/components/ui/dialog";
 import {
   DropdownMenu,
@@ -130,8 +131,7 @@ export const TextPreview: React.FC<TextPropsPreview> = ({ attachment, onFail }) 
     </pre>
   );
 
-  const button =
-    "flex size-7 shrink-0 items-center justify-center rounded text-ink-faint transition hover:bg-hover hover:text-ink";
+  const button = "size-7 rounded text-ink-faint";
 
   return (
     <>
@@ -165,18 +165,18 @@ export const TextPreview: React.FC<TextPropsPreview> = ({ attachment, onFail }) 
         <footer data-gc="conversa.previa-de-texto.footer" className="flex items-center gap-2 border-t border-line bg-codigo px-2 py-1.5">
           {long && (
             <Tooltip data-gc="conversa.previa-de-texto.tooltip--2" label={collapseHint}>
-              <button data-gc="conversa.previa-de-texto.button"
-                type="button"
+              <IconButton data-gc="conversa.previa-de-texto.icon-button"
+                variant="surface"
+                round
                 onClick={() => setIsOpen((v) => !v)}
                 aria-expanded={isOpen}
-                aria-label={collapseHint}
-                className="flex size-8 shrink-0 items-center justify-center rounded-full bg-surface-3 text-ink-muted transition hover:bg-surface-4 hover:text-ink"
+                label={collapseHint}
+                className="[&_svg]:size-[18px]"
               >
                 <ChevronDown data-gc="conversa.previa-de-texto.chevron-down"
-                  size={18}
                   className={cn("transition-transform", isOpen && "rotate-180")}
                 />
-              </button>
+              </IconButton>
             </Tooltip>
           )}
 
@@ -188,25 +188,23 @@ export const TextPreview: React.FC<TextPropsPreview> = ({ attachment, onFail }) 
           <LanguagePicker data-gc="conversa.previa-de-texto.language-picker.set-language" language={language} onPick={setLanguage} />
 
           <Tooltip data-gc="conversa.previa-de-texto.tooltip--3" label={t("conversa.codigo.verInteiro")}>
-            <button data-gc="conversa.previa-de-texto.button--2"
-              type="button"
+            <IconButton data-gc="conversa.previa-de-texto.icon-button--2"
               onClick={() => setWhole(true)}
-              aria-label={t("conversa.codigo.verInteiro")}
+              label={t("conversa.codigo.verInteiro")}
               className={button}
             >
-              <Expand data-gc="conversa.previa-de-texto.expand" size={16} />
-            </button>
+              <Expand data-gc="conversa.previa-de-texto.expand" />
+            </IconButton>
           </Tooltip>
 
           <DropdownMenu data-gc="conversa.previa-de-texto.dropdown-menu">
             <DropdownMenuTrigger data-gc="conversa.previa-de-texto.dropdown-menu-trigger" asChild>
-              <button data-gc="conversa.previa-de-texto.button--3"
-                type="button"
-                aria-label={t("conversa.codigo.maisOpcoes")}
+              <IconButton data-gc="conversa.previa-de-texto.icon-button--3"
+                label={t("conversa.codigo.maisOpcoes")}
                 className={button}
               >
-                <MoreHorizontal data-gc="conversa.previa-de-texto.more-horizontal" size={16} />
-              </button>
+                <MoreHorizontal data-gc="conversa.previa-de-texto.more-horizontal" />
+              </IconButton>
             </DropdownMenuTrigger>
 
             <DropdownMenuContent data-gc="conversa.previa-de-texto.dropdown-menu-content" align="end" className="w-48">
@@ -270,13 +268,12 @@ export const TextPreview: React.FC<TextPropsPreview> = ({ attachment, onFail }) 
 
             <DropdownMenu data-gc="conversa.previa-de-texto.dropdown-menu--2">
               <DropdownMenuTrigger data-gc="conversa.previa-de-texto.dropdown-menu-trigger--2" asChild>
-                <button data-gc="conversa.previa-de-texto.button--4"
-                  type="button"
-                  aria-label={t("conversa.codigo.maisOpcoes")}
+                <IconButton data-gc="conversa.previa-de-texto.icon-button--4"
+                  label={t("conversa.codigo.maisOpcoes")}
                   className={button}
                 >
-                  <MoreHorizontal data-gc="conversa.previa-de-texto.more-horizontal--2" size={16} />
-                </button>
+                  <MoreHorizontal data-gc="conversa.previa-de-texto.more-horizontal--2" />
+                </IconButton>
               </DropdownMenuTrigger>
 
               <DropdownMenuContent data-gc="conversa.previa-de-texto.dropdown-menu-content--2" align="end" className="w-48">

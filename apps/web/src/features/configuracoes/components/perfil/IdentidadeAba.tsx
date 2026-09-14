@@ -63,10 +63,10 @@ export const IdentityTab: React.FC<IdentityTabProps> = ({ id, username, draft, s
             variant="surface"
             size="sm"
             onClick={() => pickPhoto.current?.click()}
-            disabled={sending}
+            loading={sending}
           >
             <Upload data-gc="configuracoes.perfil.identidade-aba.upload" size={14} />
-            {sending ? "Enviando…" : "Trocar foto"}
+            Trocar foto
           </Button>
 
           <p data-gc="configuracoes.perfil.identidade-aba.p" className="mt-1.5 text-xs text-ink-faint">
@@ -124,10 +124,11 @@ export const IdentityTab: React.FC<IdentityTabProps> = ({ id, username, draft, s
             variant="surface"
             size="sm"
             onClick={() => setPickingTrack(true)}
-            disabled={sending || importing}
+            disabled={sending}
+            loading={importing}
           >
             <ImageUp data-gc="configuracoes.perfil.identidade-aba.image-up" size={14} />
-            {importing ? "Trazendo o GIF…" : "Escolher imagem ou GIF"}
+            Escolher imagem ou GIF
           </Button>
 
           {draft.bannerUrl && (

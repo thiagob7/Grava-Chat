@@ -69,8 +69,8 @@ export const CreationModal: React.FC<CreationPropsModal> = ({
             Cancelar
           </Button>
 
-          <Button data-gc="configuracoes.aplicativos.modal-de-criacao.button.create" disabled={!valid || creating} onClick={create}>
-            {creating ? "Criando…" : "Criar"}
+          <Button data-gc="configuracoes.aplicativos.modal-de-criacao.button.create" disabled={!valid} loading={creating} onClick={create}>
+            Criar
           </Button>
         </DialogFooter>
       </DialogContent>

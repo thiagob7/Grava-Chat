@@ -11,6 +11,7 @@ import {
   DropdownMenuRadioItem,
   DropdownMenuTrigger,
 } from "~/components/ui/dropdown-menu";
+import { IconButton } from "~/components/ui/button";
 import { Tooltip } from "~/components/ui/tooltip";
 import { SEARCH_FILTERS } from "~/features/conversa/lib/busca";
 import { flxAttr, flxCls } from "~/lib/compat-de-tema";
@@ -61,13 +62,12 @@ export const SearchField: React.FC<SearchPropsField> = ({
           <DropdownMenu data-gc="conversa.campo-de-busca.dropdown-menu">
             <Tooltip data-gc="conversa.campo-de-busca.tooltip" label={`${t("conversa.busca.escopo.titulo")}: ${t(`conversa.busca.escopo.${scope}`)}`}>
               <DropdownMenuTrigger data-gc="conversa.campo-de-busca.dropdown-menu-trigger" asChild>
-                <button data-gc="conversa.campo-de-busca.button"
-                  type="button"
-                  aria-label={t("conversa.busca.escopo.titulo")}
-                  className="absolute left-1 flex size-7 shrink-0 items-center justify-center rounded text-ink-faint transition hover:bg-surface-3 hover:text-ink"
+                <IconButton data-gc="conversa.campo-de-busca.icon-button"
+                  label={t("conversa.busca.escopo.titulo")}
+                  className="absolute left-1 size-7 rounded text-ink-faint hover:bg-surface-3"
                 >
-                  <MagnifyingGlass data-gc="conversa.campo-de-busca.magnifying-glass" size={16} />
-                </button>
+                  <MagnifyingGlass data-gc="conversa.campo-de-busca.magnifying-glass" />
+                </IconButton>
               </DropdownMenuTrigger>
             </Tooltip>
 
@@ -111,16 +111,16 @@ export const SearchField: React.FC<SearchPropsField> = ({
         />
 
         {draft && (
-          <button data-gc="conversa.campo-de-busca.button--2"
+          <IconButton data-gc="conversa.campo-de-busca.icon-button--2"
             onClick={() => {
               setDraft("");
               onSearch("");
             }}
-            aria-label={t("conversa.busca.limpar")}
-            className={cn("absolute right-2 text-ink-faint transition hover:text-ink", flxCls("clearSearch"))}
+            label={t("conversa.busca.limpar")}
+            className={cn("absolute right-2 size-auto text-ink-faint hover:bg-transparent [&_svg]:size-[13px]", flxCls("clearSearch"))}
           >
-            <X data-gc="conversa.campo-de-busca.x" size={13} />
-          </button>
+            <X data-gc="conversa.campo-de-busca.x" />
+          </IconButton>
         )}
       </div>
 
@@ -128,7 +128,7 @@ export const SearchField: React.FC<SearchPropsField> = ({
         <div data-gc="conversa.campo-de-busca.div--3" className="absolute right-0 top-full z-40 mt-1.5 w-80 rounded-lg border border-line bg-surface-4 p-1.5 shadow-2xl">
           <p data-gc="conversa.campo-de-busca.p" className="px-2 pb-1 pt-1.5 text-11 font-semibold uppercase text-ink-faint">{t("conversa.busca.filtros")}</p>
           {SEARCH_FILTERS.map((filter) => (
-            <button data-gc="conversa.campo-de-busca.button--3"
+            <button data-gc="conversa.campo-de-busca.button"
               key={filter.key}
               type="button"
               onMouseDown={(e) => e.preventDefault()}

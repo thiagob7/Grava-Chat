@@ -47,7 +47,7 @@ import { useScreenNarrow } from "~/hooks/use-tela-estreita";
 import { cn } from "~/lib/utils";
 import { useReplyStore } from "~/features/conversa/stores/reply-store";
 import { useAppearance } from "~/features/configuracoes/stores/aparencia";
-import { Button } from "~/components/ui/button";
+import { Button, IconButton } from "~/components/ui/button";
 import { IllustratedModal } from "~/components/ui/illustrated-modal";
 import {
   FileLargeArt,
@@ -483,14 +483,14 @@ export const Composer: React.FC<ComposerProps> = ({
               @ {t(mentionReply ? "conversa.caixa.ligado" : "conversa.caixa.desligado")}
             </button>
 
-            <button data-gc="conversa.composer.button.cancel-reply"
-              type="button"
+            <IconButton data-gc="conversa.composer.icon-button.cancel-reply"
+              round
               onClick={cancelReply}
-              aria-label={t("conversa.caixa.pararDeResponder")}
-              className="shrink-0 rounded-full p-0.5 text-ink-faint transition hover:bg-surface-4 hover:text-ink"
+              label={t("conversa.caixa.pararDeResponder")}
+              className="size-[18px] text-ink-faint hover:bg-surface-4 [&_svg]:size-3.5"
             >
-              <X data-gc="conversa.composer.x" size={14} />
-            </button>
+              <X data-gc="conversa.composer.x" />
+            </IconButton>
           </div>
         )}
 

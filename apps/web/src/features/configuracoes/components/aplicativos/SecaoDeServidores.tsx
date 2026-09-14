@@ -2,7 +2,7 @@ import React from "react";
 import { X } from "lucide-react";
 
 import { useBotGuilds, useRemoveBotFromGuild } from "~/@core/application/queries/bot/use-bots";
-import { Button } from "~/components/ui/button";
+import { Button, IconButton } from "~/components/ui/button";
 import { useConfirm } from "~/components/ui/confirm";
 import { copy } from "~/features/configuracoes/components/aplicativos/comum";
 
@@ -48,8 +48,8 @@ export const ServersSection: React.FC<ServersPropsSection> = ({ botId, link }) =
 
               <span data-gc="configuracoes.aplicativos.secao-de-servidores.span--2" className="min-w-0 flex-1 truncate text-sm">{server.name}</span>
 
-              <button data-gc="configuracoes.aplicativos.secao-de-servidores.button"
-                type="button"
+              <IconButton data-gc="configuracoes.aplicativos.secao-de-servidores.icon-button"
+                size="xs"
                 onClick={() =>
                   void confirm({
                     title: `Tirar de ${server.name}?`,
@@ -61,18 +61,18 @@ export const ServersSection: React.FC<ServersPropsSection> = ({ botId, link }) =
                       confirmed && remove.mutate({ botId, guildId: server.id }),
                   )
                 }
-                aria-label={`Tirar de ${server.name}`}
+                label={`Tirar de ${server.name}`}
                 title={`Tirar de ${server.name}`}
-                className="shrink-0 rounded p-1 text-ink-faint opacity-0 transition hover:text-danger group-hover:opacity-100"
+                className="rounded text-ink-faint opacity-0 hover:bg-transparent hover:text-danger group-hover:opacity-100 [&_svg]:size-4"
               >
-                <X data-gc="configuracoes.aplicativos.secao-de-servidores.x" size={16} />
-              </button>
+                <X data-gc="configuracoes.aplicativos.secao-de-servidores.x" />
+              </IconButton>
             </div>
           ))}
         </div>
       )}
 
-      <Button data-gc="configuracoes.aplicativos.secao-de-servidores.button--2"
+      <Button data-gc="configuracoes.aplicativos.secao-de-servidores.button"
         variant="surface"
         size="sm"
         className="mt-4"

@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import { ArrowClockwise, ArrowsVertical, Image as ImageIcon, MagnifyingGlassPlus } from "@phosphor-icons/react";
 
-import { Button } from "~/components/ui/button";
+import { Button, IconButton } from "~/components/ui/button";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogTitle } from "~/components/ui/dialog";
 import { cropGif } from "~/lib/recortar-gif";
 import { cn } from "~/lib/utils";
@@ -312,15 +312,14 @@ export const ImageEditor: React.FC<{
           )}
 
           <div data-gc="editor-de-imagem.div--6" className="flex items-end justify-end gap-1 pb-0.5">
-            <button data-gc="editor-de-imagem.button"
-              type="button"
-              aria-label="Girar"
+            <IconButton data-gc="editor-de-imagem.icon-button"
+              label="Girar"
               title="Girar"
               onClick={() => change({ turn: (frame.turn + 90) % 360 })}
-              className="rounded-md p-2 text-ink-muted transition hover:bg-hover hover:text-ink"
+              className="size-[34px] [&_svg]:size-[18px]"
             >
-              <ArrowClockwise data-gc="editor-de-imagem.arrow-clockwise" size={18} />
-            </button>
+              <ArrowClockwise data-gc="editor-de-imagem.arrow-clockwise" />
+            </IconButton>
           </div>
         </div>
 
@@ -335,7 +334,7 @@ export const ImageEditor: React.FC<{
         </p>
 
         <DialogFooter data-gc="editor-de-imagem.dialog-footer" className="mt-4">
-          <Button data-gc="editor-de-imagem.button--2" variant="surface" className="mr-auto" disabled={untouched} onClick={() => setFrame(START)}>
+          <Button data-gc="editor-de-imagem.button" variant="surface" className="mr-auto" disabled={untouched} onClick={() => setFrame(START)}>
             Redefinir
           </Button>
 
@@ -349,7 +348,7 @@ export const ImageEditor: React.FC<{
             </Button>
           )}
 
-          <Button data-gc="editor-de-imagem.button--3" disabled={!source} loading={working} onClick={() => void apply()}>
+          <Button data-gc="editor-de-imagem.button--2" disabled={!source} loading={working} onClick={() => void apply()}>
             {applyLabel}
           </Button>
         </DialogFooter>

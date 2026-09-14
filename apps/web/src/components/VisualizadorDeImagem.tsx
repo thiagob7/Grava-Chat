@@ -15,6 +15,7 @@ import {
 import { useTranslation } from "react-i18next";
 import { toast } from "react-toastify";
 
+import { IconButton } from "~/components/ui/button";
 import { Tooltip } from "~/components/ui/tooltip";
 import { downloadImage, copyImage } from "~/lib/imagem";
 import { copyText } from "~/lib/copiar";
@@ -132,14 +133,14 @@ export const ImageViewer: React.FC = () => {
           <div data-gc="visualizador-de-imagem.div--2" className="flex shrink-0 items-center gap-1 border-t border-line bg-surface-1 px-3 py-2">
             {actions.map((action) => (
               <Tooltip data-gc="visualizador-de-imagem.tooltip" key={action.key} label={action.label} side="top">
-                <button data-gc="visualizador-de-imagem.button.make"
-                  type="button"
-                  aria-label={action.label}
+                <IconButton data-gc="visualizador-de-imagem.icon-button.make"
+                  label={action.label}
                   onClick={action.make}
-                  className="flex size-9 shrink-0 items-center justify-center rounded-md text-ink-muted transition hover:bg-surface-3 hover:text-ink"
+                  size="md"
+                  className="hover:bg-surface-3 [&_svg]:size-[17px]"
                 >
-                  <action.icon data-gc="visualizador-de-imagem.actionicon" size={17} />
-                </button>
+                  <action.icon data-gc="visualizador-de-imagem.actionicon" />
+                </IconButton>
               </Tooltip>
             ))}
 

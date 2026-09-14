@@ -469,13 +469,15 @@ const Field: React.FC<{
       </p>
 
       {hidden ? (
-        <button
+        <Button
           data-gc="configuracoes.account-section.button--6"
+          variant="surface"
+          size="xs"
           onClick={() => setRevealed(true)}
-          className="mt-0.5 rounded bg-surface-3 px-2 py-0.5 text-sm text-ink-faint transition hover:text-ink"
+          className="mt-0.5 rounded px-2 py-0.5 text-sm font-normal text-ink-faint hover:bg-surface-3"
         >
           Escondido pelo modo streamer — clique para ver
-        </button>
+        </Button>
       ) : (
         <p
           data-gc="configuracoes.account-section.p--9"

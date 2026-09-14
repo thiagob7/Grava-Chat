@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { Info } from "@phosphor-icons/react";
 
+import { IconButton } from "~/components/ui/button";
 import {
   Dialog,
   DialogBody,
@@ -24,20 +25,19 @@ export const ChannelTopic: React.FC<{
   return (
     <>
       {compact ? (
-        <button data-gc="conversa.topico-do-canal.button"
-          type="button"
+        <IconButton data-gc="conversa.topico-do-canal.icon-button"
           onClick={() => setIsOpen(true)}
-          aria-label={t("conversa.topico.abrir")}
+          label={t("conversa.topico.abrir")}
           title={t("conversa.topico.abrir")}
-          className="shrink-0 rounded p-1 text-ink-faint transition hover:bg-surface-3 hover:text-ink"
+          className="size-[26px] rounded text-ink-faint hover:bg-surface-3 [&_svg]:size-[18px]"
         >
-          <Info data-gc="conversa.topico-do-canal.info" size={18} weight="fill" />
-        </button>
+          <Info data-gc="conversa.topico-do-canal.info" weight="fill" />
+        </IconButton>
       ) : (
         <>
           <span data-gc="conversa.topico-do-canal.span" {...flx("topicDivider", "mx-1 h-5 w-px shrink-0 bg-line")} />
 
-          <button data-gc="conversa.topico-do-canal.button--2"
+          <button data-gc="conversa.topico-do-canal.button"
             type="button"
             onClick={() => setIsOpen(true)}
             title={t("conversa.topico.abrir")}

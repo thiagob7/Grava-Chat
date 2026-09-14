@@ -41,7 +41,7 @@ import { cn } from "~/lib/utils";
 import { useTranslation } from "~/traducao";
 import { useNotices } from "~/stores/notificacoes";
 import { useCreateCategory } from "~/@core/application/queries/guild/use-create-category";
-import { Button } from "~/components/ui/button";
+import { Button, IconButton } from "~/components/ui/button";
 import { Checkbox } from "~/components/ui/checkbox";
 import {
   ContextMenu,
@@ -343,17 +343,17 @@ export const ChannelSidebar: React.FC<ChannelSidebarProps> = ({
 
           {detail && can("CREATE_INVITE") && (
             <Tooltip data-gc="servidor.channel-sidebar.tooltip" label="Convidar amigos">
-              <button data-gc="servidor.channel-sidebar.button--2"
+              <IconButton data-gc="servidor.channel-sidebar.icon-button"
                 onClick={() => setInviting(true)}
+                label="Convidar amigos"
                 className={cn(
-                  "shrink-0 rounded-lg p-1.5 transition",
-                  withTrack
-                    ? "text-sobre-marca drop-shadow-[0_1px_3px_rgba(0,0,0,0.9)] hover:text-sobre-marca/80"
-                    : "text-ink-muted hover:text-ink",
+                  "rounded-lg [&_svg]:size-[18px]",
+                  withTrack &&
+                    "text-sobre-marca drop-shadow-[0_1px_3px_rgba(0,0,0,0.9)] hover:bg-sobre-midia hover:text-sobre-marca/80",
                 )}
               >
-                <UserPlus data-gc="servidor.channel-sidebar.user-plus--2" size={18} weight="fill" />
-              </button>
+                <UserPlus data-gc="servidor.channel-sidebar.user-plus--2" weight="fill" />
+              </IconButton>
             </Tooltip>
           )}
           </div>
@@ -365,21 +365,21 @@ export const ChannelSidebar: React.FC<ChannelSidebarProps> = ({
 
         <div data-gc="servidor.channel-sidebar.div--6" className="relative flex min-h-0 flex-1 flex-col">
           {viewOutside.above && (
-            <button data-gc="servidor.channel-sidebar.button--3" type="button" onClick={() => irForNotRead("acima")} className={PILL + " top-2"}>
+            <Button data-gc="servidor.channel-sidebar.button--2" type="button" size="xs" onClick={() => irForNotRead("acima")} className={cn(PILL, "top-2")}>
               {t("servidor.novasMensagens")}
-            </button>
+            </Button>
           )}
           {viewOutside.below && (
-            <button data-gc="servidor.channel-sidebar.button--4" type="button" onClick={() => irForNotRead("abaixo")} className={PILL + " bottom-2"}>
+            <Button data-gc="servidor.channel-sidebar.button--3" type="button" size="xs" onClick={() => irForNotRead("abaixo")} className={cn(PILL, "bottom-2")}>
               {t("servidor.novasMensagens")}
-            </button>
+            </Button>
           )}
 
           <ContextMenu data-gc="servidor.channel-sidebar.context-menu">
           <ContextMenuTrigger data-gc="servidor.channel-sidebar.context-menu-trigger" asChild>
           <div data-gc="servidor.channel-sidebar.div.measure-view-outside" ref={scroller} onScroll={measureViewOutside} {...flx("channelsScroller", "flex-1 overflow-y-auto px-2 py-3")}>
             <div data-gc="servidor.channel-sidebar.div--7" className="mb-2 border-b border-divisor pb-2">
-              <button data-gc="servidor.channel-sidebar.button--5"
+              <button data-gc="servidor.channel-sidebar.button--4"
                 type="button"
                 onClick={() => setViewingEvents(true)}
                 className="flex w-full items-center gap-2.5 rounded-md px-2 py-1.5 text-left text-base font-medium leading-5 text-ink-faint transition hover:bg-hover hover:text-ink"
@@ -402,7 +402,7 @@ export const ChannelSidebar: React.FC<ChannelSidebarProps> = ({
                 <section data-gc="servidor.channel-sidebar.section" key={group.id ?? "sem-categoria"} {...flx("channelsGroup", "mb-4")}>
                   {group.name && (
                     <div data-gc="servidor.channel-sidebar.div--8" className="group flex items-center justify-between px-1">
-                      <button data-gc="servidor.channel-sidebar.button--6"
+                      <button data-gc="servidor.channel-sidebar.button--5"
                         onClick={() =>
                           group.id &&
                           setCollapsed({
@@ -420,7 +420,7 @@ export const ChannelSidebar: React.FC<ChannelSidebarProps> = ({
                         <span data-gc="servidor.channel-sidebar.span--3" className="truncate">{group.name}</span>
                       </button>
                       {canManageChannels && group.id !== "favoritos" && (
-                        <button data-gc="servidor.channel-sidebar.button--7"
+                        <button data-gc="servidor.channel-sidebar.button--6"
                           onClick={() => setCreatingIn(group.id)}
                           title="Criar canal"
                           className="text-ink-faint opacity-0 transition hover:text-ink group-hover:opacity-100"
@@ -462,7 +462,7 @@ export const ChannelSidebar: React.FC<ChannelSidebarProps> = ({
                               {...flx("channelUnreadPill", "pointer-events-none absolute -left-2 top-1/2 h-2 w-1 -translate-y-1/2 rounded-r-full bg-pilula")}
                             />
                           )}
-                          <button data-gc="servidor.channel-sidebar.button--8"
+                          <button data-gc="servidor.channel-sidebar.button--7"
                             onClick={() =>
                               channel.type === "LINK"
                                 ? channel.url &&
@@ -593,33 +593,39 @@ export const ChannelSidebar: React.FC<ChannelSidebarProps> = ({
 
                           <div data-gc="servidor.channel-sidebar.div--10" className="pointer-events-none absolute right-2 top-1.5 flex gap-0.5 opacity-0 transition group-hover/canal:pointer-events-auto group-hover/canal:opacity-100">
                             {channel.type === "VOICE" && (
-                              <button data-gc="servidor.channel-sidebar.button--9"
+                              <IconButton data-gc="servidor.channel-sidebar.icon-button--2"
                                 onClick={() => onOpenVoiceChat?.(channel.id)}
+                                label="Abrir chat"
                                 title="Abrir chat"
-                                className="rounded p-0.5 text-ink-faint transition hover:text-ink"
+                                size="xs"
+                                className="size-5 rounded text-ink-faint [&_svg]:size-4"
                               >
-                                <ChatCircle data-gc="servidor.channel-sidebar.chat-circle" size={16} weight="fill" />
-                              </button>
+                                <ChatCircle data-gc="servidor.channel-sidebar.chat-circle" weight="fill" />
+                              </IconButton>
                             )}
 
                             {can("CREATE_INVITE") && (
-                              <button data-gc="servidor.channel-sidebar.button--10"
+                              <IconButton data-gc="servidor.channel-sidebar.icon-button--3"
                                 onClick={() => setInviting(true)}
+                                label="Convidar pessoas"
                                 title="Convidar pessoas"
-                                className="rounded p-0.5 text-ink-faint transition hover:text-ink"
+                                size="xs"
+                                className="size-5 rounded text-ink-faint [&_svg]:size-4"
                               >
-                                <UserPlus data-gc="servidor.channel-sidebar.user-plus--3" size={16} weight="fill" />
-                              </button>
+                                <UserPlus data-gc="servidor.channel-sidebar.user-plus--3" weight="fill" />
+                              </IconButton>
                             )}
 
                             {(canManageChannels || canManageRoles) && (
-                              <button data-gc="servidor.channel-sidebar.button--11"
+                              <IconButton data-gc="servidor.channel-sidebar.icon-button--4"
                                 onClick={() => setEditingChannel(channel.id)}
+                                label="Editar canal"
                                 title="Editar canal"
-                                className="rounded p-0.5 text-ink-faint transition hover:text-ink"
+                                size="xs"
+                                className="size-5 rounded text-ink-faint [&_svg]:size-4"
                               >
-                                <GearSix data-gc="servidor.channel-sidebar.gear-six" size={16} weight="fill" />
-                              </button>
+                                <GearSix data-gc="servidor.channel-sidebar.gear-six" weight="fill" />
+                              </IconButton>
                             )}
                           </div>
 
@@ -709,8 +715,8 @@ export const ChannelSidebar: React.FC<ChannelSidebarProps> = ({
           </DialogBody>
 
           <DialogFooter data-gc="servidor.channel-sidebar.dialog-footer">
-            <Button data-gc="servidor.channel-sidebar.button--12" variant="surface" onClick={() => setCreatingCategory(false)}>Cancelar</Button>
-            <Button data-gc="servidor.channel-sidebar.button--13"
+            <Button data-gc="servidor.channel-sidebar.button--8" variant="surface" onClick={() => setCreatingCategory(false)}>Cancelar</Button>
+            <Button data-gc="servidor.channel-sidebar.button--9"
               disabled={!categoryName.trim() || createCategory.isPending}
               onClick={() =>
                 detail &&

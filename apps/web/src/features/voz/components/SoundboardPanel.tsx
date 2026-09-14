@@ -1,11 +1,12 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import { toast } from "react-toastify";
 import { LIMITS } from "@gravae/shared";
-import { Music2, Search, Volume2, VolumeX } from "lucide-react";
+import { Music2, Volume2, VolumeX } from "lucide-react";
 
 import { useFindExpressions } from "~/@core/application/queries/expression/use-expressions";
 import { playSound } from "~/@core/lib/websocket/emit-voice";
-import { Input } from "~/components/ui/input";
+import { IconButton } from "~/components/ui/button";
+import { SearchField } from "~/components/ui/input";
 import {
   Popover,
   PopoverAnchor,
@@ -104,18 +105,12 @@ export const SoundboardPanel: React.FC<SoundboardPanelProps> = ({ guildId, canUs
 
       <PopoverContent data-gc="voz.soundboard-panel.popover-content" side="top" align="center" collisionPadding={12} className="w-[min(21rem,92vw)] p-0">
         <div data-gc="voz.soundboard-panel.div" className="flex items-center gap-2 border-b border-divisor p-3">
-          <div data-gc="voz.soundboard-panel.div--2" className="relative flex-1">
-            <Search data-gc="voz.soundboard-panel.search"
-              size={15}
-              className="pointer-events-none absolute left-2.5 top-1/2 -translate-y-1/2 text-ink-faint"
-            />
-            <Input data-gc="voz.soundboard-panel.input"
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              placeholder="Encontre o som perfeito"
-              className="h-9 border-transparent pl-8 text-sm shadow-none focus-visible:border-line-sutil focus-visible:ring-0"
-            />
-          </div>
+          <SearchField data-gc="voz.soundboard-panel.search-field"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            placeholder="Encontre o som perfeito"
+            className="h-9 flex-1 border-transparent focus-within:border-line-sutil"
+          />
 
           <div data-gc="voz.soundboard-panel.div.show-volume"
             className="shrink-0"
@@ -124,18 +119,17 @@ export const SoundboardPanel: React.FC<SoundboardPanelProps> = ({ guildId, canUs
           >
             <Popover data-gc="voz.soundboard-panel.popover.set-volume-is-open" open={volumeIsOpen} onOpenChange={setVolumeIsOpen}>
               <PopoverAnchor data-gc="voz.soundboard-panel.popover-anchor" asChild>
-                <button data-gc="voz.soundboard-panel.button--2"
-                  type="button"
+                <IconButton data-gc="voz.soundboard-panel.icon-button"
                   aria-pressed={!panelSound}
-                  aria-label={panelSound ? "Desativar os sons" : "Ativar os sons"}
+                  label={panelSound ? "Desativar os sons" : "Ativar os sons"}
                   onClick={() => set({ panelSound: !panelSound })}
                   className={cn(
-                    "p-1 transition",
-                    panelSound ? "text-ink-muted hover:text-ink" : "text-danger hover:text-danger/80",
+                    "size-7 [&_svg]:size-5",
+                    !panelSound && "text-danger hover:text-danger/80",
                   )}
                 >
-                  {panelSound ? <Volume2 data-gc="voz.soundboard-panel.volume2" size={20} /> : <VolumeX data-gc="voz.soundboard-panel.volume-x" size={20} />}
-                </button>
+                  {panelSound ? <Volume2 data-gc="voz.soundboard-panel.volume2" /> : <VolumeX data-gc="voz.soundboard-panel.volume-x" />}
+                </IconButton>
               </PopoverAnchor>
 
               <PopoverContent data-gc="voz.soundboard-panel.popover-content.show-volume"
@@ -151,7 +145,7 @@ export const SoundboardPanel: React.FC<SoundboardPanelProps> = ({ guildId, canUs
               >
                 <PopoverArrow data-gc="voz.soundboard-panel.popover-arrow" />
 
-                <div data-gc="voz.soundboard-panel.div--3" className="mb-2 flex items-center justify-between gap-2 text-xs">
+                <div data-gc="voz.soundboard-panel.div--2" className="mb-2 flex items-center justify-between gap-2 text-xs">
                   <span data-gc="voz.soundboard-panel.span" className="font-medium text-ink-muted">Volume dos efeitos sonoros</span>
                   <span data-gc="voz.soundboard-panel.span--2" className="shrink-0 tabular-nums text-ink-faint">
                     {panelSound ? `${percent}%` : "mudo"}
@@ -180,7 +174,7 @@ export const SoundboardPanel: React.FC<SoundboardPanelProps> = ({ guildId, canUs
           </div>
         </div>
 
-        <div data-gc="voz.soundboard-panel.div--4" className="max-h-72 overflow-y-auto p-3">
+        <div data-gc="voz.soundboard-panel.div--3" className="max-h-72 overflow-y-auto p-3">
           <h3 data-gc="voz.soundboard-panel.h3" className="mb-2 text-xs font-semibold uppercase tracking-wide text-ink-faint">
             Sons do servidor
           </h3>
@@ -196,9 +190,9 @@ export const SoundboardPanel: React.FC<SoundboardPanelProps> = ({ guildId, canUs
             <p data-gc="voz.soundboard-panel.p--3" className="py-6 text-center text-sm text-ink-muted">Nenhum som com esse nome.</p>
           )}
 
-          <div data-gc="voz.soundboard-panel.div--5" className="grid grid-cols-2 gap-2">
+          <div data-gc="voz.soundboard-panel.div--4" className="grid grid-cols-2 gap-2">
             {sounds.map((sound) => (
-              <button data-gc="voz.soundboard-panel.button--3"
+              <button data-gc="voz.soundboard-panel.button--2"
                 key={sound.id}
                 disabled={!canUse || waiting || deafened}
                 onClick={() => play(sound.id)}

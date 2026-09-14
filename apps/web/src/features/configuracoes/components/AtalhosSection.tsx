@@ -1,9 +1,9 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
-import { RotateCcw, Search, X } from "lucide-react";
+import { RotateCcw } from "lucide-react";
 
-import { Button } from "~/components/ui/button";
+import { Button, IconButton } from "~/components/ui/button";
 import { Switch } from "~/components/ui/switch";
-import { bareField, fieldGroup } from "~/components/ui/input";
+import { SearchField } from "~/components/ui/input";
 import { ConfigSection as Section } from "~/features/configuracoes/components/SecaoDeConfig";
 import {
   AREAS,
@@ -57,26 +57,14 @@ export const ShortcutsSection: React.FC = () => {
         pra mexer.
       </p>
 
-      <div data-gc="configuracoes.atalhos-section.div--2" className={cn(fieldGroup, "mt-5")}>
-        <Search data-gc="configuracoes.atalhos-section.search" size={14} className="shrink-0 text-ink-faint" />
-        <input data-gc="configuracoes.atalhos-section.input"
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-          placeholder="Procurar atalho"
-          aria-label="Procurar atalho"
-          className={bareField}
-        />
-        {search && (
-          <button data-gc="configuracoes.atalhos-section.button"
-            type="button"
-            onClick={() => setSearch("")}
-            aria-label="Limpar a busca"
-            className="shrink-0 rounded p-0.5 text-ink-faint transition hover:text-ink"
-          >
-            <X data-gc="configuracoes.atalhos-section.x" size={14} />
-          </button>
-        )}
-      </div>
+      <SearchField data-gc="configuracoes.atalhos-section.search-field"
+        value={search}
+        onChange={(e) => setSearch(e.target.value)}
+        onClear={() => setSearch("")}
+        placeholder="Procurar atalho"
+        aria-label="Procurar atalho"
+        className="mt-5"
+      />
 
       {byArea.map((area) =>
         area.shortcuts.length ? (
@@ -86,7 +74,7 @@ export const ShortcutsSection: React.FC = () => {
             title={area.name}
             detail={area.detail}
           >
-            <div data-gc="configuracoes.atalhos-section.div--3" className="overflow-hidden rounded-lg border border-line">
+            <div data-gc="configuracoes.atalhos-section.div--2" className="overflow-hidden rounded-lg border border-line">
               {area.shortcuts.map((shortcut) => (
                 <ShortcutLine data-gc="configuracoes.atalhos-section.shortcut-line"
                   key={shortcut.id}
@@ -102,7 +90,7 @@ export const ShortcutsSection: React.FC = () => {
             </div>
 
             {area.id === "voice" && (
-              <Button data-gc="configuracoes.atalhos-section.button--2"
+              <Button data-gc="configuracoes.atalhos-section.button"
                 variant="ghost"
                 size="sm"
                 className="mt-3"
@@ -124,8 +112,8 @@ export const ShortcutsSection: React.FC = () => {
         title="Voltar ao padrão"
         detail="Devolve todas as teclas de fábrica e religa o que você desligou."
       >
-        <div data-gc="configuracoes.atalhos-section.div--4" className="flex items-start gap-4">
-          <div data-gc="configuracoes.atalhos-section.div--5" className="min-w-0 flex-1">
+        <div data-gc="configuracoes.atalhos-section.div--3" className="flex items-start gap-4">
+          <div data-gc="configuracoes.atalhos-section.div--4" className="min-w-0 flex-1">
             <p data-gc="configuracoes.atalhos-section.p--3" className="text-sm font-medium">Restaurar todos os atalhos</p>
             <p data-gc="configuracoes.atalhos-section.p--4" className="mt-0.5 text-xs text-ink-faint">
               {touched
@@ -187,8 +175,8 @@ const ShortcutLine: React.FC<{
   }, [capturing, shortcut.id, swap, onGiveup]);
 
   return (
-    <div data-gc="configuracoes.atalhos-section.div--6" className="flex items-center gap-3 border-b border-divisor px-3 py-2.5 last:border-b-0">
-      <div data-gc="configuracoes.atalhos-section.div--7" className="min-w-0 flex-1">
+    <div data-gc="configuracoes.atalhos-section.div--5" className="flex items-center gap-3 border-b border-divisor px-3 py-2.5 last:border-b-0">
+      <div data-gc="configuracoes.atalhos-section.div--6" className="min-w-0 flex-1">
         <p data-gc="configuracoes.atalhos-section.p--5" className={cn("text-sm font-medium", !on && "text-ink-faint")}>
           {shortcut.name}
         </p>
@@ -202,15 +190,15 @@ const ShortcutLine: React.FC<{
       ) : (
         <>
           {swapped && (
-            <button data-gc="configuracoes.atalhos-section.button--3"
-              type="button"
+            <IconButton data-gc="configuracoes.atalhos-section.icon-button"
+              size="xs"
               onClick={() => defaultGive(shortcut.id)}
-              aria-label={`Voltar ${shortcut.name} ao padrão`}
+              label={`Voltar ${shortcut.name} ao padrão`}
               title={`Padrão: ${writeCombo(shortcut.fallback)}`}
-              className="shrink-0 rounded p-1 text-ink-faint transition hover:text-ink"
+              className="size-[22px] rounded text-ink-faint hover:bg-transparent"
             >
-              <RotateCcw data-gc="configuracoes.atalhos-section.rotate-ccw--2" size={14} />
-            </button>
+              <RotateCcw data-gc="configuracoes.atalhos-section.rotate-ccw--2" />
+            </IconButton>
           )}
 
           <button data-gc="configuracoes.atalhos-section.button.on-giveup"

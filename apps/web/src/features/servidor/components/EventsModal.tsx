@@ -9,7 +9,7 @@ import {
   useEvents,
   useSetEventInterest,
 } from "~/@core/application/queries/guild/use-events";
-import { Button } from "~/components/ui/button";
+import { Button, IconButton } from "~/components/ui/button";
 import { Dialog, DialogContent, DialogTitle } from "~/components/ui/dialog";
 import { Skeleton } from "~/components/ui/skeleton";
 import { useConfirm } from "~/components/ui/confirm";
@@ -57,17 +57,13 @@ export const EventsModal: React.FC<{
                 </Button>
               )}
 
-              <button data-gc="servidor.events-modal.button.close"
-                type="button"
+              <IconButton data-gc="servidor.events-modal.icon-button.close"
                 onClick={close}
-                aria-label="Fechar"
-                className={cn(
-                  "shrink-0 rounded p-1 text-ink-faint transition hover:bg-hover hover:text-ink",
-                  !canCreate && "ml-auto",
-                )}
+                label="Fechar"
+                className={cn("text-ink-faint [&_svg]:size-5", !canCreate && "ml-auto")}
               >
-                <X data-gc="servidor.events-modal.x" size={20} />
-              </button>
+                <X data-gc="servidor.events-modal.x" />
+              </IconButton>
             </header>
 
             <div data-gc="servidor.events-modal.div" className="max-h-[60vh] min-h-[18rem] overflow-y-auto p-5">

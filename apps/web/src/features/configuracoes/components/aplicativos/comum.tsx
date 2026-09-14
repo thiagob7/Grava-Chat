@@ -2,6 +2,7 @@ import React from "react";
 import { toast } from "react-toastify";
 import { Check, Copy, Eye, EyeOff } from "lucide-react";
 
+import { IconButton } from "~/components/ui/button";
 import { copyText } from "~/lib/copiar";
 import { cn } from "~/lib/utils";
 
@@ -10,20 +11,7 @@ export const copy = (text: string, notice: string) =>
     gave ? toast.success(notice) : toast.error("Seu navegador não deixou copiar."),
   );
 
-export const IconButton: React.FC<
-  React.ComponentProps<"button"> & { label: string }
-> = ({ label, className, ...props }) => (
-  <button data-gc="configuracoes.aplicativos.comum.button"
-    type="button"
-    aria-label={label}
-    title={label}
-    className={cn(
-      "shrink-0 rounded p-1.5 text-ink-faint transition hover:bg-surface-3 hover:text-ink",
-      className,
-    )}
-    {...props}
-  />
-);
+const secretButton = "size-[26px] rounded text-ink-faint hover:bg-surface-3";
 
 export const SecretField: React.FC<{
   value: string;
@@ -54,15 +42,18 @@ export const SecretField: React.FC<{
 
       {hideable && (
         <IconButton data-gc="configuracoes.aplicativos.comum.icon-button"
+          size="xs"
           label={isOpen ? "Esconder" : "Mostrar"}
+          title={isOpen ? "Esconder" : "Mostrar"}
+          className={secretButton}
           onClick={() => setIsOpen((v) => !v)}
         >
-          {isOpen ? <EyeOff data-gc="configuracoes.aplicativos.comum.eye-off" size={14} /> : <Eye data-gc="configuracoes.aplicativos.comum.eye" size={14} />}
+          {isOpen ? <EyeOff data-gc="configuracoes.aplicativos.comum.eye-off" /> : <Eye data-gc="configuracoes.aplicativos.comum.eye" />}
         </IconButton>
       )}
 
-      <IconButton data-gc="configuracoes.aplicativos.comum.icon-button.on-copy" label={labelCopy} onClick={onCopy}>
-        {copied ? <Check data-gc="configuracoes.aplicativos.comum.check" size={14} className="text-online" /> : <Copy data-gc="configuracoes.aplicativos.comum.copy" size={14} />}
+      <IconButton data-gc="configuracoes.aplicativos.comum.icon-button.on-copy" size="xs" label={labelCopy} title={labelCopy} className={secretButton} onClick={onCopy}>
+        {copied ? <Check data-gc="configuracoes.aplicativos.comum.check" className="text-online" /> : <Copy data-gc="configuracoes.aplicativos.comum.copy" />}
       </IconButton>
     </div>
   );

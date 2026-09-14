@@ -3,6 +3,7 @@ import { Check, X } from "lucide-react";
 
 import type { Choice } from "~/features/perfil/lib/catalogo";
 import { ColorField as ColorPicker } from "~/components/ui/color-picker";
+import { IconButton } from "~/components/ui/button";
 import { Label } from "~/components/ui/input";
 import {
   Popover,
@@ -53,14 +54,14 @@ export const ColorField: React.FC<ColorPropsField> = ({ label, value, onChange, 
 
       <span data-gc="configuracoes.perfil.campos.span" className="flex-1 font-mono text-xs text-ink-faint">{value ?? "herdada"}</span>
       {value && (
-        <button data-gc="configuracoes.perfil.campos.button--2"
-          type="button"
+        <IconButton data-gc="configuracoes.perfil.campos.icon-button"
+          size="xs"
           onClick={() => onChange(null)}
-          className="rounded p-1 text-ink-faint transition hover:bg-surface-3 hover:text-ink"
-          aria-label={`Limpar ${label.toLowerCase()}`}
+          className="size-[22px] rounded text-ink-faint hover:bg-surface-3"
+          label={`Limpar ${label.toLowerCase()}`}
         >
-          <X data-gc="configuracoes.perfil.campos.x" size={14} />
-        </button>
+          <X data-gc="configuracoes.perfil.campos.x" />
+        </IconButton>
       )}
     </div>
     {hint && <p data-gc="configuracoes.perfil.campos.p" className="mt-1 text-xs text-ink-faint">{hint}</p>}
@@ -87,7 +88,7 @@ export function OptionsGrid<T extends string>({
       <Label data-gc="configuracoes.perfil.campos.label--2">{label}</Label>
       <div data-gc="configuracoes.perfil.campos.div--4" className="grid grid-cols-2 gap-2 sm:grid-cols-3">
         {options.map((option) => (
-          <button data-gc="configuracoes.perfil.campos.button--3"
+          <button data-gc="configuracoes.perfil.campos.button--2"
             key={option.id}
             type="button"
             onClick={() => onPick(option.id)}

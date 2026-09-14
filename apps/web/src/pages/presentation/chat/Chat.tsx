@@ -57,7 +57,7 @@ import { ChannelStar } from "~/features/conversa/components/EstrelaDoCanal";
 import { SearchPanel } from "~/features/conversa/components/PainelDeBusca";
 import { TypingIndicator } from "~/features/conversa/components/TypingIndicator";
 import { VoiceStage } from "~/features/voz/components/VoiceStage";
-import { Button } from "~/components/ui/button";
+import { Button, IconButton } from "~/components/ui/button";
 import { Tooltip } from "~/components/ui/tooltip";
 import { useSession } from "~/contexts/session-context";
 import { usePermissions } from "~/hooks/use-permissions";
@@ -293,13 +293,13 @@ export const Chat: React.FC = () => {
             {...flx("topChannelCore", "flex h-full w-full items-center gap-2 px-4")}
           >
             {screenNarrow && (
-              <button data-gc="chat.chat.button"
+              <IconButton data-gc="chat.chat.icon-button"
                 onClick={() => setMenuIsOpen(true)}
-                aria-label="Abrir servidores e canais"
-                className="-ml-1 rounded p-1.5 text-ink-muted transition hover:bg-surface-3 hover:text-ink"
+                label="Abrir servidores e canais"
+                className="-ml-1 rounded hover:bg-surface-3 [&_svg]:size-5"
               >
-                <Menu data-gc="chat.chat.menu" size={20} />
-              </button>
+                <Menu data-gc="chat.chat.menu" />
+              </IconButton>
             )}
 
             {channel?.type === "VOICE" ? (
@@ -338,7 +338,7 @@ export const Chat: React.FC = () => {
 
               {channel?.type === "VOICE" && (
                 <Tooltip data-gc="chat.chat.tooltip" label={voiceIsOpenChat ? "Fechar chat" : "Abrir chat"}>
-                  <button data-gc="chat.chat.button--2"
+                  <button data-gc="chat.chat.button"
                     onClick={() => setVoiceIsOpenChat((isOpen) => !isOpen)}
                     aria-label={voiceIsOpenChat ? "Fechar chat" : "Abrir chat"}
                     className={cn(
@@ -352,7 +352,7 @@ export const Chat: React.FC = () => {
               )}
 
               <Tooltip data-gc="chat.chat.tooltip--2" label="Membros">
-                <button data-gc="chat.chat.button--3"
+                <button data-gc="chat.chat.button--2"
                   onClick={() =>
                     screenNarrow ? setMembersIsOpen(true) : setShowMembers((v) => !v)
                   }
@@ -426,12 +426,12 @@ export const Chat: React.FC = () => {
                   <p data-gc="chat.chat.p--3" className="max-w-xs text-sm text-ink-muted">
                     Você já está nesta chamada — só que em outra aba. O áudio está tocando lá.
                   </p>
-                  <Button data-gc="chat.chat.button--4" onClick={() => void joinVoice(channel.id).catch(() => undefined)}>
+                  <Button data-gc="chat.chat.button--3" onClick={() => void joinVoice(channel.id).catch(() => undefined)}>
                     Trazer a chamada para esta aba
                   </Button>
                 </>
               ) : (
-                <Button data-gc="chat.chat.button--5"
+                <Button data-gc="chat.chat.button--4"
                   variant="success"
                   onClick={() => void joinVoice(channel.id).catch(() => undefined)}
                 >
@@ -551,10 +551,10 @@ const ChannelBell: React.FC<{ channelId: string }> = ({ channelId }) => {
   return (
     <DropdownMenu data-gc="chat.chat.dropdown-menu">
       <DropdownMenuTrigger data-gc="chat.chat.dropdown-menu-trigger" asChild>
-        <button data-gc="chat.chat.button--6"
-          aria-label="Avisos deste canal"
+        <IconButton data-gc="chat.chat.icon-button--2"
+          label="Avisos deste canal"
           className={cn(
-            "gc-icone gc-icone--balanca rounded p-1.5 transition hover:bg-surface-3 hover:text-ink",
+            "gc-icone gc-icone--balanca rounded hover:bg-surface-3 [&_svg]:size-5",
             mode === "nada" ? "text-ink-faint" : "text-ink-muted",
           )}
         >
@@ -565,7 +565,7 @@ const ChannelBell: React.FC<{ channelId: string }> = ({ channelId }) => {
               <Bell data-gc="chat.chat.bell" size={20} weight="fill" />
             )}
           </Tooltip>
-        </button>
+        </IconButton>
       </DropdownMenuTrigger>
 
       <DropdownMenuContent data-gc="chat.chat.dropdown-menu-content" align="end" className="w-64">

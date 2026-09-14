@@ -14,8 +14,8 @@ import { useMe } from "~/@core/application/queries/auth/use-me";
 import { useUpdateGuild } from "~/@core/application/queries/guild/use-update-guild";
 import { useVerifyGuild } from "~/@core/application/queries/guild/use-verificar-guild";
 import type { GuildModel } from "~/@core/domain/models/guild-model";
-import { Button } from "~/components/ui/button";
-import { bareField, fieldGroup, Textarea } from "~/components/ui/input";
+import { Button, IconButton } from "~/components/ui/button";
+import { BareInput, FieldGroup, Textarea } from "~/components/ui/input";
 import { SelectField } from "~/components/ui/select";
 import { CommunitySeal } from "~/features/servidor/components/SeloDaComunidade";
 import { CommunitySection } from "~/features/servidor/components/server-settings/ComunidadeSection";
@@ -168,21 +168,21 @@ export const DiscoverySection: React.FC<{ guild: GuildModel; channels: Channel[]
           htmlFor="descoberta-tags"
           hint={`Até ${GUILD_TAGS_MAX} tags. Ajudam a achar a comunidade na busca do Explorar.`}
         >
-          <div data-gc="servidor.server-settings.descoberta-section.div--10" className={cn(fieldGroup, "h-auto min-h-10 flex-wrap py-1.5")}>
+          <FieldGroup data-gc="servidor.server-settings.descoberta-section.field-group" className="h-auto min-h-10 flex-wrap py-1.5">
             {tags.map((tag) => (
               <span data-gc="servidor.server-settings.descoberta-section.span" key={tag} className="flex items-center gap-1 rounded-md bg-surface-3 py-0.5 pl-2 pr-1 text-xs font-medium">
                 {tag}
-                <button data-gc="servidor.server-settings.descoberta-section.button"
-                  type="button"
-                  aria-label={`Tirar a tag ${tag}`}
+                <IconButton data-gc="servidor.server-settings.descoberta-section.icon-button"
+                  label={`Tirar a tag ${tag}`}
                   onClick={() => setTags(tags.filter((item) => item !== tag))}
-                  className="rounded p-0.5 text-ink-faint transition hover:text-ink"
+                  size="xs"
+                  className="size-4 rounded text-ink-faint [&_svg]:size-3"
                 >
-                  <X data-gc="servidor.server-settings.descoberta-section.x" size={12} />
-                </button>
+                  <X data-gc="servidor.server-settings.descoberta-section.x" />
+                </IconButton>
               </span>
             ))}
-            <input data-gc="servidor.server-settings.descoberta-section.input.add-tag"
+            <BareInput data-gc="servidor.server-settings.descoberta-section.bare-input.add-tag"
               id="descoberta-tags"
               value={draftTag}
               maxLength={GUILD_TAG_LENGTH}
@@ -198,14 +198,14 @@ export const DiscoverySection: React.FC<{ guild: GuildModel; channels: Channel[]
                   setTags(tags.slice(0, -1));
                 }
               }}
-              className={cn(bareField, "min-w-32")}
+              className="min-w-32"
             />
-          </div>
+          </FieldGroup>
         </SettingsField>
 
-        <div data-gc="servidor.server-settings.descoberta-section.div--11" className="flex justify-end gap-2">
+        <div data-gc="servidor.server-settings.descoberta-section.div--10" className="flex justify-end gap-2">
           {changed && (
-            <Button data-gc="servidor.server-settings.descoberta-section.button--2"
+            <Button data-gc="servidor.server-settings.descoberta-section.button"
               variant="ghost"
               onClick={() => {
                 setDiscoverable(guild.discoverable !== false);

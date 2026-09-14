@@ -6,7 +6,7 @@ import { SCOPES_OAUTH, PERMISSION_LABELS, isScope, type ScopeAuth, type Permissi
 
 import { useBotDestinations } from "~/@core/application/queries/bot/use-bots";
 import { api } from "~/@core/lib/api";
-import { Button } from "~/components/ui/button";
+import { Button, IconButton } from "~/components/ui/button";
 import { BrandBackground } from "~/features/app/components/FundoDaMarca";
 import { Checkbox } from "~/components/ui/checkbox";
 import { SelectField } from "~/components/ui/select";
@@ -277,9 +277,9 @@ const Frame: React.FC<{ title: string; onClose: () => void; children: React.Reac
     <div data-gc="bot.autorizar-app.div--8" className={cn("relative w-full max-w-md rounded-xl bg-surface-1 shadow-2xl ring-1 ring-line-sutil")}>
       <div data-gc="bot.autorizar-app.div--9" className="flex items-center justify-between border-b border-line px-5 py-4">
         <h1 data-gc="bot.autorizar-app.h1" className="text-base font-semibold">{title}</h1>
-        <button data-gc="bot.autorizar-app.button.on-close" type="button" onClick={onClose} aria-label="Fechar" className="text-ink-faint transition hover:text-ink">
-          <X data-gc="bot.autorizar-app.x" size={18} />
-        </button>
+        <IconButton data-gc="bot.autorizar-app.icon-button.on-close" onClick={onClose} label="Fechar" className="-my-1.5 -mr-1.5 text-ink-faint [&_svg]:size-[18px]">
+          <X data-gc="bot.autorizar-app.x" />
+        </IconButton>
       </div>
       <div data-gc="bot.autorizar-app.div--10" className="p-5">{children}</div>
     </div>

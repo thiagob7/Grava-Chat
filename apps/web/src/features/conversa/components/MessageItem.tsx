@@ -313,7 +313,7 @@ export const MessageItem: React.FC<MessageItemProps> = ({
           ),
         highlighted && "bg-brand/15 shadow-[inset_2px_0_0_var(--color-brand)]",
         (message.pending || message.queued) && "opacity-60",
-        message.failed && "bg-danger-fundo",
+        message.failed && message.reason !== "nao-entregue" && "bg-danger-fundo",
       )}
     >
       {message.forwarded && (
@@ -422,7 +422,12 @@ export const MessageItem: React.FC<MessageItemProps> = ({
         ) : (
           message.content && (
             <div data-gc="conversa.message-item.div--8"
-              className={cn("whitespace-pre-wrap break-words text-ink", flxCls("messageBody"), flxCls("messageText"))}
+              className={cn(
+                "whitespace-pre-wrap break-words text-ink",
+                flxCls("messageBody"),
+                flxCls("messageText"),
+                message.failed && message.reason === "nao-entregue" && "text-danger",
+              )}
               style={{ fontFamily: fontFamily(message.font) ?? undefined }}
             >
               <MessageContent data-gc="conversa.message-item.message-content--2" content={message.content} emojis={emojis} mentions={mentions} blocks />

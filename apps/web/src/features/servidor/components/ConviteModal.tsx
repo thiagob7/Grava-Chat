@@ -78,13 +78,15 @@ export const InviteModal: React.FC<{
                   : t("servidor.convite.aceitarComo", { nome: eu?.displayName ?? "" })}
               </Button>
 
-              <button data-gc="servidor.convite-modal.button.on-close"
+              <Button data-gc="servidor.convite-modal.button.on-close"
                 type="button"
+                variant="link"
+                size="sm"
                 onClick={onClose}
-                className="mt-3 text-sm text-ink-muted transition hover:text-ink hover:underline"
+                className="mt-3 text-sm font-normal text-ink-muted hover:text-ink"
               >
                 {t("servidor.convite.recusar")}
-              </button>
+              </Button>
             </>
           )}
         </div>

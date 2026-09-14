@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState } from "react";
 import { Pause, Play, Volume2, VolumeX } from "lucide-react";
 import type { Attachment } from "@gravae/shared";
 
+import { IconButton } from "~/components/ui/button";
 import { VoiceWave } from "~/features/conversa/components/OndaDeVoz";
 import { durationWriting, readWaves } from "~/features/conversa/lib/gravador-de-voz";
 import { cn } from "~/lib/utils";
@@ -47,14 +48,16 @@ export const VoiceMessage: React.FC<{ attachment: Attachment }> = ({ attachment 
 
   return (
     <div data-gc="conversa.mensagem-de-voz.div" className="mt-1 flex max-w-sm items-center gap-3 rounded-lg border border-line bg-surface-3 px-3 py-2">
-      <button data-gc="conversa.mensagem-de-voz.button.toggle"
-        type="button"
+      <IconButton data-gc="conversa.mensagem-de-voz.icon-button.toggle"
+        variant="primary"
+        size="md"
+        round
         onClick={toggle}
-        aria-label={playing ? "Pausar" : "Tocar"}
-        className="flex size-9 shrink-0 items-center justify-center rounded-full bg-brand text-sobre-marca transition hover:brightness-110"
+        label={playing ? "Pausar" : "Tocar"}
+        className="[&_svg]:size-[15px]"
       >
-        {playing ? <Pause data-gc="conversa.mensagem-de-voz.pause" size={15} className="fill-current" /> : <Play data-gc="conversa.mensagem-de-voz.play" size={15} className="ml-0.5 fill-current" />}
-      </button>
+        {playing ? <Pause data-gc="conversa.mensagem-de-voz.pause" className="fill-current" /> : <Play data-gc="conversa.mensagem-de-voz.play" className="ml-0.5 fill-current" />}
+      </IconButton>
 
       <div data-gc="conversa.mensagem-de-voz.div.ir-for" className="min-w-0 flex-1 cursor-pointer" onClick={irFor}>
         <VoiceWave data-gc="conversa.mensagem-de-voz.voice-wave" peaks={peaks} progress={progress} />
