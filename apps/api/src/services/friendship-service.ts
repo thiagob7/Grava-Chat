@@ -239,22 +239,37 @@ export const friendshipService = {
     podem ter virado amigas ou entrado na mesma comunidade.
   */
   async requireDeliverable(userId: string, channelId: string, other: { id: string; membersAllowDm: boolean; spamFilter: string }) {
-    const request = await dmRepositoryRequest.findByChannel(channelId);
-    if (request?.status !== "UNDELIVERED") return;
+    const [request, relation] = await Promise.all([
+      dmRepositoryRequest.findByChannel(channelId),
+      friendshipRepository.findBetween(userId, other.id),
+    ]);
 
-    const relation = await friendshipRepository.findBetween(userId, other.id);
     if (relation?.status === "BLOCKED") throw notDelivered();
 
     if (relation?.status === "ACCEPTED") {
-      await dmRepositoryRequest.accept(channelId);
-      io().to(rooms.user(other.id)).emit("dm:created", { channelId });
+      if (request && request.status !== "ACCEPTED") {
+        await dmRepositoryRequest.accept(channelId);
+        io().in(rooms.user(other.id)).socketsJoin(rooms.channel(channelId));
+        io().to(rooms.user(other.id)).emit("dm:created", { channelId });
+      }
       return;
     }
 
-    if (!(await canReach(other, userId))) throw notDelivered();
+    if (request?.status === "ACCEPTED") return;
+    if (request && request.fromId === other.id) return;
 
-    await dmRepositoryRequest.reopen(channelId, userId, other.id, await isSuspect(other, userId));
-    io().to(rooms.user(other.id)).emit("dm:pedido", { channelId });
+    if (!(await canReach(other, userId))) {
+      if (request?.status === "PENDING") {
+        await dmRepositoryRequest.silence(channelId);
+        io().to(rooms.user(other.id)).emit("dm:pedido", { channelId });
+      }
+      throw notDelivered();
+    }
+
+    if (request?.status === "UNDELIVERED") {
+      await dmRepositoryRequest.reopen(channelId, userId, other.id, await isSuspect(other, userId));
+      io().to(rooms.user(other.id)).emit("dm:pedido", { channelId });
+    }
   },
 
   async announcePendingMessage(userId: string, channelId: string) {
