@@ -52,7 +52,7 @@ async function sendDirect(
 
 export async function sendFile(file: File): Promise<Attachment> {
   const { direct } = await getSetting();
-  if (!direct) return sendFile(file);
+  if (!direct) return uploadFile(file);
 
   const kind = file.type || "application/octet-stream";
   const { uploadUrl, attachment } = await presignUpload({
