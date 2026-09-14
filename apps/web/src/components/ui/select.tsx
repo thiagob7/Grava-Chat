@@ -119,7 +119,7 @@ interface SelectFieldProps<T extends string | number> {
   id?: string;
   value: T;
   onSelect: (value: T) => void;
-  options: { value: T; label: React.ReactNode }[];
+  options: { value: T; label: React.ReactNode; disabled?: boolean }[];
   placeholder?: string;
   disabled?: boolean;
   className?: string;
@@ -156,7 +156,7 @@ export function SelectField<T extends string | number>({
       </SelectTrigger>
       <SelectContent data-gc="ui.select.select-content">
         {options.map((o) => (
-          <SelectItem data-gc="ui.select.select-item" key={String(o.value)} value={toRadix(o.value)}>
+          <SelectItem data-gc="ui.select.select-item" key={String(o.value)} value={toRadix(o.value)} disabled={o.disabled}>
             {o.label}
           </SelectItem>
         ))}
