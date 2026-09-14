@@ -292,7 +292,7 @@ export const VoiceMemberMenu: React.FC<VoiceMemberMenuProps> = ({
                       <ContextMenuItem data-gc="voz.voice-member-menu.context-menu-item--12"
                         key={channel.id}
                         onSelect={() =>
-                          void moveMember(userId, channel.id).catch((e: Error) =>
+                          void moveMember(userId, channel.id, voiceState?.channelId).catch((e: Error) =>
                             toast.error(e.message),
                           )
                         }
@@ -315,6 +315,7 @@ export const VoiceMemberMenu: React.FC<VoiceMemberMenuProps> = ({
                     e.preventDefault();
                     void moderateVoice({
                       userId,
+                      fromChannelId: voiceState?.channelId,
                       serverMute: !voiceState?.serverMute,
                     }).catch((error: Error) => toast.error(error.message));
                   }}
@@ -333,6 +334,7 @@ export const VoiceMemberMenu: React.FC<VoiceMemberMenuProps> = ({
                     e.preventDefault();
                     void moderateVoice({
                       userId,
+                      fromChannelId: voiceState?.channelId,
                       serverDeaf: !voiceState?.serverDeaf,
                     }).catch((error: Error) => toast.error(error.message));
                   }}
@@ -348,7 +350,7 @@ export const VoiceMemberMenu: React.FC<VoiceMemberMenuProps> = ({
                   danger
                   disabled={!can("MOVE_MEMBERS")}
                   onSelect={() =>
-                    void kickFromVoice(userId).catch((error: Error) =>
+                    void kickFromVoice(userId, voiceState?.channelId).catch((error: Error) =>
                       toast.error(error.message),
                     )
                   }
