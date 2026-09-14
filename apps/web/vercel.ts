@@ -12,6 +12,17 @@ export const config: VercelConfig = {
   outputDirectory: "dist",
   installCommand: "cd ../.. && yarn install --frozen-lockfile",
 
+  headers: [
+    {
+      source: "/(.*)",
+      headers: [
+        { key: "X-Content-Type-Options", value: "nosniff" },
+        { key: "Referrer-Policy", value: "strict-origin-when-cross-origin" },
+        { key: "Content-Security-Policy", value: "frame-ancestors 'none'; object-src 'none'; base-uri 'self'" },
+      ],
+    },
+  ],
+
   rewrites: [
     routes.rewrite("/api/:path*", `${destination}/api/:path*`),
     routes.rewrite("/(.*)", "/index.html"),

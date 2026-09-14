@@ -312,6 +312,17 @@ export const botService = {
     };
   },
 
+  async serversSeenBy(userId: string, botId: string) {
+    const bot = await botRepository.findById(botId);
+    if (!bot) throw new NotFoundError("Bot não encontrado");
+
+    const all = await botService.servers(botId);
+    if (bot.ownerId === userId) return all;
+
+    const mine = new Set((await memberRepository.guildIdsOf(userId)).map((m) => m.guildId));
+    return all.filter((g) => mine.has(g.id));
+  },
+
   async servers(botId: string) {
     const bot = await botRepository.findById(botId);
     if (!bot) throw new NotFoundError("Bot não encontrado");

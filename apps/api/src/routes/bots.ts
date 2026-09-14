@@ -61,7 +61,7 @@ export async function botRoutes(app: FastifyInstance) {
   );
 
   app.get("/bots/:botId/servidores", (req) =>
-    botService.servers(botParams.parse(req.params).botId),
+    botService.serversSeenBy(req.userId, botParams.parse(req.params).botId),
   );
 
   const notifyCommands = (guildId: string) =>

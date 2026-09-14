@@ -305,7 +305,7 @@ export const createChannelInput = z.object({
   name: z.string().min(1).max(LIMITS.channelName),
   font: z.enum(NAME_FONTS).optional(),
   type: z.enum(CHANNEL_TYPES),
-  url: z.string().url().max(512).nullable().optional(),
+  url: z.url({ protocol: /^https?$/ }).max(512).nullable().optional(),
   categoryId: objectId.nullable().optional(),
   topic: z.string().max(512).nullable().optional(),
   isPrivate: z.boolean().optional(),

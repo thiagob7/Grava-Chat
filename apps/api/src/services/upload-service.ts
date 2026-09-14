@@ -2,7 +2,7 @@ import { randomUUID } from "node:crypto";
 import { S3Client, PutObjectCommand, DeleteObjectsCommand } from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import { env } from "~/env.js";
-import { CEILING_BY_PURPOSE } from "@gravae/shared";
+import { CEILING_BY_PURPOSE, type UploadPurpose } from "@gravae/shared";
 import { AppError } from "~/lib/http.js";
 import { redis, keys } from "~/lib/redis.js";
 import { fitsQuota, quotaMessage, QUOTA_S_WINDOW } from "~/lib/cota-de-upload.js";
@@ -16,6 +16,20 @@ const s3 = new S3Client({
 });
 
 const IMAGE_TYPES = ["image/png", "image/jpeg", "image/webp", "image/gif", "image/avif"];
+
+const RENDERED_BY_BROWSER = /^(text\/html|application\/xhtml\+xml|image\/svg\+xml|text\/xml|application\/xml|(application|text)\/(x-)?javascript)\b/i;
+
+function storedType(contentType: string, purpose: UploadPurpose) {
+  const clean = contentType.split(";")[0]!.trim().toLowerCase();
+
+  if (purpose !== "anexo") {
+    if (!IMAGE_TYPES.includes(clean)) throw new AppError("Isso não é uma imagem aceita", 400);
+    return clean;
+  }
+
+  if (RENDERED_BY_BROWSER.test(clean)) return "text/plain";
+  return /^[\w.+-]+\/[\w.+-]+$/.test(clean) ? clean : "application/octet-stream";
+}
 
 export const uploadService = {
   isImage: (contentType: string) => IMAGE_TYPES.includes(contentType),
@@ -50,7 +64,12 @@ export const uploadService = {
     return `${env.R2_PUBLIC_URL}/${key}`;
   },
 
-  async upload(userId: string, file: { filename: string; contentType: string; body: Buffer }) {
+  async upload(
+    userId: string,
+    file: { filename: string; contentType: string; body: Buffer },
+    purpose: UploadPurpose = "anexo",
+  ) {
+    file = { ...file, contentType: storedType(file.contentType, purpose) };
     await uploadService.reserveQuota(userId, file.body.length);
 
     const key = uploadService.buildKey(userId, file.filename);
@@ -93,7 +112,7 @@ export const uploadService = {
   async doImport(userId: string, input: ImportImageInput) {
     const ceiling = CEILING_BY_PURPOSE[input.purpose];
 
-    const reply = await fetch(input.url, { signal: AbortSignal.timeout(10_000) }).catch(() => null);
+    const reply = await fetch(input.url, { redirect: "error", signal: AbortSignal.timeout(10_000) }).catch(() => null);
     if (!reply?.ok) throw new AppError("Nao consegui baixar essa imagem", 502);
 
     const announced = Number(reply.headers.get("content-length") ?? 0);
@@ -107,14 +126,15 @@ export const uploadService = {
 
     const extension = contentType.split("/")[1]?.split(";")[0] ?? "gif";
 
-    return uploadService.upload(userId, {
-      filename: `importada.${extension}`,
-      contentType,
-      body,
-    });
+    return uploadService.upload(
+      userId,
+      { filename: `importada.${extension}`, contentType, body },
+      input.purpose,
+    );
   },
 
   async presign(userId: string, input: PresignInput) {
+    input = { ...input, contentType: storedType(input.contentType, input.purpose) };
     await uploadService.reserveQuota(userId, input.size);
 
     const key = uploadService.buildKey(userId, input.filename);

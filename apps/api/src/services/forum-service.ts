@@ -3,7 +3,10 @@ import { AppError, ForbiddenError, NotFoundError } from "~/lib/http.js";
 import { toMessage, toPublicUser } from "~/lib/serialize.js";
 import { forumRepository } from "~/repositories/forum-repository.js";
 import { messageRepository } from "~/repositories/message-repository.js";
+import { guildRepository } from "~/repositories/guild-repository.js";
 import { accessService } from "./access-service.js";
+import { autoModService } from "./automod-service.js";
+import { ensureFlow, respectModeSlow, timeoutRequireNotThis, verifiedRequireEmail } from "./message-guards.js";
 
 const toPost = (
   p: Awaited<ReturnType<typeof forumRepository.findById>> & object,
@@ -40,6 +43,24 @@ export const forumService = {
 
     if (context && !has(context.permissions, "SEND_MESSAGES")) {
       throw new ForbiddenError("Você não pode criar assuntos neste fórum");
+    }
+
+    if (context) {
+      timeoutRequireNotThis(context);
+      await respectModeSlow(userId, channel, context);
+      await verifiedRequireEmail(userId, await guildRepository.findById(channel.guildId), context);
+    }
+
+    await ensureFlow(userId);
+
+    if (context) {
+      await autoModService.evaluate({
+        guildId: channel.guildId,
+        channelId,
+        userId,
+        context,
+        content: `${input.title}\n${input.content}`,
+      });
     }
 
     const post = await forumRepository.create({

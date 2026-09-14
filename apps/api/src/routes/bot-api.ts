@@ -13,6 +13,7 @@ import {
 } from "~/realtime/difusao.js";
 import { io } from "~/realtime/io.js";
 import { channelRepository, memberRepository } from "~/repositories/guild-repository.js";
+import { accessService } from "~/services/access-service.js";
 import { botService } from "~/services/bot-service.js";
 import { guildService } from "~/services/guild-service.js";
 import { messageService } from "~/services/message-service.js";
@@ -92,9 +93,13 @@ export async function botApiRoutes(app: FastifyInstance) {
 
     await requirePresence(userId, guildId);
 
-    const channels = await channelRepository.findManyByGuild(guildId);
+    const [channels, readable] = await Promise.all([
+      channelRepository.findManyByGuild(guildId),
+      accessService.readableChannels(userId, guildId, { withHistory: false }),
+    ]);
+    const visible = new Set(readable);
 
-    return channels.map((c) => ({ id: c.id, name: c.name, type: c.type }));
+    return channels.filter((c) => visible.has(c.id)).map((c) => ({ id: c.id, name: c.name, type: c.type }));
   });
 
   app.get("/bot/servidores/:guildId/membros", async (req) => {
