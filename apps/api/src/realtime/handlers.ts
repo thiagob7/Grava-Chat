@@ -196,7 +196,7 @@ export function registerHandlers(socket: GravaeSocket) {
     return { idle };
   });
 
-  on(socket, "voice:token", ({ channelId }) => voiceService.issueToken(userId, channelId));
+  on(socket, "voice:token", ({ channelId }) => voiceService.issueToken(userId, channelId, Boolean(socket.data.isBot)));
 
   on(socket, "voice:onde", async ({ userId: target }) => {
     const state = await voiceService.get(target);
@@ -218,6 +218,7 @@ export function registerHandlers(socket: GravaeSocket) {
       resume,
       client ?? null,
       device ?? null,
+      Boolean(socket.data.isBot),
     );
     socket.data.voiceChannelId = channelId;
 
@@ -227,7 +228,17 @@ export function registerHandlers(socket: GravaeSocket) {
     return state;
   });
 
-  on(socket, "voice:leave", async () => {
+  on(socket, "voice:leave", async ({ channelId }) => {
+    if (socket.data.isBot) {
+      const states = (await voiceService.statesOf(userId)).filter((s) => !channelId || s.channelId === channelId);
+      const left = (await Promise.all(states.map((s) => voiceService.leaveState(s)))).filter(
+        (s): s is NonNullable<typeof s> => Boolean(s),
+      );
+
+      for (const state of left) await announceLeave(state.guildId, state.channelId, userId);
+      return left[0] ? { channelId: left[0].channelId } : null;
+    }
+
     const state = await voiceService.leave(userId);
     socket.data.voiceChannelId = null;
 
@@ -267,7 +278,7 @@ export function registerHandlers(socket: GravaeSocket) {
   });
 
   on(socket, "voice:moderate", async ({ userId: targetId, serverMute, serverDeaf }) => {
-    const state = await voiceService.get(targetId);
+    const state = await stateToModerate(userId, targetId);
     if (!state) throw new NotFoundError("Esta pessoa não está numa chamada");
     if (!state.guildId) throw new AppError("Não há moderação numa chamada de privado");
 
@@ -281,7 +292,7 @@ export function registerHandlers(socket: GravaeSocket) {
     }
     if (targetId !== userId) await accessService.targetRequireAbove(context, state.guildId, targetId);
 
-    const updated = await voiceService.moderate(targetId, { serverMute, serverDeaf });
+    const updated = await voiceService.moderate(state, { serverMute, serverDeaf });
     if (updated) io().to(await voiceRecipients(updated)).emit("voice:updated", updated);
 
     return updated;
@@ -299,7 +310,7 @@ export function registerHandlers(socket: GravaeSocket) {
   });
 
   on(socket, "voice:kick", async ({ userId: targetId }) => {
-    const state = await voiceService.get(targetId);
+    const state = await stateToModerate(userId, targetId);
     if (!state) throw new NotFoundError("Esta pessoa não está numa chamada");
     if (!state.guildId) throw new AppError("Não dá pra expulsar de uma chamada de privado");
 
@@ -308,15 +319,15 @@ export function registerHandlers(socket: GravaeSocket) {
 
     await voiceService.sfuDisconnect(state.channelId, targetId);
 
-    const left = await voiceService.leave(targetId);
+    const left = await voiceService.leaveState(state);
     if (left) await announceLeave(left.guildId, left.channelId, targetId);
 
-    io().to(rooms.user(targetId)).emit("voice:move", { channelId: "" });
+    io().to(rooms.user(targetId)).emit("voice:move", { channelId: "", fromChannelId: state.channelId });
     return { userId: targetId };
   });
 
   on(socket, "voice:moveMember", async ({ userId: targetId, channelId }) => {
-    const state = await voiceService.get(targetId);
+    const state = await stateToModerate(userId, targetId);
     if (!state) throw new NotFoundError("Esta pessoa não está numa chamada");
     if (!state.guildId) throw new AppError("Não dá pra mover alguém de uma chamada de privado");
 
@@ -328,7 +339,7 @@ export function registerHandlers(socket: GravaeSocket) {
     if (channel.type !== "VOICE") throw new AppError("Só dá pra mover para canal de voz");
 
     await voiceService.sfuDisconnect(state.channelId, targetId);
-    io().to(rooms.user(targetId)).emit("voice:move", { channelId });
+    io().to(rooms.user(targetId)).emit("voice:move", { channelId, fromChannelId: state.channelId });
 
     return { userId: targetId, channelId };
   });
@@ -393,14 +404,31 @@ export async function broadcastPresence(userId: string, status?: PresenceStatus)
 
 export async function cleanupVoiceOnDisconnect(userId: string, socketId: string) {
   const orphaned = await voiceService.orphan(userId, socketId);
-  if (!orphaned) return;
+  if (!orphaned.length) return;
 
   setTimeout(() => {
     void voiceService
       .reapOrphan(userId, socketId)
-      .then((state) => {
-        if (state) void announceLeave(state.guildId, state.channelId, userId);
+      .then((states) => {
+        for (const state of states) void announceLeave(state.guildId, state.channelId, userId);
       })
       .catch(() => undefined);
   }, VOICE_GRACE_MS).unref();
+}
+
+async function stateToModerate(actorId: string, targetId: string) {
+  const states = await voiceService.statesOf(targetId);
+  if (states.length <= 1) return states[0] ?? null;
+
+  const actorState = await voiceService.get(actorId);
+  const sameGuild = states.find((s) => s.guildId && s.guildId === actorState?.guildId);
+  if (sameGuild) return sameGuild;
+
+  for (const state of states) {
+    if (!state.guildId) continue;
+    const member = await accessService.requireMember(actorId, state.guildId).then(() => true).catch(() => false);
+    if (member) return state;
+  }
+
+  return states[0] ?? null;
 }
