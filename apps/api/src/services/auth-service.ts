@@ -159,7 +159,7 @@ export const authService = {
     return user;
   },
 
-  async swapPassword(userId: string, params: { current?: string; fresh: string }) {
+  async swapPassword(userId: string, params: { current?: string; fresh: string }, currentRaw?: string) {
     const user = await authService.requireUser(userId);
 
     if (user.passwordHash) {
@@ -169,7 +169,13 @@ export const authService = {
     }
 
     await userRepository.update(userId, { passwordHash: await generateHash(params.fresh) });
-    await sessionRepository.revokeAllForUser(userId);
+
+    const current = currentRaw ? await sessionRepository.findByHash(hashToken(currentRaw)) : null;
+    const keep = current && current.userId === userId && !current.revokedAt ? current : null;
+
+    if (keep) await sessionRepository.revokeAllForUserExcept(userId, keep.id);
+    else await sessionRepository.revokeAllForUser(userId);
+
     await revokeAccess(userId);
 
     const accounts = await accountRepository.findManyByUser(userId);
@@ -178,6 +184,8 @@ export const authService = {
     }
 
     void officialService.notify(userId, "passwordSwapped", undefined);
+
+    return { keptCurrentSession: Boolean(keep) };
   },
 
   async signInWithProvider(params: {
