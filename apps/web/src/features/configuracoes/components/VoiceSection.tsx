@@ -17,7 +17,13 @@ import { Switch } from "~/components/ui/switch";
 import { useVoiceMeter } from "~/features/voz/hooks/use-voice-meter";
 import { desktop } from "~/lib/desktop";
 import { usePttGlobal } from "~/features/voz/stores/ptt-global";
-import { SCREEN_FRAME_RATES, SCREEN_RESOLUTIONS } from "~/features/voz/lib/qualidade-da-transmissao";
+import {
+  SCREEN_FRAME_RATES,
+  SCREEN_RESOLUTIONS,
+  isScreenFrameRateLocked,
+  isScreenResolutionLocked,
+  screenQuality,
+} from "~/features/voz/lib/qualidade-da-transmissao";
 import { useVoicePrefs } from "~/features/voz/stores/voice-prefs";
 import { useTranslation } from "~/traducao";
 import { useVoiceStore } from "~/features/voz/stores/voice-store";
@@ -510,11 +516,12 @@ export const VoiceSection: React.FC<{ part?: "audio" | "video" }> = ({
                   {t("chamada.tela.resolucao")}
                 </span>
                 <SelectField data-gc="configuracoes.voice-section.select-field--4"
-                  value={prefs.screenResolution}
+                  value={screenQuality(prefs.screenResolution, prefs.screenFrameRate).resolution}
                   onSelect={(value) => void setScreenQuality({ screenResolution: value })}
                   options={SCREEN_RESOLUTIONS.map((value) => ({
                     value,
                     label: value === "original" ? t("chamada.tela.original") : `${value}p`,
+                    disabled: isScreenResolutionLocked(value),
                   }))}
                 />
               </label>
@@ -524,9 +531,13 @@ export const VoiceSection: React.FC<{ part?: "audio" | "video" }> = ({
                   {t("chamada.tela.taxaDeQuadros")}
                 </span>
                 <SelectField data-gc="configuracoes.voice-section.select-field--5"
-                  value={prefs.screenFrameRate}
+                  value={screenQuality(prefs.screenResolution, prefs.screenFrameRate).frameRate}
                   onSelect={(value) => void setScreenQuality({ screenFrameRate: value })}
-                  options={SCREEN_FRAME_RATES.map((value) => ({ value, label: t("chamada.tela.quadros", { quadros: value }) }))}
+                  options={SCREEN_FRAME_RATES.map((value) => ({
+                    value,
+                    label: t("chamada.tela.quadros", { quadros: value }),
+                    disabled: isScreenFrameRateLocked(value),
+                  }))}
                 />
               </label>
             </div>

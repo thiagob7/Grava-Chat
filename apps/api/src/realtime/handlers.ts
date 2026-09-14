@@ -61,7 +61,7 @@ function on<E extends ClientEventName>(
 
       ack?.({ ok: false, error: message, reason: isDomainError ? err.reason : undefined });
 
-      if (!isDomainError || err.notify) socket.emit("error", { event, message });
+      if (!isDomainError || (err.notify && !err.reason)) socket.emit("error", { event, message });
     }
   });
 }
