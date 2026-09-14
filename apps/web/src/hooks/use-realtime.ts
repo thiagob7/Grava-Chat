@@ -472,6 +472,10 @@ export function useRealtime(
       ])?.id;
       if (!myId) return;
 
+      queryClient.setQueryData(queryKeys.user.profile(myId), (profile?: { status?: PresenceStatus }) =>
+        profile ? { ...profile, status: projected } : profile,
+      );
+
       cache.patchGuildsWhere(
         queryClient,
         (g) => g.members.some((m) => m.user.id === myId),

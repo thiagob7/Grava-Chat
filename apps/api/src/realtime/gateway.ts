@@ -96,6 +96,12 @@ export async function createGateway(app: FastifyInstance) {
     if (status) {
       broadcastPresence(userId, status).catch((err) => app.log.error({ err, userId }, "falha ao avisar presença"));
     }
+
+    if (!socket.data.isBot) {
+      Promise.all([presenceService.desiredOf(userId), presenceService.mapFor([userId])])
+        .then(([desired, map]) => socket.emit("presence:self", { status: desired, projected: map[userId] ?? "OFFLINE" }))
+        .catch((err) => app.log.error({ err, userId }, "falha ao avisar a presença própria"));
+    }
   });
 
   setIo(server);
