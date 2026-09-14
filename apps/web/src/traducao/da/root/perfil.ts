@@ -43,6 +43,7 @@ export const perfil = {
     falhou: "Den kunne ikke sendes. Prøv fra samtalen.",
   },
   cartao: {
+    equipe: "Gravaê-teamet",
     trocarFaixa: "Skift kortets banner",
     trocarFaixaCurto: "Skift banner",
     trocarFoto: "Skift profilbillede",

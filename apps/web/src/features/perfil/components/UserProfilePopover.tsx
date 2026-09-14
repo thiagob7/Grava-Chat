@@ -481,6 +481,7 @@ const ProfileCard: React.FC<{
         username={profile.username}
         isBot={profile.isBot}
         isSystem={profile.system}
+        staff={profile.staff}
         avatarUrl={profile.avatarUrl}
         status={profile.status}
         profile={profile.profile}

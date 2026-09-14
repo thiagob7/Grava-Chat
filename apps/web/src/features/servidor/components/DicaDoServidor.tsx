@@ -32,26 +32,23 @@ export const ServerHint: React.FC<ServerPropsHint> = ({ name, verified, detectab
         </p>
 
         {voices.map((channel) => (
-          <div data-gc="servidor.dica-do-servidor.div" key={channel.channelId} className="mt-2.5">
-            <p data-gc="servidor.dica-do-servidor.p--2" className="flex items-center gap-1.5 text-xs text-ink-muted">
-              <SpeakerHigh data-gc="servidor.dica-do-servidor.speaker-high" size={13} weight="fill" className="shrink-0 text-ink-faint" />
-              <span data-gc="servidor.dica-do-servidor.span--2" className="truncate">{channel.channelName}</span>
-            </p>
+          <div data-gc="servidor.dica-do-servidor.div" key={channel.channelId} title={channel.channelName} className="mt-2 flex items-center gap-2">
+            <SpeakerHigh data-gc="servidor.dica-do-servidor.speaker-high" size={18} weight="fill" className="shrink-0 text-ink-muted" aria-label={channel.channelName} />
 
-            <div data-gc="servidor.dica-do-servidor.div--2" className="mt-1.5 flex items-center pl-[3px]">
+            <div data-gc="servidor.dica-do-servidor.div--2" className="flex items-center pl-1.5">
               {channel.people.slice(0, FACES).map((person) => (
-                <div data-gc="servidor.dica-do-servidor.div--3" key={person.userId} className="-ml-[3px] rounded-full ring-2 ring-surface-4">
+                <div data-gc="servidor.dica-do-servidor.div--3" key={person.userId} className="-ml-1.5 rounded-full ring-[3px] ring-surface-4">
                   <Avatar data-gc="servidor.dica-do-servidor.avatar"
                     id={person.userId}
                     name={person.displayName}
                     url={person.avatarUrl}
-                    size={22}
+                    size={26}
                   />
                 </div>
               ))}
 
               {channel.people.length > FACES && (
-                <span data-gc="servidor.dica-do-servidor.span--3" className="ml-1.5 text-xs tabular-nums text-ink-faint">
+                <span data-gc="servidor.dica-do-servidor.span--2" className="-ml-1.5 flex size-[26px] items-center justify-center rounded-full bg-surface-3 text-11 font-semibold tabular-nums text-ink-muted ring-[3px] ring-surface-4">
                   +{channel.people.length - FACES}
                 </span>
               )}

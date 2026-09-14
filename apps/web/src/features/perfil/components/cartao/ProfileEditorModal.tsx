@@ -1,4 +1,4 @@
-import React, { useMemo, useRef, useState } from "react";
+import React, { useMemo, useState } from "react";
 import * as DialogPrimitive from "@radix-ui/react-dialog";
 import { Pencil, X } from "lucide-react";
 import type { CustomStatus } from "@gravae/shared";
@@ -8,7 +8,7 @@ import { useImageProfileSending } from "~/features/perfil/hooks/use-envio-de-ima
 import type { SelfUserModel } from "~/@core/domain/models/user-model";
 import { Avatar } from "~/features/perfil/components/Avatar";
 import { ProfileCardVisual } from "~/features/perfil/components/cartao/ProfileCardVisual";
-import { ProfileImageFraming } from "~/features/perfil/components/EnquadrarImagemDePerfil";
+import { ProfileImageChooser } from "~/features/perfil/components/EnquadrarImagemDePerfil";
 import { StatusModal } from "~/features/perfil/components/cartao/StatusModal";
 import { PickCharmModal } from "~/features/perfil/components/cartao/EscolherEnfeiteModal";
 import { AVATAR_DECORATIONS } from "~/features/perfil/lib/catalogo";
@@ -38,16 +38,12 @@ export const ProfileEditorModal: React.FC<{
   const { t } = useTranslation();
   const updateProfile = useUpdateProfile();
   const [settingStatus, setSettingStatus] = useState(false);
-  const pickPhoto = useRef<HTMLInputElement>(null);
-  const pickTrack = useRef<HTMLInputElement>(null);
   const [charmIsOpen, setCharmIsOpen] = useState<"decoration" | null>(null);
 
   const saved = useMemo(() => fromUser(user), [user]);
   const { draft, set, discard, dirty } = useDraft(saved);
   const profile = forProfile(draft);
-  const { send, framing, cancelFrame, applyFrame } = useImageProfileSending(
-    (field, url) => set(field, url),
-  );
+  const image = useImageProfileSending((field, url) => set(field, url));
 
   const cardPreview = {
     id: user.id,
@@ -116,26 +112,7 @@ export const ProfileEditorModal: React.FC<{
           </aside>
 
           <main data-gc="perfil.cartao.profile-editor-modal.main" className="min-w-0 flex-1 overflow-y-auto p-4 md:p-8">
-            <ProfileImageFraming data-gc="perfil.cartao.profile-editor-modal.profile-image-framing.cancel-frame"
-              framing={framing}
-              onCancel={cancelFrame}
-              onApply={(cut) => void applyFrame(cut)}
-            />
-
-            <input data-gc="perfil.cartao.profile-editor-modal.input"
-              ref={pickPhoto}
-              type="file"
-              accept="image/*"
-              className="hidden"
-              onChange={(e) => void send(e, "avatarUrl")}
-            />
-            <input data-gc="perfil.cartao.profile-editor-modal.input--2"
-              ref={pickTrack}
-              type="file"
-              accept="image/*"
-              className="hidden"
-              onChange={(e) => void send(e, "bannerUrl")}
-            />
+            <ProfileImageChooser data-gc="perfil.cartao.profile-editor-modal.profile-image-chooser" image={image} />
 
             <div data-gc="perfil.cartao.profile-editor-modal.div--3" className="mx-auto w-full max-w-96">
               <div data-gc="perfil.cartao.profile-editor-modal.div--4">
@@ -157,7 +134,7 @@ export const ProfileEditorModal: React.FC<{
                       set("tagGuildId", guildId)
                     }
                     onStatus={() => setSettingStatus(true)}
-                    onEditPhoto={() => pickPhoto.current?.click()}
+                    onEditPhoto={() => image.choose("avatarUrl")}
                     trackMenu={
                       <DropdownMenu data-gc="perfil.cartao.profile-editor-modal.dropdown-menu">
                         <DropdownMenuTrigger data-gc="perfil.cartao.profile-editor-modal.dropdown-menu-trigger" asChild>
@@ -172,7 +149,7 @@ export const ProfileEditorModal: React.FC<{
 
                         <DropdownMenuContent data-gc="perfil.cartao.profile-editor-modal.dropdown-menu-content" align="end">
                           <DropdownMenuItem data-gc="perfil.cartao.profile-editor-modal.dropdown-menu-item"
-                            onSelect={() => pickTrack.current?.click()}
+                            onSelect={() => image.choose("bannerUrl")}
                           >
                             Trocar a faixa
                           </DropdownMenuItem>

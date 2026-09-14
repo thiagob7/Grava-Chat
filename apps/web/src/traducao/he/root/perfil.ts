@@ -43,6 +43,7 @@ export const perfil = {
     falhou: "לא הצלחנו לשלוח. נסה מתוך השיחה.",
   },
   cartao: {
+    equipe: "צוות Gravaê",
     trocarFaixa: "החלפת הכרזה של הכרטיס",
     trocarFaixaCurto: "החלפת הכרזה",
     trocarFoto: "החלפת תמונת הפרופיל",

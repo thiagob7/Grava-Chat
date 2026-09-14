@@ -225,13 +225,13 @@ describe("enviar numa conversa que não entrega", () => {
     expect(requestReopen).not.toHaveBeenCalled();
   });
 
-  it("pedido aceito continua entregando", async () => {
+  it("pedido aceito não passa por cima de quem só aceita amigos", async () => {
     requestByChannel.mockResolvedValue({ status: "ACCEPTED" });
     findBetween.mockResolvedValue(null);
 
-    await friendshipService.requireDeliverable("eu", "c1", destination({ membersAllowDm: false }));
-
-    expect(requestSilence).not.toHaveBeenCalled();
+    await expect(
+      friendshipService.requireDeliverable("eu", "c1", destination({ membersAllowDm: false })),
+    ).rejects.toMatchObject({ reason: "nao-entregue" });
   });
 
   it("conversa antiga sem pedido e sem amizade não entrega quando a pessoa só aceita amigos", async () => {
@@ -243,13 +243,20 @@ describe("enviar numa conversa que não entrega", () => {
     ).rejects.toMatchObject({ reason: "nao-entregue" });
   });
 
-  it("responder a quem puxou a conversa sempre entrega", async () => {
+  it("responder a quem puxou a conversa também respeita quem só aceita amigos", async () => {
     requestByChannel.mockResolvedValue({ status: "PENDING", fromId: "outra", toId: "eu" });
     findBetween.mockResolvedValue(null);
 
-    await friendshipService.requireDeliverable("eu", "c1", destination({ membersAllowDm: false }));
+    await expect(
+      friendshipService.requireDeliverable("eu", "c1", destination({ membersAllowDm: false })),
+    ).rejects.toMatchObject({ reason: "nao-entregue" });
+  });
 
-    expect(requestSilence).not.toHaveBeenCalled();
+  it("amigos sempre se alcançam", async () => {
+    requestByChannel.mockResolvedValue(null);
+    findBetween.mockResolvedValue({ status: "ACCEPTED" });
+
+    await friendshipService.requireDeliverable("eu", "c1", destination({ membersAllowDm: false }));
   });
 
   it("bloqueio vence até pedido aceito", async () => {
