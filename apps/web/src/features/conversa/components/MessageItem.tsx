@@ -24,7 +24,7 @@ import {
   TriangleAlert,
   UserPlus,
 } from "lucide-react";
-import type { Attachment, GuildEmoji, Message, PublicUser } from "@gravae/shared";
+import type { Attachment, GuildEmoji, Message, PublicUser, ProfilePublic } from "@gravae/shared";
 
 import { Emoji } from "~/features/expressao/components/Emoji";
 import { recentEmojis } from "~/features/expressao/lib/emoji";
@@ -354,7 +354,7 @@ export const MessageItem: React.FC<MessageItemProps> = ({
                 id={message.author.id}
                 name={message.author.displayName}
                 url={message.author.avatarUrl}
-                charms={charms?.profile}
+                charms={charms?.profile?.decoration ? charms.profile : { ...charms?.profile, decoration: message.author.decoration as ProfilePublic["decoration"] }}
                 className={flxCls("messageAvatar")}
               />
             </button>
