@@ -1,4 +1,4 @@
-import React, { useState, type ReactNode } from "react";
+import React, { useEffect, useRef, useState, type ReactNode } from "react";
 import { useNavigate } from "react-router";
 import {
   asLe,
@@ -82,6 +82,8 @@ import { copyText } from "~/lib/copiar";
 import { roleMoreHighColor } from "~/features/perfil/lib/cargo";
 import { useTranslation } from "~/traducao";
 
+let closeOpenCard: (() => void) | null = null;
+
 interface UserProfilePopoverProps {
   userId: string;
   children: ReactNode;
@@ -105,8 +107,25 @@ export const UserProfilePopover: React.FC<UserProfilePopoverProps> = ({
   const [isOpen, setIsOpen] = useState(false);
   const { data: profile, isLoading, isError } = useFindProfile(isOpen ? userId : null);
 
+  const close = useRef(() => setIsOpen(false)).current;
+
+  const changeOpen = (open: boolean) => {
+    if (open) {
+      if (closeOpenCard !== close) closeOpenCard?.();
+      closeOpenCard = close;
+    } else if (closeOpenCard === close) {
+      closeOpenCard = null;
+    }
+
+    setIsOpen(open);
+  };
+
+  useEffect(() => () => {
+    if (closeOpenCard === close) closeOpenCard = null;
+  }, [close]);
+
   return (
-    <Popover data-gc="perfil.user-profile-popover.popover.set-is-open" open={isOpen} onOpenChange={setIsOpen}>
+    <Popover data-gc="perfil.user-profile-popover.popover.set-is-open" open={isOpen} onOpenChange={changeOpen}>
       <PopoverTrigger data-gc="perfil.user-profile-popover.popover-trigger" asChild>{children}</PopoverTrigger>
 
       <PopoverContent data-gc="perfil.user-profile-popover.popover-content"
