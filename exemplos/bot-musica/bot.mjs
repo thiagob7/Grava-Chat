@@ -169,7 +169,7 @@ function abrirAudio(paginaDoVideo, aoFalhar) {
     "--no-warnings",
     "-o", "-",
     paginaDoVideo,
-  ]);
+  ], { detached: true });
 
   const ffmpeg = spawn("ffmpeg", [
     "-i", "pipe:0",
@@ -179,7 +179,7 @@ function abrirAudio(paginaDoVideo, aoFalhar) {
     "-ac", String(CANAIS),
     "-f", "s16le",
     "pipe:1",
-  ]);
+  ], { detached: true });
 
   ytdlp.stdout.pipe(ffmpeg.stdin);
 
@@ -206,13 +206,28 @@ function abrirAudio(paginaDoVideo, aoFalhar) {
     saida: ffmpeg.stdout,
     motivo: () => diagnosticar(reclamacao),
     matar: () => {
-      ytdlp.kill("SIGKILL");
-      ffmpeg.kill("SIGKILL");
+      for (const processo of [ytdlp, ffmpeg]) {
+        try {
+          process.kill(-processo.pid, "SIGKILL");
+        } catch {
+          processo.kill("SIGKILL");
+        }
+      }
     },
   };
 }
 
-async function entrarNaVoz(channelId) {
+const entrando = new Map();
+
+function entrarNaVoz(channelId) {
+  if (entrando.has(channelId)) return entrando.get(channelId);
+
+  const pedido = conectarNaVoz(channelId).finally(() => entrando.delete(channelId));
+  entrando.set(channelId, pedido);
+  return pedido;
+}
+
+async function conectarNaVoz(channelId) {
   const jaEsta = filas.get(channelId);
 
   if (jaEsta?.sala.isConnected) return jaEsta;
@@ -225,14 +240,20 @@ async function entrarNaVoz(channelId) {
   const { url, token } = await pedir("voice:token", { channelId });
 
   const sala = new Room();
+  let filaDestaSala = null;
 
   sala.on(RoomEvent.Disconnected, () => {
-    const atual = filas.get(channelId);
-    if (atual?.sala !== sala) return;
+    if (!filaDestaSala) return;
+
+    if (filas.get(channelId) !== filaDestaSala) {
+      filaDestaSala.parando = true;
+      filaDestaSala.audio?.matar();
+      return;
+    }
 
     console.log(`saí da chamada de ${channelId} (a conexão caiu ou me desconectaram)`);
-    avisarQueCaiu(atual);
-    largarFila(atual);
+    avisarQueCaiu(filaDestaSala);
+    largarFila(filaDestaSala);
   });
 
   await sala.connect(url, token, { autoSubscribe: false, dynacast: true });
@@ -256,6 +277,7 @@ async function entrarNaVoz(channelId) {
     parando: false,
     canalDeAviso: null,
   };
+  filaDestaSala = fila;
   filas.set(channelId, fila);
 
   return fila;
@@ -284,6 +306,8 @@ async function sairDaVoz(fila) {
 }
 
 async function tocarProxima(fila, avisarEm) {
+  if (fila.parando) return;
+
   const musica = fila.musicas[0];
 
   if (!musica) {
