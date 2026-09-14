@@ -578,15 +578,15 @@ function filaDoAutor(mensagem) {
 */
 const COMANDOS = [
   {
-    nome: "play",
-    descricao: "Toca uma música do YouTube",
-    opcoes: [
-      { nome: "busca", descricao: "Nome da música ou link", tipo: "texto", obrigatoria: true },
+    name: "play",
+    description: "Toca uma música do YouTube",
+    options: [
+      { name: "busca", description: "Nome da música ou link", kind: "texto", required: true },
     ],
   },
-  { nome: "skip", descricao: "Pula a música atual" },
-  { nome: "stop", descricao: "Para tudo e sai do canal de voz" },
-  { nome: "fila", descricao: "Mostra o que vem por aí" },
+  { name: "skip", description: "Pula a música atual" },
+  { name: "stop", description: "Para tudo e sai do canal de voz" },
+  { name: "fila", description: "Mostra o que vem por aí" },
 ];
 
 /**
@@ -645,7 +645,7 @@ socket.on("connect", async () => {
 
   /// A cada partida, e a lista inteira: o que sumir daqui some do app, sem o
   /// bot precisar lembrar o que registrou da última vez.
-  await pedirHttp("/bot/comandos", { metodo: "PUT", corpo: { comandos: COMANDOS } })
+  await pedirHttp("/bot/comandos", { metodo: "PUT", corpo: { commands: COMANDOS } })
     .then(() => console.log(`${COMANDOS.length} comandos de barra registrados`))
     .catch((erro) => console.error("[comandos]", erro.message));
 });
@@ -676,7 +676,7 @@ socket.on("voice:move", async ({ channelId }) => {
   conferir se veio argumento. O servidor já validou contra o que este bot
   declarou, e `opcoes` chega separado e no tipo certo.
 */
-socket.on("command:invoked", async ({ channelId, comando, opcoes, usuario }) => {
+socket.on("command:invoked", async ({ channelId, command, options, user }) => {
   const config = await configDe(await servidorDe(channelId));
 
   /*
@@ -691,7 +691,7 @@ socket.on("command:invoked", async ({ channelId, comando, opcoes, usuario }) => 
     return falar(channelId, `Meus comandos são no <#${config.canalDeComandos}>.`);
   }
 
-  await executar({ channelId, author: usuario }, comando, opcoes.busca ?? "", config);
+  await executar({ channelId, author: user }, command, options.busca ?? "", config);
 });
 
 socket.on("message:created", async (mensagem) => {
