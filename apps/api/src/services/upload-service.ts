@@ -41,6 +41,11 @@ export const uploadService = {
     return [env.R2_PREFIX, userId, randomUUID(), safeName].filter(Boolean).join("/");
   },
 
+  ownsKey(userId: string, key: string) {
+    const base = [env.R2_PREFIX, userId].filter(Boolean).join("/") + "/";
+    return key.startsWith(base) && !key.includes("..");
+  },
+
   publicUrl(key: string) {
     return `${env.R2_PUBLIC_URL}/${key}`;
   },

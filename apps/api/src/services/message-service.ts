@@ -269,6 +269,11 @@ export const messageService = {
     await ensureFlow(userId);
 
     const content = input.content.trim();
+
+    if (input.attachments?.some((a) => !uploadService.ownsKey(userId, a.id))) {
+      throw new AppError("Esse anexo não foi enviado por você", 400);
+    }
+
     if (!content && !input.attachments?.length && !input.poll && !input.stickerId) {
       throw new AppError("Mensagem vazia");
     }
@@ -305,6 +310,7 @@ export const messageService = {
       ...(input.font && input.font !== "padrao" ? { font: input.font } : {}),
       attachments: (input.attachments ?? []).map((a) => ({
         ...a,
+        url: uploadService.publicUrl(a.id),
         width: a.width ?? null,
         height: a.height ?? null,
         spoiler: a.spoiler || (messageGuild?.filtersMediaExplicit === true && isMedia(a.contentType)),
@@ -380,7 +386,9 @@ export const messageService = {
 
     await messageRepository.softDelete(messageId);
 
-    void uploadService.remove(existing.attachments.map((a) => a.id));
+    void uploadService.remove(
+      existing.attachments.map((a) => a.id).filter((key) => uploadService.ownsKey(existing.authorId, key)),
+    );
 
     return { messageId, channelId: existing.channelId };
   },
@@ -407,7 +415,7 @@ export const messageService = {
       !existing.poll &&
       !existing.stickerId;
 
-    void uploadService.remove([attachmentId]);
+    if (uploadService.ownsKey(existing.authorId, attachmentId)) void uploadService.remove([attachmentId]);
 
     if (emptyStayed) {
       await messageRepository.softDelete(messageId);

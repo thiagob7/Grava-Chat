@@ -147,7 +147,9 @@ export async function authRoutes(app: FastifyInstance) {
 
   app.put("/auth/senha", { preHandler: [app.authenticate] }, async (req, reply) => {
     await authService.swapPassword(req.userId, swapPasswordInput.parse(req.body));
-    return reply.code(204).send();
+
+    const fresh = await authService.issueRefreshToken(req.userId, metaOf(req));
+    return reply.setCookie(REFRESH_COOKIE, fresh.raw, refreshCookieOptions).code(204).send();
   });
 
   app.post("/auth/refresh", async (req, reply) => {

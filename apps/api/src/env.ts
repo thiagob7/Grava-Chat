@@ -1,7 +1,7 @@
 import { z } from "zod";
 
 const schema = z.object({
-  NODE_ENV: z.enum(["development", "production", "test"]).default("development"),
+  NODE_ENV: z.enum(["development", "production", "test"]).default("production"),
 
   API_PORT: z.coerce.number().int().default(3333),
   API_HOST: z.string().default("0.0.0.0"),
@@ -44,6 +44,7 @@ const schema = z.object({
   COOKIE_BETWEEN_SITES: z.stringbool().default(false),
 
   ACCEPT_PREVIEWS_VERCEL: z.stringbool().default(false),
+  VERCEL_PREVIEW_SCOPE: z.string().default(""),
 
   RESEND_API_KEY: z.string().default(""),
   EMAIL_SENDER: z.string().default("Gravaê <onboarding@resend.dev>"),

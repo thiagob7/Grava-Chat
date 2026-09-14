@@ -19,6 +19,15 @@ export interface Context {
   highest: number;
 }
 
+export function requireGrantable(context: Context, permissions: Permission[]) {
+  if (context.isOwner || context.permissions.has("ADMINISTRATOR")) return;
+
+  const missing = permissions.filter((p) => !context.permissions.has(p));
+  if (missing.length) {
+    throw new ForbiddenError(`Você não pode conceder permissões que não tem: ${missing.join(", ")}`);
+  }
+}
+
 export const accessService = {
   async requireMember(userId: string, guildId: string) {
     const member = await memberRepository.find(guildId, userId);
@@ -33,12 +42,14 @@ export const accessService = {
   },
 
   async contextOf(userId: string, guildId: string, channelId?: string): Promise<Context> {
-    const [member, guild] = await Promise.all([
+    const [member, guild, channel] = await Promise.all([
       accessService.requireMember(userId, guildId),
       guildRepository.findById(guildId),
+      channelId ? channelRepository.findById(channelId) : null,
     ]);
 
     if (!guild) throw new NotFoundError("Servidor não encontrado");
+    if (channelId && channel?.guildId !== guildId) throw new NotFoundError("Canal não encontrado");
 
     const roles = await roleRepository.findForMember(guildId, member.roleIds);
     const overwrites = channelId ? await overwriteRepository.findManyByChannel(channelId) : undefined;

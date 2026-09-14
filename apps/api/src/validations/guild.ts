@@ -37,8 +37,8 @@ export type UpdateChannelInput = z.infer<typeof updateChannelInput>;
 
 export const updateGuildInput = z.object({
   name: z.string().min(2).max(LIMITS.guildName).optional(),
-  iconUrl: z.string().nullable().optional(),
-  bannerUrl: z.string().nullable().optional(),
+  iconUrl: r2Url.nullable().optional(),
+  bannerUrl: r2Url.nullable().optional(),
   description: z.string().max(512).nullable().optional(),
   tag: z.string().min(1).max(4).nullable().optional(),
   tagIcon: z.string().max(16).nullable().optional(),

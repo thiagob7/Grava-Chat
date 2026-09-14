@@ -16,7 +16,7 @@ import { botRepository } from "~/repositories/bot-repository.js";
 import { memberRepository, guildRepository } from "~/repositories/guild-repository.js";
 import { roleRepository } from "~/repositories/role-repository.js";
 import { userRepository } from "~/repositories/user-repository.js";
-import { accessService } from "~/services/access-service.js";
+import { accessService, requireGrantable } from "~/services/access-service.js";
 import { authService } from "~/services/auth-service.js";
 
 const LIMIT_BY_PERSON = 10;
@@ -235,11 +235,13 @@ export const botService = {
     const bot = await botRepository.findById(botId);
     if (!bot) throw new NotFoundError("Bot não encontrado");
 
-    const permissions = picked
+    const permissions = (picked
       ? bot.permissionsRequested.filter((p) => picked.includes(p))
-      : bot.permissionsRequested;
+      : bot.permissionsRequested
+    ).filter((p): p is Permission => (PERMISSIONS as readonly string[]).includes(p));
 
-    await accessService.requirePermission(userId, guildId, "MANAGE_GUILD");
+    const context = await accessService.requirePermission(userId, guildId, "MANAGE_GUILD");
+    requireGrantable(context, permissions);
 
     if (!bot.isPublic && bot.ownerId !== userId) {
       throw new ForbiddenError("Esse bot é fechado: só quem o criou pode adicioná-lo.");

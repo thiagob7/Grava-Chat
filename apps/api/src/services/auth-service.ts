@@ -162,6 +162,7 @@ export const authService = {
     }
 
     await userRepository.update(userId, { passwordHash: await generateHash(params.fresh) });
+    await sessionRepository.revokeAllForUser(userId);
 
     const accounts = await accountRepository.findManyByUser(userId);
     if (!accounts.some((c) => c.provider === "senha")) {
@@ -181,11 +182,20 @@ export const authService = {
     const linked = await accountRepository.findByProvider(params.provider, params.providerAccountId);
     if (linked) return linked.user;
 
-    const user = await authService.findOrCreateUser({
+    let user = await authService.findOrCreateUser({
       email: params.email,
       displayName: params.displayName,
       avatarUrl: params.avatarUrl,
     });
+
+    if (!user.emailVerifiedAt) {
+      if (user.passwordHash) {
+        await accountRepository.removeProvider(user.id, "senha");
+        await sessionRepository.revokeAllForUser(user.id);
+      }
+
+      user = await userRepository.update(user.id, { emailVerifiedAt: new Date(), passwordHash: null });
+    }
 
     await accountRepository.create({
       userId: user.id,
