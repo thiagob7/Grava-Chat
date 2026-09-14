@@ -1,5 +1,20 @@
 import React, { useEffect, useRef, useState } from "react";
+import { useNavigate } from "react-router";
+import { toast } from "react-toastify";
+import { Copy, MessageCircle, MoreHorizontal, Pencil } from "lucide-react";
 import type { Role } from "@gravae/shared";
+
+import { useOpenDm } from "~/@core/application/queries/friend/use-open-dm";
+import { Button, IconButton } from "~/components/ui/button";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "~/components/ui/dropdown-menu";
+import { useSession } from "~/contexts/session-context";
+import { ProfileEditorModal } from "~/features/perfil/components/cartao/ProfileEditorModal";
+import { copyText } from "~/lib/copiar";
 
 import type { ProfileModel } from "~/@core/domain/models/profile-model";
 import { Avatar } from "~/features/perfil/components/Avatar";
@@ -43,6 +58,51 @@ export const FullProfileModal: React.FC<FullProfileModalProps> = ({
   const note = useRef<HTMLTextAreaElement>(null);
 
   const notes = profile.friendship !== "SELF" && !profile.system;
+  const own = profile.friendship === "SELF";
+  const { user } = useSession();
+  const navigate = useNavigate();
+  const openDm = useOpenDm();
+  const [editing, setEditing] = useState(false);
+  const trackColor = profile.profile?.bannerColor?.trim() || avatarColor(profile.id);
+
+  const sendMessage = async () => {
+    const channel = await openDm.mutateAsync(profile.id).catch(() => null);
+    if (!channel) return;
+    onClose();
+    navigate(`/dm/${channel.id}`);
+  };
+
+  const actions = (
+    <div data-gc="perfil.full-profile-modal.div" className="mb-1 flex shrink-0 items-center gap-2">
+      {own ? (
+        <Button data-gc="perfil.full-profile-modal.button" size="sm" onClick={() => setEditing(true)}>
+          <Pencil data-gc="perfil.full-profile-modal.pencil" size={14} /> {t("perfil.editar")}
+        </Button>
+      ) : (
+        !profile.system && (
+          <Button data-gc="perfil.full-profile-modal.button--2" size="sm" loading={openDm.isPending} onClick={() => void sendMessage()}>
+            <MessageCircle data-gc="perfil.full-profile-modal.message-circle" size={14} /> Enviar mensagem
+          </Button>
+        )
+      )}
+
+      <DropdownMenu data-gc="perfil.full-profile-modal.dropdown-menu">
+        <DropdownMenuTrigger data-gc="perfil.full-profile-modal.dropdown-menu-trigger" asChild>
+          <IconButton data-gc="perfil.full-profile-modal.icon-button" variant="surface" size="sm" label={t("perfil.mais")}>
+            <MoreHorizontal data-gc="perfil.full-profile-modal.more-horizontal" />
+          </IconButton>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent data-gc="perfil.full-profile-modal.dropdown-menu-content" align="end">
+          <DropdownMenuItem data-gc="perfil.full-profile-modal.dropdown-menu-item" onSelect={() => void copyText(profile.username)}>
+            Copiar nome de usuário <Copy data-gc="perfil.full-profile-modal.copy" size={14} />
+          </DropdownMenuItem>
+          <DropdownMenuItem data-gc="perfil.full-profile-modal.dropdown-menu-item--2" onSelect={() => void copyText(profile.id).then(() => toast.success(t("perfil.idCopiado")))}>
+            {t("perfil.copiarId")} <Copy data-gc="perfil.full-profile-modal.copy--2" size={14} />
+          </DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu>
+    </div>
+  );
 
   /*
     O lápis ao lado do nome, no cartão, abre esta janela e pede o cursor na
@@ -73,46 +133,42 @@ export const FullProfileModal: React.FC<FullProfileModalProps> = ({
   return (
   <Dialog data-gc="perfil.full-profile-modal.dialog" open={open} onOpenChange={(isOpen) => !isOpen && onClose()}>
     <DialogContent data-gc="perfil.full-profile-modal.dialog-content"
-      className={cn("max-w-lg overflow-hidden border-2 border-brand p-0", flxCls("completeProfile"), flxCls("profileCompleteContent"))}
+      className={cn(
+        "h-[min(52rem,90vh)] max-h-[90vh] max-w-[38rem] overflow-hidden border-[3px] p-0",
+        flxCls("completeProfile"),
+        flxCls("profileCompleteContent"),
+      )}
+      style={{ borderColor: trackColor }}
+      showClose={false}
       onOpenAutoFocus={(e) => e.preventDefault()}
     >
-      <div data-gc="perfil.full-profile-modal.div"
-        className={cn("h-28 bg-cover bg-center", flxCls("trackProfileMask"))}
+      <div data-gc="perfil.full-profile-modal.div--2"
+        className={cn("h-52 shrink-0 bg-cover bg-center", flxCls("trackProfileMask"))}
         style={{
-          ...trackNotch(72, 56),
-          backgroundColor: profile.profile?.bannerColor?.trim() || avatarColor(profile.id),
+          ...trackNotch(88, 72),
+          backgroundColor: trackColor,
           ...(profile.profile?.bannerUrl
             ? { backgroundImage: `url(${profile.profile.bannerUrl})` }
             : null),
         }}
       />
 
-      <div data-gc="perfil.full-profile-modal.div--2" {...flx("profileContent", "px-6 pb-6")}>
-        {/*
-          O recorte da faixa fica no rodapé dela, então o avatar precisa nascer
-          com o CENTRO nessa mesma altura para o vão sair parelho. Com -mt-14 o
-          centro caía 8px acima do furo, e o anel saía grosso em cima e colado
-          embaixo. A margem de baixo encolhe o mesmo tanto que a de cima cresceu,
-          então nada abaixo daqui se mexe.
-        */}
-        <div data-gc="perfil.full-profile-modal.div--3" className="-mt-12 mb-2">
+      <div data-gc="perfil.full-profile-modal.div--3" className="relative z-10 -mt-16 flex shrink-0 items-end justify-between gap-3 px-6 pb-3">
           <Avatar data-gc="perfil.full-profile-modal.avatar"
             id={profile.id}
             name={profile.displayName}
             url={profile.avatarUrl}
-            size={96}
+            size={128}
             status={profile.status}
             charms={profile.profile}
             animate
-            /*
-              O anel é da cor do CARTÃO, não um cinza próprio. Assim ele não se
-              lê como anel: lê-se como o avatar recortado de dentro do cartão,
-              que é o efeito que a referência faz. Os 8px fecham exatamente o
-              vão entre o avatar de raio 48 e o furo de raio 56.
-            */
-            className="rounded-full ring-[8px] ring-surface-1"
+            className="shrink-0 rounded-full ring-[8px] ring-surface-1"
           />
-        </div>
+
+          {actions}
+      </div>
+
+      <div data-gc="perfil.full-profile-modal.div--4" {...flx("profileContent", "flex min-h-0 flex-1 flex-col overflow-y-auto px-6 pb-6")}>
 
         <DialogTitle data-gc="perfil.full-profile-modal.dialog-title" className="text-2xl font-bold leading-tight">
           <UserName data-gc="perfil.full-profile-modal.user-name"
@@ -129,9 +185,9 @@ export const FullProfileModal: React.FC<FullProfileModalProps> = ({
         <DialogDescription data-gc="perfil.full-profile-modal.dialog-description" className="text-base">@{profile.username}</DialogDescription>
 
         {tabs.length > 1 && (
-          <div data-gc="perfil.full-profile-modal.div--4" {...flx("tabsFrame", "mt-4 flex gap-4 border-b border-line")}>
+          <div data-gc="perfil.full-profile-modal.div--5" {...flx("tabsFrame", "mt-4 flex gap-4 border-b border-line")}>
             {tabs.map((item) => (
-              <button data-gc="perfil.full-profile-modal.button"
+              <button data-gc="perfil.full-profile-modal.button--3"
                 key={item.id}
                 onClick={() => setTab(item.id)}
                 aria-current={tab === item.id}
@@ -153,9 +209,9 @@ export const FullProfileModal: React.FC<FullProfileModalProps> = ({
         )}
 
         {tab === "amigos" && inCommon.data && (
-          <div data-gc="perfil.full-profile-modal.div--5" className="mt-4 space-y-1">
+          <div data-gc="perfil.full-profile-modal.div--6" className="mt-4 space-y-1">
             {inCommon.data.friends.map((friend) => (
-              <div data-gc="perfil.full-profile-modal.div--6" key={friend.id} className="flex items-center gap-2.5 rounded-lg px-2 py-1.5 hover:bg-hover">
+              <div data-gc="perfil.full-profile-modal.div--7" key={friend.id} className="flex items-center gap-2.5 rounded-lg px-2 py-1.5 hover:bg-hover">
                 <Avatar data-gc="perfil.full-profile-modal.avatar--2"
                   id={friend.id}
                   name={friend.displayName}
@@ -173,9 +229,9 @@ export const FullProfileModal: React.FC<FullProfileModalProps> = ({
         )}
 
         {tab === "servidores" && inCommon.data && (
-          <div data-gc="perfil.full-profile-modal.div--7" className="mt-4 space-y-1">
+          <div data-gc="perfil.full-profile-modal.div--8" className="mt-4 space-y-1">
             {inCommon.data.servers.map((server) => (
-              <div data-gc="perfil.full-profile-modal.div--8" key={server.id} className="flex items-center gap-2.5 rounded-lg px-2 py-1.5 hover:bg-hover">
+              <div data-gc="perfil.full-profile-modal.div--9" key={server.id} className="flex items-center gap-2.5 rounded-lg px-2 py-1.5 hover:bg-hover">
                 {server.iconUrl ? (
                   <img data-gc="perfil.full-profile-modal.img" src={server.iconUrl} alt="" className="size-8 rounded-full object-cover" />
                 ) : (
@@ -209,7 +265,7 @@ export const FullProfileModal: React.FC<FullProfileModalProps> = ({
 
         {tab === "geral" && roleList.length > 0 && (
           <Block data-gc="perfil.full-profile-modal.block--2" title={t("perfil.cargosTitulo")}>
-            <div data-gc="perfil.full-profile-modal.div--9" className="flex flex-wrap gap-1.5">
+            <div data-gc="perfil.full-profile-modal.div--10" className="flex flex-wrap gap-1.5">
               {roleList.map((role) => (
                 <span data-gc="perfil.full-profile-modal.span--5"
                   key={role.id}
@@ -246,6 +302,9 @@ export const FullProfileModal: React.FC<FullProfileModalProps> = ({
         )}
       </div>
     </DialogContent>
+    {own && user && editing && (
+      <ProfileEditorModal data-gc="perfil.full-profile-modal.profile-editor-modal" open user={user} onClose={() => setEditing(false)} />
+    )}
   </Dialog>
   );
 };
