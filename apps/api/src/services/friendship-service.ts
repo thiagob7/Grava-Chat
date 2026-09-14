@@ -255,9 +255,6 @@ export const friendshipService = {
       return;
     }
 
-    if (request?.status === "ACCEPTED") return;
-    if (request && request.fromId === other.id) return;
-
     if (!(await canReach(other, userId))) {
       if (request?.status === "PENDING") {
         await dmRepositoryRequest.silence(channelId);
