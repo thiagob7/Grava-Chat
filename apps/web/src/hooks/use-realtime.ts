@@ -823,9 +823,22 @@ export function useRealtime(
       }
     };
 
-    const handleDisconnect = () => useConnectionStore.getState().dropped();
-
     let lastSwap = 0;
+
+    const handleDisconnect = (reason: string) => {
+      useConnectionStore.getState().dropped();
+      if (reason !== "io server disconnect") return;
+
+      lastSwap = Date.now();
+
+      void refreshSession()
+        .then(() => socketInstance.connect())
+        .catch((failure) => {
+          if (axios.isAxiosError(failure) && failure.response?.status === 401) {
+            notifySessionLost();
+          }
+        });
+    };
 
     const handleConnectError = (error: Error) => {
       useConnectionStore.getState().dropped();

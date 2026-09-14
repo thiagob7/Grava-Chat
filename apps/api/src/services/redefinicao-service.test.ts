@@ -58,6 +58,8 @@ vi.mock("~/repositories/session-repository.js", () => ({
   sessionRepository: { revokeAllForUser: (...a: unknown[]) => dropSessions(...a) },
 }));
 
+vi.mock("~/lib/token-revocation.js", () => ({ revokeAccess: async () => undefined }));
+
 const { resetService, emailText } = await import("~/services/redefinicao-service.js");
 
 const person = (extras = {}) => ({

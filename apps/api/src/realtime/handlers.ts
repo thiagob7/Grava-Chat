@@ -3,6 +3,7 @@ import type { z } from "zod";
 import type { PresenceStatus } from "@gravae/shared";
 import {
   clientEventSchemas,
+  has,
   LIMITS,
   rooms,
   type Ack,
@@ -10,7 +11,7 @@ import {
   type ClientToServerEvents,
   type ServerToClientEvents,
 } from "@gravae/shared";
-import { AppError, ConflictError, NotFoundError } from "~/lib/http.js";
+import { AppError, ConflictError, ForbiddenError, NotFoundError } from "~/lib/http.js";
 import { toPublicUser } from "~/lib/serialize.js";
 import { expressionRepository } from "~/repositories/expression-repository.js";
 import { userRepository } from "~/repositories/user-repository.js";
@@ -30,6 +31,38 @@ import { io, type SocketData } from "./io.js";
 
 type GravaeSocket = Socket<ClientToServerEvents, ServerToClientEvents, Record<string, never>, SocketData>;
 
+const WINDOW_MS = 10_000;
+const DEFAULT_PER_WINDOW = 30;
+const PER_WINDOW: Partial<Record<ClientEventName, number>> = {
+  "typing:start": 8,
+  "presence:update": 6,
+  "presence:afk": 6,
+  "message:react": 20,
+  "message:unreact": 20,
+  "voice:token": 10,
+  "voice:join": 10,
+  "voice:onde": 20,
+  "voice:recusar": 10,
+  "channel:subscribe": 60,
+};
+
+const usage = new WeakMap<GravaeSocket, Map<string, { start: number; count: number }>>();
+
+function overLimit(socket: GravaeSocket, event: ClientEventName) {
+  const now = Date.now();
+  const byEvent = usage.get(socket) ?? new Map<string, { start: number; count: number }>();
+  usage.set(socket, byEvent);
+
+  const current = byEvent.get(event);
+  if (!current || now - current.start >= WINDOW_MS) {
+    byEvent.set(event, { start: now, count: 1 });
+    return false;
+  }
+
+  current.count += 1;
+  return current.count > (PER_WINDOW[event] ?? DEFAULT_PER_WINDOW);
+}
+
 function on<E extends ClientEventName>(
   socket: GravaeSocket,
   event: E,
@@ -41,6 +74,11 @@ function on<E extends ClientEventName>(
   ) => void;
 
   listen(event, async (raw: unknown, ack?: Ack<unknown>) => {
+    if (overLimit(socket, event)) {
+      ack?.({ ok: false, error: "Devagar: muitas ações seguidas" });
+      return;
+    }
+
     const parsed = clientEventSchemas[event].safeParse(raw);
 
     if (!parsed.success) {
@@ -162,7 +200,14 @@ export function registerHandlers(socket: GravaeSocket) {
 
   on(socket, "voice:onde", async ({ userId: target }) => {
     const state = await voiceService.get(target);
-    return { channelId: state?.channelId ?? null };
+    if (!state) return { channelId: null };
+
+    const visible = await accessService
+      .requireChannelAccess(userId, state.channelId)
+      .then(() => true)
+      .catch(() => false);
+
+    return { channelId: visible ? state.channelId : null };
   });
 
   on(socket, "voice:join", async ({ channelId, resume, client, device }) => {
@@ -204,19 +249,13 @@ export function registerHandlers(socket: GravaeSocket) {
 
     if (!state.guildId) throw new AppError("O painel de sons só existe em servidor");
 
-    const context = await accessService.requirePermission(
-      userId,
-      state.guildId,
-      "USE_SOUNDBOARD",
-      state.channelId,
-    );
-    void context;
+    await accessService.requirePermission(userId, state.guildId, "USE_SOUNDBOARD", state.channelId);
 
     const sound = await expressionRepository.findSoundById(soundId);
     if (!sound || sound.guildId !== state.guildId) throw new NotFoundError("Som não encontrado");
 
     io()
-      .to(rooms.guild(state.guildId))
+      .to(await voiceRecipients(state))
       .emit("voice:sound", {
         channelId: state.channelId,
         userId,
@@ -232,12 +271,15 @@ export function registerHandlers(socket: GravaeSocket) {
     if (!state) throw new NotFoundError("Esta pessoa não está numa chamada");
     if (!state.guildId) throw new AppError("Não há moderação numa chamada de privado");
 
-    if (serverMute !== undefined) {
-      await accessService.requirePermission(userId, state.guildId, "MUTE_MEMBERS");
+    const context = await accessService.contextOf(userId, state.guildId, state.channelId);
+
+    if (serverMute !== undefined && !has(context.permissions, "MUTE_MEMBERS")) {
+      throw new ForbiddenError("Você não tem permissão para isso");
     }
-    if (serverDeaf !== undefined) {
-      await accessService.requirePermission(userId, state.guildId, "DEAFEN_MEMBERS");
+    if (serverDeaf !== undefined && !has(context.permissions, "DEAFEN_MEMBERS")) {
+      throw new ForbiddenError("Você não tem permissão para isso");
     }
+    if (targetId !== userId) await accessService.targetRequireAbove(context, state.guildId, targetId);
 
     const updated = await voiceService.moderate(targetId, { serverMute, serverDeaf });
     if (updated) io().to(await voiceRecipients(updated)).emit("voice:updated", updated);
@@ -261,7 +303,9 @@ export function registerHandlers(socket: GravaeSocket) {
     if (!state) throw new NotFoundError("Esta pessoa não está numa chamada");
     if (!state.guildId) throw new AppError("Não dá pra expulsar de uma chamada de privado");
 
-    await accessService.requirePermission(userId, state.guildId, "MOVE_MEMBERS");
+    const context = await accessService.requirePermission(userId, state.guildId, "MOVE_MEMBERS", state.channelId);
+    if (targetId !== userId) await accessService.targetRequireAbove(context, state.guildId, targetId);
+
     await voiceService.sfuDisconnect(state.channelId, targetId);
 
     const left = await voiceService.leave(targetId);
@@ -276,7 +320,9 @@ export function registerHandlers(socket: GravaeSocket) {
     if (!state) throw new NotFoundError("Esta pessoa não está numa chamada");
     if (!state.guildId) throw new AppError("Não dá pra mover alguém de uma chamada de privado");
 
-    await accessService.requirePermission(userId, state.guildId, "MOVE_MEMBERS");
+    const context = await accessService.requirePermission(userId, state.guildId, "MOVE_MEMBERS", state.channelId);
+    if (targetId !== userId) await accessService.targetRequireAbove(context, state.guildId, targetId);
+    await accessService.requirePermission(userId, state.guildId, "MOVE_MEMBERS", channelId);
 
     const { channel } = await accessService.requireChannelAccess(targetId, channelId);
     if (channel.type !== "VOICE") throw new AppError("Só dá pra mover para canal de voz");

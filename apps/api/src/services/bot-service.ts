@@ -274,6 +274,8 @@ export const botService = {
 
     await accessService.requirePermission(userId, guildId, "MANAGE_GUILD");
     await memberRepository.remove(guildId, bot.botUserId);
+
+    return bot.botUserId;
   },
 
   async destinationsFor(userId: string, botId: string) {

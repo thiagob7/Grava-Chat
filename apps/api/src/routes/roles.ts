@@ -1,6 +1,7 @@
 import type { FastifyInstance } from "fastify";
 import { rooms, objectId } from "@gravae/shared";
 import { io } from "~/realtime/io.js";
+import { syncGuildRooms } from "~/realtime/room-sync.js";
 import { roleService } from "~/services/role-service.js";
 import { guildParams, guildChannelParams, guildMemberParams } from "~/validations/common.js";
 import {
@@ -14,8 +15,10 @@ import {
 const roleParams = guildParams.extend({ roleId: objectId });
 const overwriteParams = guildChannelParams.extend({ targetId: objectId });
 
-const notifyChange = (guildId: string) =>
+const notifyChange = (guildId: string) => {
   io().to(rooms.guild(guildId)).emit("guild:refresh", { guildId });
+  void syncGuildRooms(guildId).catch(() => undefined);
+};
 
 export async function roleRoutes(app: FastifyInstance) {
   app.addHook("preHandler", app.authenticate);
@@ -68,6 +71,7 @@ export async function roleRoutes(app: FastifyInstance) {
 
     io().to(rooms.guild(guildId)).emit("member:updated", member);
     io().to(rooms.user(userId)).emit("guild:refresh", { guildId });
+    void syncGuildRooms(guildId, [userId]).catch(() => undefined);
 
     return member;
   });

@@ -8,6 +8,7 @@ import {
 } from "@gravae/shared";
 
 import { io } from "~/realtime/io.js";
+import { syncGuildRooms } from "~/realtime/room-sync.js";
 import { botService } from "~/services/bot-service.js";
 import { objectId } from "~/validations/common.js";
 import { r2Url } from "~/validations/auth.js";
@@ -76,7 +77,8 @@ export async function botRoutes(app: FastifyInstance) {
 
   app.delete("/bots/:botId/servidores/:guildId", async (req, reply) => {
     const { botId, guildId } = botServer.parse(req.params);
-    await botService.removeServer(req.userId, botId, guildId);
+    const botUserId = await botService.removeServer(req.userId, botId, guildId);
+    await syncGuildRooms(guildId, [botUserId]).catch(() => undefined);
 
     notifyCommands(guildId);
     return reply.status(204).send();
