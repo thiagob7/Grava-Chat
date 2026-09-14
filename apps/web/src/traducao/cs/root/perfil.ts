@@ -43,6 +43,7 @@ export const perfil = {
     falhou: "Nepodařilo se odeslat. Zkus to z konverzace.",
   },
   cartao: {
+    equipe: "Tým Gravaê",
     trocarFaixa: "Změnit banner karty",
     trocarFaixaCurto: "Změnit banner",
     trocarFoto: "Změnit profilovou fotku",

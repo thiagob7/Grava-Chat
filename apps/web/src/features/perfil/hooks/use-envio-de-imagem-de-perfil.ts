@@ -2,6 +2,9 @@ import { useState } from "react";
 import type React from "react";
 
 import { useUploadImage } from "~/@core/application/queries/upload/use-upload-image";
+import { toast } from "react-toastify";
+
+import { importImage } from "~/@core/application/requests/upload/importar-imagem";
 import { formatBytes } from "~/lib/image";
 
 const AVATAR_MAX_PX = 256;
@@ -20,14 +23,15 @@ export interface ProfileImageFrame {
   exportWidth: number;
 }
 
-const animated = (file: File) => file.type === "image/gif";
-
 export function useImageProfileSending(
   set: (field: Field, url: string) => void,
 ) {
   const uploadImage = useUploadImage();
   const [saving, setSaving] = useState<string | null>(null);
   const [framing, setFraming] = useState<ProfileImageFrame | null>(null);
+  const [chooserField, setChooserField] = useState<Field | null>(null);
+  const [chooserOpen, setChooserOpen] = useState(false);
+  const [fetchingGif, setFetchingGif] = useState(false);
 
   const upload = async (file: File, field: Field) => {
     const photo = field === "avatarUrl";
@@ -49,19 +53,8 @@ export function useImageProfileSending(
     );
   };
 
-  /*
-    A imagem escolhida não sobe direto: primeiro a pessoa enquadra, e só o
-    recorte vai para o servidor.
-
-    O GIF é a exceção e passa reto. Enquadrar é desenhar num canvas, e isso
-    devolveria um quadro parado — quem escolheu um GIF quer o GIF.
-  */
-  const send = async (event: React.ChangeEvent<HTMLInputElement>, field: Field) => {
-    const file = event.target.files?.[0];
-    event.target.value = "";
-    if (!file) return;
-
-    if (animated(file)) return upload(file, field);
+  const sendFile = (file: File, field: Field) => {
+    if (!file.type.startsWith("image/")) return;
 
     const photo = field === "avatarUrl";
     setFraming({
@@ -72,18 +65,66 @@ export function useImageProfileSending(
     });
   };
 
+  const send = async (event: React.ChangeEvent<HTMLInputElement>, field: Field) => {
+    const file = event.target.files?.[0];
+    event.target.value = "";
+    if (file) sendFile(file, field);
+  };
+
+  const sendGif = async (url: string, field: Field) => {
+    setFetchingGif(true);
+    const file = await fetch(url)
+      .then((reply) => (reply.ok ? reply.blob() : Promise.reject()))
+      .then((blob) => new File([blob], "klipy.gif", { type: blob.type || "image/gif" }))
+      .catch(() => null)
+      .finally(() => setFetchingGif(false));
+
+    if (file) {
+      sendFile(file, field);
+      return;
+    }
+
+    setFetchingGif(true);
+    const attachment = await importImage(url, field === "avatarUrl" ? "avatar" : "banner")
+      .catch(() => {
+        toast.error("Não consegui trazer esse GIF.");
+        return null;
+      })
+      .finally(() => setFetchingGif(false));
+
+    if (attachment) set(field, attachment.url);
+  };
+
   const applyFrame = async (cut: File) => {
     const open = framing;
     setFraming(null);
     if (open) await upload(cut, open.field);
   };
 
+  const skipFrame = async () => {
+    const open = framing;
+    setFraming(null);
+    if (open) await upload(open.file, open.field);
+  };
+
   return {
     send,
+    sendFile,
+    sendGif,
     framing,
     cancelFrame: () => setFraming(null),
     applyFrame,
+    skipFrame,
     saving,
-    sending: uploadImage.isPending,
+    sending: uploadImage.isPending || fetchingGif,
+    chooserField,
+    chooserOpen,
+    choose: (field: Field) => {
+      setChooserField(field);
+      setChooserOpen(true);
+    },
+    closeChooser: () => setChooserOpen(false),
   };
 }
+
+export type ProfileImageSending = ReturnType<typeof useImageProfileSending>;

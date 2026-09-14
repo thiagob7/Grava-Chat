@@ -43,6 +43,7 @@ export const perfil = {
     falhou: "送信できませんでした。会話から試してください。",
   },
   cartao: {
+    equipe: "Gravaê チーム",
     trocarFaixa: "カードのバナーを変更",
     trocarFaixaCurto: "バナーを変更",
     trocarFoto: "プロフィール画像を変更",

@@ -43,6 +43,7 @@ export const perfil = {
     falhou: "Kon niet worden verzonden. Probeer het vanuit het gesprek.",
   },
   cartao: {
+    equipe: "Gravaê-team",
     trocarFaixa: "De kaartbanner wijzigen",
     trocarFaixaCurto: "De banner wijzigen",
     trocarFoto: "De profielfoto wijzigen",
