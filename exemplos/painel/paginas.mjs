@@ -34,7 +34,6 @@ const COMANDOS = [
   { nome: "fila", uso: "fila", texto: "Mostra o que está tocando e o que vem depois." },
 ];
 
-// ── a capa ──────────────────────────────────────────────────────────────
 export const landing = ({ usuario, linkDeConvite }) =>
   moldura(
     `${NOME} — música no seu servidor`,
@@ -83,7 +82,6 @@ export const landing = ({ usuario, linkDeConvite }) =>
     { usuario },
   );
 
-// ── entrar ──────────────────────────────────────────────────────────────
 export const precisaEntrar = () =>
   moldura(
     "Entrar",
@@ -97,7 +95,6 @@ export const precisaEntrar = () =>
     { topo: false },
   );
 
-// ── escolher servidor ───────────────────────────────────────────────────
 export const listaDeServidores = ({ usuario, servidores, linkDeConvite }) => {
   const gerencia = servidores.filter((g) => g.gerencia);
 
@@ -140,7 +137,6 @@ export const listaDeServidores = ({ usuario, servidores, linkDeConvite }) => {
   );
 };
 
-// ── o painel de um servidor ─────────────────────────────────────────────
 const SECOES = [
   { grupo: "Bot", itens: [["geral", "Visão geral"], ["musica", "Música"]] },
   { grupo: "Comunidade", itens: [["boas-vindas", "Boas-vindas"]] },
@@ -177,14 +173,6 @@ const salvar = (mensagem = "Alterações não salvas são perdidas ao sair.", ex
     <button class="botao" name="acao" value="salvar">Salvar</button>
   </div>`;
 
-/*
-  O botão de testar.
-
-  Manda a mensagem de verdade, no canal escolhido, pela API REST do bot — é o
-  jeito de descobrir que o bot não pode escrever ali ANTES de alguém entrar no
-  servidor e a mensagem não sair. Salva junto: testar o texto antigo enquanto
-  você olha para o novo na tela seria pior que não testar.
-*/
 const botaoDeTeste = `
   <button class="botao fantasma" name="acao" value="testar">Salvar e testar</button>`;
 

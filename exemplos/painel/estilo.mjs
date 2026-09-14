@@ -1,11 +1,4 @@
-/**
- * O CSS da plataforma, num arquivo só.
- *
- * Vive em JS e não num `.css` porque o exemplo inteiro roda com `node
- * servidor.mjs`, sem build e sem servir arquivo estático: quem clonar o
- * repositório tem um site de pé no primeiro comando.
- */
-export const ESTILO = /* css */ `
+export const ESTILO = `
 :root {
   --fundo: #0e0e10;
   --superficie: #17171a;

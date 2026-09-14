@@ -23,10 +23,6 @@ export const presenceService = {
   visible,
 
   async onConnect(userId: string) {
-    /*
-      Uma ida ao Redis em vez de duas, e sem janela entre elas. Isto roda em
-      toda conexão de socket — é dos caminhos mais quentes que existem aqui.
-    */
     const rounds = await redis
       .multi()
       .incr(keys.sessions(userId))
@@ -75,16 +71,6 @@ export const presenceService = {
     else await redis.del(keys.idle(userId));
   },
 
-  /*
-    A projeção junta duas fontes, e cada uma guarda o que lhe cabe.
-
-    Do Redis vem o que é descartável e muda o tempo todo: se há aba conectada e
-    se o teclado parou. Se o Redis sumir, a resposta certa para as duas é "não",
-    e todo mundo aparece offline até reconectar — nada se perdeu.
-
-    Do Mongo vem a escolha da pessoa, que não pode sumir. As duas idas acontecem
-    ao mesmo tempo, então isto continua custando uma viagem de rede, não duas.
-  */
   async mapFor(userIds: string[]): Promise<Record<string, PresenceStatus>> {
     if (!userIds.length) return {};
 
@@ -117,14 +103,6 @@ export const presenceService = {
     const idles = await redis.keys("idle:*");
     if (stale.length || idles.length) await redis.del(...stale, ...idles);
   },
-  /*
-    Traz o status escolhido do Redis para o Mongo, uma vez só.
-
-    Ele morava em `presence:<id>`. Sem esta cópia, quem estava Invisível ou em
-    Não perturbe voltaria a aparecer Online no primeiro deploy — o campo novo
-    nasce vazio e o Prisma o lê como ONLINE. Quem não tem nada guardado recebe
-    ONLINE gravado de verdade, e por isso a segunda subida já não acha ninguém.
-  */
   async migrateDesired(): Promise<number> {
     const ids = await userRepository.idsWithoutDesired();
 

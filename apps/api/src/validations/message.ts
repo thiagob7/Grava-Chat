@@ -13,7 +13,6 @@ export const historyQuery = z
     postId: objectId.optional(),
     limit: z.coerce.number().int().min(1).max(100).default(LIMITS.messagePageSize),
   })
-  /* Os dois juntos não querem dizer nada: cada um recorta para um lado. */
   .refine((q) => !(q.before && q.after), {
     message: "Use before ou after, não os dois",
     path: ["after"],

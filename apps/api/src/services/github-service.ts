@@ -10,28 +10,12 @@ import type {
 import { env } from "~/env.js";
 import { AppError, NotFoundError } from "~/lib/http.js";
 
-/*
-  O GitHub visto pelo painel.
-
-  O token fica só aqui, no servidor. Com ele a API do GitHub responde bem mais
-  vezes por hora e deixa aprovar a publicação. Sem ele o painel ainda mostra o
-  que é público do repositório, e o botão de aprovar some.
-
-  A leitura guarda o resultado por alguns segundos: o painel pergunta de tempos
-  em tempos, e várias pessoas com ele aberto não podem virar várias perguntas ao
-  GitHub.
-*/
 const API = "https://api.github.com";
 const WORKFLOWS = ["api.yml", "desktop.yml"];
 const CACHE_MS = 20_000;
 
 let cached: { at: number; view: PublicationsView } | null = null;
 
-/*
-  Execução e deploy que terminaram não mudam mais. Guardados por id, a leitura
-  seguinte só pergunta pelo que ainda está andando, e o painel aberto fica bem
-  abaixo do limite do token.
-*/
 const finishedRuns = new Map<number, WorkflowRun>();
 const finishedDeploys = new Map<number, WebDeploy>();
 
@@ -281,11 +265,6 @@ export const githubService = {
     }
   },
 
-  /*
-    Aprova ou recusa tudo o que a execução está esperando. No GitHub a revisão
-    sai no nome do dono do token; o comentário leva o nome de quem clicou, e o
-    registro do painel guarda o mesmo.
-  */
   async review(runId: number, approve: boolean, actorName: string) {
     if (!env.GITHUB_TOKEN) throw new AppError("O servidor não tem GITHUB_TOKEN; aprove direto no GitHub.");
 

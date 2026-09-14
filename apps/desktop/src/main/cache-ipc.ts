@@ -18,17 +18,6 @@ import {
   type QueuedSend,
 } from "./cache-local.js";
 
-/*
-  A ponte entre a janela e o banco.
-
-  Tudo aqui é à prova de falha de propósito: é CACHE. Se o disco estiver cheio,
-  o arquivo corrompido ou o SQLite indisponível, a resposta certa é seguir sem
-  cache, não derrubar a conversa. Por isso cada handler engole o erro e devolve
-  o valor neutro — vazio para leitura, zero para escrita.
-
-  Quem chama do outro lado trata o vazio como "não tenho nada guardado", que é
-  exatamente o estado de quem acabou de instalar o aplicativo.
-*/
 function quiet<T>(what: string, neutral: T, run: () => T): T {
   try {
     return run();

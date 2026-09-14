@@ -67,22 +67,8 @@ async function resolveMentions(
 
 const WHO_REACTED_LIMIT = 50;
 
-/*
-  Dez minutos de recibo.
-
-  É folgado para o que a fila faz — ela reenvia assim que a rede volta, o que é
-  questão de segundos — e curto para o Redis, que não fica carregando recibo de
-  conversa de ontem.
-*/
 const RECEIPT_S_TTL = 10 * 60;
 
-/*
-  A mensagem que este `nonce` já criou, se criou.
-
-  Uma chave órfã é possível: o recibo pode ter sobrevivido a uma mensagem que
-  foi apagada depois. Nesse caso o certo é deixar passar como envio novo, e não
-  devolver um fantasma — por isso a busca no banco também decide.
-*/
 async function receiptOf(userId: string, input: { nonce: string; channelId: string; retry?: boolean }) {
   const messageId = await redis.get(keys.sendReceipt(userId, input.nonce)).catch(() => null);
 
@@ -101,17 +87,8 @@ async function receiptOf(userId: string, input: { nonce: string; channelId: stri
   return message;
 }
 
-/*
-  A fila guarda por sete dias; a janela vai um dia além para cobrir fuso e
-  relógio torto de quem reenvia.
-*/
 const RETRY_WINDOW_MS = 8 * 24 * 60 * 60 * 1000;
 
-/*
-  As mensagens devolvidas por recibo, e não criadas agora. Quem difunde
-  pergunta aqui para não anunciar de novo ao canal o que todo mundo já recebeu:
-  anunciar outra vez contava não lida e tocava notificação em dobro.
-*/
 const replays = new WeakSet<object>();
 
 export const wasReplay = (message: object) => replays.has(message);
@@ -130,11 +107,6 @@ export const messageService = {
 
     const messages = await messageRepository.findPage({ channelId, ...params });
 
-    /*
-      O banco devolve da borda do cursor para fora, então `before` vem do mais
-      novo para o mais velho e `after` vem ao contrário. Quem lê espera sempre a
-      mesma ordem, da mais velha para a mais nova, e é isso que sai daqui.
-    */
     const ordered = params.after ? messages : messages.reverse();
 
     return {
@@ -199,18 +171,6 @@ export const messageService = {
   },
 
   async send(userId: string, input: SendMessageInput) {
-    /*
-      O reenvio não pode virar mensagem nova.
-
-      Quando a rede cai depois do pedido sair mas antes da resposta voltar, o
-      aplicativo não tem como saber se chegou. A fila reenvia — é o certo a
-      fazer — e cabe ao servidor reconhecer que é a MESMA mensagem.
-
-      O recibo é consultado antes de qualquer trabalho: antes de permissão, de
-      modo lento, de limite de fluxo. Um reenvio não é uma tentativa nova de
-      falar, é a mesma de antes chegando enfim, e não deve gastar cota nem
-      esbarrar no modo lento de novo.
-    */
     const already = input.nonce
       ? await receiptOf(userId, { nonce: input.nonce, channelId: input.channelId, retry: input.retry })
       : null;
@@ -342,11 +302,6 @@ export const messageService = {
     }
 
     if (input.nonce) {
-      /*
-        Falhar aqui não pode desfazer uma mensagem que já existe. O pior caso
-        de perder o recibo é um reenvio duplicar, e isso é menos grave do que
-        derrubar um envio que deu certo.
-      */
       await redis
         .set(keys.sendReceipt(userId, input.nonce), created.id, "EX", RECEIPT_S_TTL)
         .catch(() => undefined);

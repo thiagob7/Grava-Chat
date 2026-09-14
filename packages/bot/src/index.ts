@@ -15,14 +15,6 @@ import { Rest, type ClientOptions } from "./rest.js";
 export { ApiError, errorReason, helpsInsist } from "./rest.js";
 export type { ClientOptions } from "./rest.js";
 
-/*
-  O cliente é fino de propósito.
-
-  Ele resolve as três coisas que todo mundo reescreve errado — o cabeçalho, o
-  formato do erro e a decisão de insistir — e mais nada. Os tipos vêm do
-  @gravae/shared, o mesmo pacote que o servidor usa para validar, então não
-  existe cópia de tipo que possa envelhecer.
-*/
 export class Gravae {
   readonly rest: Rest;
   private socket: Socket | null = null;
@@ -35,13 +27,9 @@ export class Gravae {
     this.base = (options.base ?? "https://gravaechat-api.duckdns.org/api").replace(/\/api\/?$/, "");
   }
 
-  // ---- identidade ----
-
   eu() {
     return this.rest.askFor<PublicUser>("GET", "/bot/eu");
   }
-
-  // ---- servidores e canais ----
 
   servers() {
     return this.rest.askFor<Guild[]>("GET", "/bot/servidores");
@@ -54,8 +42,6 @@ export class Gravae {
   createChannel(guildId: string, data: { name: string; type?: "TEXT" | "VOICE" | "FORUM" }) {
     return this.rest.askFor<Channel>("POST", `/bot/servidores/${guildId}/canais`, data);
   }
-
-  // ---- membros e cargos ----
 
   members(guildId: string) {
     return this.rest.askFor<GuildMember[]>("GET", `/bot/servidores/${guildId}/membros`);
@@ -73,8 +59,6 @@ export class Gravae {
     );
   }
 
-  // ---- moderação ----
-
   timeout(guildId: string, userId: string, minutes: number, reason?: string) {
     return this.rest.askFor("PUT", `/bot/servidores/${guildId}/castigos/${userId}`, {
       minutes,
@@ -86,16 +70,12 @@ export class Gravae {
     return this.rest.askFor("PUT", `/bot/servidores/${guildId}/banimentos/${userId}`, options);
   }
 
-  // ---- expressões ----
-
   expressions(guildId: string) {
     return this.rest.askFor<{ emojis: GuildEmoji[] }>(
       "GET",
       `/bot/servidores/${guildId}/expressoes`,
     );
   }
-
-  // ---- mensagens ----
 
   send(channelId: string, content: string | { content: string; replyToId?: string }) {
     const body = typeof content === "string" ? { content: content } : content;
@@ -130,18 +110,10 @@ export class Gravae {
     return this.rest.askFor("PUT", `/bot/mensagens/${messageId}/fixar`);
   }
 
-  // ---- comandos de barra ----
-
   setCommands(commands: unknown[]) {
     return this.rest.askFor("PUT", "/bot/comandos", { commands });
   }
 
-  // ---- tempo real ----
-
-  /**
-   * Abre a conexão. O bot NÃO precisa se inscrever em canal: ao conectar, ele
-   * já recebe tudo o que o cargo dele alcança.
-   */
   connect() {
     if (this.socket) return this.socket;
 
@@ -153,7 +125,6 @@ export class Gravae {
     return this.socket;
   }
 
-  /** Escuta um evento do servidor, com o tipo certo do payload. */
   ao<E extends keyof ServerToClientEvents>(event: E, listener: ServerToClientEvents[E]) {
     this.connect().on(event as string, listener as never);
     return this;

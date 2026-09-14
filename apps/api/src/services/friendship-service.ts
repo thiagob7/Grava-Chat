@@ -216,12 +216,6 @@ export const friendshipService = {
 
     const channel = await dmRepository.create([userId, otherId]);
 
-    /*
-      Quem não pode receber ainda ganha a conversa aberta, só que muda: ela
-      existe para quem escreveu, e a mensagem é recusada no envio com o motivo
-      ao lado. Para a outra pessoa nada aparece — nem conversa, nem pedido —
-      até que dê para entregar de verdade.
-    */
     if (!(await canReach(other, userId))) {
       await dmRepositoryRequest.create(channel.id, userId, otherId, false, "UNDELIVERED");
       return { channel: toChannel(channel), request: true, silent: true };
@@ -233,11 +227,6 @@ export const friendshipService = {
     return { channel: toChannel(channel), request: true, silent: false };
   },
 
-  /*
-    Chamado no envio de toda mensagem de DM. Só age na conversa que foi aberta
-    sem poder entregar: confere de novo, porque de lá para cá as duas pessoas
-    podem ter virado amigas ou entrado na mesma comunidade.
-  */
   async requireDeliverable(userId: string, channelId: string, other: { id: string; membersAllowDm: boolean; spamFilter: string }) {
     const [request, relation] = await Promise.all([
       dmRepositoryRequest.findByChannel(channelId),
