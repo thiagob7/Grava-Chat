@@ -114,13 +114,6 @@ const RECEBIDOS = {
   error: "Deu errado o que o bot pediu. Vem com o nome do evento e o motivo.",
 };
 
-/*
-  O que a API responde quando dá errado.
-
-  Os códigos vêm das classes de erro do servidor, e os motivos da lista fechada
-  em `falhas.ts`. Como a lista é fechada, um motivo novo sem texto aqui derruba
-  o build — mesma trava que já vale para rota e para evento.
-*/
 const CODIGOS = {
   400: "O pedido não passou na validação. Vem com `issues`, dizendo qual campo e por quê.",
   401: "Sem credencial, ou com credencial vencida. Gere outro token.",
@@ -248,17 +241,6 @@ if (semDescricao.length) {
   process.exit(1);
 }
 
-/*
-  A referência dividida por OBJETO, e não por transporte.
-
-  Antes existiam duas páginas: uma com todas as rotas, outra com todos os
-  eventos. Quem chega não pergunta "quais rotas existem", pergunta "como mando
-  uma mensagem" — e a resposta ficava espalhada. Aqui cada objeto reúne o que é,
-  os campos que ele tem, as rotas que mexem nele e os eventos que ele dispara.
-
-  A ordem da lista é a ordem da página, e ela vai do que se usa todo dia para o
-  que se usa uma vez.
-*/
 const OBJETOS = [
   {
     id: "mensagem",
@@ -460,11 +442,6 @@ if (semTextoDeFalha.length) {
   process.exit(1);
 }
 
-/*
-  Os campos de cada objeto saem do MESMO esquema que o servidor usa para
-  validar. Se um campo entrou na API, ele aparece aqui sem ninguém escrever
-  nada — e se saiu, some.
-*/
 const ESQUEMAS: Record<string, z.ZodType> = {
   messageSchema,
   channelSchema,
@@ -517,11 +494,6 @@ const objects = OBJETOS.map((object) => ({
   }),
 }));
 
-/*
-  A trava que mantém a divisão honesta: rota que não cai em objeto nenhum
-  ficaria invisível na nova referência, e ninguém descobriria até alguém
-  procurar por ela e não achar.
-*/
 const foraDeObjeto = rest.filter(
   (route) => !OBJETOS.some((object) => object.routes?.test(route.path)),
 );
@@ -545,21 +517,6 @@ const received = nomesRecebidos.map((name) => ({ name, description: RECEBIDOS[na
 await mkdir(dirname(OUTPUT), { recursive: true });
 await writeFile(OUTPUT, `${JSON.stringify({ rest, events, received, objects, limits, permissions, failures }, null, 2)}\n`);
 
-/*
-  O índice em texto puro, para quem lê com máquina.
-
-  Hoje boa parte de quem integra uma API chega por um assistente de código, e
-  assistente não navega menu: ele busca um arquivo. É o mesmo papel do
-  `llms.txt` que outras plataformas publicam — uma lista chapada do que existe
-  e onde está, sem HTML no meio.
-
-  Sai do mesmo lugar que a documentação, então não tem como divergir dela.
-*/
-/*
-  As páginas saem do MESMO arquivo que desenha o menu, lido como texto — o
-  script já faz assim com o `events.ts`. Importar o módulo puxaria junto o
-  resto do app; ler o texto pega só o que interessa e não acopla nada.
-*/
 const fonteDosDocs = await readFile(join(HERE, "..", "src", "dados", "docs.ts"), "utf8");
 
 const paginasDosDocs = [
@@ -602,17 +559,6 @@ const index = [
 
 await writeFile(join(HERE, "..", "public", "llms.txt"), `${index}\n`);
 
-/*
-  A mesma coisa em inglês.
-
-  A documentação inteira ainda é só em português, e traduzir 30 páginas é outro
-  trabalho. Mas quem chega de fora — pessoa ou assistente de código — bate
-  primeiro neste arquivo, e aqui o custo de traduzir é uma linha por rota. É a
-  fatia da Fase 4 que dá para entregar sem esperar o resto.
-
-  Rota e evento não são traduzidos de propósito: `POST /bot/canais/:channelId/mensagens`
-  é o endereço de verdade, e traduzir endereço seria mentir sobre a API.
-*/
 const indiceEmIngles = [
   "# Gravaê — developer documentation",
   "",

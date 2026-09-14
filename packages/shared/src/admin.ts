@@ -1,13 +1,3 @@
-/*
-  As áreas do painel de administração.
-
-  Quem é dono (e-mail em ADMIN_EMAILS no servidor) tem todas e não depende de
-  senha de painel. Quem é adicionado pelo painel tem só as áreas marcadas, e
-  entra com uma senha própria, separada da senha da conta.
-
-  "aprovar" é a mais delicada: com ela a pessoa manda código para produção sem
-  passar pelo GitHub. Por isso fica separada de "publicacoes", que só mostra.
-*/
 export const ADMIN_AREAS = [
   "publicacoes",
   "aprovar",
@@ -31,9 +21,7 @@ export interface AdminMe {
   role: "dono" | "admin";
   email: string;
   areas: AdminArea[];
-  /** Precisa digitar a senha do painel antes de ver qualquer área. */
   locked: boolean;
-  /** Entrou com senha provisória e ainda não trocou. */
   mustChangePassword: boolean;
 }
 
@@ -94,7 +82,6 @@ export interface WorkflowRun {
   updatedAt: string;
   link: string;
   jobs: WorkflowJob[];
-  /** Ambientes esperando aprovação nesta execução. */
   pending: { environment: string; canApprove: boolean }[];
   reviews: { user: string; state: string; comment: string | null }[];
 }
@@ -121,7 +108,6 @@ export interface PublicationsView {
   branches: Record<"master" | "staging" | "dev", { sha: string; message: string; when: string } | null>;
   web: WebDeploy[];
   runs: WorkflowRun[];
-  /** Commits que estão na dev e ainda não chegaram na master. */
   toShip: { count: number; commits: PendingCommit[] };
   error: string | null;
 }

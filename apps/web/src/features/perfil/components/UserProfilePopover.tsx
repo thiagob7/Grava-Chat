@@ -125,7 +125,7 @@ export const UserProfilePopover: React.FC<UserProfilePopoverProps> = ({
   }, [close]);
 
   return (
-    <Popover data-gc="perfil.user-profile-popover.popover.set-is-open" open={isOpen} onOpenChange={changeOpen}>
+    <Popover data-gc="perfil.user-profile-popover.popover.change-open" open={isOpen} onOpenChange={changeOpen}>
       <PopoverTrigger data-gc="perfil.user-profile-popover.popover-trigger" asChild>{children}</PopoverTrigger>
 
       <PopoverContent data-gc="perfil.user-profile-popover.popover-content"

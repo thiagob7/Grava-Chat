@@ -10,13 +10,6 @@ export interface ThemeHeader {
   tags: string[];
 }
 
-/*
-  Um ativo do tema: a imagem que o CSS chama por `gc-ativo("nome")`.
-
-  Ele viaja junto com o tema porque sem isso o tema chega quebrado do outro
-  lado: o CSS pede o fundo, não acha nada para resolver, e a pessoa instala um
-  tema sem a imagem que era o motivo dele existir.
-*/
 export interface ThemeActive {
   name: string;
   url: string;
@@ -26,10 +19,6 @@ export interface ThemeActive {
 
 export const ACTIVE_LIMIT = 12;
 
-/*
-  O peso que a pessoa vê antes de instalar: o CSS mais o que cada imagem pesa.
-  Ativo sem tamanho conhecido não some do total, só não soma nada.
-*/
 export function themeWeight(css: string, actives: ThemeActive[] = []): number {
   const fromCss = new TextEncoder().encode(css).length;
   return actives.reduce((total, active) => total + (active.bytes ?? 0), fromCss);

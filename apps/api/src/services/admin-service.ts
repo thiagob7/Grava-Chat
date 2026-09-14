@@ -18,19 +18,9 @@ import { checkPassword, generateHash } from "~/lib/senha.js";
 import { ADMINS, isAdmin } from "~/lib/serialize.js";
 import { userRepository } from "~/repositories/user-repository.js";
 
-/*
-  Nada aqui responde 401. O app lê 401 como "a sessão da conta venceu", renova
-  o login e repete o pedido — senha errada viraria duas tentativas. Painel
-  trancado é 423, senha que não confere é 403.
-*/
 const locked = () => new AppError("Digite a senha do painel para continuar.", 423);
 const wrongPassword = (message: string) => new AppError(message, 403);
 
-/*
-  Doze horas de painel aberto, e cinco tentativas de senha a cada quinze
-  minutos. A sessão é por aparelho: o token vai no cabeçalho, e no Redis fica só
-  a impressão dele, para um vazamento do Redis não abrir o painel de ninguém.
-*/
 const SESSION_S_TTL = 12 * 60 * 60;
 const ATTEMPTS_LIMIT = 5;
 const ATTEMPTS_S_WINDOW = 15 * 60;
@@ -91,10 +81,6 @@ async function sessionOf(token: string | undefined): Promise<Session | null> {
   return raw ? (JSON.parse(raw) as Session) : null;
 }
 
-/*
-  A sessão só vale para a pessoa que abriu e só enquanto a senha for a mesma:
-  trocar ou redefinir a senha derruba todo painel aberto com a anterior.
-*/
 async function sessionValid(access: AdminAccess, token: string | undefined) {
   if (access.role === "dono") return true;
 
@@ -137,12 +123,6 @@ export const adminService = {
     };
   },
 
-  /*
-    A porta de toda rota do painel. Quem não é administrador recebe "não
-    encontrado", para o painel não anunciar que existe. Quem é, mas não abriu a
-    sessão, ou ainda está com a senha provisória, ou não tem a área, recebe o
-    motivo.
-  */
   async require(userId: string, token: string | undefined, area: AdminArea): Promise<AdminAccess> {
     const access = await accessOf(userId);
     if (!access) throw new NotFoundError("Não encontrado");
@@ -193,11 +173,6 @@ export const adminService = {
     if (token) await redis.del(keys.adminSession(fingerprint(token)));
   },
 
-  /*
-    Trocar a senha também renova a sessão: a regra acima derruba toda sessão
-    mais velha que a senha, inclusive a de quem está trocando, então ela recebe
-    um token novo na mesma resposta.
-  */
   async changePassword(
     userId: string,
     token: string | undefined,
@@ -271,11 +246,6 @@ export const adminService = {
     };
   },
 
-  /*
-    Quem gerencia não dá o que não tem, e só o dono entrega a própria gestão de
-    administradores: senão qualquer um com a área criaria outro com a área, e a
-    cadeia não teria fim.
-  */
   grantable(actor: AdminAccess, areas: AdminArea[]): AdminArea[] {
     const wanted = cleanAreas(areas);
 
@@ -335,7 +305,6 @@ export const adminService = {
     const next = this.grantable(actor, areas);
     if (!next.length) throw new AppError("Marque pelo menos uma área, ou remova a pessoa.");
 
-    /* Quem não é dono também não tira área que ele próprio não poderia dar. */
     const removed = cleanAreas(member.areas).filter((area) => !next.includes(area));
     this.grantable(actor, removed);
 

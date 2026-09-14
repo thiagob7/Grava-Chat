@@ -47,10 +47,6 @@ function serialize(theme: ThemeWithAuthor): ThemeShared {
   };
 }
 
-/*
-  O que está no banco é Json, e Json aceita qualquer coisa. Antes de entregar
-  para quem vai instalar, só passa o que tem nome e URL de texto.
-*/
 function readActive(value: unknown): ThemeActive[] {
   if (!Array.isArray(value)) return [];
 

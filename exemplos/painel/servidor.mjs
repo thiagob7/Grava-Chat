@@ -1,15 +1,3 @@
-/**
- * A plataforma do Gravaê Music — landing + painel de configuração.
- *
- * Roda FORA do Gravaê, como o site da Loritta. É o dev que hospeda, e é aqui
- * que ele inventa o que o bot faz: a plataforma não sabe o que é "prefixo" ou
- * "boas-vindas do bot" — quem sabe é este site, e quem obedece é o bot.
- *
- *   GRAVAE_CLIENT_ID=... GRAVAE_CLIENT_SECRET=... GRAVAE_BOT_TOKEN=... \
- *   node servidor.mjs
- *
- * Sem dependências: só o Node.
- */
 import { createServer } from "node:http";
 import { randomBytes } from "node:crypto";
 
@@ -31,8 +19,6 @@ if (!CLIENT_ID || !CLIENT_SECRET) {
 
 const LINK_DE_CONVITE = `${APP}/bots/${CLIENT_ID}/adicionar`;
 
-/// Sessões e `state` em memória: se o processo cair, todo mundo entra de novo.
-/// A CONFIGURAÇÃO, essa sim, vai pra disco — ela é o que não pode se perder.
 const sessoes = new Map();
 const pendentes = new Set();
 
@@ -42,13 +28,6 @@ const comToken = async (caminho, token, tipo = "Bearer") => {
   return r.json();
 };
 
-/**
- * Os canais do servidor, lidos com o token do BOT.
- *
- * O token do usuário não serve aqui: ele diz quem a pessoa é e onde ela manda,
- * não a estrutura de cada servidor. Quem enxerga canais é o bot, e só onde ele
- * foi adicionado — sem o bot lá dentro, o painel mostra a lista vazia e avisa.
- */
 async function canaisDe(guildId) {
   if (!BOT_TOKEN) return [];
 
@@ -57,25 +36,12 @@ async function canaisDe(guildId) {
     .catch(() => []);
 }
 
-/**
- * Manda a mensagem de boas-vindas agora, no canal escolhido.
- *
- * É o "Salvar e testar" da aba. Usa a API REST do bot — o painel não abre
- * WebSocket nenhum, e não precisa: `POST` numa rota, com o token do bot no
- * cabeçalho, é tudo o que existe entre configurar e ver a mensagem no chat.
- *
- * O valor está no que ele descobre cedo: o bot sem permissão de escrever no
- * canal responde 403 aqui, na cara de quem está configurando, e não silêncio
- * no dia em que alguém entrar no servidor.
- */
 async function testarBoasVindas(guild) {
   const config = configuracoes.de(guild.id);
 
   if (!BOT_TOKEN) return "Sem GRAVAE_BOT_TOKEN aqui: não dá para mandar o teste.";
   if (!config.boasVindasCanal) return "Salvo. Escolha um canal para poder testar.";
 
-  /// As mesmas trocas que o bot faz de verdade, com você no lugar de quem
-  /// entrou — testar com `{pessoa}` cru não mostraria como fica.
   const texto = (config.boasVindasTexto || "Bem-vindo, {pessoa}!")
     .replaceAll("{pessoa}", "@você")
     .replaceAll("{nome}", "você")
@@ -114,14 +80,12 @@ createServer(async (req, res) => {
   const irPara = (destino, extra = {}) => res.writeHead(302, { location: destino, ...extra }).end();
 
   try {
-    // ── a capa ──────────────────────────────────────────────────────────
     if (url.pathname === "/") {
       return enviar(
         paginas.landing({ usuario: sessao?.nome ?? null, linkDeConvite: LINK_DE_CONVITE }),
       );
     }
 
-    // ── login ───────────────────────────────────────────────────────────
     if (url.pathname === "/entrar") {
       const state = randomBytes(16).toString("hex");
       pendentes.add(state);
@@ -144,8 +108,6 @@ createServer(async (req, res) => {
       const code = url.searchParams.get("code");
       const state = url.searchParams.get("state");
 
-      /// O `state` prova que este login começou AQUI. Sem ele, alguém induz a
-      /// vítima a terminar um login que não é dela.
       if (!code || !state || !pendentes.delete(state)) {
         return enviar(paginas.erro("Login inválido", "O código de segurança não confere."));
       }
@@ -174,12 +136,11 @@ createServer(async (req, res) => {
       return irPara("/painel", { "set-cookie": `sessao=${id}; HttpOnly; Path=/; SameSite=Lax` });
     }
 
-    // ── daqui pra baixo, precisa estar logado ───────────────────────────
     if (url.pathname.startsWith("/painel")) {
       if (!sessao) return enviar(paginas.precisaEntrar());
 
       const servidores = await comToken("/oauth2/servidores", sessao.token);
-      const partes = url.pathname.split("/").filter(Boolean); // painel / <id> / <secao>
+      const partes = url.pathname.split("/").filter(Boolean);
 
       if (partes.length === 1) {
         return enviar(
@@ -193,8 +154,6 @@ createServer(async (req, res) => {
 
       const guild = servidores.find((g) => g.id === partes[1]);
 
-      /// Gerenciar é o que decide. Estar no servidor não basta — senão
-      /// qualquer membro configuraria o bot do servidor dos outros.
       if (!guild?.gerencia) {
         return enviar(
           paginas.erro("Sem permissão", "Você não gerencia esse servidor, ou ele não existe."),
@@ -209,9 +168,6 @@ createServer(async (req, res) => {
         const form = await corpoDoFormulario(req);
         const mudancas = {};
 
-        /// Só os campos QUE VIERAM nesta seção. Espalhar o formulário inteiro
-        /// apagaria o que a outra aba configurou, porque um `checkbox`
-        /// desmarcado simplesmente não é enviado.
         for (const [campo, padrao] of Object.entries(PADRAO)) {
           if (typeof padrao === "boolean") {
             if (form.has(campo) || form.has(`${campo}__presente`)) {
@@ -245,12 +201,6 @@ createServer(async (req, res) => {
       );
     }
 
-    // ── o que o BOT lê ──────────────────────────────────────────────────
-    /*
-      É por aqui que a configuração vira comportamento: o bot pergunta, antes
-      de agir, como este servidor quer ser tratado. Sem esta rota, o painel
-      seria só um formulário bonito que não muda nada.
-    */
     if (url.pathname.startsWith("/api/config/")) {
       const guildId = url.pathname.split("/").pop();
       return res
