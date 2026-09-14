@@ -1,6 +1,7 @@
 import type { FastifyInstance } from "fastify";
 import { rooms, objectId } from "@gravae/shared";
 import { io } from "~/realtime/io.js";
+import { syncGuildRooms } from "~/realtime/room-sync.js";
 import { auditService } from "~/services/audit-service.js";
 import { autoModCrud } from "~/services/automod-crud.js";
 import { moderationService } from "~/services/moderation-service.js";
@@ -33,7 +34,7 @@ export async function moderationRoutes(app: FastifyInstance) {
     const ban = await moderationService.ban(req.userId, guildId, userId, banInput.parse(req.body ?? {}));
 
     io().to(rooms.guild(guildId)).emit("member:left", { guildId, userId });
-    io().in(rooms.user(userId)).socketsLeave(rooms.guild(guildId));
+    await syncGuildRooms(guildId, [userId]);
 
     return ban;
   });

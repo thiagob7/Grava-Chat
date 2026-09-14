@@ -23,8 +23,12 @@ export function originAllowed(origin: string | undefined): boolean {
 
 function isVercelPreview(origin: string): boolean {
   try {
+    const scope = env.VERCEL_PREVIEW_SCOPE.toLowerCase();
+    if (!/^[a-z0-9-]+$/.test(scope)) return false;
+
     const { protocol, hostname } = new URL(origin);
-    return protocol === "https:" && /\.vercel\.app$/.test(hostname);
+    const preview = new RegExp(`^gravae-chat-[a-z0-9-]+-${scope}\\.vercel\\.app$`);
+    return protocol === "https:" && preview.test(hostname);
   } catch {
     return false;
   }

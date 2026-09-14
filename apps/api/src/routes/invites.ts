@@ -3,6 +3,7 @@ import { rooms } from "@gravae/shared";
 import { guildService } from "~/services/guild-service.js";
 import { inviteService } from "~/services/invite-service.js";
 import { io } from "~/realtime/io.js";
+import { syncGuildRooms } from "~/realtime/room-sync.js";
 import { inviteParams } from "~/validations/common.js";
 
 export async function inviteRoutes(app: FastifyInstance) {
@@ -20,6 +21,7 @@ export async function inviteRoutes(app: FastifyInstance) {
     if (result.member) {
       io().to(rooms.guild(result.guildId)).emit("member:joined", result.member);
       io().in(rooms.user(req.userId)).socketsJoin(rooms.guild(result.guildId));
+      await syncGuildRooms(result.guildId, [req.userId]).catch(() => undefined);
 
       const greeting = await guildService.goodWelcome(result.guildId, req.userId);
       if (greeting) io().to(rooms.channel(greeting.channelId)).emit("message:created", greeting);

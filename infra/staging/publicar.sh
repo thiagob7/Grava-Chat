@@ -19,6 +19,11 @@ const p = require("./apps/api/package.json");
 delete p.dependencies["@gravae/shared"];
 p.devDependencies = { prisma: p.devDependencies.prisma };
 p.scripts = { start: "node dist/server.js" };
+for (const name of Object.keys(p.dependencies)) {
+  const installed = [`./apps/api/node_modules/${name}/package.json`, `./node_modules/${name}/package.json`]
+    .find((file) => require("fs").existsSync(file));
+  if (installed) p.dependencies[name] = require(installed).version;
+}
 require("fs").writeFileSync("/tmp/api-staging-package.json", JSON.stringify(p, null, 2));
 '
 
@@ -29,7 +34,7 @@ rsync -az -e "$SSH" apps/api/prisma/schema.prisma "$HOST:$DESTINO/prisma/"
 rsync -az -e "$SSH" /tmp/api-staging-package.json "$HOST:$DESTINO/package.json"
 
 echo "==> dependencias e Prisma Client"
-$SSH "$HOST" "cd $DESTINO && npm install --omit=dev --no-audit --no-fund --silent && npx prisma generate --schema prisma/schema.prisma"
+$SSH "$HOST" "cd $DESTINO && npm install --omit=dev --ignore-scripts --no-audit --no-fund --silent && npm rebuild prisma @prisma/engines @prisma/client --silent && npx prisma generate --schema prisma/schema.prisma"
 
 echo "==> reiniciando"
 $SSH "$HOST" "sudo systemctl restart gravae-api-staging"

@@ -1,4 +1,4 @@
-import { randomBytes } from "node:crypto";
+import { createHash, randomBytes } from "node:crypto";
 
 import {
   PERMISSIONS,
@@ -16,7 +16,7 @@ import { botRepository } from "~/repositories/bot-repository.js";
 import { memberRepository, guildRepository } from "~/repositories/guild-repository.js";
 import { roleRepository } from "~/repositories/role-repository.js";
 import { userRepository } from "~/repositories/user-repository.js";
-import { accessService } from "~/services/access-service.js";
+import { accessService, requireGrantable } from "~/services/access-service.js";
 import { authService } from "~/services/auth-service.js";
 
 const LIMIT_BY_PERSON = 10;
@@ -30,6 +30,7 @@ const DEFAULT_REQUEST: Permission[] = [
 ];
 
 const newToken = () => randomBytes(32).toString("base64url");
+const tokenHash = (raw: string) => createHash("sha256").update(raw).digest("hex");
 
 type BotWithUser = NonNullable<Awaited<ReturnType<typeof botRepository.findById>>>;
 
@@ -144,7 +145,7 @@ export const botService = {
     const bot = await botRepository.create({
       ownerId,
       botUserId: user.id,
-      token,
+      token: tokenHash(token),
       clientSecret: randomBytes(32).toString("base64url"),
       permissionsRequested: DEFAULT_REQUEST,
     });
@@ -205,7 +206,7 @@ export const botService = {
     await botService.myBot(ownerId, botId);
 
     const token = newToken();
-    const bot = await botRepository.updateToken(botId, token);
+    const bot = await botRepository.updateToken(botId, tokenHash(token));
 
     return forOwner(bot, token);
   },
@@ -235,11 +236,13 @@ export const botService = {
     const bot = await botRepository.findById(botId);
     if (!bot) throw new NotFoundError("Bot não encontrado");
 
-    const permissions = picked
+    const permissions = (picked
       ? bot.permissionsRequested.filter((p) => picked.includes(p))
-      : bot.permissionsRequested;
+      : bot.permissionsRequested
+    ).filter((p): p is Permission => (PERMISSIONS as readonly string[]).includes(p));
 
-    await accessService.requirePermission(userId, guildId, "MANAGE_GUILD");
+    const context = await accessService.requirePermission(userId, guildId, "MANAGE_GUILD");
+    requireGrantable(context, permissions);
 
     if (!bot.isPublic && bot.ownerId !== userId) {
       throw new ForbiddenError("Esse bot é fechado: só quem o criou pode adicioná-lo.");
@@ -272,6 +275,8 @@ export const botService = {
 
     await accessService.requirePermission(userId, guildId, "MANAGE_GUILD");
     await memberRepository.remove(guildId, bot.botUserId);
+
+    return bot.botUserId;
   },
 
   async destinationsFor(userId: string, botId: string) {
@@ -306,6 +311,17 @@ export const botService = {
       serversTotal: mine.length,
       alreadyThisAt: alreadyHas.size,
     };
+  },
+
+  async serversSeenBy(userId: string, botId: string) {
+    const bot = await botRepository.findById(botId);
+    if (!bot) throw new NotFoundError("Bot não encontrado");
+
+    const all = await botService.servers(botId);
+    if (bot.ownerId === userId) return all;
+
+    const mine = new Set((await memberRepository.guildIdsOf(userId)).map((m) => m.guildId));
+    return all.filter((g) => mine.has(g.id));
   },
 
   async servers(botId: string) {
@@ -416,8 +432,16 @@ export const botService = {
   },
 
   async resolveToken(token: string) {
-    const bot = await botRepository.findByToken(token);
-    if (!bot) return null;
+    let bot = await botRepository.findByToken(tokenHash(token));
+
+    if (!bot) {
+      if (/^[a-f0-9]{64}$/.test(token)) return null;
+
+      bot = await botRepository.findByToken(token);
+      if (!bot) return null;
+
+      await botRepository.updateToken(bot.id, tokenHash(token));
+    }
 
     return { botId: bot.id, userId: bot.botUserId };
   },

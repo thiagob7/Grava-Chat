@@ -270,6 +270,8 @@ export const guildService = {
 
     const before = await guildRepository.findByIdOrThrow(guildId);
 
+    await accessService.requireChannelsOfGuild(guildId, [input.systemChannelId]);
+
     if (input.afkChannelId) {
       const channel = await channelRepository.findById(input.afkChannelId);
       if (!channel || channel.guildId !== guildId || channel.type !== "VOICE") {
@@ -360,6 +362,8 @@ export const guildService = {
       );
     }
 
+    await accessService.requireChannelsOfGuild(guildId, [input.rulesChannelId, input.noticesChannelId]);
+
     const [category] = await categoryRepository.findManyByGuild(guildId);
 
     const born = async (name: string, topic: string) => {
@@ -411,6 +415,12 @@ export const guildService = {
 
     const guild = await guildRepository.findByIdOrThrow(guildId);
     if (guild.community !== true) throw new AppError("Este servidor ainda não é uma comunidade", 400);
+
+    await accessService.requireChannelsOfGuild(guildId, [
+      input.rulesChannelId,
+      input.noticesChannelId,
+      (input as { securityChannelId?: string | null }).securityChannelId,
+    ]);
 
     await guildRepository.update(guildId, input);
 
@@ -508,6 +518,7 @@ export const guildService = {
     await accessService.requirePermission(userId, guildId, "MANAGE_CHANNELS");
 
     const categoryId = input.categoryId ?? null;
+    await accessService.requireCategoryOfGuild(guildId, categoryId);
     const last = await channelRepository.lastPosition(guildId, categoryId);
 
     const channel = await channelRepository.create({
@@ -579,6 +590,8 @@ export const guildService = {
 
     const before = await channelRepository.findById(channelId);
     if (!before || before.guildId !== guildId) throw new NotFoundError("Canal não encontrado");
+
+    await accessService.requireCategoryOfGuild(guildId, input.categoryId);
 
     const channel = await channelRepository.update(channelId, input);
 
@@ -667,13 +680,13 @@ export const guildService = {
     const member = await memberRepository.find(guildId, targetId);
     if (!member) throw new NotFoundError("Essa pessoa não está no servidor");
 
-    const channels = await channelRepository.findManyByGuild(guildId);
+    const readable = await accessService.readableChannels(actorId, guildId);
     const context = await accessService.contextOf(targetId, guildId);
 
     const user = await userRepository.findByIdOrThrow(targetId);
 
     const [activity, audit] = await Promise.all([
-      messageStatsRepository.byUserInChannels(targetId, channels.map((c) => c.id)),
+      messageStatsRepository.byUserInChannels(targetId, readable),
       auditStatsRepository.countFor(guildId, targetId),
     ]);
 
@@ -705,10 +718,10 @@ export const guildService = {
   ) {
     await accessService.requirePermission(actorId, guildId, "MODERATE_MEMBERS");
 
-    const channels = await channelRepository.findManyByGuild(guildId);
+    const readable = await accessService.readableChannels(actorId, guildId);
     const lines = await messageStatsRepository.findByUserInChannels({
       userId: targetId,
-      channelIds: channels.map((c) => c.id),
+      channelIds: readable,
       filter,
       limit: 50,
       before,

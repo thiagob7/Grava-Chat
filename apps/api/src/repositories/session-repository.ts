@@ -58,4 +58,11 @@ export const sessionRepository = {
       data: { revokedAt: new Date() },
     });
   },
+
+  revokeAllForUserExcept(userId: string, keepId: string) {
+    return prisma.refreshToken.updateMany({
+      where: { userId, id: { not: keepId }, ...unset("revokedAt") },
+      data: { revokedAt: new Date() },
+    });
+  },
 };

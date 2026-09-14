@@ -1,6 +1,10 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
-const env = { WEB_ORIGIN: "https://gravae-chat.vercel.app", ACCEPT_PREVIEWS_VERCEL: false };
+const env = {
+  WEB_ORIGIN: "https://gravae-chat.vercel.app",
+  ACCEPT_PREVIEWS_VERCEL: false,
+  VERCEL_PREVIEW_SCOPE: "thiago",
+};
 
 vi.mock("~/env.js", () => ({ env, isDev: false }));
 
@@ -8,6 +12,7 @@ const { originAllowed } = await import("~/lib/origins.js");
 
 beforeEach(() => {
   env.ACCEPT_PREVIEWS_VERCEL = false;
+  env.VERCEL_PREVIEW_SCOPE = "thiago";
 });
 
 describe("origens aceitas", () => {
@@ -29,7 +34,7 @@ describe("prévias da Vercel", () => {
     expect(originAllowed("https://gravae-chat-abc123-thiago.vercel.app")).toBe(false);
   });
 
-  it("ligado, qualquer prévia da Vercel entra", () => {
+  it("ligado, as prévias do projeto neste time entram", () => {
     env.ACCEPT_PREVIEWS_VERCEL = true;
 
     for (const o of [
@@ -40,15 +45,27 @@ describe("prévias da Vercel", () => {
     }
   });
 
-  it("ligado, ainda exige https e o domínio exato", () => {
+  it("ligado, recusa http, outro projeto, outro time e domínio parecido", () => {
     env.ACCEPT_PREVIEWS_VERCEL = true;
 
     for (const o of [
       "http://gravae-chat.vercel.app",
       "https://vercel.app.site-de-outro.com",
       "https://naovercel.app.br",
+      "https://atacante.vercel.app",
+      "https://gravae-chat-abc123-outro-time.vercel.app",
+      "https://outro-projeto-abc123-thiago.vercel.app",
     ]) {
       expect({ o, ok: originAllowed(o) }).toEqual({ o, ok: false });
     }
+  });
+});
+
+describe("prévias sem time configurado", () => {
+  it("sem VERCEL_PREVIEW_SCOPE, nenhuma prévia entra", () => {
+    env.ACCEPT_PREVIEWS_VERCEL = true;
+    env.VERCEL_PREVIEW_SCOPE = "";
+
+    expect(originAllowed("https://gravae-chat-abc123-thiago.vercel.app")).toBe(false);
   });
 });

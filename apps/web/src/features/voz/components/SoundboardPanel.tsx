@@ -91,7 +91,7 @@ export const SoundboardPanel: React.FC<SoundboardPanelProps> = ({ guildId, canUs
           aria-disabled={deafened}
           onClick={(e) => deafened && e.preventDefault()}
           className={cn(
-            "flex items-center justify-center rounded-lg bg-hover py-2 text-ink-muted transition",
+            "flex items-center justify-center rounded-lg bg-surface-3 py-2 text-ink-muted transition data-[state=open]:bg-surface-4",
             deafened ? "cursor-not-allowed opacity-40" : "hover:bg-surface-4 hover:text-ink",
           )}
         >

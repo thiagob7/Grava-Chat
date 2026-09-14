@@ -10,7 +10,7 @@ services:
     container_name: gravae-mongo
     command: ["--replSet", "rs0", "--bind_ip_all", "--port", "27017"]
     ports:
-      - "27017:27017"
+      - "127.0.0.1:27017:27017"
     volumes:
       - mongo-data:/data/db
     healthcheck:
@@ -33,7 +33,7 @@ services:
       # (o caso aqui), ele fica com a 6379 e o container perde silenciosamente —
       # a aplicação conecta no Redis errado e tudo "funciona" até você tentar
       # inspecionar o estado e não achar nada.
-      - "6381:6379"
+      - "127.0.0.1:6381:6379"
     volumes:
       - redis-data:/data
     healthcheck:
@@ -52,8 +52,8 @@ services:
       MINIO_ROOT_USER: gravae
       MINIO_ROOT_PASSWORD: gravae-dev-secret
     ports:
-      - "9000:9000"
-      - "9001:9001"
+      - "127.0.0.1:9000:9000"
+      - "127.0.0.1:9001:9001"
     volumes:
       - minio-data:/data
     healthcheck:
@@ -87,7 +87,7 @@ services:
     volumes:
       - ./livekit/livekit.yaml:/etc/livekit.yaml:ro
     ports:
-      - "7880:7880"      # signaling (WebSocket)
+      - "127.0.0.1:7880:7880"      # signaling (WebSocket)
       - "7881:7881"      # fallback TCP do WebRTC
       - "7882:7882/udp"  # midia (o caminho normal)
     healthcheck:

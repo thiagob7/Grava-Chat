@@ -1,4 +1,4 @@
-import { routes, type VercelConfig } from "@vercel/config/v1";
+import type { VercelConfig } from "@vercel/config/v1";
 
 const API = {
   production: "https://gravaechat-api.duckdns.org",
@@ -12,9 +12,31 @@ export const config: VercelConfig = {
   outputDirectory: "dist",
   installCommand: "cd ../.. && yarn install --frozen-lockfile",
 
-  rewrites: [
-    routes.rewrite("/api/:path*", `${destination}/api/:path*`),
-    routes.rewrite("/(.*)", "/index.html"),
+  routes: [
+    {
+      src: "/(.*)",
+      headers: {
+        "X-Content-Type-Options": "nosniff",
+        "Referrer-Policy": "strict-origin-when-cross-origin",
+        "Content-Security-Policy": "frame-ancestors 'none'; object-src 'none'; base-uri 'self'",
+      },
+      continue: true,
+    },
+    {
+      src: "^/api/(.*)$",
+      dest: `${destination}/api/$1`,
+      transforms: [
+        {
+          type: "request.headers",
+          op: "set",
+          target: { key: "x-gravae-borda" },
+          args: "$EDGE_SECRET",
+          env: ["EDGE_SECRET"],
+        },
+      ],
+    },
+    { handle: "filesystem" },
+    { src: "/(.*)", dest: "/index.html" },
   ],
 };
 

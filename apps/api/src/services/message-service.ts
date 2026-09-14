@@ -19,10 +19,11 @@ import { accessService, type Context } from "./access-service.js";
 import { autoModService } from "./automod-service.js";
 import { forumService } from "./forum-service.js";
 import {
-  flowPassed,
-  flowMessage,
-  WINDOW_S as FLOW_S_WINDOW,
-} from "~/lib/fluxo-de-mensagens.js";
+  ensureFlow,
+  respectModeSlow,
+  timeoutRequireNotThis,
+  verifiedRequireEmail,
+} from "./message-guards.js";
 import { uploadService } from "./upload-service.js";
 import { friendshipService } from "./friendship-service.js";
 import type { EditMessageInput, SendMessageInput } from "~/validations/message.js";
@@ -269,6 +270,11 @@ export const messageService = {
     await ensureFlow(userId);
 
     const content = input.content.trim();
+
+    if (input.attachments?.some((a) => !uploadService.ownsKey(userId, a.id))) {
+      throw new AppError("Esse anexo não foi enviado por você", 400);
+    }
+
     if (!content && !input.attachments?.length && !input.poll && !input.stickerId) {
       throw new AppError("Mensagem vazia");
     }
@@ -305,6 +311,7 @@ export const messageService = {
       ...(input.font && input.font !== "padrao" ? { font: input.font } : {}),
       attachments: (input.attachments ?? []).map((a) => ({
         ...a,
+        url: uploadService.publicUrl(a.id),
         width: a.width ?? null,
         height: a.height ?? null,
         spoiler: a.spoiler || (messageGuild?.filtersMediaExplicit === true && isMedia(a.contentType)),
@@ -380,7 +387,9 @@ export const messageService = {
 
     await messageRepository.softDelete(messageId);
 
-    void uploadService.remove(existing.attachments.map((a) => a.id));
+    void uploadService.remove(
+      existing.attachments.map((a) => a.id).filter((key) => uploadService.ownsKey(existing.authorId, key)),
+    );
 
     return { messageId, channelId: existing.channelId };
   },
@@ -407,7 +416,7 @@ export const messageService = {
       !existing.poll &&
       !existing.stickerId;
 
-    void uploadService.remove([attachmentId]);
+    if (uploadService.ownsKey(existing.authorId, attachmentId)) void uploadService.remove([attachmentId]);
 
     if (emptyStayed) {
       await messageRepository.softDelete(messageId);
@@ -455,7 +464,8 @@ export const messageService = {
   },
 
   async pinned(userId: string, channelId: string) {
-    await accessService.requireChannelAccess(userId, channelId);
+    const { context } = await accessService.requireChannelAccess(userId, channelId);
+    if (context && !has(context.permissions, "READ_MESSAGE_HISTORY")) return [];
 
     const messages = await messageRepository.findPinned(channelId);
     return messages.map((m) => toMessage(m, userId));
@@ -588,8 +598,10 @@ export const messageService = {
       dmRepository.findManyForUser(userId),
     ]);
 
-    const serverChannels = await channelRepository.idsByGuilds(guildIds.map((g) => g.guildId));
-    const channelIds = [...serverChannels.map((c) => c.id), ...dms.map((d) => d.id)];
+    const serverChannels = await Promise.all(
+      guildIds.map((g) => accessService.readableChannels(userId, g.guildId).catch(() => [] as string[])),
+    );
+    const channelIds = [...serverChannels.flat(), ...dms.map((d) => d.id)];
     if (!channelIds.length) return [];
 
     const since = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
@@ -699,79 +711,8 @@ async function mentionsChannelNeverIsOpen(
   );
 }
 
-function timeoutRequireNotThis(context: Context) {
-  const until = context.member?.timeoutUntil;
-  if (!until || until <= new Date()) return;
-
-  const minutes = Math.ceil((until.getTime() - Date.now()) / 60_000);
-  throw new ForbiddenError(`Você está de castigo neste servidor por mais ${minutes} min`).having("castigo");
-}
-
-async function respectModeSlow(
-  userId: string,
-  channel: { id: string; slowmodeSeconds: number },
-  context: Context,
-) {
-  if (!channel.slowmodeSeconds) return;
-
-  if (
-    has(context.permissions, "BYPASS_SLOWMODE") ||
-    has(context.permissions, "MANAGE_MESSAGES") ||
-    has(context.permissions, "MANAGE_CHANNELS")
-  ) {
-    return;
-  }
-
-  const key = keys.slowmode(channel.id, userId);
-  const first = await redis.set(key, "1", "EX", channel.slowmodeSeconds, "NX");
-
-  if (!first) {
-    const missing = await redis.ttl(key);
-    throw new AppError(`Modo lento: espere ${Math.max(missing, 1)}s para mandar de novo`, 429).having("modo-lento");
-  }
-}
-
 const isMedia = (contentType: string) =>
   contentType.startsWith("image/") || contentType.startsWith("video/");
-
-async function verifiedRequireEmail(
-  userId: string,
-  guild: { verifiedRequiresEmail: boolean | null } | null,
-  context: Context,
-) {
-  if (context.isOwner || context.member?.roleIds?.length) return;
-  if (!guild?.verifiedRequiresEmail) return;
-
-  const user = await userRepository.findById(userId);
-  if (user?.isBot || user?.emailVerifiedAt) return;
-
-  throw new ForbiddenError(
-    "Esta comunidade só deixa falar quem confirmou o e-mail. Confirme o seu nas configurações da conta.",
-  ).having("recusada");
-}
-
-/*
-  Os dois comandos vão juntos de propósito.
-
-  Separados, existia uma janela entre o `incr` e o `expire` em que a API podia
-  morrer. A chave ficava sem prazo, o contador nunca zerava, e como o teste é
-  "usos acima do limite" a pessoa levava 429 em toda mensagem PARA SEMPRE — com
-  a tela dizendo "espere 1s", porque o tempo restante voltava como -1.
-
-  O `NX` é o que mantém a janela fixa: só põe prazo em chave que ainda não tem,
-  então contar de novo não empurra o fim da janela para a frente. É o mesmo
-  feitio que a cota de upload já usava.
-*/
-async function ensureFlow(userId: string) {
-  const key = keys.messagesFlow(userId);
-
-  const rounds = await redis.multi().incr(key).expire(key, FLOW_S_WINDOW, "NX").exec();
-  const uses = Number(rounds?.[0]?.[1] ?? 0);
-
-  if (flowPassed(uses)) {
-    throw new AppError(flowMessage(await redis.ttl(key)), 429).having("depressa");
-  }
-}
 
 function buildPoll(input: NonNullable<SendMessageInput["poll"]>) {
   return {

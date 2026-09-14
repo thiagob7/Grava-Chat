@@ -1,5 +1,6 @@
 import { z } from "zod";
 import { LIMITS } from "@gravae/shared";
+import { r2Url } from "./auth.js";
 
 const emojiName = z
   .string()
@@ -9,7 +10,7 @@ const emojiName = z
 
 export const createEmojiInput = z.object({
   name: emojiName,
-  url: z.string().url(),
+  url: r2Url,
   animated: z.boolean().optional(),
 });
 export type CreateEmojiInput = z.infer<typeof createEmojiInput>;
@@ -20,7 +21,7 @@ export const createStickerInput = z.object({
   name: z.string().min(2).max(30),
   description: z.string().max(100).nullable().optional(),
   relatedEmoji: z.string().min(1).max(16),
-  url: z.string().url(),
+  url: r2Url,
   size: z.number().int().positive().max(LIMITS.stickerBytes),
 });
 export type CreateStickerInput = z.infer<typeof createStickerInput>;
@@ -34,7 +35,7 @@ export const updateStickerInput = z.object({
 export const createSoundInput = z.object({
   name: z.string().min(1).max(32),
   emoji: z.string().max(16).nullable().optional(),
-  url: z.string().url(),
+  url: r2Url,
   volume: z.number().min(0).max(1).optional(),
   size: z.number().int().positive().max(LIMITS.soundBytes),
 });

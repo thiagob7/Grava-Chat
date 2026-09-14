@@ -8,6 +8,7 @@ import { generateHash } from "~/lib/senha.js";
 import { keys, redis } from "~/lib/redis.js";
 import { accountRepository } from "~/repositories/account-repository.js";
 import { sessionRepository } from "~/repositories/session-repository.js";
+import { revokeAccess } from "~/lib/token-revocation.js";
 import { userRepository } from "~/repositories/user-repository.js";
 
 const VALIDITY_S = 30 * 60;
@@ -76,6 +77,7 @@ export const resetService = {
     }
 
     await sessionRepository.revokeAllForUser(user.id);
+    await revokeAccess(user.id);
     await redis.del(keys.resetRequest(user.id));
 
     void officialService.notify(user.id, "passwordSwapped", undefined);

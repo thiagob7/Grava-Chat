@@ -27,7 +27,8 @@ install -d "$DESTINO/prisma"
 install -m 0644 "$TEMP/prisma/schema.prisma" "$DESTINO/prisma/schema.prisma"
 
 cd "$DESTINO"
-npm install --omit=dev --no-audit --no-fund --silent
+npm install --omit=dev --ignore-scripts --no-audit --no-fund --silent
+npm rebuild prisma @prisma/engines @prisma/client --silent
 npx prisma generate --schema prisma/schema.prisma >/dev/null
 
 sudo systemctl restart "$SERVICO"

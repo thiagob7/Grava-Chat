@@ -12,6 +12,10 @@ export const accountRepository = {
     return prisma.account.findMany({ where: { userId }, select: { provider: true } });
   },
 
+  removeProvider(userId: string, provider: string) {
+    return prisma.account.deleteMany({ where: { userId, provider } });
+  },
+
   create(data: { userId: string; provider: string; providerAccountId: string }) {
     return prisma.account.create({ data });
   },

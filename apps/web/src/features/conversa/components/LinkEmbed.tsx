@@ -135,22 +135,46 @@ const Card: React.FC<{ embed: EmbedModel }> = ({ embed }) => {
 
       {coverLarge && embed.image && (
         <div data-gc="conversa.link-embed.div--4" className="px-3 pb-3">
-          {playing && embed.player ? (
+          {playing && trustedPlayer(embed.player) ? (
             <iframe data-gc="conversa.link-embed.iframe"
-              src={embed.player}
+              src={trustedPlayer(embed.player)!}
               title={embed.title ?? t("conversa.cartao.tocador")}
               allow="autoplay; encrypted-media; picture-in-picture; fullscreen"
+              sandbox="allow-scripts allow-same-origin allow-presentation allow-popups"
+              referrerPolicy="strict-origin-when-cross-origin"
               allowFullScreen
               className="aspect-video w-full rounded border-0 bg-palco"
             />
           ) : (
-            <Cover data-gc="conversa.link-embed.cover" embed={embed} ready={Boolean(measure)} onOpen={() => (embed.player ? setPlaying(true) : open())} />
+            <Cover data-gc="conversa.link-embed.cover" embed={embed} ready={Boolean(measure)} onOpen={() => (trustedPlayer(embed.player) ? setPlaying(true) : open())} />
           )}
         </div>
       )}
     </article>
   );
 };
+
+const PLAYER_HOSTS = [
+  "www.youtube-nocookie.com",
+  "www.youtube.com",
+  "player.vimeo.com",
+  "player.twitch.tv",
+  "clips.twitch.tv",
+  "open.spotify.com",
+  "w.soundcloud.com",
+  "streamable.com",
+];
+
+function trustedPlayer(value: string | null | undefined): string | null {
+  if (!value) return null;
+
+  try {
+    const url = new URL(value);
+    return url.protocol === "https:" && PLAYER_HOSTS.includes(url.hostname) ? url.href : null;
+  } catch {
+    return null;
+  }
+}
 
 const Cover: React.FC<{ embed: EmbedModel; ready: boolean; onOpen: () => void }> = ({
   embed,

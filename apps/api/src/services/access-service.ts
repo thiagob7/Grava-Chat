@@ -6,7 +6,12 @@ import {
   type RoleLike,
 } from "@gravae/shared";
 import { AppError, NotFoundError, ForbiddenError } from "~/lib/http.js";
-import { memberRepository, channelRepository, guildRepository } from "~/repositories/guild-repository.js";
+import {
+  memberRepository,
+  channelRepository,
+  guildRepository,
+  categoryRepository,
+} from "~/repositories/guild-repository.js";
 import { banRepository } from "~/repositories/ban-repository.js";
 import { dmRepository, dmRepositoryRequest } from "~/repositories/friendship-repository.js";
 import { roleRepository, overwriteRepository } from "~/repositories/role-repository.js";
@@ -17,6 +22,15 @@ export interface Context {
   isOwner: boolean;
   permissions: Set<Permission>;
   highest: number;
+}
+
+export function requireGrantable(context: Context, permissions: Permission[]) {
+  if (context.isOwner || context.permissions.has("ADMINISTRATOR")) return;
+
+  const missing = permissions.filter((p) => !context.permissions.has(p));
+  if (missing.length) {
+    throw new ForbiddenError(`Você não pode conceder permissões que não tem: ${missing.join(", ")}`);
+  }
 }
 
 export const accessService = {
@@ -33,12 +47,14 @@ export const accessService = {
   },
 
   async contextOf(userId: string, guildId: string, channelId?: string): Promise<Context> {
-    const [member, guild] = await Promise.all([
+    const [member, guild, channel] = await Promise.all([
       accessService.requireMember(userId, guildId),
       guildRepository.findById(guildId),
+      channelId ? channelRepository.findById(channelId) : null,
     ]);
 
     if (!guild) throw new NotFoundError("Servidor não encontrado");
+    if (channelId && channel?.guildId !== guildId) throw new NotFoundError("Canal não encontrado");
 
     const roles = await roleRepository.findForMember(guildId, member.roleIds);
     const overwrites = channelId ? await overwriteRepository.findManyByChannel(channelId) : undefined;
@@ -136,6 +152,25 @@ export const accessService = {
     });
 
     return [...byServer.flat(), ...reachable.map((c) => c.id)];
+  },
+
+  async requireChannelsOfGuild(guildId: string, channelIds: (string | null | undefined)[]) {
+    const ids = [...new Set(channelIds.filter((id): id is string => Boolean(id)))];
+    if (!ids.length) return;
+
+    const channels = await channelRepository.findManyByIds(ids);
+    if (channels.length !== ids.length || channels.some((c) => c.guildId !== guildId)) {
+      throw new AppError("O canal precisa ser deste servidor", 400);
+    }
+  },
+
+  async requireCategoryOfGuild(guildId: string, categoryId: string | null | undefined) {
+    if (!categoryId) return;
+
+    const categories = await categoryRepository.findManyByGuild(guildId);
+    if (!categories.some((c) => c.id === categoryId)) {
+      throw new AppError("A categoria precisa ser deste servidor", 400);
+    }
   },
 
   requireAbove(context: Context, positionTarget: number, message: string) {

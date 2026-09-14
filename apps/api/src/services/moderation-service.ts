@@ -48,7 +48,7 @@ export const moderationService = {
         new Date(Date.now() - input.deleteHours * 3600_000),
       );
 
-      void uploadService.remove(orphans);
+      void uploadService.remove(orphans.filter((key) => uploadService.ownsKey(targetId, key)));
     }
 
     auditService.register({

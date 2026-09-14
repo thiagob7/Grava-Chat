@@ -35,7 +35,7 @@ export const RecordingBar: React.FC<{
   const near = ms > LIMIT_MS - 15_000;
 
   return (
-    <div data-gc="conversa.barra-de-gravacao.div" className="flex flex-1 items-center gap-3 px-2">
+    <div data-gc="conversa.barra-de-gravacao.div" className="flex min-w-0 flex-1 items-center gap-3 px-2">
       <IconButton data-gc="conversa.barra-de-gravacao.icon-button"
         onClick={() => void end(false)}
         label={t("conversa.recado.descartar")}
@@ -48,7 +48,7 @@ export const RecordingBar: React.FC<{
         <span data-gc="conversa.barra-de-gravacao.span--2" className="size-2 animate-pulse rounded-full bg-danger" />
       </span>
 
-      <VoiceWave data-gc="conversa.barra-de-gravacao.voice-wave" peaks={peaks} />
+      <VoiceWave data-gc="conversa.barra-de-gravacao.voice-wave" peaks={peaks} live />
 
       <span data-gc="conversa.barra-de-gravacao.span--3" className={cn("shrink-0 tabular-nums text-xs", near ? "text-danger" : "text-ink-faint")}>
         {durationWriting(ms)} / {durationWriting(LIMIT_MS)}

@@ -2,6 +2,8 @@ import type { FastifyInstance, FastifyReply, FastifyRequest } from "fastify";
 import oauth2, { type OAuth2Namespace } from "@fastify/oauth2";
 import { z } from "zod";
 import { env, isDev } from "~/env.js";
+import { loginAttempts } from "~/lib/tentativas-de-login.js";
+import { clientIp } from "~/lib/ip-do-cliente.js";
 import { googleService } from "~/services/google-service.js";
 import { authService, REFRESH_COOKIE } from "~/services/auth-service.js";
 import { desktopLoginService } from "~/services/desktop-login-service.js";
@@ -65,9 +67,9 @@ function webAppUrl(req: FastifyRequest, path = "/") {
 }
 
 export async function authRoutes(app: FastifyInstance) {
-  const metaOf = (req: { headers: Record<string, unknown>; ip: string }) => ({
+  const metaOf = (req: FastifyRequest) => ({
     userAgent: typeof req.headers["user-agent"] === "string" ? req.headers["user-agent"] : undefined,
-    ip: req.ip,
+    ip: clientIp(req),
   });
 
   if (isDev) {
@@ -100,7 +102,15 @@ export async function authRoutes(app: FastifyInstance) {
   });
 
   app.post("/auth/entrar", { config: { rateLimit: { max: 10, timeWindow: "1 minute" } } }, async (req, reply) => {
-    const user = await authService.joinWithPassword(joinInput.parse(req.body));
+    const input = joinInput.parse(req.body);
+    await loginAttempts.require(input.email);
+
+    const user = await authService.joinWithPassword(input).catch(async (err: unknown) => {
+      await loginAttempts.fail(input.email);
+      throw err;
+    });
+
+    await loginAttempts.clear(input.email);
     return openSession(req, reply, user);
   });
 
@@ -146,8 +156,13 @@ export async function authRoutes(app: FastifyInstance) {
   );
 
   app.put("/auth/senha", { preHandler: [app.authenticate] }, async (req, reply) => {
-    await authService.swapPassword(req.userId, swapPasswordInput.parse(req.body));
-    return reply.code(204).send();
+    const raw = req.cookies[REFRESH_COOKIE];
+    const { keptCurrentSession } = await authService.swapPassword(req.userId, swapPasswordInput.parse(req.body), raw);
+
+    if (keptCurrentSession) return reply.code(204).send();
+
+    const fresh = await authService.issueRefreshToken(req.userId, metaOf(req));
+    return reply.setCookie(REFRESH_COOKIE, fresh.raw, refreshCookieOptions).code(204).send();
   });
 
   app.post("/auth/refresh", async (req, reply) => {
