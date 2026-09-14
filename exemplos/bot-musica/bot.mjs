@@ -168,12 +168,22 @@ const acessoDo = (url) =>
     ? ["--cookies", COOKIES_YOUTUBE, "--js-runtimes", "node", "-f", "bestaudio/18"]
     : ["-f", "bestaudio"];
 
+let vezDoYtdlp = Promise.resolve();
+
+function umDeCadaVez(tarefa) {
+  const vez = vezDoYtdlp.then(tarefa, tarefa);
+  vezDoYtdlp = vez.catch(() => undefined);
+  return vez;
+}
+
 function prepararMusica(musica) {
   if (!doYoutube(musica.url) || musica.direta || musica.preparando) return musica.preparando;
 
-  musica.preparando = rodar("nice", ["-n", "15", "yt-dlp", ...acessoDo(musica.url), "-g", "--no-playlist", "--no-warnings", musica.url], {
-    timeout: 90_000,
-  })
+  musica.preparando = umDeCadaVez(() =>
+    rodar("nice", ["-n", "15", "yt-dlp", ...acessoDo(musica.url), "-g", "--no-playlist", "--no-warnings", musica.url], {
+      timeout: 90_000,
+    }),
+  )
     .then(({ stdout }) => {
       const direta = stdout.trim().split("\n")[0];
       if (/^https:\/\//.test(direta)) musica.direta = { url: direta, em: Date.now() };
@@ -184,6 +194,7 @@ function prepararMusica(musica) {
 }
 
 const DIRETA_VALE_MS = 3 * 60 * 60 * 1000;
+const SOZINHO_MS = 60_000;
 
 function abrirAudio(musica, aoFalhar) {
   const direta = musica.direta && Date.now() - musica.direta.em < DIRETA_VALE_MS ? musica.direta.url : null;
@@ -310,6 +321,21 @@ async function conectarNaVoz(channelId) {
   filaDestaSala = fila;
   filas.set(channelId, fila);
 
+  fila.vigia = setInterval(() => {
+    if (fila.parando) return clearInterval(fila.vigia);
+
+    if (sala.remoteParticipants.size > 0) {
+      fila.sozinhoDesde = null;
+      return;
+    }
+
+    fila.sozinhoDesde ??= Date.now();
+    if (Date.now() - fila.sozinhoDesde < SOZINHO_MS) return;
+
+    if (fila.canalDeAviso) falar(fila.canalDeAviso, "👋 Fiquei sozinho na chamada, então saí.");
+    void sairDaVoz(fila);
+  }, 15_000);
+
   return fila;
 }
 
@@ -323,6 +349,7 @@ function avisarQueCaiu(fila) {
 }
 
 function largarFila(fila) {
+  clearInterval(fila.vigia);
   fila.parando = true;
   fila.audio?.matar();
   filas.delete(fila.channelId);
@@ -349,14 +376,16 @@ async function tocarProxima(fila, avisarEm) {
 
   fila.tocando = musica;
 
+  if (doYoutube(musica.url) && !musica.direta) {
+    if (avisarEm) falar(avisarEm, `⏳ Preparando **${musica.titulo}**…`);
+    await prepararMusica(musica);
+    if (fila.parando) return;
+  }
+
   if (fila.musicas[1]) void prepararMusica(fila.musicas[1]);
 
   const audio = abrirAudio(musica, (erro) => console.error("falha ao abrir o áudio:", erro));
   fila.audio = audio;
-
-  if (avisarEm && !audio.direta && doYoutube(musica.url)) {
-    falar(avisarEm, `⏳ Preparando **${musica.titulo}**…`);
-  }
 
   let sobra = Buffer.alloc(0);
   let proximoQuadro = Date.now();
@@ -393,7 +422,8 @@ async function tocarProxima(fila, avisarEm) {
 
   audio.matar();
 
-  if (!veioAlgo && audio.direta && !fila.parando) {
+  if (!veioAlgo && audio.direta && !fila.parando && !musica.repreparada) {
+    musica.repreparada = true;
     musica.direta = null;
     musica.preparando = null;
     return tocarProxima(fila, null);
@@ -437,12 +467,14 @@ async function procurar(busca) {
 }
 
 async function procurarNoSoundcloud(busca) {
-  const achado = await rodar("yt-dlp", [
-    "scsearch8:" + busca,
-    "--flat-playlist",
-    "--print", "%(duration)s\t%(webpage_url)s\t%(title)s",
-    "--no-warnings",
-  ]).catch(() => null);
+  const achado = await umDeCadaVez(() =>
+    rodar("yt-dlp", [
+      "scsearch8:" + busca,
+      "--flat-playlist",
+      "--print", "%(duration)s\t%(webpage_url)s\t%(title)s",
+      "--no-warnings",
+    ]),
+  ).catch(() => null);
 
   if (!achado) return null;
 
