@@ -70,8 +70,10 @@ export const ScreenShareMenuItems: React.FC<{ withSettings?: boolean }> = ({ wit
           >
             {SCREEN_FRAME_RATES.map((fps) => (
               <DropdownMenuRadioItem data-gc="voz.menu-da-transmissao.dropdown-menu-radio-item" key={fps} value={String(fps)} disabled={isScreenFrameRateLocked(fps)} onSelect={(e) => e.preventDefault()}>
-                {t("chamada.tela.quadros", { quadros: fps })}
-                {isScreenFrameRateLocked(fps) && <Lock data-gc="voz.menu-da-transmissao.lock" size={12} className="ml-auto mr-5 text-ink-faint" />}
+                <span data-gc="voz.menu-da-transmissao.span" className="flex w-full items-center justify-between gap-2">
+                  {t("chamada.tela.quadros", { quadros: fps })}
+                  {isScreenFrameRateLocked(fps) && <Lock data-gc="voz.menu-da-transmissao.lock" size={13} className="shrink-0 text-ink-faint" />}
+                </span>
               </DropdownMenuRadioItem>
             ))}
           </DropdownMenuRadioGroup>
@@ -85,8 +87,10 @@ export const ScreenShareMenuItems: React.FC<{ withSettings?: boolean }> = ({ wit
           >
             {SCREEN_RESOLUTIONS.map((resolution) => (
               <DropdownMenuRadioItem data-gc="voz.menu-da-transmissao.dropdown-menu-radio-item--2" key={resolution} value={resolution} disabled={isScreenResolutionLocked(resolution)} onSelect={(e) => e.preventDefault()}>
-                {resolution === "original" ? t("chamada.tela.original") : `${resolution}p`}
-                {isScreenResolutionLocked(resolution) && <Lock data-gc="voz.menu-da-transmissao.lock--2" size={12} className="ml-auto mr-5 text-ink-faint" />}
+                <span data-gc="voz.menu-da-transmissao.span--2" className="flex w-full items-center justify-between gap-2">
+                  {resolution === "original" ? t("chamada.tela.original") : `${resolution}p`}
+                  {isScreenResolutionLocked(resolution) && <Lock data-gc="voz.menu-da-transmissao.lock--2" size={13} className="shrink-0 text-ink-faint" />}
+                </span>
               </DropdownMenuRadioItem>
             ))}
           </DropdownMenuRadioGroup>
