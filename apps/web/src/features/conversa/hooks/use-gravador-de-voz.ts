@@ -17,6 +17,7 @@ export interface NoteRecorded {
 }
 
 const STEP_MS = 50;
+const LIVE_PEAKS = 400;
 
 export function useVoiceRecorder() {
   const [recording, setRecording] = useState(false);
@@ -71,6 +72,7 @@ export function useVoiceRecorder() {
 
     const ctx = new AudioContext();
     context.current = ctx;
+    if (ctx.state === "suspended") await ctx.resume().catch(() => undefined);
 
     const analyser = ctx.createAnalyser();
     analyser.fftSize = 1024;
@@ -89,8 +91,8 @@ export function useVoiceRecorder() {
       let larger = 0;
       for (const v of sample) larger = Math.max(larger, Math.abs(v - 128) / 128);
 
-      measured.current.push(larger);
-      setPeaks([...measured.current]);
+      measured.current.push(Math.min(1, Math.sqrt(larger)));
+      setPeaks(measured.current.slice(-LIVE_PEAKS));
 
       const passado = Date.now() - started.current;
       setMs(passado);

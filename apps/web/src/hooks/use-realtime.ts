@@ -29,7 +29,7 @@ import type { SelfUserModel } from "~/@core/domain/models/user-model";
 import axios from "axios";
 
 import { notifySessionLost, refreshSession } from "~/@core/lib/api";
-import { mustSwapToken } from "~/features/app/lib/reconexao";
+import { isRefusalByToken, RETRY_FIRST_MS, RETRY_MAX_MS } from "~/features/app/lib/reconexao";
 import { connectSocket, disconnectSocket, socket } from "~/@core/lib/websocket";
 import { joinChannel } from "~/@core/lib/websocket/join-channel";
 import {
@@ -805,6 +805,10 @@ export function useRealtime(
     });
 
     const handleConnect = () => {
+      if (retry) clearTimeout(retry);
+      retry = null;
+      retryDelay = RETRY_FIRST_MS;
+
       const droppedBefore = useConnectionStore.getState().alreadyConnected;
       useConnectionStore.getState().didConnect();
 
@@ -823,37 +827,41 @@ export function useRealtime(
       }
     };
 
-    let lastSwap = 0;
+    let retry: ReturnType<typeof setTimeout> | null = null;
+    let retryDelay = RETRY_FIRST_MS;
+
+    const scheduleReconnect = (swapToken: boolean) => {
+      if (retry) return;
+
+      retry = setTimeout(async () => {
+        retry = null;
+
+        try {
+          if (swapToken) await refreshSession();
+          socketInstance.connect();
+        } catch (failure) {
+          if (axios.isAxiosError(failure) && failure.response?.status === 401) {
+            notifySessionLost();
+            return;
+          }
+
+          scheduleReconnect(swapToken);
+        }
+      }, retryDelay);
+
+      retryDelay = Math.min(retryDelay * 2, RETRY_MAX_MS);
+    };
 
     const handleDisconnect = (reason: string) => {
       useConnectionStore.getState().dropped();
-      if (reason !== "io server disconnect") return;
-
-      lastSwap = Date.now();
-
-      void refreshSession()
-        .then(() => socketInstance.connect())
-        .catch((failure) => {
-          if (axios.isAxiosError(failure) && failure.response?.status === 401) {
-            notifySessionLost();
-          }
-        });
+      if (reason === "io server disconnect") scheduleReconnect(true);
     };
 
     const handleConnectError = (error: Error) => {
       useConnectionStore.getState().dropped();
+      if (socketInstance.active) return;
 
-      const now = Date.now();
-      if (!mustSwapToken(error.message, now, lastSwap)) return;
-      lastSwap = now;
-
-      void refreshSession()
-        .then(() => socketInstance.connect())
-        .catch((failure) => {
-          if (axios.isAxiosError(failure) && failure.response?.status === 401) {
-            notifySessionLost();
-          }
-        });
+      scheduleReconnect(isRefusalByToken(error.message));
     };
     const handleAttempt = (n: number) =>
       useConnectionStore.getState().trying(n);
@@ -866,6 +874,7 @@ export function useRealtime(
     if (socketInstance.connected) useConnectionStore.getState().didConnect();
 
     return () => {
+      if (retry) clearTimeout(retry);
       socketInstance.off("connect", handleConnect);
       socketInstance.off("disconnect", handleDisconnect);
       socketInstance.off("connect_error", handleConnectError);

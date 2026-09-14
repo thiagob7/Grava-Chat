@@ -1,5 +1,9 @@
 export const WAIT_BETWEEN_SWAPS_MS = 15_000;
 
+export const RETRY_FIRST_MS = 1_000;
+
+export const RETRY_MAX_MS = 15_000;
+
 export const isRefusalByToken = (message: string) => /token/i.test(message);
 
 export function mustSwapToken(
