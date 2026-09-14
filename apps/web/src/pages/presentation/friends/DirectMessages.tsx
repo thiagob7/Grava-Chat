@@ -8,6 +8,7 @@ import { Phone, PhoneSlash, SpeakerHigh, User, VideoCamera } from "@phosphor-ico
 import { useActive } from "~/@core/application/queries/friend/use-ativos";
 import { useFindDms } from "~/@core/application/queries/friend/use-find-dms";
 import { useFindFriends } from "~/@core/application/queries/friend/use-find-friends";
+import type { ProfilePublic } from "@gravae/shared";
 import { useOpenDm } from "~/@core/application/queries/friend/use-open-dm";
 import { useReadStates } from "~/@core/application/queries/message/use-read-states";
 import { useLogout } from "~/@core/application/queries/auth/use-logout";
@@ -235,6 +236,7 @@ export const DirectMessages: React.FC<{ requests?: boolean }> = ({ requests = fa
                     url={chat.user.avatarUrl}
                     status={chat.user.status}
                     size={24}
+                    charms={{ decoration: chat.user.decoration as ProfilePublic["decoration"] }}
                   />
                   <h2 data-gc="friends.direct-messages.h2" className="truncate text-base font-semibold leading-5">
                     <UserName data-gc="friends.direct-messages.user-name" name={chat.user.displayName} isBot={chat.user.isBot} isSystem={chat.user.system} />

@@ -145,7 +145,7 @@ export const FullProfileModal: React.FC<FullProfileModalProps> = ({
       <div data-gc="perfil.full-profile-modal.div--2"
         className={cn("h-52 shrink-0 bg-cover bg-center", flxCls("trackProfileMask"))}
         style={{
-          ...trackNotch(88, 72),
+          ...trackNotch(88, profile.profile?.decoration && profile.profile.decoration !== "nenhuma" ? 65 : 72),
           backgroundColor: trackColor,
           ...(profile.profile?.bannerUrl
             ? { backgroundImage: `url(${profile.profile.bannerUrl})` }

@@ -10,7 +10,7 @@ import { Avatar } from "~/features/perfil/components/Avatar";
 import { AvatarsGroup } from "~/components/ui/grupo-de-avatares";
 import { LottieArt } from "~/components/LottieArt";
 import { useTranslation } from "~/traducao";
-import type { PublicUser } from "@gravae/shared";
+import type { PublicUser, ProfilePublic } from "@gravae/shared";
 
 const loadWave = () =>
   import("~/assets/animations/add-friend.json").then((mod) => mod.default);
@@ -49,6 +49,8 @@ export const StartDm: React.FC<{ person: PublicUser; channelId?: string; empty?:
         url={person.avatarUrl}
         status={person.status}
         size={80}
+        charms={{ decoration: person.decoration as ProfilePublic["decoration"] }}
+        animate
       />
 
       <h2 data-gc="conversa.inicio-da-dm.h2" className="mt-4 text-2xl font-bold">{person.username}</h2>

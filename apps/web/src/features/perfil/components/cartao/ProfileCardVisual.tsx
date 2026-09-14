@@ -159,7 +159,7 @@ export const ProfileCardVisual: React.FC<ProfileCardVisualProps> = ({
       <div data-gc="perfil.cartao.profile-card-visual.div--2"
         className={cn("relative aspect-[20/7] bg-cover bg-center", flxCls("trackMask"))}
         style={{
-          ...trackNotch(56, 47),
+          ...trackNotch(56, hasDecoration ? 41 : 47),
           backgroundColor: profile?.bannerColor?.trim() || avatarColor(id),
           ...(profile?.bannerUrl
             ? { backgroundImage: `url(${profile.bannerUrl})` }
