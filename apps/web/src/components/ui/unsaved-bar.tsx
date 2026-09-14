@@ -35,7 +35,7 @@ export const UnsavedBar: React.FC<UnsavedBarProps> = ({
         "flex items-center gap-3 rounded-lg bg-surface-0 px-4 py-3 shadow-2xl ring-1 ring-line",
         floating
           ? "pointer-events-auto fixed bottom-6 left-1/2 z-[60] w-[min(560px,92vw)] -translate-x-1/2"
-          : "sticky bottom-4 z-10 mx-auto mt-6 w-[min(560px,100%)]",
+          : "sticky bottom-4 z-10 mt-6 w-full",
       )}
     >
       <p data-gc="ui.unsaved-bar.p" className="flex-1 text-sm">{text ?? t("perfil.editor.naoSalvo")}</p>
