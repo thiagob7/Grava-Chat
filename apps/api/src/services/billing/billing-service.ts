@@ -10,6 +10,7 @@ import {
 
 import { env } from "~/env.js";
 import { AppError, NotFoundError } from "~/lib/http.js";
+import { mercadoPagoEnabled, refundPayment } from "~/lib/mercadopago.js";
 import { stripe, type Stripe } from "~/lib/stripe.js";
 import { announceUserUpdated } from "~/realtime/difusao.js";
 import { billingRepository } from "~/repositories/billing-repository.js";
@@ -42,6 +43,11 @@ function requireStripe(): Stripe {
   if (!stripe || !billingEnabled()) throw new AppError("A assinatura ainda não está disponível", 503);
   return stripe;
 }
+
+export const mercadoPagoPaymentOf = (sourceId: string) => (sourceId.startsWith("mp:") ? sourceId.slice(3) : null);
+
+const refundable = (payment: { paymentIntentId: string | null; sourceId: string }) =>
+  Boolean(payment.paymentIntentId || mercadoPagoPaymentOf(payment.sourceId));
 
 const toDate = (seconds: number | null | undefined) => (seconds ? new Date(seconds * 1000) : null);
 
@@ -135,11 +141,12 @@ export const billingService = {
           }
         : null,
       refund:
-        latest && latest.paymentIntentId && canRefund(latest)
+        latest && refundable(latest) && canRefund(latest)
           ? { amount: latest.amount, currency: latest.currency, openUntil: refundOpenUntil(latest.paidAt).toISOString() }
           : null,
       canManage: Boolean(customer),
       prices,
+      pixEnabled: mercadoPagoEnabled(),
     };
   },
 
@@ -201,15 +208,23 @@ export const billingService = {
   },
 
   async refund(userId: string) {
-    const client = requireStripe();
     const payment = await billingRepository.latestPayment(userId);
 
-    if (!payment?.paymentIntentId || !canRefund(payment)) {
+    if (!payment || !refundable(payment) || !canRefund(payment)) {
       throw new AppError("Não há pagamento dentro dos 7 dias para reembolsar", 400);
     }
 
+    const mpPaymentId = mercadoPagoPaymentOf(payment.sourceId);
+    if (mpPaymentId) {
+      await refundPayment(mpPaymentId);
+      await billingService.removeRecorded(payment);
+      return billingService.status(userId);
+    }
+
+    const client = requireStripe();
+
     await client.refunds.create(
-      { payment_intent: payment.paymentIntentId, metadata: { userId, reason: "withdrawal" } },
+      { payment_intent: payment.paymentIntentId ?? undefined, metadata: { userId, reason: "withdrawal" } },
       { idempotencyKey: `refund-${payment.id}` },
     );
 
@@ -220,14 +235,16 @@ export const billingService = {
       }
     }
 
-    await billingService.removePayment(payment.paymentIntentId);
+    await billingService.removeRecorded(payment);
     return billingService.status(userId);
   },
 
   async removePayment(paymentIntentId: string) {
     const payment = await billingRepository.paymentByIntent(paymentIntentId);
-    if (!payment) return;
+    if (payment) await billingService.removeRecorded(payment);
+  },
 
+  async removeRecorded(payment: { id: string; userId: string; kind: string; days: number | null }) {
     const { count } = await billingRepository.markRefunded(payment.id, new Date());
     if (!count) return;
 
@@ -243,19 +260,28 @@ export const billingService = {
 
     const paymentIntentId = typeof session.payment_intent === "string" ? session.payment_intent : session.payment_intent?.id;
 
-    await billingRepository.createPayment({
+    await billingService.recordPass({
       userId,
-      kind: "pass",
       sourceId: session.id,
       paymentIntentId: paymentIntentId ?? null,
       amount: session.amount_total ?? 0,
       currency: session.currency ?? "brl",
       days,
-      paidAt: new Date(),
     });
+  },
 
-    await savePremium(userId, (current) => ({
-      premiumUntil: extendPremium(current.premiumUntil, days),
+  async recordPass(pass: {
+    userId: string;
+    sourceId: string;
+    paymentIntentId: string | null;
+    amount: number;
+    currency: string;
+    days: number;
+  }) {
+    await billingRepository.createPayment({ ...pass, kind: "pass", paidAt: new Date() });
+
+    await savePremium(pass.userId, (current) => ({
+      premiumUntil: extendPremium(current.premiumUntil, pass.days),
       premiumSource: current.premiumSource === "stripe_subscription" ? current.premiumSource : "stripe_pass",
     }));
   },

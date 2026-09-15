@@ -39,6 +39,37 @@ export const billingRepository = {
     return prisma.billingPayment.updateMany({ where: { id, refundedAt: null }, data: { refundedAt } });
   },
 
+  createPixCharge(data: Prisma.PixChargeCreateInput) {
+    return prisma.pixCharge.create({ data });
+  },
+
+  updatePixCharge(id: string, data: Prisma.PixChargeUpdateInput) {
+    return prisma.pixCharge.update({ where: { id }, data });
+  },
+
+  pixCharge(id: string) {
+    return prisma.pixCharge.findUnique({ where: { id } });
+  },
+
+  pixChargeByPayment(mpPaymentId: string) {
+    return prisma.pixCharge.findUnique({ where: { mpPaymentId } });
+  },
+
+  openPixCharge(userId: string, interval: string, now: Date) {
+    return prisma.pixCharge.findFirst({
+      where: { userId, interval, status: "pending", expiresAt: { gt: now } },
+      orderBy: { createdAt: "desc" },
+    });
+  },
+
+  pendingPixCharges(userId: string) {
+    return prisma.pixCharge.findMany({ where: { userId, status: "pending" }, take: 5 });
+  },
+
+  claimPixCharge(id: string, paidAt: Date) {
+    return prisma.pixCharge.updateMany({ where: { id, status: "pending" }, data: { status: "paid", paidAt } });
+  },
+
   async eventSeen(stripeId: string) {
     return (await prisma.billingEvent.count({ where: { stripeId } })) > 0;
   },

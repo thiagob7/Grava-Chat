@@ -38,7 +38,7 @@ import { botRoutes } from "~/routes/bots.js";
 import { oauthRoutes } from "~/routes/oauth.js";
 import { botApiRoutes } from "~/routes/bot-api.js";
 import { embedRoutes } from "~/routes/embeds.js";
-import { billingRoutes, billingWebhookRoutes } from "~/routes/billing.js";
+import { billingRoutes, billingWebhookRoutes, mercadoPagoWebhookRoutes } from "~/routes/billing.js";
 
 export async function buildApp() {
   const app = Fastify({
@@ -120,6 +120,7 @@ export async function buildApp() {
       await api.register(embedRoutes);
       await api.register(billingRoutes);
       await api.register(billingWebhookRoutes);
+      await api.register(mercadoPagoWebhookRoutes);
       await api.register(publicWebhookRoutes);
     },
     { prefix: "/api" },
