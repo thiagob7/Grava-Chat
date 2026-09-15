@@ -15,6 +15,10 @@ export const conversa = {
     carregando: "בודק מה יש בקישור…",
     destino: "מוביל אל {{destino}}",
   },
+  botComponents: {
+    noResponse: "הבוט לא הגיב.",
+    choose: "בחרו אפשרות",
+  },
   reacao: {
     carregando: "בודק מי הגיב עם {{emoji}}…",
     uma: "{{nome}} הגיב עם {{emoji}}",

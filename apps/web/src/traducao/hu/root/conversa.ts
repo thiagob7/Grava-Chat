@@ -15,6 +15,10 @@ export const conversa = {
     carregando: "Nézem, mi van a hivatkozás mögött…",
     destino: "Ide visz: {{destino}}",
   },
+  botComponents: {
+    noResponse: "A bot nem válaszolt.",
+    choose: "Válassz egy lehetőséget",
+  },
   reacao: {
     carregando: "Nézem, ki reagált ezzel: {{emoji}}…",
     uma: "{{nome}} reagált ezzel: {{emoji}}",

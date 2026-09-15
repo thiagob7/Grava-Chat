@@ -15,6 +15,10 @@ export const conversa = {
     carregando: "Žiūriu, kas yra nuorodoje…",
     destino: "Veda į {{destino}}",
   },
+  botComponents: {
+    noResponse: "Botas neatsakė.",
+    choose: "Pasirinkite parinktį",
+  },
   reacao: {
     carregando: "Žiūriu, kas reagavo su {{emoji}}…",
     uma: "{{nome}} reagavo su {{emoji}}",

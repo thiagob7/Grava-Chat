@@ -15,6 +15,10 @@ export const conversa = {
     carregando: "링크에 뭐가 있는지 보는 중…",
     destino: "{{destino}}(으)로 갑니다",
   },
+  botComponents: {
+    noResponse: "봇이 응답하지 않았습니다.",
+    choose: "옵션을 선택하세요",
+  },
   reacao: {
     carregando: "{{emoji}}로 반응한 사람을 보는 중…",
     uma: "{{nome}}님이 {{emoji}}로 반응했습니다",

@@ -15,6 +15,10 @@ export const conversa = {
     carregando: "Katson, mitä linkin takana on…",
     destino: "Vie osoitteeseen {{destino}}",
   },
+  botComponents: {
+    noResponse: "Botti ei vastannut.",
+    choose: "Tee valinta",
+  },
   reacao: {
     carregando: "Katson, kuka reagoi merkillä {{emoji}}…",
     uma: "{{nome}} reagoi merkillä {{emoji}}",

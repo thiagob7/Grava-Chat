@@ -94,6 +94,11 @@ import {
   offCommandsChanged,
 } from "~/@core/lib/websocket/on-commands-changed";
 import {
+  onInteractionFinished,
+  offInteractionFinished,
+} from "~/@core/lib/websocket/on-interaction-finished";
+import { useInteractionStore } from "~/features/conversa/stores/interaction-store";
+import {
   onExpressionsChanged,
   offExpressionsChanged,
 } from "~/@core/lib/websocket/on-expressions-changed";
@@ -627,6 +632,8 @@ export function useRealtime(
       });
     });
 
+    onInteractionFinished(({ interactionId }) => useInteractionStore.getState().markFinished(interactionId));
+
     onCommandsChanged(({ guildId }) => {
       void queryClient.invalidateQueries({
         queryKey: queryKeys.command.find_many(guildId),
@@ -897,6 +904,7 @@ export function useRealtime(
       offGuildDeleted();
       offGuildRefresh();
       offCommandsChanged();
+      offInteractionFinished();
       offExpressionsChanged();
       offEventUpdated();
       offPostCreated();

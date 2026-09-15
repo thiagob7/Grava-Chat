@@ -48,6 +48,7 @@ import { useMe } from "~/@core/application/queries/auth/use-me";
 import { MessageContent } from "~/features/conversa/components/MessageContent";
 import { LinkEmbeds } from "~/features/conversa/components/LinkEmbed";
 import { BotEmbeds } from "~/features/conversa/components/BotEmbed";
+import { MessageComponents } from "~/features/conversa/components/MessageComponents";
 import { Tooltip } from "~/components/ui/tooltip";
 import { useWhoReacted } from "~/@core/application/queries/message/use-quem-reagiu";
 import { PollCard } from "~/features/conversa/components/PollCard";
@@ -457,6 +458,10 @@ export const MessageItem: React.FC<MessageItemProps> = ({
 
         {!(ignored && !revealed) && message.embeds && message.embeds.length > 0 && (
           <BotEmbeds data-gc="conversa.message-item.bot-embeds" embeds={message.embeds} emojis={emojis} mentions={mentions} mentionProfiles={{ guildId }} />
+        )}
+
+        {!(ignored && !revealed) && message.components && message.components.length > 0 && (
+          <MessageComponents data-gc="conversa.message-item.message-components" messageId={message.id} rows={message.components} />
         )}
 
         {message.sticker && (

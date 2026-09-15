@@ -151,6 +151,7 @@ export const messageRepository = {
     kind?: "USER" | "JOIN" | "COMANDO";
     poll?: Prisma.PollCreateInput;
     embeds?: Prisma.EmbedCreateInput[];
+    components?: Prisma.ComponentRowCreateInput[];
     stickerId?: string;
     postId?: string;
     nonce?: string;

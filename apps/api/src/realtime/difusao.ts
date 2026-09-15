@@ -6,6 +6,7 @@ import { messageRepository } from "~/repositories/message-repository.js";
 import { userRepository } from "~/repositories/user-repository.js";
 import { accessService } from "~/services/access-service.js";
 import { botService } from "~/services/bot-service.js";
+import { interactionService } from "~/services/interaction-service.js";
 import { messageService, wasReplay } from "~/services/message-service.js";
 import { io } from "./io.js";
 
@@ -24,6 +25,18 @@ export async function sendMessage(
   else room.emit("message:created", message);
 
   return message;
+}
+
+export async function startInteraction(userId: string, input: Parameters<typeof interactionService.prepare>[1]) {
+  const { interaction, event } = await interactionService.prepare(userId, input);
+
+  const listening = await io().in(rooms.user(interaction.botUserId)).fetchSockets();
+  if (!listening.length) throw new AppError("O bot está desligado agora", 409);
+
+  await interactionService.store(interaction);
+  io().to(rooms.user(interaction.botUserId)).emit("interaction:created", event);
+
+  return { interactionId: interaction.id };
 }
 
 export async function editMessage(

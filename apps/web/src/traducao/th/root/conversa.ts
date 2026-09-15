@@ -15,6 +15,10 @@ export const conversa = {
     carregando: "กำลังดูว่าในลิงก์มีอะไร…",
     destino: "ไปที่ {{destino}}",
   },
+  botComponents: {
+    noResponse: "บอทไม่ตอบกลับ",
+    choose: "เลือกตัวเลือก",
+  },
   reacao: {
     carregando: "กำลังดูว่าใครแสดงความรู้สึกด้วย {{emoji}}…",
     uma: "{{nome}} แสดงความรู้สึกด้วย {{emoji}}",

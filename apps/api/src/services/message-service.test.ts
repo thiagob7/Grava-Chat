@@ -682,3 +682,24 @@ describe("embeds", () => {
     expect(updateMessage).not.toHaveBeenCalled();
   });
 });
+
+describe("components", () => {
+  const rows = [{ components: [{ type: "button" as const, style: "success" as const, label: "Accept", customId: "accept" }] }];
+
+  it("changing only the components does not mark the message as edited", async () => {
+    findMessageById.mockResolvedValue({ ...messageRow, embeds: [], components: [], poll: null, stickerId: null });
+    updateMessage.mockResolvedValue(messageRow);
+
+    await messageService.edit(AUTHOR, { messageId: "m1", components: rows });
+
+    const data = updateMessage.mock.calls.at(-1)?.[1];
+    expect(data.components).toHaveLength(1);
+    expect(data.editedAt).toBeUndefined();
+  });
+
+  it("a message can carry only components", async () => {
+    await messageService.send(AUTHOR, { channelId: CHANNEL, content: "" }, { components: rows });
+
+    expect(recorded().components[0].components[0]).toMatchObject({ type: "button", customId: "accept", url: null });
+  });
+});

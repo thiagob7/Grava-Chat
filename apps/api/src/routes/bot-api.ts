@@ -1,6 +1,12 @@
 import type { FastifyInstance, FastifyRequest } from "fastify";
 import { z } from "zod";
-import { setCommandsInput, botEditMessageInput, botSendMessageInput, rooms } from "@gravae/shared";
+import {
+  setCommandsInput,
+  botEditMessageInput,
+  botSendMessageInput,
+  interactionCallbackInput,
+  rooms,
+} from "@gravae/shared";
 
 import { ForbiddenError, UnauthorizedError } from "~/lib/http.js";
 import { baseUrlDe } from "~/lib/endereco.js";
@@ -24,6 +30,7 @@ import { banInput, nicknameInput, timeoutInput } from "~/validations/moderation.
 import { auditService } from "~/services/audit-service.js";
 import { expressionService } from "~/services/expression-service.js";
 import { webhookService } from "~/services/webhook-service.js";
+import { interactionService } from "~/services/interaction-service.js";
 import { createEmojiInput, updateEmojiInput } from "~/validations/expression.js";
 import { createChannelInput, updateChannelInput, updateGuildInput } from "~/validations/guild.js";
 import { auditQuery } from "~/validations/moderation.js";
@@ -43,6 +50,8 @@ const messageParams = z.object({ messageId: objectId });
 
 
 const overwriteParams = guildParams.extend({ channelId: objectId, targetId: objectId });
+
+const interactionParams = z.object({ interactionId: z.uuid(), token: z.string().min(1).max(128) });
 
 const reactionParams = messageParams.extend({ emoji: z.string().min(1).max(80) });
 const reactionBody = z.object({ burst: z.boolean().optional() });
@@ -340,6 +349,36 @@ export async function botApiRoutes(app: FastifyInstance) {
     return reply.status(204).send();
   });
 
+  app.post("/bot/interactions/:interactionId/:token/callback", async (req) => {
+    const { userId } = await botDoToken(req);
+    const { interactionId, token } = interactionParams.parse(req.params);
+    const body = interactionCallbackInput.parse(req.body);
+
+    const interaction = await interactionService.claim(userId, interactionId, token);
+
+    try {
+      let message = null;
+
+      if (body.type === "reply") {
+        const { embeds, components, ...data } = body.data;
+        message = await sendMessage(userId, { ...data, channelId: interaction.channelId }, undefined, { embeds, components });
+      } else if (body.type === "update") {
+        message = await editMessage(userId, { messageId: interaction.messageId, ...body.data });
+      }
+
+      io().to(rooms.user(interaction.userId)).emit("interaction:finished", {
+        interactionId,
+        messageId: interaction.messageId,
+        customId: interaction.customId,
+      });
+
+      return { type: body.type, message };
+    } catch (err) {
+      await interactionService.release(interactionId);
+      throw err;
+    }
+  });
+
   app.put("/bot/comandos", async (req) => {
     const { botId } = await botDoToken(req);
     const { commands } = setCommandsInput.parse(req.body);
@@ -357,9 +396,9 @@ export async function botApiRoutes(app: FastifyInstance) {
     const { userId } = await botDoToken(req);
     const { channelId } = channelParams.parse(req.params);
 
-    const { embeds, ...body } = botSendMessageInput.parse(req.body);
+    const { embeds, components, ...body } = botSendMessageInput.parse(req.body);
 
-    const message = await sendMessage(userId, { ...body, channelId }, undefined, { embeds });
+    const message = await sendMessage(userId, { ...body, channelId }, undefined, { embeds, components });
 
     return reply.status(201).send(message);
   });
@@ -396,9 +435,9 @@ export async function botApiRoutes(app: FastifyInstance) {
   app.patch("/bot/mensagens/:messageId", async (req) => {
     const { userId } = await botDoToken(req);
     const { messageId } = messageParams.parse(req.params);
-    const { content, embeds } = botEditMessageInput.parse(req.body);
+    const { content, embeds, components } = botEditMessageInput.parse(req.body);
 
-    return editMessage(userId, { messageId, content, embeds });
+    return editMessage(userId, { messageId, content, embeds, components });
   });
 
   app.delete("/bot/mensagens/:messageId", async (req, reply) => {

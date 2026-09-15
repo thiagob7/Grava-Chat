@@ -15,6 +15,10 @@ export const conversa = {
     carregando: "Bağlantının ardında ne var bakıyorum…",
     destino: "{{destino}} adresine gider",
   },
+  botComponents: {
+    noResponse: "Bot yanıt vermedi.",
+    choose: "Bir seçenek belirle",
+  },
   reacao: {
     carregando: "{{emoji}} ile kimin tepki verdiğine bakıyorum…",
     uma: "{{nome}} {{emoji}} ile tepki verdi",

@@ -15,6 +15,10 @@ export const conversa = {
     carregando: "正在看链接里有什么…",
     destino: "通向 {{destino}}",
   },
+  botComponents: {
+    noResponse: "机器人没有响应。",
+    choose: "请选择",
+  },
   reacao: {
     carregando: "正在看谁用 {{emoji}} 回应…",
     uma: "{{nome}} 用 {{emoji}} 回应了",

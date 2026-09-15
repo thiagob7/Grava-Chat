@@ -15,6 +15,10 @@ export const conversa = {
     carregando: "リンクの中身を確認中…",
     destino: "{{destino}} へ行きます",
   },
+  botComponents: {
+    noResponse: "ボットが応答しませんでした。",
+    choose: "選択してください",
+  },
   reacao: {
     carregando: "{{emoji}} で反応した人を確認中…",
     uma: "{{nome}} が {{emoji}} で反応しました",

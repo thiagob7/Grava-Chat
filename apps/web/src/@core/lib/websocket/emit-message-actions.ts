@@ -15,6 +15,9 @@ export const reactToMessage = (messageId: string, emoji: string, add: boolean, b
 export const votePoll = (messageId: string, optionId: string) =>
   emit("poll:vote", { messageId, optionId });
 
+export const interactWithComponent = (payload: ClientEventPayload<"component:interact">) =>
+  emit("component:interact", payload) as Promise<{ interactionId: string }>;
+
 export const closePoll = (messageId: string) => emit("poll:close", { messageId });
 
 export const ackMessage = (channelId: string, messageId: string) =>

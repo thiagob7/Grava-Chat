@@ -45,6 +45,9 @@ export const LIMITS = {
   embedsPerMessage: 10,
   embedFields: 25,
   embedTotalLength: 6000,
+  componentRows: 5,
+  componentsPerRow: 5,
+  selectOptions: 25,
 } as const;
 
 export const NOTE_LIMIT = 120;

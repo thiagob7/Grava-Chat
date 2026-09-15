@@ -16,6 +16,7 @@ import type {
 } from "@gravae/shared";
 import { env } from "~/env.js";
 import { unset } from "./mongo.js";
+import { toComponentRows } from "./components.js";
 
 type UserRow = Prisma.UserGetPayload<object>;
 
@@ -248,6 +249,7 @@ export function toMessage(m: MessageRow, viewerId: string): Message {
         }
       : null,
     embeds: (m.embeds ?? []).map(toEmbed),
+    components: toComponentRows(m.components),
     sticker: m.sticker ? toSticker(m.sticker) : null,
     reactions: [...grouped.entries()].map(([emoji, v]) => ({
       emoji,

@@ -14,6 +14,7 @@ import {
   sendMessageInput,
   editMessageInput,
   invokeCommandInput,
+  interactInput,
 } from "./models.js";
 import type { PresenceStatus } from "./constants.js";
 
@@ -39,6 +40,8 @@ export const clientEventSchemas = {
   "typing:start": z.object({ channelId: objectId }),
 
   "command:invoke": invokeCommandInput,
+
+  "component:interact": interactInput,
 
   "presence:update": z.object({ status: z.enum(DESIRED_STATUSES) }),
   "presence:afk": z.object({ idle: z.boolean() }),
@@ -124,6 +127,21 @@ export type ServerToClientEvents = {
   }) => void;
 
   "commands:changed": (p: { guildId: string }) => void;
+
+  "interaction:created": (p: {
+    id: string;
+    token: string;
+    type: "component";
+    guildId: string | null;
+    channelId: string;
+    messageId: string;
+    customId: string;
+    values: string[];
+    user: z.infer<typeof publicUserSchema>;
+    member: { roleIds: string[]; nickname: string | null } | null;
+  }) => void;
+
+  "interaction:finished": (p: { interactionId: string; messageId: string; customId: string }) => void;
 
   "presence:changed": (p: { userId: string; status: PresenceStatus }) => void;
   "presence:self": (p: { status: DesiredStatus; projected: PresenceStatus }) => void;

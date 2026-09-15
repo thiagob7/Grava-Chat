@@ -184,6 +184,103 @@ export const embedsInput = z
     }
   });
 
+export const BUTTON_STYLES = ["primary", "secondary", "success", "danger", "link"] as const;
+export type ButtonStyle = (typeof BUTTON_STYLES)[number];
+
+const customId = z.string().min(1).max(100);
+
+export const buttonComponentSchema = z.object({
+  type: z.literal("button"),
+  style: z.enum(BUTTON_STYLES),
+  label: z.string().trim().min(1).max(80).optional(),
+  emoji: z.string().trim().min(1).max(64).optional(),
+  customId: customId.optional(),
+  url: embedUrl.optional(),
+  disabled: z.boolean().optional(),
+});
+export type ButtonComponent = z.infer<typeof buttonComponentSchema>;
+
+export const selectOptionSchema = z.object({
+  label: z.string().trim().min(1).max(100),
+  value: z.string().min(1).max(100),
+  description: z.string().trim().min(1).max(100).optional(),
+  emoji: z.string().trim().min(1).max(64).optional(),
+});
+export type SelectOption = z.infer<typeof selectOptionSchema>;
+
+export const selectComponentSchema = z.object({
+  type: z.literal("select"),
+  customId,
+  placeholder: z.string().trim().min(1).max(150).optional(),
+  minValues: z.number().int().min(0).max(LIMITS.selectOptions).optional(),
+  maxValues: z.number().int().min(1).max(LIMITS.selectOptions).optional(),
+  options: z.array(selectOptionSchema).min(1).max(LIMITS.selectOptions),
+  disabled: z.boolean().optional(),
+});
+export type SelectComponent = z.infer<typeof selectComponentSchema>;
+
+export const messageComponentSchema = z.discriminatedUnion("type", [buttonComponentSchema, selectComponentSchema]);
+export type MessageComponent = z.infer<typeof messageComponentSchema>;
+
+export const componentRowSchema = z.object({
+  components: z.array(messageComponentSchema).min(1).max(LIMITS.componentsPerRow),
+});
+export type ComponentRow = z.infer<typeof componentRowSchema>;
+
+export const selectLimits = (select: SelectComponent) => {
+  const max = Math.min(select.maxValues ?? 1, select.options.length);
+  return { min: Math.min(select.minValues ?? 1, max), max };
+};
+
+export const componentsInput = z
+  .array(componentRowSchema)
+  .max(LIMITS.componentRows)
+  .superRefine((rows, ctx) => {
+    const seen = new Set<string>();
+
+    rows.forEach((row, rowIndex) => {
+      const hasSelect = row.components.some((component) => component.type === "select");
+      if (hasSelect && row.components.length > 1) {
+        ctx.addIssue({ code: "custom", path: [rowIndex], message: "A row with a select cannot hold anything else" });
+      }
+
+      row.components.forEach((component, index) => {
+        const path = [rowIndex, "components", index];
+
+        if (component.customId) {
+          if (seen.has(component.customId)) {
+            ctx.addIssue({ code: "custom", path, message: `customId "${component.customId}" is repeated` });
+          }
+          seen.add(component.customId);
+        }
+
+        if (component.type === "button") {
+          if (!component.label && !component.emoji) {
+            ctx.addIssue({ code: "custom", path, message: "A button needs a label or an emoji" });
+          }
+          if (component.style === "link" && (!component.url || component.customId)) {
+            ctx.addIssue({ code: "custom", path, message: "A link button needs url and no customId" });
+          }
+          if (component.style !== "link" && (!component.customId || component.url)) {
+            ctx.addIssue({ code: "custom", path, message: "A button needs customId and no url, unless its style is link" });
+          }
+          return;
+        }
+
+        const values = component.options.map((option) => option.value);
+        if (new Set(values).size !== values.length) {
+          ctx.addIssue({ code: "custom", path, message: "Select option values must be unique" });
+        }
+        if ((component.minValues ?? 1) > (component.maxValues ?? 1)) {
+          ctx.addIssue({ code: "custom", path, message: "minValues cannot be greater than maxValues" });
+        }
+        if ((component.minValues ?? 1) > component.options.length) {
+          ctx.addIssue({ code: "custom", path, message: "minValues cannot be greater than the number of options" });
+        }
+      });
+    });
+  });
+
 export const stickerSchema = z.object({
   id: objectId,
   guildId: objectId,
@@ -245,6 +342,7 @@ export const messageSchema = z.object({
   attachments: z.array(attachmentSchema),
   poll: pollSchema.nullable(),
   embeds: z.array(embedSchema).optional(),
+  components: z.array(componentRowSchema).optional(),
   sticker: stickerSchema.nullable(),
   reactions: z.array(reactionSummarySchema),
   mentions: z.array(objectId),
@@ -390,18 +488,35 @@ export const editMessageInput = z.object({
 
 export const botSendMessageInput = sendMessageInput
   .omit({ channelId: true, nonce: true, retry: true })
-  .extend({ embeds: embedsInput.optional() });
+  .extend({ embeds: embedsInput.optional(), components: componentsInput.optional() });
 export type BotSendMessageInput = z.infer<typeof botSendMessageInput>;
 
 export const botEditMessageInput = z
   .object({
     content: z.string().max(LIMITS.messageLength).optional(),
     embeds: embedsInput.optional(),
+    components: componentsInput.optional(),
   })
-  .refine((input) => input.content !== undefined || input.embeds !== undefined, {
-    message: "Send content, embeds or both",
+  .refine((input) => input.content !== undefined || input.embeds !== undefined || input.components !== undefined, {
+    message: "Send content, embeds, components or a mix",
   });
 export type BotEditMessageInput = z.infer<typeof botEditMessageInput>;
+
+export const INTERACTION_RESPONSE_MS = 3000;
+
+export const interactInput = z.object({
+  messageId: objectId,
+  customId,
+  values: z.array(z.string().min(1).max(100)).max(LIMITS.selectOptions).optional(),
+});
+export type InteractInput = z.infer<typeof interactInput>;
+
+export const interactionCallbackInput = z.discriminatedUnion("type", [
+  z.object({ type: z.literal("reply"), data: botSendMessageInput }),
+  z.object({ type: z.literal("update"), data: botEditMessageInput }),
+  z.object({ type: z.literal("defer") }),
+]);
+export type InteractionCallbackInput = z.infer<typeof interactionCallbackInput>;
 
 const commandName = z
   .string()

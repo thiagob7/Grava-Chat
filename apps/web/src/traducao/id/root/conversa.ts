@@ -15,6 +15,10 @@ export const conversa = {
     carregando: "Melihat isi tautannya…",
     destino: "Menuju {{destino}}",
   },
+  botComponents: {
+    noResponse: "Bot tidak merespons.",
+    choose: "Pilih salah satu",
+  },
   reacao: {
     carregando: "Melihat siapa yang bereaksi dengan {{emoji}}…",
     uma: "{{nome}} bereaksi dengan {{emoji}}",

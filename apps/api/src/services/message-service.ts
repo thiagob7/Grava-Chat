@@ -2,8 +2,9 @@ import { randomUUID } from "node:crypto";
 import type { SearchQuery } from "~/validations/message.js";
 import { guildRepository } from "~/repositories/guild-repository.js";
 import { userRepository } from "~/repositories/user-repository.js";
-import { has, LIMITS, type Embed, type ReactionPeople } from "@gravae/shared";
+import { has, LIMITS, type ComponentRow, type Embed, type ReactionPeople } from "@gravae/shared";
 import { embedText, toStoredEmbed } from "~/lib/embeds.js";
+import { toStoredComponents } from "~/lib/components.js";
 import { AppError, ForbiddenError, NotFoundError } from "~/lib/http.js";
 import {
   messageRepository,
@@ -171,7 +172,11 @@ export const messageService = {
     };
   },
 
-  async send(userId: string, input: SendMessageInput, extra: { embeds?: Embed[] } = {}) {
+  async send(
+    userId: string,
+    input: SendMessageInput,
+    extra: { embeds?: Embed[]; components?: ComponentRow[] } = {},
+  ) {
     const already = input.nonce
       ? await receiptOf(userId, { nonce: input.nonce, channelId: input.channelId, retry: input.retry })
       : null;
@@ -237,8 +242,9 @@ export const messageService = {
     }
 
     const embeds = extra.embeds ?? [];
+    const components = extra.components ?? [];
 
-    if (!content && !input.attachments?.length && !input.poll && !input.stickerId && !embeds.length) {
+    if (!content && !input.attachments?.length && !input.poll && !input.stickerId && !embeds.length && !components.length) {
       throw new AppError("Mensagem vazia");
     }
 
@@ -284,6 +290,7 @@ export const messageService = {
       })),
       ...(input.poll ? { poll: buildPoll(input.poll) } : {}),
       ...(embeds.length ? { embeds: embeds.map(toStoredEmbed) } : {}),
+      ...(components.length ? { components: toStoredComponents(components) } : {}),
       ...(input.stickerId ? { stickerId: input.stickerId } : {}),
       ...(input.postId ? { postId: input.postId } : {}),
       replyToId: input.replyToId ?? null,
@@ -316,7 +323,7 @@ export const messageService = {
 
   async edit(
     userId: string,
-    input: Omit<EditMessageInput, "content"> & { content?: string; embeds?: Embed[] },
+    input: Omit<EditMessageInput, "content"> & { content?: string; embeds?: Embed[]; components?: ComponentRow[] },
   ) {
     const existing = await messageRepository.findById(input.messageId);
     if (!existing || existing.deletedAt) throw new NotFoundError("Mensagem não encontrada");
@@ -324,7 +331,10 @@ export const messageService = {
 
     const content = input.content !== undefined ? input.content.trim() : existing.content;
     const embedsLeft = input.embeds !== undefined ? input.embeds.length : (existing.embeds ?? []).length;
-    const otherContent = existing.attachments.length > 0 || Boolean(existing.poll) || Boolean(existing.stickerId);
+    const componentsLeft =
+      input.components !== undefined ? input.components.length : (existing.components ?? []).length;
+    const otherContent =
+      existing.attachments.length > 0 || Boolean(existing.poll) || Boolean(existing.stickerId) || componentsLeft > 0;
 
     if (!content && !embedsLeft && !otherContent) throw new AppError("Mensagem vazia");
 
@@ -344,7 +354,8 @@ export const messageService = {
     const updated = await messageRepository.update(input.messageId, {
       content,
       ...(input.embeds !== undefined ? { embeds: input.embeds.map(toStoredEmbed) } : {}),
-      editedAt: new Date(),
+      ...(input.components !== undefined ? { components: toStoredComponents(input.components) } : {}),
+      ...(input.content !== undefined || input.embeds !== undefined ? { editedAt: new Date() } : {}),
       mentions: extractMentions(content),
       ...(await resolveMentions(content, channel?.guildId ?? null, context)),
     });

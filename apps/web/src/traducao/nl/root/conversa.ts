@@ -15,6 +15,10 @@ export const conversa = {
     carregando: "Ik kijk wat er achter de link zit…",
     destino: "Gaat naar {{destino}}",
   },
+  botComponents: {
+    noResponse: "De bot reageerde niet.",
+    choose: "Maak een keuze",
+  },
   reacao: {
     carregando: "Ik kijk wie met {{emoji}} reageerde…",
     uma: "{{nome}} reageerde met {{emoji}}",

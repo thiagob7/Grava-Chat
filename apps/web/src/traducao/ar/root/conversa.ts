@@ -15,6 +15,10 @@ export const conversa = {
     carregando: "جارٍ فتح ما في الرابط…",
     destino: "يذهب إلى {{destino}}",
   },
+  botComponents: {
+    noResponse: "لم يستجب البوت.",
+    choose: "اختر خيارًا",
+  },
   reacao: {
     carregando: "جارٍ معرفة من تفاعل بـ {{emoji}}…",
     uma: "تفاعل {{nome}} بـ {{emoji}}",

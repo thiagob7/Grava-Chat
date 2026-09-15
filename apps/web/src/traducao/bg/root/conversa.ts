@@ -15,6 +15,10 @@ export const conversa = {
     carregando: "Гледам какво има в връзката…",
     destino: "Води към {{destino}}",
   },
+  botComponents: {
+    noResponse: "Ботът не отговори.",
+    choose: "Изберете опция",
+  },
   reacao: {
     carregando: "Гледам кой реагира с {{emoji}}…",
     uma: "{{nome}} реагира с {{emoji}}",

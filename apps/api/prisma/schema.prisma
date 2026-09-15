@@ -136,6 +136,31 @@ type Embed {
   timestamp    DateTime?
 }
 
+type SelectOption {
+  label       String
+  value       String
+  description String?
+  emoji       String?
+}
+
+type Component {
+  type        String
+  style       String?
+  label       String?
+  emoji       String?
+  customId    String?
+  url         String?
+  disabled    Boolean        @default(false)
+  placeholder String?
+  minValues   Int?
+  maxValues   Int?
+  options     SelectOption[]
+}
+
+type ComponentRow {
+  components Component[]
+}
+
 type Poll {
   question    String @map("pergunta")
   options      PollOption[]
@@ -451,6 +476,7 @@ model Message {
   attachments Attachment[]
   poll        Poll?
   embeds      Embed[]
+  components  ComponentRow[]
   stickerId   String?       @db.ObjectId
   sticker     GuildSticker? @relation(fields: [stickerId], references: [id], onDelete: SetNull)
   replyToId   String?      @db.ObjectId
