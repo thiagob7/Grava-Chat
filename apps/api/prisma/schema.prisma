@@ -941,8 +941,8 @@ model PixCharge {
   interval     String
   days         Int
   amount       Int
-  mpPaymentId  String?   @unique
-  mpOrderId    String?   @unique
+  mpPaymentId  String?
+  mpOrderId    String?
   qrCode       String?
   qrCodeBase64 String?
   status       String    @default("pending")
@@ -951,4 +951,6 @@ model PixCharge {
   createdAt    DateTime  @default(now())
 
   @@index([userId, createdAt])
+  @@index([mpPaymentId])
+  @@index([mpOrderId])
 }
