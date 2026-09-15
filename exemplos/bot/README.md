@@ -65,7 +65,7 @@ comandos em algum README, e o bot precisa fatiar a string na mão. A alternativa
 é declarar o que ele sabe fazer:
 
 ```
-PUT /api/bot/comandos     { comandos: [ ... ] }
+PUT /api/bot/comandos     { commands: [ ... ] }
 ```
 
 ```js
@@ -73,12 +73,12 @@ await fetch(`${SERVIDOR}/api/bot/comandos`, {
   method: "PUT",
   headers: { Authorization: `Bot ${TOKEN}`, "Content-Type": "application/json" },
   body: JSON.stringify({
-    comandos: [
+    commands: [
       {
-        nome: "play",
-        descricao: "Toca uma música",
-        opcoes: [
-          { nome: "busca", descricao: "Nome ou link", tipo: "texto", obrigatoria: true },
+        name: "play",
+        description: "Toca uma música",
+        options: [
+          { name: "busca", description: "Nome ou link", kind: "texto", required: true },
         ],
       },
     ],
@@ -92,14 +92,16 @@ deixar de mandá-lo, e o bot não precisa lembrar o que registrou da última vez
 Aí o app desenha a lista quando alguém digita `/`, e o comando chega pronto:
 
 ```js
-socket.on("command:invoked", ({ channelId, comando, opcoes, usuario, messageId }) => {
-  // opcoes.busca já veio separado, e já é do tipo declarado
+socket.on("command:invoked", ({ id, token, channelId, command, options, user, messageId }) => {
+  // options.busca já veio separado, e já é do tipo declarado
 });
 ```
 
-Os tipos de opção são `texto`, `numero`, `usuario` e `canal`. O servidor
-converte antes de entregar: `numero` chega número, `usuario` e `canal` chegam
-como id. **Nada disso precisa ser validado de novo no bot** — se faltou uma
+Os tipos de opção são `texto`, `numero`, `usuario`, `canal`, `role` e
+`boolean`. O servidor converte antes de entregar: `numero` chega número,
+`usuario`, `canal` e `role` chegam como id, e `boolean` chega `true` ou `false`.
+Opções `texto` e `numero` aceitam `choices` (até 25 pares `{ name, value }`), e
+aí só valem essas escolhas. **Nada disso precisa ser validado de novo no bot** — se faltou uma
 opção obrigatória ou o número não era número, o evento nem chega.
 
 Duas regras que o registro cobra na hora:
@@ -110,7 +112,9 @@ Duas regras que o registro cobra na hora:
   diria qual pedaço é de qual.
 
 `messageId` é a linha "fulano usou /play" que fica no canal — dá para citá-la
-na resposta.
+na resposta. Com `id` e `token`, o bot também responde ao comando pela rota de
+interação, inclusive com uma mensagem que só quem chamou vê ou com um
+formulário. Os exemplos em `../interactive-bots/` mostram como.
 
 ## Cuidado com o token
 

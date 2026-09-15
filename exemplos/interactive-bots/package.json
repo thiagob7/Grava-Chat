@@ -1,0 +1,14 @@
+{
+  "name": "gravae-interactive-bots",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "tickets": "node tickets-bot.mjs",
+    "reports": "node reports-bot.mjs",
+    "roles": "node role-picker-bot.mjs",
+    "tic-tac-toe": "node tic-tac-toe-bot.mjs"
+  },
+  "dependencies": {
+    "socket.io-client": "^4.8.1"
+  }
+}
