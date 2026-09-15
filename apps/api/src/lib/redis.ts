@@ -29,6 +29,7 @@ export const keys = {
   webhookRate: (webhookId: string) => `webhook:rate:${webhookId}`,
   interaction: (interactionId: string) => `interaction:${interactionId}`,
   interactionAnswered: (interactionId: string) => `interaction:answered:${interactionId}`,
+  ephemeralMessage: (messageId: string) => `ephemeral:${messageId}`,
   slowmode: (channelId: string, userId: string) => `slow:${channelId}:${userId}`,
   uploadQuota: (userId: string) => `upload:bytes:${userId}`,
   messagesFlow: (userId: string) => `fluxo:msg:${userId}`,

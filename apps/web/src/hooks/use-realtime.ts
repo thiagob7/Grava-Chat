@@ -376,6 +376,7 @@ export function useRealtime(
 
     const handleMessageCreated = (message: PendingMessageModel) => {
       cache.appendMessage(queryClient, message);
+      if (message.ephemeral) return;
 
       /*
         Guarda a mensagem nova no disco na hora em que ela chega, e não só
@@ -548,7 +549,7 @@ export function useRealtime(
     onMessageCreated(handleMessageCreated);
     onMessageUpdated((message) => {
       cache.patchMessage(queryClient, message.channelId, message.id, message);
-      void conversationOnDisk.write(message.channelId, [message]);
+      if (!message.ephemeral) void conversationOnDisk.write(message.channelId, [message]);
     });
     onMessageDeleted(({ channelId, messageId }) => {
       cache.removeMessage(queryClient, channelId, messageId);

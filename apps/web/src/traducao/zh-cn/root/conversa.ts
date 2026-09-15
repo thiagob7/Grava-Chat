@@ -18,6 +18,8 @@ export const conversa = {
   botComponents: {
     noResponse: "机器人没有响应。",
     choose: "请选择",
+    onlyYou: "只有你能看到",
+    dismiss: "忽略",
   },
   reacao: {
     carregando: "正在看谁用 {{emoji}} 回应…",

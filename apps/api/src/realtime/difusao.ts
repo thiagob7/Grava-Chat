@@ -1,4 +1,4 @@
-import { has, rooms, type BotCommand } from "@gravae/shared";
+import { has, rooms, type BotCommand, type ComponentRow, type Embed } from "@gravae/shared";
 
 import { AppError, ForbiddenError } from "~/lib/http.js";
 import { toMessage, toPublicUser } from "~/lib/serialize.js";
@@ -7,6 +7,7 @@ import { userRepository } from "~/repositories/user-repository.js";
 import { accessService } from "~/services/access-service.js";
 import { botService } from "~/services/bot-service.js";
 import { interactionService } from "~/services/interaction-service.js";
+import { ephemeralService } from "~/services/ephemeral-service.js";
 import { messageService, wasReplay } from "~/services/message-service.js";
 import { io } from "./io.js";
 
@@ -37,6 +38,33 @@ export async function startInteraction(userId: string, input: Parameters<typeof 
   io().to(rooms.user(interaction.botUserId)).emit("interaction:created", event);
 
   return { interactionId: interaction.id };
+}
+
+export async function sendEphemeral(
+  botUserId: string,
+  target: { userId: string; channelId: string },
+  data: { content?: string; embeds?: Embed[]; components?: ComponentRow[] },
+) {
+  await accessService.requireChannelAccess(botUserId, target.channelId);
+
+  const bot = await userRepository.findById(botUserId);
+  if (!bot) throw new AppError("Bot not found", 404);
+
+  const { message } = await ephemeralService.create({ bot: toPublicUser(bot), ...target, ...data });
+  io().to(rooms.user(target.userId)).emit("message:created", message);
+
+  return message;
+}
+
+export async function editEphemeral(
+  botUserId: string,
+  messageId: string,
+  changes: { content?: string; embeds?: Embed[]; components?: ComponentRow[] },
+) {
+  const { userId, message } = await ephemeralService.edit(messageId, botUserId, changes);
+  io().to(rooms.user(userId)).emit("message:updated", message);
+
+  return message;
 }
 
 export async function editMessage(
@@ -143,7 +171,21 @@ export async function invokeCommand(
 
   const user = await userRepository.findById(userId);
 
+  const { interaction, token } = interactionService.open({
+    kind: "command",
+    sourceEphemeral: false,
+    botUserId: bot.botUserId,
+    userId,
+    guildId: channel.guildId,
+    channelId: channel.id,
+    messageId: message.id,
+    customId: command.name,
+  });
+  await interactionService.store(interaction);
+
   io().to(rooms.user(bot.botUserId)).emit("command:invoked", {
+    id: interaction.id,
+    token,
     channelId: channel.id,
     guildId: channel.guildId,
     messageId: message.id,

@@ -8,12 +8,14 @@ import {
   rooms,
 } from "@gravae/shared";
 
-import { ForbiddenError, UnauthorizedError } from "~/lib/http.js";
+import { AppError, ForbiddenError, UnauthorizedError } from "~/lib/http.js";
 import { baseUrlDe } from "~/lib/endereco.js";
 import { toPublicUser } from "~/lib/serialize.js";
 import {
   deleteMessage,
+  editEphemeral,
   editMessage,
+  sendEphemeral,
   sendMessage,
   react,
 } from "~/realtime/difusao.js";
@@ -360,10 +362,23 @@ export async function botApiRoutes(app: FastifyInstance) {
       let message = null;
 
       if (body.type === "reply") {
-        const { embeds, components, ...data } = body.data;
-        message = await sendMessage(userId, { ...data, channelId: interaction.channelId }, undefined, { embeds, components });
+        const { embeds, components, ephemeral, ...data } = body.data;
+
+        message = ephemeral
+          ? await sendEphemeral(
+              userId,
+              { userId: interaction.userId, channelId: interaction.channelId },
+              { content: data.content, embeds, components },
+            )
+          : await sendMessage(userId, { ...data, channelId: interaction.channelId }, undefined, { embeds, components });
       } else if (body.type === "update") {
-        message = await editMessage(userId, { messageId: interaction.messageId, ...body.data });
+        if (interaction.kind !== "component") {
+          throw new AppError("update only works on a component interaction; use reply for commands", 400);
+        }
+
+        message = interaction.sourceEphemeral
+          ? await editEphemeral(userId, interaction.messageId, body.data)
+          : await editMessage(userId, { messageId: interaction.messageId, ...body.data });
       }
 
       io().to(rooms.user(interaction.userId)).emit("interaction:finished", {

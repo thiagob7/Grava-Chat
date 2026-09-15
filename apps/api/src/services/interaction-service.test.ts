@@ -35,6 +35,7 @@ vi.mock("~/lib/redis.js", () => ({
   keys: {
     interaction: (id: string) => `interaction:${id}`,
     interactionAnswered: (id: string) => `interaction:answered:${id}`,
+    ephemeralMessage: (id: string) => `ephemeral:${id}`,
   },
 }));
 
@@ -186,5 +187,44 @@ describe("claim", () => {
     await interactionService.release(event.id);
 
     await expect(interactionService.claim(BOT, event.id, event.token)).resolves.toBeTruthy();
+  });
+});
+
+describe("ephemeral messages", () => {
+  const botUser = { id: BOT, username: "shop", displayName: "Shop", avatarUrl: null, status: "ONLINE" as const, isBot: true };
+  const rows = [{ components: [{ type: "button" as const, style: "danger" as const, label: "Cancel", customId: "cancel" }] }];
+
+  const ephemeral = async () => {
+    const { ephemeralService } = await import("~/services/ephemeral-service.js");
+    findMessage.mockResolvedValue(null);
+    const { message } = await ephemeralService.create({ bot: botUser, userId: PERSON, channelId: CHANNEL, content: "Only you", components: rows });
+    return { ephemeralService, message };
+  };
+
+  it("only the person who received it can click its components", async () => {
+    const { message } = await ephemeral();
+
+    const { interaction } = await interactionService.prepare(PERSON, { messageId: message.id, customId: "cancel" });
+    expect(interaction.sourceEphemeral).toBe(true);
+
+    await expect(interactionService.prepare(OTHER_BOT, { messageId: message.id, customId: "cancel" })).rejects.toThrow(
+      "Mensagem não encontrada",
+    );
+  });
+
+  it("an empty ephemeral reply is refused", async () => {
+    const { ephemeralService } = await import("~/services/ephemeral-service.js");
+    await expect(ephemeralService.create({ bot: botUser, userId: PERSON, channelId: CHANNEL, content: "  " })).rejects.toThrow();
+  });
+
+  it("only the bot that sent it can edit it, and swapping components is not an edit", async () => {
+    const { ephemeralService, message } = await ephemeral();
+
+    await expect(ephemeralService.edit(message.id, OTHER_BOT, { content: "x" })).rejects.toThrow("expired");
+
+    const { message: updated } = await ephemeralService.edit(message.id, BOT, { components: [] });
+    expect(updated.components).toEqual([]);
+    expect(updated.editedAt).toBeNull();
+    expect(updated.ephemeral).toBe(true);
   });
 });

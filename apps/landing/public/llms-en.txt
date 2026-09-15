@@ -41,7 +41,7 @@ Base URL: https://gravaechat-api.duckdns.org/api
 
 ## Objects
 
-- Mensagem (mensagem) — 21 fields, 9 routes, 6 events
+- Mensagem (mensagem) — 22 fields, 9 routes, 6 events
 - Canal (canal) — 16 fields, 6 routes, 5 events
 - Servidor (servidor) — 7 fields, 2 routes, 4 events
 - Membro (membro) — 7 fields, 4 routes, 5 events

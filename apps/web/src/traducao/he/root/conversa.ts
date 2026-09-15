@@ -18,6 +18,8 @@ export const conversa = {
   botComponents: {
     noResponse: "הבוט לא הגיב.",
     choose: "בחרו אפשרות",
+    onlyYou: "רק את/ה רואה את זה",
+    dismiss: "סגירה",
   },
   reacao: {
     carregando: "בודק מי הגיב עם {{emoji}}…",

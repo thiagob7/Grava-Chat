@@ -18,6 +18,8 @@ export const conversa = {
   botComponents: {
     noResponse: "Bot neodpověděl.",
     choose: "Vyberte možnost",
+    onlyYou: "Tohle vidíte jen vy",
+    dismiss: "Zavřít",
   },
   reacao: {
     carregando: "Zjišťuji, kdo reagoval s {{emoji}}…",

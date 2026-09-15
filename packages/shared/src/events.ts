@@ -118,6 +118,8 @@ export type ServerToClientEvents = {
   "typing:started": (p: { channelId: string; user: z.infer<typeof publicUserSchema> }) => void;
 
   "command:invoked": (p: {
+    id: string;
+    token: string;
     channelId: string;
     guildId: string;
     messageId: string;

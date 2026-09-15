@@ -18,6 +18,8 @@ export const conversa = {
   botComponents: {
     noResponse: "Bot yanıt vermedi.",
     choose: "Bir seçenek belirle",
+    onlyYou: "Bunu yalnızca sen görebilirsin",
+    dismiss: "Kapat",
   },
   reacao: {
     carregando: "{{emoji}} ile kimin tepki verdiğine bakıyorum…",

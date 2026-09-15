@@ -127,3 +127,17 @@ describe("interactionCallbackInput", () => {
     expect(interactionCallbackInput.safeParse({ type: "update", data: {} }).success).toBe(false);
   });
 });
+
+describe("ephemeral replies", () => {
+  it("take content, embeds and components, but not attachments or polls", () => {
+    expect(
+      interactionCallbackInput.safeParse({ type: "reply", data: { content: "Only you", ephemeral: true } }).success,
+    ).toBe(true);
+    expect(
+      interactionCallbackInput.safeParse({
+        type: "reply",
+        data: { content: "", ephemeral: true, poll: { question: "?", options: [{ text: "a" }, { text: "b" }] } },
+      }).success,
+    ).toBe(false);
+  });
+});

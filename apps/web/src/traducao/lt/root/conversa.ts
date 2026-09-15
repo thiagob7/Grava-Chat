@@ -18,6 +18,8 @@ export const conversa = {
   botComponents: {
     noResponse: "Botas neatsakė.",
     choose: "Pasirinkite parinktį",
+    onlyYou: "Tai matote tik jūs",
+    dismiss: "Uždaryti",
   },
   reacao: {
     carregando: "Žiūriu, kas reagavo su {{emoji}}…",

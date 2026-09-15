@@ -1,7 +1,8 @@
 import { createHash, randomBytes, randomUUID, timingSafeEqual } from "node:crypto";
 import { INTERACTION_RESPONSE_MS, selectLimits, type InteractInput, type ServerToClientEvents } from "@gravae/shared";
 
-import { findComponent } from "~/lib/components.js";
+import { findComponent, findInRows } from "~/lib/components.js";
+import { ephemeralService } from "./ephemeral-service.js";
 import { AppError, NotFoundError } from "~/lib/http.js";
 import { keys, redis } from "~/lib/redis.js";
 import { toPublicUser } from "~/lib/serialize.js";
@@ -13,8 +14,12 @@ import { accessService } from "./access-service.js";
 const INTERACTION_TTL_S = 15 * 60;
 const RESPONSE_GRACE_MS = 500;
 
+export type InteractionKind = "component" | "command";
+
 export interface StoredInteraction {
   id: string;
+  kind: InteractionKind;
+  sourceEphemeral: boolean;
   tokenHash: string;
   botUserId: string;
   userId: string;
@@ -35,17 +40,55 @@ const sameHash = (expected: string, given: string) => {
   return a.length === b.length && timingSafeEqual(a, b);
 };
 
+async function findSource(userId: string, messageId: string) {
+  const message = await messageRepository.findById(messageId);
+
+  if (message && !message.deletedAt) {
+    return {
+      channelId: message.channelId,
+      authorId: message.authorId,
+      ephemeral: false,
+      find: (customId: string) => findComponent(message.components, customId),
+    };
+  }
+
+  const ephemeral = await ephemeralService.find(messageId);
+
+  if (ephemeral && ephemeral.userId === userId) {
+    return {
+      channelId: ephemeral.message.channelId,
+      authorId: ephemeral.botUserId,
+      ephemeral: true,
+      find: (customId: string) => findInRows(ephemeral.message.components ?? [], customId),
+    };
+  }
+
+  throw new NotFoundError("Mensagem não encontrada");
+}
+
 const notFound = () => new NotFoundError("Interaction not found or expired");
 
 export const interactionService = {
+  open(params: Omit<StoredInteraction, "id" | "tokenHash" | "createdAt">) {
+    const token = randomBytes(32).toString("base64url");
+
+    const interaction: StoredInteraction = {
+      ...params,
+      id: randomUUID(),
+      tokenHash: hashToken(token),
+      createdAt: Date.now(),
+    };
+
+    return { interaction, token };
+  },
+
   async prepare(userId: string, input: InteractInput) {
-    const message = await messageRepository.findById(input.messageId);
-    if (!message || message.deletedAt) throw new NotFoundError("Mensagem não encontrada");
+    const source = await findSource(userId, input.messageId);
 
-    const { channel } = await accessService.requireChannelAccess(userId, message.channelId);
+    const { channel } = await accessService.requireChannelAccess(userId, source.channelId);
 
-    const author = await userRepository.findById(message.authorId);
-    const component = author?.isBot ? findComponent(message.components, input.customId) : undefined;
+    const author = await userRepository.findById(source.authorId);
+    const component = author?.isBot ? source.find(input.customId) : undefined;
     if (!author || !component) throw new NotFoundError("Essa opção não existe mais");
 
     if (component.disabled) throw new AppError("Essa opção está desativada");
@@ -72,19 +115,16 @@ export const interactionService = {
     ]);
     if (!user) throw new NotFoundError("Usuário não encontrado");
 
-    const token = randomBytes(32).toString("base64url");
-
-    const interaction: StoredInteraction = {
-      id: randomUUID(),
-      tokenHash: hashToken(token),
+    const { interaction, token } = interactionService.open({
+      kind: "component",
+      sourceEphemeral: source.ephemeral,
       botUserId: author.id,
       userId,
       guildId: channel.guildId,
       channelId: channel.id,
-      messageId: message.id,
+      messageId: input.messageId,
       customId: input.customId,
-      createdAt: Date.now(),
-    };
+    });
 
     const event: InteractionEvent = {
       id: interaction.id,
@@ -92,7 +132,7 @@ export const interactionService = {
       type: "component",
       guildId: channel.guildId,
       channelId: channel.id,
-      messageId: message.id,
+      messageId: input.messageId,
       customId: input.customId,
       values,
       user: toPublicUser(user),

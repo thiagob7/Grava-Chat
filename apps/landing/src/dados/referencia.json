@@ -316,8 +316,8 @@
       "method": "POST",
       "path": "/bot/interactions/:interactionId/:token/callback",
       "group": "Interações",
-      "description": "Responde a um clique em botão ou menu. `reply` manda mensagem no canal, `update` edita a mensagem do botão e `defer` só avisa que recebeu. Uma resposta por clique, em até 3 segundos.",
-      "body": "{ type: reply, data: botSendMessageInput } | { type: update, data: botEditMessageInput } | { type: defer }",
+      "description": "Responde a um clique em botão ou menu, ou a um comando de barra. `reply` manda mensagem no canal (com `ephemeral: true`, só quem clicou vê), `update` edita a mensagem do botão e `defer` só avisa que recebeu. Uma resposta por interação, em até 3 segundos.",
+      "body": "{ type: reply, data: botSendMessageInput & { ephemeral? } } | { type: update, data: botEditMessageInput } | { type: defer }",
       "parametros": [
         "interactionId",
         "token"
@@ -949,7 +949,7 @@
     },
     {
       "name": "command:invoked",
-      "description": "Chamaram um comando de barra do bot. É por aqui que ele trabalha."
+      "description": "Chamaram um comando de barra do bot. Vem com `id` e `token` pra responder, inclusive só pra quem chamou."
     },
     {
       "name": "commands:changed",
@@ -1134,6 +1134,11 @@
         {
           "name": "components",
           "kind": "array",
+          "required": false
+        },
+        {
+          "name": "ephemeral",
+          "kind": "boolean",
           "required": false
         },
         {
@@ -2090,8 +2095,8 @@
           "method": "POST",
           "path": "/bot/interactions/:interactionId/:token/callback",
           "group": "Interações",
-          "description": "Responde a um clique em botão ou menu. `reply` manda mensagem no canal, `update` edita a mensagem do botão e `defer` só avisa que recebeu. Uma resposta por clique, em até 3 segundos.",
-          "body": "{ type: reply, data: botSendMessageInput } | { type: update, data: botEditMessageInput } | { type: defer }",
+          "description": "Responde a um clique em botão ou menu, ou a um comando de barra. `reply` manda mensagem no canal (com `ephemeral: true`, só quem clicou vê), `update` edita a mensagem do botão e `defer` só avisa que recebeu. Uma resposta por interação, em até 3 segundos.",
+          "body": "{ type: reply, data: botSendMessageInput & { ephemeral? } } | { type: update, data: botEditMessageInput } | { type: defer }",
           "parametros": [
             "interactionId",
             "token"
@@ -2109,7 +2114,7 @@
       "events": [
         {
           "name": "command:invoked",
-          "description": "Chamaram um comando de barra do bot. É por aqui que ele trabalha."
+          "description": "Chamaram um comando de barra do bot. Vem com `id` e `token` pra responder, inclusive só pra quem chamou."
         },
         {
           "name": "commands:changed",

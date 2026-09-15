@@ -343,6 +343,7 @@ export const messageSchema = z.object({
   poll: pollSchema.nullable(),
   embeds: z.array(embedSchema).optional(),
   components: z.array(componentRowSchema).optional(),
+  ephemeral: z.boolean().optional(),
   sticker: stickerSchema.nullable(),
   reactions: z.array(reactionSummarySchema),
   mentions: z.array(objectId),
@@ -511,8 +512,17 @@ export const interactInput = z.object({
 });
 export type InteractInput = z.infer<typeof interactInput>;
 
+export const interactionReplyInput = botSendMessageInput
+  .extend({ ephemeral: z.boolean().optional() })
+  .refine(
+    (input) =>
+      !input.ephemeral ||
+      (!input.attachments?.length && !input.poll && !input.stickerId && !input.replyToId && !input.forwarded && !input.postId),
+    { message: "An ephemeral reply only takes content, embeds and components" },
+  );
+
 export const interactionCallbackInput = z.discriminatedUnion("type", [
-  z.object({ type: z.literal("reply"), data: botSendMessageInput }),
+  z.object({ type: z.literal("reply"), data: interactionReplyInput }),
   z.object({ type: z.literal("update"), data: botEditMessageInput }),
   z.object({ type: z.literal("defer") }),
 ]);

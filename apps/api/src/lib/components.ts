@@ -71,7 +71,10 @@ const toComponent = (stored: StoredComponent): MessageComponent =>
 export const toComponentRows = (rows: StoredRow[] | null | undefined): ComponentRow[] =>
   (rows ?? []).map((row) => ({ components: row.components.map(toComponent) }));
 
-export const findComponent = (rows: StoredRow[] | null | undefined, customId: string) =>
-  toComponentRows(rows)
+export const findInRows = (rows: ComponentRow[], customId: string) =>
+  rows
     .flatMap((row) => row.components)
     .find((component) => component.customId === customId && !(component.type === "button" && component.style === "link"));
+
+export const findComponent = (rows: StoredRow[] | null | undefined, customId: string) =>
+  findInRows(toComponentRows(rows), customId);

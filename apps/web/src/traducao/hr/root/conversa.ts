@@ -18,6 +18,8 @@ export const conversa = {
   botComponents: {
     noResponse: "Bot nije odgovorio.",
     choose: "Odaberite opciju",
+    onlyYou: "Ovo vidite samo vi",
+    dismiss: "Odbaci",
   },
   reacao: {
     carregando: "Gledam tko je reagirao s {{emoji}}…",

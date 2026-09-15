@@ -18,6 +18,8 @@ export const conversa = {
   botComponents: {
     noResponse: "Botti ei vastannut.",
     choose: "Tee valinta",
+    onlyYou: "Vain sinä näet tämän",
+    dismiss: "Sulje",
   },
   reacao: {
     carregando: "Katson, kuka reagoi merkillä {{emoji}}…",

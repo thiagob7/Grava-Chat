@@ -19,6 +19,8 @@ export const conversa = {
   botComponents: {
     noResponse: "O bot não respondeu.",
     choose: "Escolha uma opção",
+    onlyYou: "Só você está vendo isto",
+    dismiss: "Dispensar",
   },
   reacao: {
     carregando: "Vendo quem reagiu com {{emoji}}…",

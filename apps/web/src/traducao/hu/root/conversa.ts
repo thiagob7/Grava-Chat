@@ -18,6 +18,8 @@ export const conversa = {
   botComponents: {
     noResponse: "A bot nem válaszolt.",
     choose: "Válassz egy lehetőséget",
+    onlyYou: "Ezt csak te látod",
+    dismiss: "Elvetés",
   },
   reacao: {
     carregando: "Nézem, ki reagált ezzel: {{emoji}}…",
