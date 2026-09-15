@@ -151,6 +151,7 @@ export const conversa = {
   },
 
   falha: {
+    premium: "Nie dostarczono — to wymaga Infinity",
     tentarDeNovo: "Spróbuj ponownie",
     erro: "Nie dostarczono",
     semConexao: "Nie dostarczono — nie masz połączenia",

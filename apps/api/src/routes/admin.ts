@@ -1,15 +1,17 @@
 import type { FastifyInstance, FastifyRequest } from "fastify";
 import { z } from "zod";
 
-import { ADMIN_AREAS, ADMIN_TOKEN_HEADER, type AdminArea } from "@gravae/shared";
+import { ADMIN_AREAS, ADMIN_TOKEN_HEADER, PREMIUM_GRANT_MAX_DAYS, type AdminArea, type PremiumAccount } from "@gravae/shared";
 
 import { NotFoundError } from "~/lib/http.js";
+import { announceUserUpdated } from "~/realtime/difusao.js";
 import { objectId } from "~/validations/common.js";
 import { userRepository } from "~/repositories/user-repository.js";
 import { adminService } from "~/services/admin-service.js";
 import { reportService } from "~/services/denuncia-service.js";
 import { githubService } from "~/services/github-service.js";
 import { systemService } from "~/services/sistema-service.js";
+import { planService } from "~/services/plan-service.js";
 
 const announcement = z.object({
   content: z.string().trim().min(1).max(4000),
@@ -23,6 +25,21 @@ const reportsQueue = z.object({
 });
 
 const outcome = z.object({ decision: z.enum(["procede", "arquivada", "reabrir"]) });
+
+const premiumSearch = z.object({ term: z.string().trim().min(2).max(200).optional() });
+const premiumGrant = z.object({ days: z.number().int().min(1).max(PREMIUM_GRANT_MAX_DAYS) });
+
+type UserRow = NonNullable<Awaited<ReturnType<typeof userRepository.findById>>>;
+
+const toPremiumAccount = (u: UserRow): PremiumAccount => ({
+  id: u.id,
+  email: u.email,
+  username: u.username,
+  displayName: u.displayName,
+  avatarUrl: u.avatarUrl,
+  premiumUntil: u.premiumUntil ? u.premiumUntil.toISOString() : null,
+  premiumSource: (u.premiumSource as PremiumAccount["premiumSource"]) ?? null,
+});
 
 const areas = z.array(z.enum(ADMIN_AREAS)).max(ADMIN_AREAS.length);
 const password = z.string().min(1).max(200);
@@ -177,4 +194,35 @@ export async function adminRoutes(app: FastifyInstance) {
       return result;
     },
   );
+
+  app.get("/admin/premium", async (req) => {
+    await requireAdmin(req, "premium");
+    const { term } = premiumSearch.parse(req.query);
+
+    const users = term ? await userRepository.search(term) : await userRepository.findPremium(new Date());
+    return users.map(toPremiumAccount);
+  });
+
+  app.post("/admin/premium/:userId", async (req) => {
+    const actor = await requireAdmin(req, "premium");
+    const { userId } = z.object({ userId: objectId }).parse(req.params);
+    const { days } = premiumGrant.parse(req.body);
+
+    const user = await planService.grant(userId, days, "grant");
+    await announceUserUpdated(user);
+    await adminService.log(actor.userId, "granted-premium", { userId, days, until: user.premiumUntil?.toISOString() });
+
+    return toPremiumAccount(user);
+  });
+
+  app.delete("/admin/premium/:userId", async (req) => {
+    const actor = await requireAdmin(req, "premium");
+    const { userId } = z.object({ userId: objectId }).parse(req.params);
+
+    const user = await planService.revoke(userId);
+    await announceUserUpdated(user);
+    await adminService.log(actor.userId, "revoked-premium", { userId });
+
+    return toPremiumAccount(user);
+  });
 }

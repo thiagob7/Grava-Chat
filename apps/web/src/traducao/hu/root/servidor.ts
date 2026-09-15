@@ -1,4 +1,15 @@
 export const servidor = {
+  perfilNoServidor: {
+    titulo: "Profil ezen a szerveren",
+    descricao: "Profilkép, banner és bemutatkozás, ami csak itt látszik: {{server}}.",
+    soInfinity: "A közösségenkénti profil a(z) {{plan}} része. Koppints a csomagokért.",
+    trocarFoto: "Profilkép cseréje",
+    trocarFaixa: "Banner cseréje",
+    usarDaConta: "A fiókét használom",
+    bio: "Bemutatkozás ezen a szerveren",
+    bioDica: "Írj valamit csak ennek a közösségnek",
+    salvo: "Szerverprofil mentve.",
+  },
   comunidade: {
     ativa: "A közösség nyitva van",
     ativaDesde: "Nyitva {{quando}} óta",

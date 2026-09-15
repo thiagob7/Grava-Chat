@@ -36,6 +36,7 @@ import {
   leaveVoiceChannel,
   updateVoiceState,
 } from "~/@core/lib/websocket/emit-voice";
+import { planLimitsNow } from "~/features/plan/stores/plan-store";
 
 export type VoiceTile = {
   identity: string;
@@ -208,7 +209,7 @@ function storeSettingsByPerson(settings: SettingsByPerson) {
 
 function currentScreenQuality() {
   const { screenResolution, screenFrameRate } = useVoicePrefs.getState();
-  return screenQuality(screenResolution, screenFrameRate);
+  return screenQuality(screenResolution, screenFrameRate, planLimitsNow());
 }
 
 /*

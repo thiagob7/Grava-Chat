@@ -13,6 +13,7 @@ import {
   NAME_FONTS,
   statusCustomSchema,
 } from "./cosmeticos.js";
+import { HIGHEST_LIMITS, PREMIUM_SOURCES } from "./plans.js";
 
 export const objectId = z.string().regex(/^[a-f\d]{24}$/i, "id invalido");
 
@@ -25,6 +26,7 @@ export const publicUserSchema = z.object({
   isBot: z.boolean(),
   system: z.boolean().optional(),
   decoration: z.string().optional(),
+  premium: z.boolean().optional(),
 });
 export type PublicUser = z.infer<typeof publicUserSchema>;
 
@@ -48,6 +50,9 @@ export const selfUserSchema = publicUserSchema.extend({
 
   deleteAt: z.iso.datetime().nullable(),
   verifiedEmail: z.boolean(),
+
+  premiumUntil: z.iso.datetime().nullable(),
+  premiumSource: z.enum(PREMIUM_SOURCES).nullable(),
 });
 export type SelfUser = z.infer<typeof selfUserSchema>;
 
@@ -366,9 +371,14 @@ export const guildMemberSchema = z.object({
   user: publicUserSchema,
   roleIds: z.array(objectId),
   nickname: z.string().nullable(),
+  avatarUrl: z.string().nullable().optional(),
+  bannerUrl: z.string().nullable().optional(),
+  bio: z.string().nullable().optional(),
   timeoutUntil: z.iso.datetime().nullable(),
   joinedAt: z.iso.datetime(),
 });
+
+export const GUILD_BIO_MAX = 190;
 
 export const roleSchema = z.object({
   id: objectId,
@@ -466,7 +476,7 @@ export type CreatePollInput = z.infer<typeof createPollInput>;
 
 export const sendMessageInput = z.object({
   channelId: objectId,
-  content: z.string().max(LIMITS.messageLength),
+  content: z.string().max(HIGHEST_LIMITS.messageLength),
   font: z.enum(NAME_FONTS).optional(),
   attachments: z.array(attachmentSchema).max(LIMITS.attachmentsPerMessage).optional(),
   poll: createPollInput.optional(),
@@ -484,12 +494,16 @@ export const sendMessageInput = z.object({
 
 export const editMessageInput = z.object({
   messageId: objectId,
-  content: z.string().min(1).max(LIMITS.messageLength),
+  content: z.string().min(1).max(HIGHEST_LIMITS.messageLength),
 });
 
 export const botSendMessageInput = sendMessageInput
   .omit({ channelId: true, nonce: true, retry: true })
-  .extend({ embeds: embedsInput.optional(), components: componentsInput.optional() });
+  .extend({
+    content: z.string().max(LIMITS.messageLength),
+    embeds: embedsInput.optional(),
+    components: componentsInput.optional(),
+  });
 export type BotSendMessageInput = z.infer<typeof botSendMessageInput>;
 
 export const botEditMessageInput = z

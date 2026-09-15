@@ -151,6 +151,7 @@ export const conversa = {
   },
 
   falha: {
+    premium: "לא נמסר — זה חלק מ-Infinity",
     tentarDeNovo: "לנסות שוב",
     erro: "לא נשלחה",
     semConexao: "לא נשלחה — אין לך חיבור",

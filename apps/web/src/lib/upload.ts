@@ -1,4 +1,4 @@
-import type { Attachment, UploadPurpose } from "@gravae/shared";
+import { LIMITS, type Attachment, type UploadPurpose } from "@gravae/shared";
 
 import { findUploadConfig } from "~/@core/application/requests/upload/find-upload-config";
 import { presignUpload } from "~/@core/application/requests/upload/presign-upload";
@@ -7,6 +7,11 @@ import { resizeImage, type PreparedImage } from "~/lib/image";
 
 let setting: Promise<{ direct: boolean }> | null = null;
 const getSetting = () => (setting ??= findUploadConfig().catch(() => ({ direct: false })));
+
+export async function attachmentCeiling(planBytes: number): Promise<number> {
+  const { direct } = await getSetting();
+  return direct ? planBytes : Math.min(planBytes, LIMITS.attachmentBytes);
+}
 
 export async function uploadImage(
   file: File,

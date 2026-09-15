@@ -43,6 +43,7 @@ export const perfil = {
     falhou: "Nem sikerült elküldeni. Próbáld a beszélgetésből.",
   },
   cartao: {
+    infinity: "Infinity-tag",
     equipe: "Gravaê csapat",
     trocarFaixa: "Kártya fejlécképének cseréje",
     trocarFaixaCurto: "Fejléckép cseréje",

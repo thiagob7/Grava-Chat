@@ -18,6 +18,9 @@ import { Tooltip } from "~/components/ui/tooltip";
 import { cn } from "~/lib/utils";
 import { useVoiceStore } from "~/features/voz/stores/voice-store";
 import { flx, flxAttr, flxCls } from "~/lib/compat-de-tema";
+import { useBillingReturn } from "~/features/plan/hooks/use-billing-return";
+import { UpgradeModal } from "~/features/plan/components/UpgradeModal";
+import { GuildProfileModal } from "~/features/plan/components/GuildProfileModal";
 
 interface UserPanelProps {
   user: SelfUserModel;
@@ -27,6 +30,7 @@ interface UserPanelProps {
 
 export const UserPanel: React.FC<UserPanelProps> = ({ user, guildId, onLogout }) => {
   const sectionRequested = useSettings((s) => s.section);
+  useBillingReturn();
   const openSettings = useSettings((s) => s.open);
   const closeRequest = useSettings((s) => s.close);
   const [editingProfile, setEditingProfile] = useState(false);
@@ -146,6 +150,9 @@ export const UserPanel: React.FC<UserPanelProps> = ({ user, guildId, onLogout })
           </Tooltip>
         </div>
       </div>
+
+      <UpgradeModal data-gc="perfil.user-panel.upgrade-modal" />
+      <GuildProfileModal data-gc="perfil.user-panel.guild-profile-modal" />
 
       {sectionRequested && (
         <UserSettingsModal data-gc="perfil.user-panel.user-settings-modal.close-request"

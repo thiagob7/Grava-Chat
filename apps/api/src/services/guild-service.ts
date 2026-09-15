@@ -39,6 +39,7 @@ import type {
   UpdateChannelInput,
   UpdateGuildInput,
 } from "~/validations/guild.js";
+import { planService } from "~/services/plan-service.js";
 
 const DEFAULT_CATEGORIES = ["CANAIS DE TEXTO", "CANAIS DE VOZ"];
 
@@ -89,6 +90,8 @@ export const guildService = {
   },
 
   async create(userId: string, input: CreateGuildInput) {
+    await planService.requireCommunityRoom(userId);
+
     const guild = await guildRepository.createWithDefaults({
       name: input.name,
       ownerId: userId,

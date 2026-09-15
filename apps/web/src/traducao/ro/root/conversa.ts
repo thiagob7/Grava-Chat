@@ -151,6 +151,7 @@ export const conversa = {
   },
 
   falha: {
+    premium: "Nelivrat — asta ține de Infinity",
     tentarDeNovo: "Încearcă din nou",
     erro: "Nu a fost livrat",
     semConexao: "Nu a fost livrat — nu ai conexiune",

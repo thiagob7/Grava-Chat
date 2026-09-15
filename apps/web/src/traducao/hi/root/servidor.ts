@@ -1,4 +1,15 @@
 export const servidor = {
+  perfilNoServidor: {
+    titulo: "इस सर्वर में प्रोफ़ाइल",
+    descricao: "अवतार, बैनर और परिचय जो सिर्फ़ {{server}} में दिखते हैं।",
+    soInfinity: "हर कम्युनिटी के लिए प्रोफ़ाइल {{plan}} का हिस्सा है। प्लान देखने के लिए टैप करें।",
+    trocarFoto: "अवतार बदलें",
+    trocarFaixa: "बैनर बदलें",
+    usarDaConta: "खाते वाला इस्तेमाल करें",
+    bio: "इस सर्वर में परिचय",
+    bioDica: "सिर्फ़ इस कम्युनिटी के लिए कुछ लिखें",
+    salvo: "सर्वर प्रोफ़ाइल सहेजी गई।",
+  },
   comunidade: {
     ativa: "समुदाय खुला है",
     ativaDesde: "{{quando}} से खुला",

@@ -151,6 +151,7 @@ export const conversa = {
   },
 
   falha: {
+    premium: "Nepristatyta — tam reikia Infinity",
     tentarDeNovo: "Bandyti dar kartą",
     erro: "Nepristatyta",
     semConexao: "Nepristatyta — neturi ryšio",

@@ -12,6 +12,14 @@ export const messageFavoriteRepository = {
     });
   },
 
+  countOf(userId: string) {
+    return prisma.messageFavorite.count({ where: { userId } });
+  },
+
+  exists(userId: string, messageId: string) {
+    return prisma.messageFavorite.count({ where: { userId, messageId } }).then((n) => n > 0);
+  },
+
   idsOf(userId: string) {
     return prisma.messageFavorite.findMany({ where: { userId }, select: { messageId: true } });
   },

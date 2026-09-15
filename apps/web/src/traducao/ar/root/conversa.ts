@@ -151,6 +151,7 @@ export const conversa = {
   },
 
   falha: {
+    premium: "لم تُسلَّم — هذه ميزة Infinity",
     tentarDeNovo: "إعادة المحاولة",
     erro: "لم تُرسل",
     semConexao: "لم تُرسل — لا يوجد اتصال",

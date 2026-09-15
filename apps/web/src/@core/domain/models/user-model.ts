@@ -1,4 +1,4 @@
-import type { DesiredStatus, ProfileStyle, SpamFilter, PresenceStatus, CustomStatus } from "@gravae/shared";
+import type { DesiredStatus, ProfileStyle, SpamFilter, PresenceStatus, CustomStatus, PremiumSource } from "@gravae/shared";
 
 export interface PublicUserModel {
   id: string;
@@ -8,6 +8,7 @@ export interface PublicUserModel {
   status: PresenceStatus;
   isBot: boolean;
   system?: boolean;
+  premium?: boolean;
 }
 
 export interface SelfUserModel extends PublicUserModel {
@@ -30,6 +31,9 @@ export interface SelfUserModel extends PublicUserModel {
 
   deleteAt: string | null;
   verifiedEmail: boolean;
+
+  premiumUntil: string | null;
+  premiumSource: PremiumSource | null;
 }
 
 export interface SessionModel {

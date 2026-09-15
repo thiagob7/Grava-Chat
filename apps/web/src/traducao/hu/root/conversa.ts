@@ -151,6 +151,7 @@ export const conversa = {
   },
 
   falha: {
+    premium: "Nem kézbesítve – ehhez Infinity kell",
     tentarDeNovo: "Újrapróbálom",
     erro: "Nem kézbesítve",
     semConexao: "Nem kézbesítve — nincs kapcsolatod",

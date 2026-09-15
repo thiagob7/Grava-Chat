@@ -1,4 +1,15 @@
 export const servidor = {
+  perfilNoServidor: {
+    titulo: "이 서버의 프로필",
+    descricao: "{{server}}에서만 보이는 아바타, 배너, 소개.",
+    soInfinity: "커뮤니티별 프로필은 {{plan}} 기능입니다. 탭해서 플랜 보기.",
+    trocarFoto: "아바타 변경",
+    trocarFaixa: "배너 변경",
+    usarDaConta: "계정 것 사용",
+    bio: "이 서버의 소개",
+    bioDica: "이 커뮤니티에만 전할 말을 적어 보세요",
+    salvo: "서버 프로필을 저장했습니다.",
+  },
   comunidade: {
     ativa: "커뮤니티가 열려 있습니다",
     ativaDesde: "{{quando}}부터 공개",

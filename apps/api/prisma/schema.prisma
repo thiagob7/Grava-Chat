@@ -199,6 +199,9 @@ model User {
 
   deleteAt DateTime? @map("excluirEm")
 
+  premiumUntil  DateTime?
+  premiumSource String?
+
   createdAt   DateTime       @default(now())
   updatedAt   DateTime       @updatedAt
 
@@ -369,6 +372,9 @@ model GuildMember {
   roleIds  String[] @db.ObjectId
   emblemIds String[] @db.ObjectId
   nickname String?
+  avatarUrl String?
+  bannerUrl String?
+  bio String?
   timeoutUntil DateTime?
   inviteCode String?
   invitedById String? @db.ObjectId
@@ -885,4 +891,45 @@ model AdminLog {
   createdAt DateTime @default(now())
 
   @@map("RegistroDeAdministracao")
+}
+
+/// Cliente da Stripe de cada conta e o estado da assinatura no cartão.
+/// Os índices únicos exigem `db push` antes de ligar a cobrança.
+model BillingCustomer {
+  id                 String    @id @default(auto()) @map("_id") @db.ObjectId
+  userId             String    @unique @db.ObjectId
+  stripeCustomerId   String    @unique
+  subscriptionId     String?
+  subscriptionStatus String?
+  interval           String?
+  currentPeriodEnd   DateTime?
+  cancelAtPeriodEnd  Boolean   @default(false)
+  createdAt          DateTime  @default(now())
+  updatedAt          DateTime  @updatedAt
+}
+
+/// Cada pagamento que liberou premium: fatura da assinatura ou período avulso.
+model BillingPayment {
+  id              String    @id @default(auto()) @map("_id") @db.ObjectId
+  userId          String    @db.ObjectId
+  kind            String
+  sourceId        String    @unique
+  paymentIntentId String?
+  amount          Int
+  currency        String
+  days            Int?
+  paidAt          DateTime
+  refundedAt      DateTime?
+  createdAt       DateTime  @default(now())
+
+  @@index([userId, paidAt])
+  @@index([paymentIntentId])
+}
+
+/// Eventos da Stripe já tratados, para o mesmo evento não liberar premium duas vezes.
+model BillingEvent {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  stripeId    String   @unique
+  type        String
+  processedAt DateTime @default(now())
 }

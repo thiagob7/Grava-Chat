@@ -1,4 +1,15 @@
 export const servidor = {
+  perfilNoServidor: {
+    titulo: "Профіль на цьому сервері",
+    descricao: "Аватар, банер і опис, які видно лише в {{server}}.",
+    soInfinity: "Профілі для спільнот входять до {{plan}}. Натисніть, щоб побачити плани.",
+    trocarFoto: "Змінити аватар",
+    trocarFaixa: "Змінити банер",
+    usarDaConta: "Використати з акаунта",
+    bio: "Опис на цьому сервері",
+    bioDica: "Розкажіть щось лише цій спільноті",
+    salvo: "Профіль сервера збережено.",
+  },
   comunidade: {
     ativa: "Спільнота відкрита",
     ativaDesde: "Відкрита з {{quando}}",

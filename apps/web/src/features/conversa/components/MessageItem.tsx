@@ -30,7 +30,8 @@ import {
 import { useQueryClient } from "@tanstack/react-query";
 import type { GuildDetailModel } from "~/@core/domain/models/guild-model";
 import { Dialog, DialogContent, DialogTitle } from "~/components/ui/dialog";
-import type { Attachment, GuildEmoji, Message, PublicUser, ProfilePublic } from "@gravae/shared";
+import { parseCustomEmoji, type Attachment, type GuildEmoji, type Message, type PublicUser, type ProfilePublic } from "@gravae/shared";
+import { ServerEmoji } from "~/features/expressao/components/ServerEmoji";
 
 import { Emoji } from "~/features/expressao/components/Emoji";
 import { recentEmojis } from "~/features/expressao/lib/emoji";
@@ -365,12 +366,12 @@ export const MessageItem: React.FC<MessageItemProps> = ({
             {formatTime(message.createdAt)}
           </span>
         ) : (
-          <UserProfilePopover data-gc="conversa.message-item.user-profile-popover" userId={message.author.id}>
+          <UserProfilePopover data-gc="conversa.message-item.user-profile-popover" userId={message.author.id} guildId={guildId}>
             <button data-gc="conversa.message-item.button" className="rounded-full transition hover:brightness-110">
               <Avatar data-gc="conversa.message-item.avatar"
                 id={message.author.id}
                 name={message.author.displayName}
-                url={message.author.avatarUrl}
+                url={charms?.guildAvatarUrl ?? message.author.avatarUrl}
                 charms={charms?.profile?.decoration ? charms.profile : { ...charms?.profile, decoration: message.author.decoration as ProfilePublic["decoration"] }}
                 className={flxCls("messageAvatar")}
               />
@@ -382,7 +383,7 @@ export const MessageItem: React.FC<MessageItemProps> = ({
       <div data-gc="conversa.message-item.div--5" {...flx("messageColumn", "min-w-0 flex-1")}>
         {!compact && (
           <div data-gc="conversa.message-item.div--6" {...flx("authorLine", "flex items-baseline gap-x-2")}>
-            <UserProfilePopover data-gc="conversa.message-item.user-profile-popover--2" userId={message.author.id}>
+            <UserProfilePopover data-gc="conversa.message-item.user-profile-popover--2" userId={message.author.id} guildId={guildId}>
               <button data-gc="conversa.message-item.button--2" {...flx("authorName", "min-w-0 max-w-full truncate font-medium text-ink hover:underline")}>
                 <UserName data-gc="conversa.message-item.user-name"
                   name={message.author.displayName}
@@ -838,7 +839,9 @@ const ReactionEmoji: React.FC<{
 }> = ({ emoji, fromServer, className = "size-5" }) => {
   const name = /^:([\w~-]+):$/.exec(emoji)?.[1];
   const match = name ? fromServer.find((e) => e.name === name) : undefined;
+  const serverRef = parseCustomEmoji(emoji);
 
+  if (serverRef) return <ServerEmoji data-gc="conversa.message-item.server-emoji" id={serverRef.id} name={serverRef.name} className={className} />;
   if (!match) return <Emoji data-gc="conversa.message-item.emoji" emoji={emoji} className={className} />;
 
   return <img data-gc="conversa.message-item.img--2" src={match.url} alt={emoji} className={cn(className, "object-contain")} />;

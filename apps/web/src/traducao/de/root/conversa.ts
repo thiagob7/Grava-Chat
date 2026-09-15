@@ -151,6 +151,7 @@ export const conversa = {
   },
 
   falha: {
+    premium: "Nicht zugestellt – das gehört zu Infinity",
     tentarDeNovo: "Erneut versuchen",
     erro: "Nicht zugestellt",
     semConexao: "Nicht zugestellt — du bist offline",

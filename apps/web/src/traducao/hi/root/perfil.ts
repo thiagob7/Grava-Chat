@@ -43,6 +43,7 @@ export const perfil = {
     falhou: "भेजा नहीं जा सका। बातचीत से आज़माएँ।",
   },
   cartao: {
+    infinity: "Infinity सदस्य",
     equipe: "Gravaê टीम",
     trocarFaixa: "कार्ड का बैनर बदलें",
     trocarFaixaCurto: "बैनर बदलें",

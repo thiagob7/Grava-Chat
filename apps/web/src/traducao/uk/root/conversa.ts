@@ -151,6 +151,7 @@ export const conversa = {
   },
 
   falha: {
+    premium: "Не доставлено — це доступно в Infinity",
     tentarDeNovo: "Спробувати ще раз",
     erro: "Не доставлено",
     semConexao: "Не доставлено — немає з'єднання",

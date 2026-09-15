@@ -55,6 +55,33 @@ export const userRepository = {
     return prisma.user.update({ where: { id }, data });
   },
 
+  planInfoOf(id: string) {
+    return prisma.user.findUnique({ where: { id }, select: { premiumUntil: true, isBot: true } });
+  },
+
+  findPremium(now: Date) {
+    return prisma.user.findMany({
+      where: { premiumUntil: { gt: now } },
+      orderBy: { premiumUntil: "asc" },
+      take: 200,
+    });
+  },
+
+  search(term: string) {
+    return prisma.user.findMany({
+      where: {
+        isBot: false,
+        ...unset("system"),
+        OR: [
+          { email: { equals: term, mode: "insensitive" } },
+          { username: { contains: term, mode: "insensitive" } },
+          { displayName: { contains: term, mode: "insensitive" } },
+        ],
+      },
+      take: 20,
+    });
+  },
+
   async updatePresenceCache(id: string, status: PresenceStatus) {
     await prisma.user
       .update({ where: { id }, data: { status, lastSeenAt: new Date() } })

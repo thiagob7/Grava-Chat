@@ -153,6 +153,7 @@ export const conversa = {
   },
 
   falha: {
+    premium: "Não foi entregue — isso é do Infinity",
     tentarDeNovo: "Tentar de novo",
     erro: "Não foi entregue",
     semConexao: "Não foi entregue — você está sem conexão",

@@ -22,6 +22,8 @@ import {
   registerUse,
   type EmojiGroup,
 } from "~/features/expressao/lib/emoji";
+import { customEmojiToken, PLAN_NAME } from "@gravae/shared";
+import { usePlanLimits, usePlanStore } from "~/features/plan/stores/plan-store";
 
 interface Pointed {
   sample: React.ReactNode;
@@ -36,6 +38,8 @@ export const TabEmoji: React.FC<{
   onEmoji: (text: string) => void;
 }> = ({ guildId, search, onEmoji }) => {
   const servers = useServers(guildId);
+  const anywhere = usePlanLimits().expressionsAnywhere;
+  const openUpgrade = usePlanStore((s) => s.openUpgrade);
   const [groups, setGroups] = useState<EmojiGroup[] | null>(null);
   const [recent, setRecent] = useState<string[]>(() => recentEmojis());
   const [pointed, setPointed] = useState<Pointed | null>(null);
@@ -153,14 +157,18 @@ export const TabEmoji: React.FC<{
                   {server.emojis.map((emoji) => (
                     <button data-gc="expressao.seletor.aba-emoji.button"
                       key={emoji.id}
-                      onClick={() => pick(`:${emoji.name}:`, false)}
+                      onClick={() => {
+                        if (server.id === guildId) pick(`:${emoji.name}:`, false);
+                        else if (anywhere) pick(customEmojiToken(emoji), false);
+                        else openUpgrade();
+                      }}
                       onMouseEnter={() =>
                         setPointed({
                           sample: (
                             <img data-gc="expressao.seletor.aba-emoji.img" src={emoji.url} alt="" className="size-7 object-contain" />
                           ),
                           title: `:${emoji.name}:`,
-                          detail: `de ${server.name}`,
+                          detail: server.id === guildId || anywhere ? `de ${server.name}` : `de ${server.name} · ${PLAN_NAME}`,
                           right: (
                             <ServerIcon data-gc="expressao.seletor.aba-emoji.server-icon--3"
                               name={server.name}

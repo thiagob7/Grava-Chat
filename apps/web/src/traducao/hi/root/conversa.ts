@@ -151,6 +151,7 @@ export const conversa = {
   },
 
   falha: {
+    premium: "नहीं भेजा गया — यह Infinity में है",
     tentarDeNovo: "फिर कोशिश करें",
     erro: "डिलीवर नहीं हुई",
     semConexao: "डिलीवर नहीं हुई — आपका कनेक्शन नहीं है",

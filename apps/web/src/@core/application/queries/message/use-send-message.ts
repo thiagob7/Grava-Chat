@@ -13,6 +13,7 @@ import { sendMessage } from "~/@core/lib/websocket/send-message";
 import { failureReason } from "~/features/conversa/lib/falha-de-envio";
 import { worthQueueing } from "~/features/conversa/lib/fila-de-saida";
 import { sendQueue } from "~/@core/infra/cache/fila-de-envio";
+import { usePlanStore } from "~/features/plan/stores/plan-store";
 
 interface SendMessageVariables {
   channelId: string;
@@ -97,6 +98,7 @@ export const useSendMessage = () => {
 
     onError: (error, variables) => {
       const reason = failureReason(error);
+      if (reason === "premium") usePlanStore.getState().openUpgrade();
 
       /*
         Falha que passa com o tempo vai para a prateleira, e o vigia reenvia

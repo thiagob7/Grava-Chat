@@ -1,4 +1,15 @@
 export const servidor = {
+  perfilNoServidor: {
+    titulo: "在此伺服器的個人檔案",
+    descricao: "只在 {{server}} 顯示的頭像、橫幅和簡介。",
+    soInfinity: "依社群設定個人檔案是 {{plan}} 的功能。點一下查看方案。",
+    trocarFoto: "更換頭像",
+    trocarFaixa: "更換橫幅",
+    usarDaConta: "使用帳號的",
+    bio: "在此伺服器的簡介",
+    bioDica: "寫點只給這個社群看的內容",
+    salvo: "伺服器個人檔案已儲存。",
+  },
   comunidade: {
     ativa: "社群已經開放",
     ativaDesde: "自 {{quando}} 起開放",

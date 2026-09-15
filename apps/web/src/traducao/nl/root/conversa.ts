@@ -151,6 +151,7 @@ export const conversa = {
   },
 
   falha: {
+    premium: "Niet bezorgd — dit hoort bij Infinity",
     tentarDeNovo: "Opnieuw proberen",
     erro: "Niet bezorgd",
     semConexao: "Niet bezorgd — je hebt geen verbinding",

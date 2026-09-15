@@ -1,7 +1,8 @@
 import { has, rooms, type BotCommand, type ComponentRow, type Embed } from "@gravae/shared";
 
 import { AppError, ForbiddenError } from "~/lib/http.js";
-import { toMessage, toPublicUser } from "~/lib/serialize.js";
+import { toMessage, toProfilePublic, toPublicUser } from "~/lib/serialize.js";
+import { memberRepository } from "~/repositories/guild-repository.js";
 import { messageRepository } from "~/repositories/message-repository.js";
 import { userRepository } from "~/repositories/user-repository.js";
 import { accessService } from "~/services/access-service.js";
@@ -10,6 +11,14 @@ import { interactionService } from "~/services/interaction-service.js";
 import { ephemeralService } from "~/services/ephemeral-service.js";
 import { messageService, wasReplay } from "~/services/message-service.js";
 import { io } from "./io.js";
+
+export async function announceUserUpdated(user: Parameters<typeof toPublicUser>[0]) {
+  const guilds = await memberRepository.guildIdsOf(user.id);
+
+  io()
+    .to([rooms.user(user.id), ...guilds.map((g) => rooms.guild(g.guildId))])
+    .emit("user:updated", { user: toPublicUser(user), profile: toProfilePublic(user) });
+}
 
 export async function sendMessage(
   userId: string,

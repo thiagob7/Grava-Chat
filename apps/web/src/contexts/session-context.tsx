@@ -12,6 +12,7 @@ import type { SelfUserModel } from "~/@core/domain/models/user-model";
 import { queryKeys } from "~/@core/infra/constants/query-keys";
 import { apiErrorMessage, refreshSession, setAccessToken, setSessionLostHandler } from "~/@core/lib/api";
 import { desktop } from "~/lib/desktop";
+import { usePlanStore } from "~/features/plan/stores/plan-store";
 
 interface SessionContextValue {
   user: SelfUserModel | null;
@@ -64,6 +65,11 @@ export const SessionProvider = ({ children }: { children: ReactNode }) => {
 
   const config = useAuthConfig();
   const me = useMe(hasSession);
+  const setPremiumUntil = usePlanStore((s) => s.setPremiumUntil);
+
+  useEffect(() => {
+    setPremiumUntil(me.data?.premiumUntil ?? null);
+  }, [me.data?.premiumUntil, setPremiumUntil]);
 
   const [tookToo, setTookToo] = useState(false);
 

@@ -151,6 +151,7 @@ export const conversa = {
   },
 
   falha: {
+    premium: "Nedoručeno — vyžaduje Infinity",
     tentarDeNovo: "Zkusit znovu",
     erro: "Nedoručeno",
     semConexao: "Nedoručeno — nemáš připojení",

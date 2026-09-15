@@ -151,6 +151,7 @@ export const conversa = {
   },
 
   falha: {
+    premium: "전송 실패 — Infinity 전용 기능입니다",
     tentarDeNovo: "다시 시도",
     erro: "전송되지 않음",
     semConexao: "전송되지 않음: 연결이 없습니다",

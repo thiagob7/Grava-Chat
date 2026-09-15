@@ -151,6 +151,7 @@ export const conversa = {
   },
 
   falha: {
+    premium: "Ikke leveret – det kræver Infinity",
     tentarDeNovo: "Prøv igen",
     erro: "Ikke leveret",
     semConexao: "Ikke leveret — du har ingen forbindelse",

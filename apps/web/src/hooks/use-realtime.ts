@@ -461,6 +461,10 @@ export function useRealtime(
       queryClient.invalidateQueries({
         queryKey: queryKeys.user.profile(user.id),
       });
+
+      if (queryClient.getQueryData<SelfUserModel>([queryKeys.auth.me])?.id === user.id) {
+        void queryClient.invalidateQueries({ queryKey: [queryKeys.auth.me] });
+      }
     };
 
     const handlePresenceSelf = ({

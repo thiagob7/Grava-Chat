@@ -43,6 +43,7 @@ export const perfil = {
     falhou: "Не удалось отправить. Попробуйте из переписки.",
   },
   cartao: {
+    infinity: "Участник Infinity",
     equipe: "Команда Gravaê",
     trocarFaixa: "Сменить баннер карточки",
     trocarFaixaCurto: "Сменить баннер",

@@ -4,6 +4,7 @@ import type { GuildEmoji } from "@gravae/shared";
 import { TextLink } from "~/features/conversa/components/LinkDoTexto";
 import { Emoji } from "~/features/expressao/components/Emoji";
 import { EMOJI } from "~/features/expressao/lib/twemoji";
+import { ServerEmoji } from "~/features/expressao/components/ServerEmoji";
 
 import { CodeBlock } from "~/features/conversa/components/BlocoDeCodigo";
 import type { ResolveMentions } from "~/features/conversa/hooks/use-mencoes";
@@ -23,7 +24,7 @@ import { cn } from "~/lib/utils";
 import { UserProfilePopover } from "~/features/perfil/components/UserProfilePopover";
 import { flxCls, type Places } from "~/lib/compat-de-tema";
 
-const RICH = /:([a-zA-Z0-9_]{2,32}):|<@&([a-f\d]{24})>|<@([a-f\d]{24})>|@(everyone|here)\b/g;
+const RICH = /:([a-zA-Z0-9_]{2,32}):|<@&([a-f\d]{24})>|<@([a-f\d]{24})>|@(everyone|here)\b|<a?:([a-zA-Z0-9_]{2,32}):([a-f\d]{24})>/g;
 
 interface MessageContentProps {
   content: string;
@@ -110,14 +111,16 @@ function enrich(
   let last = 0;
 
   for (const match of text.matchAll(RICH)) {
-    const [whole, emoji, roleId, userId, all] = match;
+    const [whole, emoji, roleId, userId, all, serverEmojiName, serverEmojiId] = match;
     if (match.index === undefined) continue;
 
     const anterior = text.slice(last, match.index);
     let piece: React.ReactNode = null;
     const k = `${key}-${match.index}`;
 
-    if (emoji) {
+    if (serverEmojiId && serverEmojiName) {
+      piece = <ServerEmoji data-gc="conversa.message-content.server-emoji" key={k} id={serverEmojiId} name={serverEmojiName} />;
+    } else if (emoji) {
       const found = byName.get(emoji);
       if (found) {
         piece = (

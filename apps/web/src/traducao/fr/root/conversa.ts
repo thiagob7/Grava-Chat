@@ -151,6 +151,7 @@ export const conversa = {
   },
 
   falha: {
+    premium: "Non distribué — cela nécessite Infinity",
     tentarDeNovo: "Réessayer",
     erro: "Non remis",
     semConexao: "Non remis — vous n'avez pas de connexion",

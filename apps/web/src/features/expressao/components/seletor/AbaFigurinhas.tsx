@@ -14,6 +14,7 @@ import { useCollapse } from "~/features/expressao/components/seletor/use-colapso
 import { useSections } from "~/features/expressao/components/seletor/use-secoes";
 import { useServers } from "~/features/expressao/components/seletor/use-servidores";
 import { recentStickers, registerSticker } from "~/features/expressao/lib/expressoes-recentes";
+import { usePlanLimits, usePlanStore } from "~/features/plan/stores/plan-store";
 
 type WithAuthor = Sticker & { createdBy: { displayName: string } | null };
 
@@ -28,6 +29,8 @@ export const TabStickers: React.FC<{
   onSticker: (s: Sticker) => void;
 }> = ({ guildId, search, onSticker }) => {
   const servers = useServers(guildId);
+  const anywhere = usePlanLimits().expressionsAnywhere;
+  const openUpgrade = usePlanStore((s) => s.openUpgrade);
   const [recent, setRecent] = useState<string[]>(() => recentStickers());
   const [pointed, setPointed] = useState<Pointed | null>(null);
   const { container, register, irFor, onScroll, active } = useSections();
@@ -60,6 +63,11 @@ export const TabStickers: React.FC<{
       });
 
   const pick = (sticker: WithAuthor) => {
+    if (sticker.guildId !== guildId && !anywhere) {
+      openUpgrade();
+      return;
+    }
+
     registerSticker(sticker.id);
     setRecent(recentStickers());
     onSticker(sticker);

@@ -7,6 +7,7 @@ import type {
   ProfileImageFrame,
   ProfileImageSending,
 } from "~/features/perfil/hooks/use-envio-de-imagem-de-perfil";
+import { usePlanLimits, usePlanStore } from "~/features/plan/stores/plan-store";
 
 /*
   O enquadrador da foto e da faixa. Fica num componente só porque as duas telas
@@ -45,6 +46,8 @@ export const ProfileImageChooser: React.FC<{ image: ProfileImageSending }> = ({ 
   const input = useRef<HTMLInputElement>(null);
   const photo = image.chooserField === "avatarUrl";
   const limit = Math.round((photo ? LIMITS.avatarBytes : LIMITS.bannerBytes) / 1024 / 1024);
+  const animated = usePlanLimits().animatedProfile;
+  const openUpgrade = usePlanStore((s) => s.openUpgrade);
 
   return (
     <>
@@ -56,6 +59,10 @@ export const ProfileImageChooser: React.FC<{ image: ProfileImageSending }> = ({ 
         onChange={(event) => {
           const file = event.target.files?.[0];
           event.target.value = "";
+          if (file?.type === "image/gif" && !animated) {
+            openUpgrade();
+            return;
+          }
           if (file && image.chooserField) image.sendFile(file, image.chooserField);
         }}
       />
@@ -63,7 +70,7 @@ export const ProfileImageChooser: React.FC<{ image: ProfileImageSending }> = ({ 
       <ImagePicker data-gc="perfil.enquadrar-imagem-de-perfil.image-picker.close-chooser"
         open={image.chooserOpen}
         title={photo ? "Trocar foto" : "Trocar faixa"}
-        footer={`PNG, JPEG, WebP ou GIF. Até ${limit} MB. O GIF continua animado.`}
+        footer={animated ? `PNG, JPEG, WebP ou GIF. Até ${limit} MB. O GIF continua animado.` : `PNG, JPEG ou WebP. Até ${limit} MB. GIF animado é do Infinity.`}
         onClose={image.closeChooser}
         onFile={() => {
           image.closeChooser();
@@ -71,6 +78,10 @@ export const ProfileImageChooser: React.FC<{ image: ProfileImageSending }> = ({ 
         }}
         onGif={(gif) => {
           image.closeChooser();
+          if (!animated) {
+            openUpgrade();
+            return;
+          }
           if (image.chooserField) void image.sendGif(gif.gif ?? gif.url, image.chooserField);
         }}
       />

@@ -15,6 +15,7 @@ vi.mock("~/repositories/guild-repository.js", () => ({
   memberRepository: {
     find: (...args: unknown[]) => findMember(...args),
     create: (...args: unknown[]) => createMember(...args),
+    countOf: async () => 0,
   },
 }));
 

@@ -151,6 +151,7 @@ export const conversa = {
   },
 
   falha: {
+    premium: "Ei toimitettu – tämä vaatii Infinityn",
     tentarDeNovo: "Yritä uudelleen",
     erro: "Ei toimitettu",
     semConexao: "Ei toimitettu — sinulla ei ole yhteyttä",

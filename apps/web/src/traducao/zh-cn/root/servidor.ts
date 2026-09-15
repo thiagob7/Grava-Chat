@@ -1,4 +1,15 @@
 export const servidor = {
+  perfilNoServidor: {
+    titulo: "在此服务器的资料",
+    descricao: "只在 {{server}} 显示的头像、横幅和简介。",
+    soInfinity: "按社区设置资料是 {{plan}} 的功能。点按查看方案。",
+    trocarFoto: "更换头像",
+    trocarFaixa: "更换横幅",
+    usarDaConta: "使用账号的",
+    bio: "在此服务器的简介",
+    bioDica: "写点只给这个社区看的内容",
+    salvo: "服务器资料已保存。",
+  },
   comunidade: {
     ativa: "社区已经开放",
     ativaDesde: "自 {{quando}} 起开放",

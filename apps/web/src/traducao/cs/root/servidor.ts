@@ -1,4 +1,15 @@
 export const servidor = {
+  perfilNoServidor: {
+    titulo: "Profil na tomto serveru",
+    descricao: "Avatar, banner a bio, které uvidí jen na {{server}}.",
+    soInfinity: "Profily pro komunity jsou součástí {{plan}}. Klepněte pro tarify.",
+    trocarFoto: "Změnit avatar",
+    trocarFaixa: "Změnit banner",
+    usarDaConta: "Použít ten z účtu",
+    bio: "Bio na tomto serveru",
+    bioDica: "Napište něco jen pro tuto komunitu",
+    salvo: "Profil serveru uložen.",
+  },
   comunidade: {
     ativa: "Komunita je otevřená",
     ativaDesde: "Otevřená od {{quando}}",

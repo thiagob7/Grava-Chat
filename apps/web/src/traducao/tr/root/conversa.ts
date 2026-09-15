@@ -151,6 +151,7 @@ export const conversa = {
   },
 
   falha: {
+    premium: "Teslim edilmedi — bu Infinity'ye özel",
     tentarDeNovo: "Yeniden dene",
     erro: "İletilmedi",
     semConexao: "İletilmedi — bağlantın yok",

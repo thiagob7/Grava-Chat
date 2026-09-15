@@ -151,6 +151,7 @@ export const conversa = {
   },
 
   falha: {
+    premium: "Δεν παραδόθηκε — χρειάζεται Infinity",
     tentarDeNovo: "Δοκίμασε ξανά",
     erro: "Δεν παραδόθηκε",
     semConexao: "Δεν παραδόθηκε — δεν έχεις σύνδεση",

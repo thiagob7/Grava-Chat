@@ -1,10 +1,11 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { toast } from "react-toastify";
 import type { Attachment } from "@gravae/shared";
-import { LIMITS } from "@gravae/shared";
+import { LIMITS, PLAN_LIMITS } from "@gravae/shared";
 
 import { apiErrorMessage } from "~/@core/lib/api";
-import { uploadImage } from "~/lib/upload";
+import { attachmentCeiling, uploadImage } from "~/lib/upload";
+import { planLimitsNow } from "~/features/plan/stores/plan-store";
 
 export interface PendingAttachment {
   id: string;
@@ -52,7 +53,7 @@ export function useAttachments() {
     [],
   );
 
-  const [largeToo, setLargeToo] = useState<string | null>(null);
+  const [largeToo, setLargeToo] = useState<{ filename: string; limit: number; premiumFits: boolean } | null>(null);
 
   const add = useCallback(
     async (files: File[]) => {
@@ -68,9 +69,15 @@ export function useAttachments() {
         toast.warn(`Só cabem mais ${space} anexo(s) nesta mensagem.`);
       }
 
+      const limits = planLimitsNow();
+      const ceiling = await attachmentCeiling(limits.attachmentBytes);
+
       for (const file of accepted) {
-        if (file.size > LIMITS.attachmentBytes) {
-          setLargeToo(file.name);
+        if (file.size > ceiling) {
+          const premiumCeiling = await attachmentCeiling(PLAN_LIMITS.premium.attachmentBytes);
+          const premiumFits = limits.attachmentBytes < PLAN_LIMITS.premium.attachmentBytes && file.size <= premiumCeiling;
+
+          setLargeToo({ filename: file.name, limit: ceiling, premiumFits });
           continue;
         }
 

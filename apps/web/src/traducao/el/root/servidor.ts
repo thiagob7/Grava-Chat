@@ -1,4 +1,15 @@
 export const servidor = {
+  perfilNoServidor: {
+    titulo: "Προφίλ σε αυτόν τον διακομιστή",
+    descricao: "Άβαταρ, banner και βιογραφικό που φαίνονται μόνο στο {{server}}.",
+    soInfinity: "Τα προφίλ ανά κοινότητα ανήκουν στο {{plan}}. Πατήστε για τα πακέτα.",
+    trocarFoto: "Αλλαγή άβαταρ",
+    trocarFaixa: "Αλλαγή banner",
+    usarDaConta: "Χρήση αυτού του λογαριασμού",
+    bio: "Βιογραφικό σε αυτόν τον διακομιστή",
+    bioDica: "Πείτε κάτι μόνο για αυτή την κοινότητα",
+    salvo: "Το προφίλ διακομιστή αποθηκεύτηκε.",
+  },
   comunidade: {
     ativa: "Η κοινότητα είναι ανοιχτή",
     ativaDesde: "Ανοιχτή από {{quando}}",

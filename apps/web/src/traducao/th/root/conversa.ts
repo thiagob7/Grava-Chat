@@ -151,6 +151,7 @@ export const conversa = {
   },
 
   falha: {
+    premium: "ส่งไม่สำเร็จ — ต้องใช้ Infinity",
     tentarDeNovo: "ลองอีกครั้ง",
     erro: "ส่งไม่สำเร็จ",
     semConexao: "ส่งไม่สำเร็จ — คุณไม่มีการเชื่อมต่อ",

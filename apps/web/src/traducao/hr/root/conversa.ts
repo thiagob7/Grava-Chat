@@ -151,6 +151,7 @@ export const conversa = {
   },
 
   falha: {
+    premium: "Nije isporučeno — to je za Infinity",
     tentarDeNovo: "Pokušaj ponovno",
     erro: "Nije dostavljeno",
     semConexao: "Nije dostavljeno — nemaš vezu",

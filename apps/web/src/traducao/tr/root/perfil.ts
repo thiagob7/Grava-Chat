@@ -43,6 +43,7 @@ export const perfil = {
     falhou: "Gönderilemedi. Sohbetten dene.",
   },
   cartao: {
+    infinity: "Infinity üyesi",
     equipe: "Gravaê Ekibi",
     trocarFaixa: "Kart afişini değiştir",
     trocarFaixaCurto: "Afişi değiştir",

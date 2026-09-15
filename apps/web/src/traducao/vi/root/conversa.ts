@@ -151,6 +151,7 @@ export const conversa = {
   },
 
   falha: {
+    premium: "Chưa gửi được — cần Infinity",
     tentarDeNovo: "Thử lại",
     erro: "Chưa gửi được",
     semConexao: "Chưa gửi được — bạn không có kết nối",

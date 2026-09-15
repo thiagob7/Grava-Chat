@@ -151,6 +151,7 @@ export const conversa = {
   },
 
   falha: {
+    premium: "未送達 — 這是 Infinity 功能",
     tentarDeNovo: "重試",
     erro: "未送出",
     semConexao: "未送出：你沒有網路連線",

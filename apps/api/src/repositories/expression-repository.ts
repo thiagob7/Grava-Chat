@@ -10,6 +10,10 @@ export const expressionRepository = {
     return prisma.guildEmoji.findUnique({ where: { id } });
   },
 
+  findEmojisByIds(ids: string[]) {
+    return ids.length ? prisma.guildEmoji.findMany({ where: { id: { in: ids } } }) : Promise.resolve([]);
+  },
+
   findEmojiByName(guildId: string, name: string) {
     return prisma.guildEmoji.findUnique({ where: { guildId_name: { guildId, name } } });
   },

@@ -13,7 +13,9 @@ import type {
   ProfilePublic,
   CustomStatus,
   DesiredStatus,
+  PremiumSource,
 } from "@gravae/shared";
+import { planOf } from "@gravae/shared";
 import { env } from "~/env.js";
 import { unset } from "./mongo.js";
 import { toComponentRows } from "./components.js";
@@ -30,6 +32,7 @@ export function toPublicUser(u: UserRow): PublicUser {
     isBot: u.isBot,
     ...(u.system ? { system: true } : {}),
     ...(u.profile?.decoration && u.profile.decoration !== "nenhuma" ? { decoration: u.profile.decoration } : {}),
+    ...(planOf(u.premiumUntil) === "premium" ? { premium: true } : {}),
   };
 }
 
@@ -117,6 +120,8 @@ export function toSelfUser(
     showsFriendsCommon: u.showsFriendsCommon,
     deleteAt: u.deleteAt ? u.deleteAt.toISOString() : null,
     verifiedEmail: Boolean(u.emailVerifiedAt),
+    premiumUntil: u.premiumUntil ? u.premiumUntil.toISOString() : null,
+    premiumSource: (u.premiumSource as PremiumSource | null) ?? null,
   };
 }
 
@@ -168,6 +173,13 @@ export function toMember(
     user: toPublicUser(m.user),
     roleIds: m.roleIds,
     nickname: m.nickname,
+    ...(planOf(m.user.premiumUntil) === "premium"
+      ? {
+          ...(m.avatarUrl ? { avatarUrl: m.avatarUrl } : {}),
+          ...(m.bannerUrl ? { bannerUrl: m.bannerUrl } : {}),
+          ...(m.bio ? { bio: m.bio } : {}),
+        }
+      : {}),
     timeoutUntil: m.timeoutUntil?.toISOString() ?? null,
     joinedAt: m.joinedAt.toISOString(),
   };

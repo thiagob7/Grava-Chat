@@ -151,6 +151,7 @@ export const conversa = {
   },
 
   falha: {
+    premium: "Tidak terkirim — ini fitur Infinity",
     tentarDeNovo: "Coba lagi",
     erro: "Tidak terkirim",
     semConexao: "Tidak terkirim — kamu tidak punya koneksi",

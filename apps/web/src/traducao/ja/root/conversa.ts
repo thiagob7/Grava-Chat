@@ -151,6 +151,7 @@ export const conversa = {
   },
 
   falha: {
+    premium: "送信できませんでした — Infinityの機能です",
     tentarDeNovo: "もう一度試す",
     erro: "送信できませんでした",
     semConexao: "送信できませんでした：接続がありません",
