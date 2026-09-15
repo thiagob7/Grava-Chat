@@ -21,6 +21,8 @@ export const conversa = {
     duas: "{{primeiro}} a {{segundo}} reagovali s {{emoji}}",
     varias: "{{nomes}} a dalších {{quantos}} reagovalo s {{emoji}}",
     dicaSuper: "Podržte pro super reakci",
+    verTodas: "Click to see all reactions",
+    titulo: "Reactions",
   },
   recado: {
     gravar: "Nahrát vzkaz",
@@ -67,6 +69,7 @@ export const conversa = {
     apagarAcao: "Smazat",
     citacaoAnexo: "klikni, ať uvidíš přílohu",
     citacaoSumiu: "Původní zpráva už tu není.",
+    encaminhada: "Přeposláno",
     encaminhadaDe: "Přeposláno z",
     irParaOriginal: "Na originál",
     bloqueadas: "{{quantas}} blokovaných zpráv",

@@ -21,6 +21,8 @@ export const conversa = {
     duas: "{{primeiro}} és {{segundo}} reagált ezzel: {{emoji}}",
     varias: "{{nomes}} és még {{quantos}} reagált ezzel: {{emoji}}",
     dicaSuper: "Tartsd nyomva a szuperreakcióhoz",
+    verTodas: "Click to see all reactions",
+    titulo: "Reactions",
   },
   recado: {
     gravar: "Hangüzenet rögzítése",
@@ -67,6 +69,7 @@ export const conversa = {
     apagarAcao: "Törlés",
     citacaoAnexo: "kattints a melléklet megtekintéséhez",
     citacaoSumiu: "Az eredeti üzenet már nincs itt.",
+    encaminhada: "Továbbítva",
     encaminhadaDe: "Továbbítva innen:",
     irParaOriginal: "Ugrás az eredetire",
     bloqueadas: "{{quantas}} blokkolt üzenet",

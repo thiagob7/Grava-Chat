@@ -21,6 +21,8 @@ export const conversa = {
     duas: "{{primeiro}} et {{segundo}} ont réagi avec {{emoji}}",
     varias: "{{nomes}} et {{quantos}} autres ont réagi avec {{emoji}}",
     dicaSuper: "Maintenez pour super réagir",
+    verTodas: "Click to see all reactions",
+    titulo: "Reactions",
   },
   recado: {
     gravar: "Enregistrer un vocal",
@@ -67,6 +69,7 @@ export const conversa = {
     apagarAcao: "Supprimer",
     citacaoAnexo: "cliquez pour voir la pièce jointe",
     citacaoSumiu: "Le message d'origine n'est plus là.",
+    encaminhada: "Transféré",
     encaminhadaDe: "Transféré depuis",
     irParaOriginal: "Aller à l'original",
     bloqueadas: "{{quantas}} messages bloqués",

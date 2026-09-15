@@ -21,6 +21,8 @@ export const conversa = {
     duas: "{{primeiro}} dan {{segundo}} bereaksi dengan {{emoji}}",
     varias: "{{nomes}} dan {{quantos}} lainnya bereaksi dengan {{emoji}}",
     dicaSuper: "Tahan untuk reaksi super",
+    verTodas: "Click to see all reactions",
+    titulo: "Reactions",
   },
   recado: {
     gravar: "Rekam pesan suara",
@@ -67,6 +69,7 @@ export const conversa = {
     apagarAcao: "Hapus",
     citacaoAnexo: "klik untuk melihat lampiran",
     citacaoSumiu: "Pesan aslinya sudah tidak ada di sini.",
+    encaminhada: "Diteruskan",
     encaminhadaDe: "Diteruskan dari",
     irParaOriginal: "Ke pesan asli",
     bloqueadas: "{{quantas}} pesan diblokir",

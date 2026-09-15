@@ -21,6 +21,8 @@ export const conversa = {
     duas: "تفاعل {{primeiro}} و{{segundo}} بـ {{emoji}}",
     varias: "تفاعل {{nomes}} و{{quantos}} آخرون بـ {{emoji}}",
     dicaSuper: "اضغط مطولًا للتفاعل الخارق",
+    verTodas: "Click to see all reactions",
+    titulo: "Reactions",
   },
   recado: {
     gravar: "تسجيل رسالة صوتية",
@@ -67,6 +69,7 @@ export const conversa = {
     apagarAcao: "حذف",
     citacaoAnexo: "انقر لرؤية المرفق",
     citacaoSumiu: "الرسالة الأصلية لم تعد هنا.",
+    encaminhada: "مُعاد توجيهها",
     encaminhadaDe: "مُعاد توجيهها من",
     irParaOriginal: "الانتقال إلى الأصل",
     bloqueadas: "{{quantas}} رسائل محظورة",

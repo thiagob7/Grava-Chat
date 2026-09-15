@@ -21,6 +21,8 @@ export const conversa = {
     duas: "{{primeiro}} și {{segundo}} au reacționat cu {{emoji}}",
     varias: "{{nomes}} și încă {{quantos}} au reacționat cu {{emoji}}",
     dicaSuper: "Ține apăsat pentru super reacție",
+    verTodas: "Click to see all reactions",
+    titulo: "Reactions",
   },
   recado: {
     gravar: "Înregistrează un mesaj vocal",
@@ -67,6 +69,7 @@ export const conversa = {
     apagarAcao: "Șterge",
     citacaoAnexo: "dă clic ca să vezi atașamentul",
     citacaoSumiu: "Mesajul original nu mai este aici.",
+    encaminhada: "Redirecționat",
     encaminhadaDe: "Redirecționat din",
     irParaOriginal: "La original",
     bloqueadas: "{{quantas}} mesaje blocate",

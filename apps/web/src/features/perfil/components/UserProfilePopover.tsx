@@ -72,6 +72,7 @@ import { Button } from "~/components/ui/button";
 import { Input } from "~/components/ui/input";
 import {
   Popover,
+  PopoverAnchor,
   PopoverContent,
   PopoverTrigger,
 } from "~/components/ui/popover";
@@ -108,9 +109,13 @@ export const UserProfilePopover: React.FC<UserProfilePopoverProps> = ({
   const { data: profile, isLoading, isError } = useFindProfile(isOpen ? userId : null);
 
   const close = useRef(() => setIsOpen(false)).current;
+  const trigger = useRef<HTMLButtonElement>(null);
+  const frozenRect = useRef(new DOMRect());
+  const anchor = useRef({ getBoundingClientRect: () => frozenRect.current });
 
   const changeOpen = (open: boolean) => {
     if (open) {
+      if (trigger.current) frozenRect.current = trigger.current.getBoundingClientRect();
       if (closeOpenCard !== close) closeOpenCard?.();
       closeOpenCard = close;
     } else if (closeOpenCard === close) {
@@ -126,7 +131,8 @@ export const UserProfilePopover: React.FC<UserProfilePopoverProps> = ({
 
   return (
     <Popover data-gc="perfil.user-profile-popover.popover.change-open" open={isOpen} onOpenChange={changeOpen}>
-      <PopoverTrigger data-gc="perfil.user-profile-popover.popover-trigger" asChild>{children}</PopoverTrigger>
+      <PopoverTrigger data-gc="perfil.user-profile-popover.popover-trigger" ref={trigger} asChild>{children}</PopoverTrigger>
+      <PopoverAnchor data-gc="perfil.user-profile-popover.popover-anchor" virtualRef={anchor} />
 
       <PopoverContent data-gc="perfil.user-profile-popover.popover-content"
         side={side}

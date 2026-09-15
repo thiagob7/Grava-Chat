@@ -21,6 +21,8 @@ export const conversa = {
     duas: "{{primeiro}} en {{segundo}} reageerden met {{emoji}}",
     varias: "{{nomes}} en nog {{quantos}} reageerden met {{emoji}}",
     dicaSuper: "Houd ingedrukt om super te reageren",
+    verTodas: "Click to see all reactions",
+    titulo: "Reactions",
   },
   recado: {
     gravar: "Spraakbericht opnemen",
@@ -67,6 +69,7 @@ export const conversa = {
     apagarAcao: "Verwijderen",
     citacaoAnexo: "klik om de bijlage te zien",
     citacaoSumiu: "Het oorspronkelijke bericht is er niet meer.",
+    encaminhada: "Doorgestuurd",
     encaminhadaDe: "Doorgestuurd uit",
     irParaOriginal: "Naar origineel",
     bloqueadas: "{{quantas}} geblokkeerde berichten",

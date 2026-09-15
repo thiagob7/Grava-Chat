@@ -21,6 +21,8 @@ export const conversa = {
     duas: "{{primeiro}} 和 {{segundo}} 用 {{emoji}} 回應了",
     varias: "{{nomes}} 和另外 {{quantos}} 人用 {{emoji}} 回應了",
     dicaSuper: "長按可超級回應",
+    verTodas: "Click to see all reactions",
+    titulo: "Reactions",
   },
   recado: {
     gravar: "錄一則語音",
@@ -67,6 +69,7 @@ export const conversa = {
     apagarAcao: "刪除",
     citacaoAnexo: "點一下查看附件",
     citacaoSumiu: "原始訊息已經不在了。",
+    encaminhada: "已轉發",
     encaminhadaDe: "轉發自",
     irParaOriginal: "前往原訊息",
     bloqueadas: "{{quantas}} 則已封鎖訊息",

@@ -21,6 +21,8 @@ export const conversa = {
     duas: "{{primeiro}} ve {{segundo}} {{emoji}} ile tepki verdi",
     varias: "{{nomes}} ve {{quantos}} kişi daha {{emoji}} ile tepki verdi",
     dicaSuper: "Süper tepki için basılı tut",
+    verTodas: "Click to see all reactions",
+    titulo: "Reactions",
   },
   recado: {
     gravar: "Sesli not kaydet",
@@ -67,6 +69,7 @@ export const conversa = {
     apagarAcao: "Sil",
     citacaoAnexo: "eki görmek için tıkla",
     citacaoSumiu: "Özgün mesaj artık burada değil.",
+    encaminhada: "İletildi",
     encaminhadaDe: "Şuradan iletildi:",
     irParaOriginal: "Orijinale git",
     bloqueadas: "{{quantas}} engellenmiş mesaj",

@@ -21,6 +21,8 @@ export const conversa = {
     duas: "{{primeiro}} และ {{segundo}} แสดงความรู้สึกด้วย {{emoji}}",
     varias: "{{nomes}} และอีก {{quantos}} คนแสดงความรู้สึกด้วย {{emoji}}",
     dicaSuper: "กดค้างเพื่อซูเปอร์รีแอค",
+    verTodas: "Click to see all reactions",
+    titulo: "Reactions",
   },
   recado: {
     gravar: "อัดข้อความเสียง",
@@ -67,6 +69,7 @@ export const conversa = {
     apagarAcao: "ลบ",
     citacaoAnexo: "คลิกเพื่อดูไฟล์แนบ",
     citacaoSumiu: "ข้อความต้นฉบับไม่อยู่ที่นี่แล้ว",
+    encaminhada: "ส่งต่อ",
     encaminhadaDe: "ส่งต่อจาก",
     irParaOriginal: "ไปที่ต้นฉบับ",
     bloqueadas: "ข้อความที่ถูกบล็อก {{quantas}} ข้อความ",

@@ -21,6 +21,8 @@ export const conversa = {
     duas: "{{primeiro}} og {{segundo}} reagerede med {{emoji}}",
     varias: "{{nomes}} og {{quantos}} andre reagerede med {{emoji}}",
     dicaSuper: "Hold nede for superreaktion",
+    verTodas: "Click to see all reactions",
+    titulo: "Reactions",
   },
   recado: {
     gravar: "Optag en talebesked",
@@ -67,6 +69,7 @@ export const conversa = {
     apagarAcao: "Slet",
     citacaoAnexo: "klik for at se vedhæftningen",
     citacaoSumiu: "Den oprindelige besked er her ikke længere.",
+    encaminhada: "Videresendt",
     encaminhadaDe: "Videresendt fra",
     irParaOriginal: "Gå til original",
     bloqueadas: "{{quantas}} blokerede beskeder",
