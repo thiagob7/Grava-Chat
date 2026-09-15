@@ -1,5 +1,6 @@
 import type { Prisma } from "@prisma/client";
 
+import { unset } from "~/lib/mongo.js";
 import { prisma } from "~/lib/prisma.js";
 
 export const billingRepository = {
@@ -36,7 +37,7 @@ export const billingRepository = {
   },
 
   markRefunded(id: string, refundedAt: Date) {
-    return prisma.billingPayment.updateMany({ where: { id, refundedAt: null }, data: { refundedAt } });
+    return prisma.billingPayment.updateMany({ where: { id, ...unset("refundedAt") }, data: { refundedAt } });
   },
 
   createPixCharge(data: Prisma.PixChargeCreateInput) {
