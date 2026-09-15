@@ -21,6 +21,8 @@ export const conversa = {
     duas: "{{primeiro}} और {{segundo}} ने {{emoji}} से रिएक्ट किया",
     varias: "{{nomes}} और {{quantos}} अन्य ने {{emoji}} से रिएक्ट किया",
     dicaSuper: "सुपर रिएक्ट करने के लिए दबाए रखें",
+    verTodas: "Click to see all reactions",
+    titulo: "Reactions",
   },
   recado: {
     gravar: "वॉइस नोट रिकॉर्ड करें",
@@ -67,6 +69,7 @@ export const conversa = {
     apagarAcao: "मिटाएँ",
     citacaoAnexo: "अटैचमेंट देखने के लिए क्लिक करें",
     citacaoSumiu: "मूल संदेश अब यहाँ नहीं है।",
+    encaminhada: "अग्रेषित",
     encaminhadaDe: "यहाँ से अग्रेषित",
     irParaOriginal: "मूल पर जाएँ",
     bloqueadas: "{{quantas}} अवरुद्ध संदेश",

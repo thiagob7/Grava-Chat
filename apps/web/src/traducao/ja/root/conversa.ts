@@ -21,6 +21,8 @@ export const conversa = {
     duas: "{{primeiro}} と {{segundo}} が {{emoji}} で反応しました",
     varias: "{{nomes}} ほか {{quantos}} 人が {{emoji}} で反応しました",
     dicaSuper: "長押しでスーパーリアクション",
+    verTodas: "Click to see all reactions",
+    titulo: "Reactions",
   },
   recado: {
     gravar: "ボイスメモを録音",
@@ -67,6 +69,7 @@ export const conversa = {
     apagarAcao: "削除",
     citacaoAnexo: "クリックして添付ファイルを見る",
     citacaoSumiu: "元のメッセージはもうありません。",
+    encaminhada: "転送済み",
     encaminhadaDe: "転送元",
     irParaOriginal: "元のメッセージへ",
     bloqueadas: "ブロックしたメッセージ {{quantas}} 件",

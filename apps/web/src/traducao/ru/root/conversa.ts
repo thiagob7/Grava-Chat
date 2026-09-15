@@ -21,6 +21,8 @@ export const conversa = {
     duas: "{{primeiro}} и {{segundo}} отреагировали с {{emoji}}",
     varias: "{{nomes}} и ещё {{quantos}} отреагировали с {{emoji}}",
     dicaSuper: "Удерживайте для суперреакции",
+    verTodas: "Click to see all reactions",
+    titulo: "Reactions",
   },
   recado: {
     gravar: "Записать голосовое",
@@ -67,6 +69,7 @@ export const conversa = {
     apagarAcao: "Удалить",
     citacaoAnexo: "нажмите, чтобы увидеть вложение",
     citacaoSumiu: "Исходного сообщения здесь больше нет.",
+    encaminhada: "Переслано",
     encaminhadaDe: "Переслано из",
     irParaOriginal: "К оригиналу",
     bloqueadas: "{{quantas}} заблокированных сообщений",

@@ -21,6 +21,8 @@ export const conversa = {
     duas: "{{primeiro}} và {{segundo}} đã thả {{emoji}}",
     varias: "{{nomes}} và {{quantos}} người nữa đã thả {{emoji}}",
     dicaSuper: "Giữ để thả siêu cảm xúc",
+    verTodas: "Click to see all reactions",
+    titulo: "Reactions",
   },
   recado: {
     gravar: "Ghi âm một lời nhắn",
@@ -67,6 +69,7 @@ export const conversa = {
     apagarAcao: "Xoá",
     citacaoAnexo: "nhấn để xem tệp đính kèm",
     citacaoSumiu: "Tin nhắn gốc không còn ở đây nữa.",
+    encaminhada: "Đã chuyển tiếp",
     encaminhadaDe: "Chuyển tiếp từ",
     irParaOriginal: "Đến tin gốc",
     bloqueadas: "{{quantas}} tin nhắn bị chặn",

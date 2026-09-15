@@ -21,6 +21,8 @@ export const conversa = {
     duas: "{{primeiro}} і {{segundo}} відреагували із {{emoji}}",
     varias: "{{nomes}} і ще {{quantos}} відреагували із {{emoji}}",
     dicaSuper: "Утримуйте для суперреакції",
+    verTodas: "Click to see all reactions",
+    titulo: "Reactions",
   },
   recado: {
     gravar: "Записати голосове",
@@ -67,6 +69,7 @@ export const conversa = {
     apagarAcao: "Видалити",
     citacaoAnexo: "натисніть, щоб побачити вкладення",
     citacaoSumiu: "Початкового повідомлення тут уже немає.",
+    encaminhada: "Переслано",
     encaminhadaDe: "Переслано з",
     irParaOriginal: "До оригіналу",
     bloqueadas: "{{quantas}} заблокованих повідомлень",

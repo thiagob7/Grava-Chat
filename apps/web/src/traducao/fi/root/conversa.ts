@@ -21,6 +21,8 @@ export const conversa = {
     duas: "{{primeiro}} ja {{segundo}} reagoivat merkillä {{emoji}}",
     varias: "{{nomes}} ja {{quantos}} muuta reagoivat merkillä {{emoji}}",
     dicaSuper: "Pidä pohjassa superreaktioon",
+    verTodas: "Click to see all reactions",
+    titulo: "Reactions",
   },
   recado: {
     gravar: "Nauhoita ääniviesti",
@@ -67,6 +69,7 @@ export const conversa = {
     apagarAcao: "Poista",
     citacaoAnexo: "napsauta nähdäksesi liitteen",
     citacaoSumiu: "Alkuperäistä viestiä ei enää ole täällä.",
+    encaminhada: "Välitetty",
     encaminhadaDe: "Välitetty kanavasta",
     irParaOriginal: "Alkuperäiseen",
     bloqueadas: "{{quantas}} estettyä viestiä",

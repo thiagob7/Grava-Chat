@@ -21,6 +21,8 @@ export const conversa = {
     duas: "{{primeiro}} και {{segundo}} αντέδρασαν με {{emoji}}",
     varias: "{{nomes}} και άλλοι {{quantos}} αντέδρασαν με {{emoji}}",
     dicaSuper: "Κρατήστε για σούπερ αντίδραση",
+    verTodas: "Click to see all reactions",
+    titulo: "Reactions",
   },
   recado: {
     gravar: "Ηχογράφηση μηνύματος",
@@ -67,6 +69,7 @@ export const conversa = {
     apagarAcao: "Διαγραφή",
     citacaoAnexo: "κάνε κλικ για να δεις το συνημμένο",
     citacaoSumiu: "Το αρχικό μήνυμα δεν είναι πια εδώ.",
+    encaminhada: "Προωθήθηκε",
     encaminhadaDe: "Προωθήθηκε από",
     irParaOriginal: "Στο πρωτότυπο",
     bloqueadas: "{{quantas}} αποκλεισμένα μηνύματα",

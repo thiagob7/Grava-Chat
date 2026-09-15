@@ -21,6 +21,8 @@ export const conversa = {
     duas: "{{primeiro}} ו{{segundo}} הגיבו עם {{emoji}}",
     varias: "{{nomes}} ועוד {{quantos}} הגיבו עם {{emoji}}",
     dicaSuper: "החזיקו לתגובת על",
+    verTodas: "Click to see all reactions",
+    titulo: "Reactions",
   },
   recado: {
     gravar: "הקלטת הודעה קולית",
@@ -67,6 +69,7 @@ export const conversa = {
     apagarAcao: "מחק",
     citacaoAnexo: "לחצו כדי לראות את הקובץ המצורף",
     citacaoSumiu: "ההודעה המקורית כבר לא כאן.",
+    encaminhada: "הועבר",
     encaminhadaDe: "הועבר מ",
     irParaOriginal: "אל המקור",
     bloqueadas: "{{quantas}} הודעות חסומות",
