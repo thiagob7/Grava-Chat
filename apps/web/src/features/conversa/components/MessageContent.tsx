@@ -20,6 +20,7 @@ import { useLightbox } from "~/stores/lightbox";
 import { useAppearance } from "~/features/configuracoes/stores/aparencia";
 import { i18next, useTranslation } from "~/traducao";
 import { cn } from "~/lib/utils";
+import { UserProfilePopover } from "~/features/perfil/components/UserProfilePopover";
 import { flxCls, type Places } from "~/lib/compat-de-tema";
 
 const RICH = /:([a-zA-Z0-9_]{2,32}):|<@&([a-f\d]{24})>|<@([a-f\d]{24})>|@(everyone|here)\b/g;
@@ -30,29 +31,54 @@ interface MessageContentProps {
   className?: string;
   mentions?: ResolveMentions;
   blocks?: boolean;
+  mentionProfiles?: { guildId?: string };
 }
+
+const MentionProfiles = React.createContext<{ guildId?: string } | null>(null);
+
+const COLOR_TOKEN = { mention: "mencao", everyone: "everyone", here: "here" } as const;
+
+const pillStyle = (color: string | null | undefined, family: keyof typeof COLOR_TOKEN): React.CSSProperties =>
+  color
+    ? { color: readable(color), backgroundColor: `${readable(color)}26` }
+    : {
+        color: `var(--color-${COLOR_TOKEN[family]})`,
+        backgroundColor: `color-mix(in srgb, var(--color-${COLOR_TOKEN[family]}) 15%, transparent)`,
+      };
 
 const Pill: React.FC<{
   children: React.ReactNode;
   color?: string | null;
   title?: string;
-  family?: "mention" | "everyone" | "here";
+  family?: keyof typeof COLOR_TOKEN;
 }> = ({ children, color, title, family = "mention" }) => (
   <span data-gc="conversa.message-content.span"
     title={title}
     className={cn("rounded px-1 py-px font-medium", flxCls("mention"))}
-    style={
-      color
-        ? { color: readable(color), backgroundColor: `${readable(color)}26` }
-        : {
-            color: `var(--color-${family})`,
-            backgroundColor: `color-mix(in srgb, var(--color-${family}) 15%, transparent)`,
-          }
-    }
+    style={pillStyle(color, family)}
   >
     {children}
   </span>
 );
+
+const UserMention: React.FC<{ userId: string; children: React.ReactNode; title: string }> = ({ userId, children, title }) => {
+  const profiles = React.useContext(MentionProfiles);
+
+  if (!profiles) return <Pill data-gc="conversa.message-content.pill" title={title}>{children}</Pill>;
+
+  return (
+    <UserProfilePopover data-gc="conversa.message-content.user-profile-popover" userId={userId} guildId={profiles.guildId}>
+      <button data-gc="conversa.message-content.button"
+        type="button"
+        title={title}
+        className={cn("cursor-pointer rounded px-1 py-px font-medium transition hover:brightness-125", flxCls("mention"))}
+        style={pillStyle(null, "mention")}
+      >
+        {children}
+      </button>
+    </UserProfilePopover>
+  );
+};
 
 function withTwemoji(text: string, key: string): React.ReactNode[] {
   const matches = [...text.matchAll(EMOJI)];
@@ -107,15 +133,15 @@ function enrich(
     } else if (roleId) {
       const role = mentions?.roleList.get(roleId);
       piece = (
-        <Pill data-gc="conversa.message-content.pill" key={k} color={role?.color} title={i18next.t("conversa.mencao.cargo")}>
+        <Pill data-gc="conversa.message-content.pill--2" key={k} color={role?.color} title={i18next.t("conversa.mencao.cargo")}>
           @{role?.name ?? i18next.t("conversa.mencao.cargoSemNome")}
         </Pill>
       );
     } else if (userId) {
       piece = (
-        <Pill data-gc="conversa.message-content.pill--2" key={k} title={i18next.t("conversa.mencao.pessoa")}>
+        <UserMention data-gc="conversa.message-content.user-mention" key={k} userId={userId} title={i18next.t("conversa.mencao.pessoa")}>
           @{mentions?.names.get(userId) ?? i18next.t("conversa.mencao.alguem")}
-        </Pill>
+        </UserMention>
       );
     } else if (all) {
       piece = (
@@ -270,7 +296,13 @@ function running(
   return parts;
 }
 
-export const MessageContent: React.FC<MessageContentProps> = ({
+export const MessageContent: React.FC<MessageContentProps> = (props) => (
+  <MentionProfiles.Provider value={props.mentionProfiles ?? null}>
+    <MessageContentBody data-gc="conversa.message-content.message-content-body" {...props} />
+  </MentionProfiles.Provider>
+);
+
+const MessageContentBody: React.FC<MessageContentProps> = ({
   content,
   emojis,
   className,
@@ -287,7 +319,7 @@ export const MessageContent: React.FC<MessageContentProps> = ({
   const alone = content.trim();
   if (openLinksImages && SO_UM_LINK.test(alone) && IS_IMAGE.test(clearLink(alone))) {
     return (
-      <button data-gc="conversa.message-content.button"
+      <button data-gc="conversa.message-content.button--2"
         onClick={() => openImage(alone)}
         aria-label={i18next.t("conversa.cartao.verImagem")}
         className="mt-1 block overflow-hidden rounded transition hover:brightness-110"

@@ -4,6 +4,7 @@ import { BarChart3, FileUp, Paperclip, Plus, Send, Timer, X } from "lucide-react
 import { LIMITS, type NameFont, type Sticker } from "@gravae/shared";
 
 import { ComposerMirror } from "~/features/conversa/components/EspelhoDoCompositor";
+import { withMentionTokens, type MentionLabel } from "~/features/conversa/lib/mention-labels";
 
 import { useSendMessage } from "~/@core/application/queries/message/use-send-message";
 import { queryKeys } from "~/@core/infra/constants/query-keys";
@@ -94,6 +95,7 @@ export const Composer: React.FC<ComposerProps> = ({
   const attachments = useAttachments();
 
   const [value, setValue] = useState("");
+  const [mentionLabels, setMentionLabels] = useState<MentionLabel[]>([]);
   const [textLong, setTextLong] = useState<string | null>(null);
 
   const queryClient = useQueryClient();
@@ -182,7 +184,14 @@ export const Composer: React.FC<ComposerProps> = ({
     if (!mention || !field) return;
 
     const cursor = field.selectionStart ?? value.length;
-    const text = `${item.text} `;
+    const label = item.kind === "todos" ? item.text : `@${item.name}`;
+    const text = `${label} `;
+
+    if (label !== item.text) {
+      setMentionLabels((current) =>
+        current.some((m) => m.label === label) ? current : [...current, { label, token: item.text }],
+      );
+    }
     const next = value.slice(0, mention.start) + text + value.slice(cursor);
     const position = mention.start + text.length;
 
@@ -212,6 +221,7 @@ export const Composer: React.FC<ComposerProps> = ({
 
   const clearBox = () => {
     setValue("");
+    setMentionLabels([]);
     setMention(null);
     setCommand(null);
   };
@@ -251,7 +261,7 @@ export const Composer: React.FC<ComposerProps> = ({
       return;
     }
 
-    const written = value.trim();
+    const written = withMentionTokens(value.trim(), mentionLabels);
     const content = convertEmoticon ? convertEmoticons(written) : written;
 
     clearBox();
@@ -577,6 +587,7 @@ export const Composer: React.FC<ComposerProps> = ({
           <ComposerMirror data-gc="conversa.composer.composer-mirror"
             ref={mirror}
             text={value}
+            mentions={mentionLabels.map((m) => m.label)}
             fontFamily={fontFamily(font) ?? undefined}
             className="py-[5px]"
           />
