@@ -21,8 +21,19 @@ import { downloadImage, copyImage } from "~/lib/imagem";
 import { copyText } from "~/lib/copiar";
 import { useLightbox } from "~/stores/lightbox";
 import { cn } from "~/lib/utils";
+import { ImageViewerMenu } from "~/features/conversa/components/ImageViewerMenu";
 
-const STEPS = [0.25, 0.5, 0.75, 1, 1.5, 2, 3, 4];
+const STEPS = [0.25, 0.5, 0.75, 1, 1.25, 1.5, 1.75, 2, 2.5, 3, 4];
+const FIT = 3;
+const MAX = STEPS.length - 1;
+
+function pointOn(e: React.MouseEvent<HTMLImageElement>) {
+  const box = e.currentTarget.getBoundingClientRect();
+  const x = ((e.clientX - box.left) / box.width) * 100;
+  const y = ((e.clientY - box.top) / box.height) * 100;
+
+  return `${Math.min(100, Math.max(0, x))}% ${Math.min(100, Math.max(0, y))}%`;
+}
 
 function sizeReadable(bytes?: number) {
   if (!bytes) return null;
@@ -39,14 +50,16 @@ export const ImageViewer: React.FC = () => {
   const info = useLightbox((s) => s.info);
   const close = useLightbox((s) => s.close);
 
-  const [step, setStep] = useState(3);
+  const [step, setStep] = useState(FIT);
   const [giro, setGiro] = useState(0);
+  const [origin, setOrigin] = useState("50% 50%");
   const [measure, setMeasure] = useState<{ width: number; height: number } | null>(null);
   const image = useRef<HTMLImageElement>(null);
 
   useEffect(() => {
-    setStep(3);
+    setStep(FIT);
     setGiro(0);
+    setOrigin("50% 50%");
     setMeasure(null);
   }, [url]);
 
@@ -56,7 +69,7 @@ export const ImageViewer: React.FC = () => {
     const inKeyboard = (e: KeyboardEvent) => {
       if (e.key === "+" || e.key === "=") setStep((p) => Math.min(STEPS.length - 1, p + 1));
       if (e.key === "-") setStep((p) => Math.max(0, p - 1));
-      if (e.key === "0") setStep(3);
+      if (e.key === "0") setStep(FIT);
     };
 
     window.addEventListener("keydown", inKeyboard);
@@ -95,7 +108,7 @@ export const ImageViewer: React.FC = () => {
     { key: "baixar", label: t("conversa.imagem.baixarImagem"), icon: Download, make: () => void downloadImage(url, name) },
     { key: "esquerda", label: t("conversa.imagem.girarEsquerda"), icon: RotateCcw, make: () => setGiro((g) => g - 90) },
     { key: "direita", label: t("conversa.imagem.girarDireita"), icon: RotateCw, make: () => setGiro((g) => g + 90) },
-    { key: "ajustar", label: t("conversa.imagem.ajustar"), icon: Maximize, make: () => { setStep(3); setGiro(0); } },
+    { key: "ajustar", label: t("conversa.imagem.ajustar"), icon: Maximize, make: () => { setStep(FIT); setGiro(0); setOrigin("50% 50%"); } },
     { key: "mais", label: t("conversa.imagem.ampliar"), icon: ZoomIn, make: () => setStep((p) => Math.min(STEPS.length - 1, p + 1)) },
     { key: "menos", label: t("conversa.imagem.reduzir"), icon: ZoomOut, make: () => setStep((p) => Math.max(0, p - 1)) },
   ];
@@ -112,22 +125,38 @@ export const ImageViewer: React.FC = () => {
           <DialogPrimitive.Title data-gc="visualizador-de-imagem.dialog-primitivetitle" className="sr-only">{name}</DialogPrimitive.Title>
 
           <div data-gc="visualizador-de-imagem.div"
-            className="flex min-h-0 flex-1 items-center justify-center overflow-auto p-6"
+            className="flex min-h-0 flex-1 items-center justify-center overflow-hidden p-6"
             onClick={(e) => e.target === e.currentTarget && close()}
           >
-            <img data-gc="visualizador-de-imagem.img"
-              ref={image}
-              src={url}
-              alt={alt}
-              onLoad={(e) =>
-                setMeasure({ width: e.currentTarget.naturalWidth, height: e.currentTarget.naturalHeight })
-              }
-              className={cn(
-                "rounded object-contain shadow-2xl transition-transform duration-150",
-                zoom <= 1 && "max-h-[calc(100vh-8rem)] max-w-full",
-              )}
-              style={{ transform: `rotate(${giro}deg) scale(${zoom})` }}
-            />
+            <ImageViewerMenu data-gc="visualizador-de-imagem.image-viewer-menu">
+              <img data-gc="visualizador-de-imagem.img"
+                ref={image}
+                src={url}
+                alt={alt}
+                draggable={false}
+                onLoad={(e) =>
+                  setMeasure({ width: e.currentTarget.naturalWidth, height: e.currentTarget.naturalHeight })
+                }
+                onClick={(e) => {
+                  if (zoom > 1) {
+                    setStep(FIT);
+                    setOrigin("50% 50%");
+                    return;
+                  }
+
+                  setOrigin(pointOn(e));
+                  setStep(MAX);
+                }}
+                onMouseMove={(e) => {
+                  if (zoom > 1) setOrigin(pointOn(e));
+                }}
+                className={cn(
+                  "max-h-[calc(100vh-8rem)] max-w-full rounded object-contain shadow-2xl transition-transform duration-150",
+                  zoom > 1 ? "cursor-zoom-out" : "cursor-zoom-in",
+                )}
+                style={{ transform: `rotate(${giro}deg) scale(${zoom})`, transformOrigin: origin }}
+              />
+            </ImageViewerMenu>
           </div>
 
           <div data-gc="visualizador-de-imagem.div--2" className="flex shrink-0 items-center gap-1 border-t border-line bg-surface-1 px-3 py-2">

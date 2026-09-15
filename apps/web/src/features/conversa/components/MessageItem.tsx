@@ -476,6 +476,13 @@ export const MessageItem: React.FC<MessageItemProps> = ({
         <MessageAttachments data-gc="conversa.message-item.message-attachments"
           attachments={message.attachments}
           onRemove={canDelete ? deleteAttachment : undefined}
+          source={{
+            id: message.id,
+            channelId: message.channelId,
+            guildId,
+            authorId: message.author.id,
+            authorName: message.author.displayName,
+          }}
         />
 
         {/*
