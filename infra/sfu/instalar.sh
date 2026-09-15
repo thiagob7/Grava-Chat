@@ -37,6 +37,8 @@ $SSH "$HOST" "sudo bash -s" <<INSTALA
 set -euo pipefail
 cd /tmp/gravae-maquina
 
+command -v jq >/dev/null || DEBIAN_FRONTEND=noninteractive apt-get install -y -qq jq >/dev/null
+
 install -m 0755 gravae-maquina /usr/local/bin/gravae-maquina
 install -m 0644 gravae-maquina.socket /etc/systemd/system/
 install -m 0644 'gravae-maquina@.service' /etc/systemd/system/

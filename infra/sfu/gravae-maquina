@@ -87,19 +87,28 @@ fi
 # Todo valor tem um padrao: uma medicao que falhou deixaria o campo vazio, e
 # `"carga":{"um":,...}` nao e JSON — o painel do outro lado engoliria o erro de
 # parse e mostraria a maquina como fora do ar, mentindo sobre o motivo.
-trafego=$(vnstat --json m 2>/dev/null | python3 -c '
-import datetime, json, sys
-try:
-    dados = json.load(sys.stdin)
-    agora = datetime.datetime.now(datetime.timezone.utc)
-    placas = [i for i in dados.get("interfaces", []) if i.get("name") != "lo"]
-    placa = max(placas, key=lambda i: i.get("traffic", {}).get("total", {}).get("tx", 0))
-    mes = next((m for m in placa.get("traffic", {}).get("month", []) if m["date"]["year"] == agora.year and m["date"]["month"] == agora.month), {"rx": 0, "tx": 0})
-    criado = placa.get("created", {}).get("date", {})
-    desde = "%d-%02d-%02d" % (criado["year"], criado["month"], criado["day"]) if criado else None
-    print(json.dumps({"mes": "%d-%02d" % (agora.year, agora.month), "enviado": mes["tx"], "recebido": mes["rx"], "desde": desde}))
-except Exception:
-    print("null")
+#
+# jq e nao python3: abrir o Python numa Micro de 1/8 de nucleo levava ~300 ms a
+# cada consulta, e era isso o "400 ms daqui" do painel.
+trafego=$(vnstat --json m 2>/dev/null | jq -c '
+def dois: tostring | if length < 2 then "0" + . else . end;
+(now | gmtime) as $agora
+| ($agora[0] | floor) as $ano
+| ($agora[1] + 1 | floor) as $mes
+| [.interfaces[]? | select(.name != "lo")]
+| if length == 0 then null else
+    (max_by(.traffic.total.tx // 0)) as $placa
+    | ([$placa.traffic.month[]? | select(.date.year == $ano and .date.month == $mes)][0] // {}) as $atual
+    | ($placa.created.date // {}) as $criado
+    | {
+        mes: "\($ano)-\($mes | dois)",
+        enviado: ($atual.tx // 0),
+        recebido: ($atual.rx // 0),
+        desde: (if $criado.year and $criado.month and $criado.day
+                then "\($criado.year)-\($criado.month | dois)-\($criado.day | dois)"
+                else null end)
+      }
+  end
 ' 2>/dev/null)
 
 responder "200 OK" "$(cat <<JSON
