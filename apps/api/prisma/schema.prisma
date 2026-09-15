@@ -942,6 +942,7 @@ model PixCharge {
   days         Int
   amount       Int
   mpPaymentId  String?   @unique
+  mpOrderId    String?   @unique
   qrCode       String?
   qrCodeBase64 String?
   status       String    @default("pending")

@@ -12,14 +12,13 @@ export interface MpPayment {
   externalReference: string | null;
 }
 
-export interface MpPixCreated extends MpPayment {
-  qrCode: string;
-  qrCodeBase64: string;
-}
-
 const TOKEN_MARGIN_MS = 10 * 60 * 1000;
 
-let cachedToken: { value: string; expiresAt: number } | null = null;
+let cachedToken: { value: string; userId: string; expiresAt: number } | null = null;
+let fixedUserId: string | null = null;
+let posReady: string | null = null;
+
+export const POS_EXTERNAL_ID = () => env.MERCADOPAGO_POS_EXTERNAL_ID || "GRAVAEINFINITY";
 
 export const mercadoPagoEnabled = () =>
   Boolean(env.MERCADOPAGO_ACCESS_TOKEN || (env.MERCADOPAGO_CLIENT_ID && env.MERCADOPAGO_CLIENT_SECRET));
@@ -39,11 +38,27 @@ async function accessToken(): Promise<string> {
     }),
   });
 
-  const json = (await reply.json().catch(() => null)) as { access_token?: string; expires_in?: number } | null;
+  const json = (await reply.json().catch(() => null)) as
+    | { access_token?: string; expires_in?: number; user_id?: string | number }
+    | null;
   if (!reply.ok || !json?.access_token) throw new Error(`Mercado Pago recusou as credenciais (${reply.status})`);
 
-  cachedToken = { value: json.access_token, expiresAt: Date.now() + (json.expires_in ?? 21_600) * 1000 };
+  cachedToken = {
+    value: json.access_token,
+    userId: String(json.user_id ?? ""),
+    expiresAt: Date.now() + (json.expires_in ?? 21_600) * 1000,
+  };
   return cachedToken.value;
+}
+
+async function accountUserId(): Promise<string> {
+  await accessToken();
+  if (cachedToken?.userId) return cachedToken.userId;
+  if (fixedUserId) return fixedUserId;
+
+  const me = await call<{ id?: string | number }>("/users/me");
+  fixedUserId = String(me.id ?? "");
+  return fixedUserId;
 }
 
 async function call<T>(path: string, init: RequestInit & { idempotent?: boolean } = {}): Promise<T> {
@@ -73,35 +88,101 @@ const toPayment = (json: Record<string, unknown>): MpPayment => ({
   externalReference: typeof json.external_reference === "string" ? json.external_reference : null,
 });
 
-export async function createPixPayment(args: {
-  amountCents: number;
-  description: string;
-  payerEmail: string;
-  externalReference: string;
-  expiresAt: Date;
-}): Promise<MpPixCreated> {
-  const json = await call<Record<string, unknown>>("/v1/payments", {
+export interface MpOrder {
+  id: string;
+  status: string;
+  externalReference: string | null;
+  amountCents: number | null;
+  qrData: string | null;
+}
+
+type OrderResponse = {
+  id?: string;
+  status?: string;
+  external_reference?: string;
+  total_amount?: string | number;
+  transactions?: { payments?: { amount?: string | number; status?: string }[] };
+  type_response?: { qr_data?: string };
+};
+
+const toOrder = (order: OrderResponse): MpOrder => {
+  const amount = order.transactions?.payments?.[0]?.amount ?? order.total_amount;
+  return {
+    id: String(order.id ?? ""),
+    status: order.status ?? "created",
+    externalReference: order.external_reference ?? null,
+    amountCents: amount === undefined ? null : Math.round(Number(amount) * 100),
+    qrData: order.type_response?.qr_data ?? null,
+  };
+};
+
+export async function ensurePointOfSale(): Promise<string> {
+  const externalId = POS_EXTERNAL_ID();
+  if (posReady === externalId) return externalId;
+
+  const found = await call<{ results?: { external_id?: string; status?: string }[] }>(
+    `/pos?limit=50&offset=0&external_id=${encodeURIComponent(externalId)}`,
+  );
+  if (found.results?.some((pos) => pos.external_id === externalId && (!pos.status || pos.status.toLowerCase() === "active"))) {
+    posReady = externalId;
+    return externalId;
+  }
+
+  const userId = await accountUserId();
+  const search = await call<{ results?: { id: string | number; external_id?: string }[] } | { results?: { id: string | number; external_id?: string }[] }[]>(
+    `/users/${userId}/stores/search?limit=50&offset=0`,
+  );
+  const stores = (Array.isArray(search) ? search : [search]).flatMap((page) => page.results ?? []);
+  const store = stores.find((candidate) => String(candidate.id) === env.MERCADOPAGO_STORE_ID) ?? stores.find((candidate) => candidate.external_id);
+  if (!store?.external_id) throw new Error("A conta Mercado Pago precisa de uma loja física cadastrada para o QR do Pix");
+
+  await call("/pos", {
     method: "POST",
-    idempotent: true,
     body: JSON.stringify({
-      transaction_amount: args.amountCents / 100,
-      description: args.description,
-      payment_method_id: "pix",
-      payer: { email: args.payerEmail },
-      external_reference: args.externalReference,
-      date_of_expiration: args.expiresAt.toISOString().replace("Z", "+00:00"),
-      ...(env.MERCADOPAGO_NOTIFICATION_URL ? { notification_url: env.MERCADOPAGO_NOTIFICATION_URL } : {}),
+      name: "Infinity",
+      fixed_amount: true,
+      store_id: Number(store.id),
+      external_store_id: store.external_id,
+      external_id: externalId,
     }),
   });
 
-  const poi = (json.point_of_interaction ?? {}) as Record<string, unknown>;
-  const tx = (poi.transaction_data ?? {}) as Record<string, unknown>;
+  posReady = externalId;
+  return externalId;
+}
 
-  return {
-    ...toPayment(json),
-    qrCode: typeof tx.qr_code === "string" ? tx.qr_code : "",
-    qrCodeBase64: typeof tx.qr_code_base64 === "string" ? tx.qr_code_base64 : "",
-  };
+export async function createPixOrder(args: {
+  amountCents: number;
+  description: string;
+  externalReference: string;
+  expiresMinutes: number;
+}): Promise<MpOrder> {
+  const externalPosId = await ensurePointOfSale();
+  const amount = (args.amountCents / 100).toFixed(2);
+
+  return toOrder(
+    await call<OrderResponse>("/v1/orders", {
+      method: "POST",
+      idempotent: true,
+      body: JSON.stringify({
+        type: "qr",
+        total_amount: amount,
+        external_reference: args.externalReference,
+        expiration_time: `PT${args.expiresMinutes}M`,
+        transactions: { payments: [{ amount }] },
+        config: { qr: { external_pos_id: externalPosId, mode: "dynamic" } },
+        description: args.description.slice(0, 150),
+      }),
+    }),
+  );
+}
+
+export async function getOrder(orderId: string): Promise<MpOrder> {
+  return toOrder(await call<OrderResponse>(`/v1/orders/${encodeURIComponent(orderId)}`));
+}
+
+export async function refundOrder(orderId: string) {
+  await call(`/v1/orders/${encodeURIComponent(orderId)}/refund`, { method: "POST", idempotent: true });
 }
 
 export async function getPayment(paymentId: string): Promise<MpPayment> {

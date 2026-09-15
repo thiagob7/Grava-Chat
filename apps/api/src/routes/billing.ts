@@ -71,8 +71,9 @@ export async function mercadoPagoWebhookRoutes(app: FastifyInstance) {
     const body = (req.body ?? {}) as { type?: string; data?: { id?: string | number } };
 
     const type = query.type ?? query.topic ?? body.type ?? "";
-    const paymentId = query["data.id"] ?? (body.data?.id != null ? String(body.data.id) : "");
-    if (!paymentId || (type && !type.toLowerCase().includes("payment"))) return reply.code(200).send({ ok: true });
+    const paymentId = query["data.id"] ?? query.id ?? (body.data?.id != null ? String(body.data.id) : "");
+    const relevant = !type || /payment|order/i.test(type);
+    if (!paymentId || !relevant) return reply.code(200).send({ ok: true });
 
     const valid =
       !env.MERCADOPAGO_WEBHOOK_SECRET ||

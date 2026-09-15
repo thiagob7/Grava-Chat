@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { CheckCircle2, Copy, QrCode } from "lucide-react";
+import QRCode from "qrcode";
 import { toast } from "react-toastify";
 import type { PixChargeView } from "@gravae/shared";
 
@@ -24,6 +25,21 @@ export const PixPayment: React.FC<{ initial: PixChargeView; onPaid: () => void; 
   const { data } = usePixCharge(initial.id);
   const charge = data ?? initial;
   const [now, setNow] = useState(() => Date.now());
+  const [qrImage, setQrImage] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (charge.qrCodeBase64) {
+      setQrImage(`data:image/png;base64,${charge.qrCodeBase64}`);
+      return;
+    }
+    if (!charge.qrCode) return;
+
+    let alive = true;
+    void QRCode.toDataURL(charge.qrCode, { width: 240, margin: 1 }).then((url) => alive && setQrImage(url));
+    return () => {
+      alive = false;
+    };
+  }, [charge.qrCode, charge.qrCodeBase64]);
 
   useEffect(() => {
     const clock = setInterval(() => setNow(Date.now()), 1000);
@@ -73,9 +89,9 @@ export const PixPayment: React.FC<{ initial: PixChargeView; onPaid: () => void; 
       <p data-gc="plan.pix-payment.p--3" className="text-2xl font-bold tabular-nums">{amount}</p>
       <p data-gc="plan.pix-payment.p--4" className="mt-1 max-w-sm text-sm text-ink-muted">{t("configuracoes.subscription.pixHint")}</p>
 
-      {charge.qrCodeBase64 && (
+      {qrImage && (
         <img data-gc="plan.pix-payment.img"
-          src={`data:image/png;base64,${charge.qrCodeBase64}`}
+          src={qrImage}
           alt={t("configuracoes.subscription.pixQrAlt")}
           className="mt-4 size-56 rounded-lg bg-white p-2"
         />
