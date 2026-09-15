@@ -95,6 +95,8 @@ interface UserProfilePopoverProps {
   canModerate?: boolean;
 }
 
+const CARD_HEIGHT = 440;
+
 export const UserProfilePopover: React.FC<UserProfilePopoverProps> = ({
   userId,
   children,
@@ -112,10 +114,16 @@ export const UserProfilePopover: React.FC<UserProfilePopoverProps> = ({
   const trigger = useRef<HTMLButtonElement>(null);
   const frozenRect = useRef(new DOMRect());
   const anchor = useRef({ getBoundingClientRect: () => frozenRect.current });
+  const [align, setAlign] = useState<"start" | "end">("start");
 
   const changeOpen = (open: boolean) => {
     if (open) {
-      if (trigger.current) frozenRect.current = trigger.current.getBoundingClientRect();
+      if (trigger.current) {
+        const rect = trigger.current.getBoundingClientRect();
+        const below = window.innerHeight - rect.top;
+        frozenRect.current = rect;
+        setAlign(below < Math.min(CARD_HEIGHT, window.innerHeight * 0.8) && rect.bottom > below ? "end" : "start");
+      }
       if (closeOpenCard !== close) closeOpenCard?.();
       closeOpenCard = close;
     } else if (closeOpenCard === close) {
@@ -130,12 +138,13 @@ export const UserProfilePopover: React.FC<UserProfilePopoverProps> = ({
   }, [close]);
 
   return (
-    <Popover data-gc="perfil.user-profile-popover.popover.change-open" open={isOpen} onOpenChange={changeOpen}>
+    <Popover data-gc="perfil.user-profile-popover.popover.change-open" open={isOpen} onOpenChange={changeOpen} modal>
       <PopoverTrigger data-gc="perfil.user-profile-popover.popover-trigger" ref={trigger} asChild>{children}</PopoverTrigger>
       <PopoverAnchor data-gc="perfil.user-profile-popover.popover-anchor" virtualRef={anchor} />
 
       <PopoverContent data-gc="perfil.user-profile-popover.popover-content"
         side={side}
+        align={align}
         className="max-h-[80vh] w-[300px] overflow-y-auto p-0 shadow-lg shadow-sombra"
       >
         {isError ? (
