@@ -85,12 +85,14 @@ export const chamada = {
     quadros: "{{quadros}} FPS",
     qualidadeDica: "रिज़ॉल्यूशन एक सीमा है: छोटी विंडो अपने आकार में रहती है। ज़्यादा रिज़ॉल्यूशन और फ़्रेम के लिए ज़्यादा इंटरनेट चाहिए, आपका और देखने वालों का। चल रही स्ट्रीम पर भी लागू होता है।",
   },
+  cameraLimit: "इस कॉल में पहले से {{limite}} कैमरे चालू हैं। किसी के बंद करने तक रुकें।",
   live: {
     etiqueta: "लाइव",
     etiquetaMaiuscula: "लाइव",
     assistir: "प्रसारण देखें",
     assistirPessoa: "{{nome}} को देखें",
     pararDeAssistir: "देखना बंद करें",
+    conectando: "स्ट्रीम से कनेक्ट हो रहा है…",
   },
   membro: {
     mudarMeuApelido: "मेरा उपनाम बदलें",

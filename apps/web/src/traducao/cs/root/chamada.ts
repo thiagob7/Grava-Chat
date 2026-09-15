@@ -85,12 +85,14 @@ export const chamada = {
     quadros: "{{quadros}} FPS",
     qualidadeDica: "Rozlišení je strop: menší okno si zachová svou velikost. Vyšší rozlišení a více snímků chtějí rychlejší internet, váš i diváků. Platí i pro probíhající přenos.",
   },
+  cameraLimit: "V hovoru už je zapnuto {{limite}} kamer. Počkejte, až někdo tu svou vypne.",
   live: {
     etiqueta: "Živě",
     etiquetaMaiuscula: "ŽIVĚ",
     assistir: "Sledovat přenos",
     assistirPessoa: "Sledovat {{nome}}",
     pararDeAssistir: "Přestat sledovat",
+    conectando: "Připojování k přenosu…",
   },
   membro: {
     mudarMeuApelido: "Změnit moji přezdívku",

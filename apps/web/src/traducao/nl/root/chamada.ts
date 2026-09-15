@@ -85,12 +85,14 @@ export const chamada = {
     quadros: "{{quadros}} FPS",
     qualidadeDica: "De resolutie is een maximum: een kleiner venster houdt zijn eigen formaat. Meer resolutie en frames vragen meer bandbreedte, van jou en van kijkers. Geldt ook voor een lopende stream.",
   },
+  cameraLimit: "Er staan al {{limite}} camera's aan in dit gesprek. Wacht tot iemand de zijne uitzet.",
   live: {
     etiqueta: "Live",
     etiquetaMaiuscula: "LIVE",
     assistir: "De uitzending bekijken",
     assistirPessoa: "{{nome}} bekijken",
     pararDeAssistir: "Stoppen met kijken",
+    conectando: "Verbinden met de stream…",
   },
   membro: {
     mudarMeuApelido: "Mijn bijnaam wijzigen",

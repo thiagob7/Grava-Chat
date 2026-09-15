@@ -85,12 +85,14 @@ export const chamada = {
     quadros: "{{quadros}} FPS",
     qualidadeDica: "Разрешение — это потолок: окно поменьше сохраняет свой размер. Больше разрешения и кадров — больше трафика, вашего и зрителей. Применяется и к идущей трансляции.",
   },
+  cameraLimit: "В звонке уже включено {{limite}} камер. Подождите, пока кто-нибудь выключит свою.",
   live: {
     etiqueta: "В эфире",
     etiquetaMaiuscula: "В ЭФИРЕ",
     assistir: "Смотреть трансляцию",
     assistirPessoa: "Смотреть {{nome}}",
     pararDeAssistir: "Перестать смотреть",
+    conectando: "Подключение к трансляции…",
   },
   membro: {
     mudarMeuApelido: "Сменить мой псевдоним",

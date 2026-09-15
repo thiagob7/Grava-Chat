@@ -85,12 +85,14 @@ export const chamada = {
     quadros: "{{quadros}} FPS",
     qualidadeDica: "解析度是上限：較小的視窗維持原本大小。解析度和影格速率越高，你和觀眾需要的頻寬越多。也會套用到正在進行的直播。",
   },
+  cameraLimit: "通話中已開啟 {{limite}} 個鏡頭。請等其他人關閉。",
   live: {
     etiqueta: "直播中",
     etiquetaMaiuscula: "直播中",
     assistir: "觀看直播",
     assistirPessoa: "觀看 {{nome}}",
     pararDeAssistir: "停止觀看",
+    conectando: "正在連線到直播…",
   },
   membro: {
     mudarMeuApelido: "修改我的暱稱",

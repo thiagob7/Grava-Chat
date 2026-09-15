@@ -11,6 +11,11 @@ import {
 } from "livekit-client";
 import { findVoiceToken } from "~/@core/application/requests/voice/find-voice-token";
 import { nextTarget } from "~/features/voz/lib/assistir";
+import { cameraLimitReached, MAX_CAMERAS_PER_CALL } from "~/features/voz/lib/camera-limit";
+import { createPreviewClient, servePreviews, type PreviewClient } from "~/features/voz/lib/stream-preview";
+import { wantsSubscription } from "~/features/voz/lib/stream-subscriptions";
+import { toast } from "react-toastify";
+import { i18next } from "~/traducao";
 import { keepSteady } from "~/features/voz/lib/quadros";
 import { audioBitrate } from "~/features/voz/lib/taxa-de-bits";
 import { screenQuality } from "~/features/voz/lib/qualidade-da-transmissao";
@@ -39,6 +44,8 @@ export type VoiceTile = {
   isLocal: boolean;
   speaking: boolean;
   micEnabled: boolean;
+  cameraOn: boolean;
+  sharingScreen: boolean;
   cameraTrack: Track | null;
   screenTrack: Track | null;
   micTrack: Track | null;
@@ -64,6 +71,7 @@ type VoiceStore = {
 
   tiles: VoiceTile[];
   watching: string | null;
+  previews: PreviewClient | null;
   requiresPushToTalk: boolean;
   guildId: string | null;
   visibleStage: boolean;
@@ -115,6 +123,11 @@ function snapshot(room: Room, previous: VoiceTile[] = []): VoiceTile[] {
 
     const audible = (source: Track.Source) => (isLocal ? null : track(source));
 
+    const published = (source: Track.Source) => {
+      const pub = p.getTrackPublication(source) as TrackPublication | undefined;
+      return Boolean(pub && !pub.isMuted);
+    };
+
     return {
       identity: p.identity,
       name: p.name || p.identity,
@@ -122,6 +135,8 @@ function snapshot(room: Room, previous: VoiceTile[] = []): VoiceTile[] {
       isLocal,
       speaking: p.isSpeaking,
       micEnabled: p.isMicrophoneEnabled,
+      cameraOn: published(Track.Source.Camera),
+      sharingScreen: published(Track.Source.ScreenShare),
       cameraTrack: track(Track.Source.Camera),
       screenTrack: track(Track.Source.ScreenShare),
       micTrack: audible(Track.Source.Microphone),
@@ -135,6 +150,18 @@ function snapshot(room: Room, previous: VoiceTile[] = []): VoiceTile[] {
     ...[...room.remoteParticipants.values()].map((p: RemoteParticipant) => build(p, false)),
   ]);
 }
+
+function syncSubscriptions(room: Room, watching: string | null) {
+  for (const participant of room.remoteParticipants.values()) {
+    for (const publication of participant.trackPublications.values()) {
+      const wanted = wantsSubscription(publication.source, participant.identity, watching);
+      if (publication.isDesired !== wanted) publication.setSubscribed(wanted);
+    }
+  }
+}
+
+const localScreen = (room: Room) =>
+  room.localParticipant.getTrackPublication(Track.Source.ScreenShare)?.track?.mediaStreamTrack ?? null;
 
 const TAB_VOICE_KEY = "gravae:voice-channel";
 const TAB_ID_KEY = "gravae:voice-cliente";
@@ -353,6 +380,7 @@ export const useVoiceStore = create<VoiceStore>((set, store) => {
   screenEnabled: false,
   tiles: [],
   watching: null,
+  previews: null,
   requiresPushToTalk: false,
   guildId: null,
   visibleStage: false,
@@ -397,6 +425,9 @@ export const useVoiceStore = create<VoiceStore>((set, store) => {
         },
       });
 
+      const previews = createPreviewClient(room);
+      servePreviews(room, () => localScreen(room));
+
       const refresh = () => {
         const tiles = snapshot(room, store().tiles);
 
@@ -407,10 +438,11 @@ export const useVoiceStore = create<VoiceStore>((set, store) => {
 
         const nextWatching = nextTarget({
           current: watching,
-          targetStillBroadcasts: tiles.some((t) => t.identity === watching && t.screenTrack),
+          targetStillBroadcasts: tiles.some((t) => t.identity === watching && t.sharingScreen),
         });
 
         if (nextWatching !== watching) set({ watching: nextWatching });
+        syncSubscriptions(room, nextWatching);
 
         set({ tiles, cameraEnabled: camera, screenEnabled: display });
 
@@ -449,10 +481,12 @@ export const useVoiceStore = create<VoiceStore>((set, store) => {
           void reapplyMicrophone(room, set, store);
         })
         .on(RoomEvent.Disconnected, () => {
-          set({ room: null, channelId: null, guildId: null, tiles: [], watching: null, cameraEnabled: false, screenEnabled: false, reconnecting: false });
+          previews.dispose();
+          set({ room: null, channelId: null, guildId: null, tiles: [], watching: null, previews: null, cameraEnabled: false, screenEnabled: false, reconnecting: false });
         });
 
-      await room.connect(url, token);
+      await room.connect(url, token, { autoSubscribe: false });
+      syncSubscriptions(room, store().watching);
 
       set({ requiresPushToTalk: Boolean(requiresPushToTalk) });
 
@@ -484,7 +518,7 @@ export const useVoiceStore = create<VoiceStore>((set, store) => {
         await room.switchActiveDevice("audiooutput", prefs.outputId).catch(() => undefined);
       }
 
-      set({ room, connecting: false, tiles: snapshot(room, store().tiles) });
+      set({ room, previews, connecting: false, tiles: snapshot(room, store().tiles) });
       rememberVoiceTab(channelId);
 
       /*
@@ -527,8 +561,9 @@ export const useVoiceStore = create<VoiceStore>((set, store) => {
     beep("leaveCall");
     stopPanelSound();
     set({ callChat: true });
+    store().previews?.dispose();
     await room.disconnect();
-    set({ room: null, channelId: null, guildId: null, tiles: [], watching: null, cameraEnabled: false, screenEnabled: false, processor: null });
+    set({ room: null, channelId: null, guildId: null, tiles: [], watching: null, previews: null, cameraEnabled: false, screenEnabled: false, processor: null });
     await leaveVoiceChannel().catch(() => undefined);
   },
 
@@ -578,6 +613,12 @@ export const useVoiceStore = create<VoiceStore>((set, store) => {
     if (!room) return;
 
     const next = !cameraEnabled;
+
+    if (next && cameraLimitReached(store().tiles)) {
+      toast.info(i18next.t("chamada.cameraLimit", { limite: MAX_CAMERAS_PER_CALL }));
+      return;
+    }
+
     const { cameraId } = useVoicePrefs.getState();
     await room.localParticipant.setCameraEnabled(
       next,
@@ -589,11 +630,17 @@ export const useVoiceStore = create<VoiceStore>((set, store) => {
 
   reset: () => {
     rememberVoiceTab(null);
+    store().previews?.dispose();
     void store().room?.disconnect();
-    set({ room: null, channelId: null, guildId: null, tiles: [], watching: null, cameraEnabled: false, screenEnabled: false, processor: null });
+    set({ room: null, channelId: null, guildId: null, tiles: [], watching: null, previews: null, cameraEnabled: false, screenEnabled: false, processor: null });
   },
 
-  watch: (identity) => set({ watching: identity }),
+  watch: (identity) => {
+    set({ watching: identity });
+
+    const { room } = store();
+    if (room) syncSubscriptions(room, identity);
+  },
   toggleCallChat: () => set({ callChat: !store().callChat }),
 
   setStageVisible: (visible) => set({ visibleStage: visible }),

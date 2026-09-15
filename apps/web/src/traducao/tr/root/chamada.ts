@@ -85,12 +85,14 @@ export const chamada = {
     quadros: "{{quadros}} FPS",
     qualidadeDica: "Çözünürlük bir üst sınırdır: daha küçük bir pencere kendi boyutunda kalır. Daha fazla çözünürlük ve kare, sizin ve izleyenlerin daha fazla internetini ister. Süren yayına da uygulanır.",
   },
+  cameraLimit: "Bu aramada zaten {{limite}} kamera açık. Birinin kapatmasını bekle.",
   live: {
     etiqueta: "Canlı",
     etiquetaMaiuscula: "CANLI",
     assistir: "Yayını izle",
     assistirPessoa: "{{nome}} kişisini izle",
     pararDeAssistir: "İzlemeyi bırak",
+    conectando: "Yayına bağlanılıyor…",
   },
   membro: {
     mudarMeuApelido: "Takma adımı değiştir",

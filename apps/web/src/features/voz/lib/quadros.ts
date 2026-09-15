@@ -30,6 +30,8 @@ export function sameTile(a: VoiceTile, b: VoiceTile): boolean {
     a.speaking === b.speaking &&
     a.micEnabled === b.micEnabled &&
     a.quality === b.quality &&
+    a.cameraOn === b.cameraOn &&
+    a.sharingScreen === b.sharingScreen &&
     a.cameraTrack === b.cameraTrack &&
     a.screenTrack === b.screenTrack &&
     a.micTrack === b.micTrack &&

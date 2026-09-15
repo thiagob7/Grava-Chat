@@ -5,6 +5,7 @@ import { CaretDown, CaretUp, ChatCircle, PhoneCall, SpeakerHigh, UserPlus, Users
 
 import { InviteModal } from "~/features/servidor/components/InviteModal";
 import { ScreenQuality } from "~/features/voz/components/QualidadeDaTela";
+import { BroadcastPreview } from "~/features/voz/components/PreviaDaTransmissao";
 
 import type {
   Channel,
@@ -167,7 +168,7 @@ export const VoiceStage: React.FC<VoiceStageProps> = ({
 
   const tiles = showWithoutVideo
     ? allTiles
-    : allTiles.filter((t) => t.isLocal || t.cameraTrack || t.screenTrack);
+    : allTiles.filter((t) => t.isLocal || t.cameraOn || t.sharingScreen);
   const connecting = useVoiceStore((s) => s.connecting);
 
   const watching = useVoiceStore((s) => s.watching);
@@ -226,7 +227,7 @@ export const VoiceStage: React.FC<VoiceStageProps> = ({
   }
 
   const sharing = watching
-    ? tiles.find((t) => t.identity === watching && t.screenTrack)
+    ? tiles.find((t) => t.identity === watching && t.sharingScreen)
     : null;
 
   const context = {
@@ -255,7 +256,11 @@ export const VoiceStage: React.FC<VoiceStageProps> = ({
             aria-label={t("chamada.voltarAosQuadros")}
             className="absolute inset-0 size-full cursor-pointer"
           >
-            <VoiceVideo data-gc="voz.voice-stage.voice-video" track={sharing.screenTrack!} />
+            {sharing.screenTrack ? (
+              <VoiceVideo data-gc="voz.voice-stage.voice-video" track={sharing.screenTrack} />
+            ) : (
+              <StreamConnecting data-gc="voz.voice-stage.stream-connecting" />
+            )}
           </button>
 
           <div data-gc="voz.voice-stage.div--6"
@@ -274,7 +279,7 @@ export const VoiceStage: React.FC<VoiceStageProps> = ({
                 <span data-gc="voz.voice-stage.span--3" {...flx("whoBroadcastsName", "text-sm font-medium")}>
                   Tela de {sharing.name}
                 </span>
-                <ScreenQuality data-gc="voz.voice-stage.screen-quality" track={sharing.screenTrack!} />
+                {sharing.screenTrack && <ScreenQuality data-gc="voz.voice-stage.screen-quality" track={sharing.screenTrack} />}
               </>
             )}
 
@@ -324,7 +329,7 @@ export const VoiceStage: React.FC<VoiceStageProps> = ({
   }
 
   const grid = buildGrid(
-    tiles.map((tile) => ({ identity: tile.identity, broadcasting: Boolean(tile.screenTrack), tile })),
+    tiles.map((tile) => ({ identity: tile.identity, broadcasting: tile.sharingScreen, tile })),
   );
 
   const inFocus = focus(grid, focused);
@@ -745,6 +750,8 @@ const TileDaLive: React.FC<{
         onClick={onWatch}
         className="absolute inset-0 flex items-center justify-center transition hover:bg-palco-ink/5"
       >
+        <BroadcastPreview data-gc="voz.voice-stage.broadcast-preview" identity={tile.identity} />
+
         <span data-gc="voz.voice-stage.span--14" className="absolute right-2 top-2 flex items-center gap-1.5 rounded-full bg-danger px-2 py-0.5 text-10 font-bold uppercase tracking-wide text-palco-ink">
           <span data-gc="voz.voice-stage.span--15" className="size-1.5 animate-pulse rounded-full bg-palco-ink" /> {t("chamada.live.etiqueta")}
         </span>
@@ -900,5 +907,15 @@ const WithMenu: React.FC<{
     >
       <div data-gc="voz.voice-stage.div--26">{children}</div>
     </VoiceMemberMenu>
+  );
+};
+
+const StreamConnecting: React.FC = () => {
+  const { t } = useTranslation();
+
+  return (
+    <span data-gc="voz.voice-stage.span--20" className="flex size-full items-center justify-center text-sm text-palco-ink/70">
+      {t("chamada.live.conectando")}
+    </span>
   );
 };

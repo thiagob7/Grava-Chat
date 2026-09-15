@@ -85,12 +85,14 @@ export const chamada = {
     quadros: "{{quadros}} FPS",
     qualidadeDica: "A felbontás felső határ: a kisebb ablak megtartja a méretét. Több felbontás és képkocka több sávszélességet kér, tőled és a nézőktől. A futó közvetítésre is vonatkozik.",
   },
+  cameraLimit: "A hívásban már {{limite}} kamera be van kapcsolva. Várj, amíg valaki kikapcsolja az övét.",
   live: {
     etiqueta: "Élő",
     etiquetaMaiuscula: "ÉLŐ",
     assistir: "Az adás megtekintése",
     assistirPessoa: "{{nome}} megtekintése",
     pararDeAssistir: "Megtekintés abbahagyása",
+    conectando: "Csatlakozás az adáshoz…",
   },
   membro: {
     mudarMeuApelido: "A becenevem módosítása",
