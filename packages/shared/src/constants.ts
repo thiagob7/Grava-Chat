@@ -48,6 +48,8 @@ export const LIMITS = {
   componentRows: 5,
   componentsPerRow: 5,
   selectOptions: 25,
+  modalFields: 5,
+  modalFieldLength: 4000,
 } as const;
 
 export const NOTE_LIMIT = 120;

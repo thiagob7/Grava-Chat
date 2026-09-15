@@ -25,6 +25,7 @@ import {
   editMessage,
   sendMessage,
   startInteraction,
+  submitModal,
   invokeCommand,
   react,
 } from "./difusao.js";
@@ -46,6 +47,7 @@ const PER_WINDOW: Partial<Record<ClientEventName, number>> = {
   "voice:recusar": 10,
   "channel:subscribe": 60,
   "component:interact": 15,
+  "modal:submit": 10,
 };
 
 const usage = new WeakMap<GravaeSocket, Map<string, { start: number; count: number }>>();
@@ -138,6 +140,8 @@ export function registerHandlers(socket: GravaeSocket) {
   });
 
   on(socket, "component:interact", (payload) => startInteraction(userId, payload));
+
+  on(socket, "modal:submit", (payload) => submitModal(userId, payload));
 
   on(socket, "command:invoke", async (payload) => {
     const message = await invokeCommand(userId, payload);

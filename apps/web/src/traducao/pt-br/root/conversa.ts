@@ -21,6 +21,8 @@ export const conversa = {
     choose: "Escolha uma opção",
     onlyYou: "Só você está vendo isto",
     dismiss: "Dispensar",
+    formFrom: "Formulário de {{nome}}",
+    optional: "opcional",
   },
   reacao: {
     carregando: "Vendo quem reagiu com {{emoji}}…",

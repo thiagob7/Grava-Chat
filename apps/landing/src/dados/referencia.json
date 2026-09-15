@@ -316,8 +316,8 @@
       "method": "POST",
       "path": "/bot/interactions/:interactionId/:token/callback",
       "group": "Interações",
-      "description": "Responde a um clique em botão ou menu, ou a um comando de barra. `reply` manda mensagem no canal (com `ephemeral: true`, só quem clicou vê), `update` edita a mensagem do botão e `defer` só avisa que recebeu. Uma resposta por interação, em até 3 segundos.",
-      "body": "{ type: reply, data: botSendMessageInput & { ephemeral? } } | { type: update, data: botEditMessageInput } | { type: defer }",
+      "description": "Responde a um clique em botão ou menu, ou a um comando de barra. `reply` manda mensagem no canal (com `ephemeral: true`, só quem clicou vê), `update` edita a mensagem do botão, `defer` só avisa que recebeu e `modal` abre um formulário de até 5 campos. Uma resposta por interação, em até 3 segundos.",
+      "body": "{ type: reply, data: botSendMessageInput & { ephemeral? } } | { type: update, data: botEditMessageInput } | { type: defer } | { type: modal, data: modalInput }",
       "parametros": [
         "interactionId",
         "token"
@@ -718,6 +718,23 @@
       ]
     },
     {
+      "name": "modal:submit",
+      "fields": [
+        {
+          "name": "modalId",
+          "kind": "string",
+          "required": true,
+          "limit": null
+        },
+        {
+          "name": "fields",
+          "kind": "object",
+          "required": true,
+          "limit": null
+        }
+      ]
+    },
+    {
       "name": "presence:update",
       "fields": [
         {
@@ -957,11 +974,15 @@
     },
     {
       "name": "interaction:created",
-      "description": "Clicaram num botão ou escolheram num menu de uma mensagem do bot. Vem com `id` e `token` pra responder."
+      "description": "Clicaram num botão, escolheram num menu ou enviaram um formulário do bot (`type: modal`, com `fields`). Vem com `id` e `token` pra responder."
     },
     {
       "name": "interaction:finished",
       "description": "O bot respondeu ao clique de quem está conectado. É o que tira o botão do estado de espera."
+    },
+    {
+      "name": "interaction:modal",
+      "description": "O bot abriu um formulário pra quem está conectado preencher."
     },
     {
       "name": "presence:changed",
@@ -2095,8 +2116,8 @@
           "method": "POST",
           "path": "/bot/interactions/:interactionId/:token/callback",
           "group": "Interações",
-          "description": "Responde a um clique em botão ou menu, ou a um comando de barra. `reply` manda mensagem no canal (com `ephemeral: true`, só quem clicou vê), `update` edita a mensagem do botão e `defer` só avisa que recebeu. Uma resposta por interação, em até 3 segundos.",
-          "body": "{ type: reply, data: botSendMessageInput & { ephemeral? } } | { type: update, data: botEditMessageInput } | { type: defer }",
+          "description": "Responde a um clique em botão ou menu, ou a um comando de barra. `reply` manda mensagem no canal (com `ephemeral: true`, só quem clicou vê), `update` edita a mensagem do botão, `defer` só avisa que recebeu e `modal` abre um formulário de até 5 campos. Uma resposta por interação, em até 3 segundos.",
+          "body": "{ type: reply, data: botSendMessageInput & { ephemeral? } } | { type: update, data: botEditMessageInput } | { type: defer } | { type: modal, data: modalInput }",
           "parametros": [
             "interactionId",
             "token"
@@ -2122,11 +2143,15 @@
         },
         {
           "name": "interaction:created",
-          "description": "Clicaram num botão ou escolheram num menu de uma mensagem do bot. Vem com `id` e `token` pra responder."
+          "description": "Clicaram num botão, escolheram num menu ou enviaram um formulário do bot (`type: modal`, com `fields`). Vem com `id` e `token` pra responder."
         },
         {
           "name": "interaction:finished",
           "description": "O bot respondeu ao clique de quem está conectado. É o que tira o botão do estado de espera."
+        },
+        {
+          "name": "interaction:modal",
+          "description": "O bot abriu um formulário pra quem está conectado preencher."
         }
       ]
     },
@@ -2283,6 +2308,16 @@
       "label": "Opções por menu",
       "format": "numero",
       "value": 25
+    },
+    {
+      "label": "Campos por formulário",
+      "format": "numero",
+      "value": 5
+    },
+    {
+      "label": "Texto de um campo do formulário",
+      "format": "caracteres",
+      "value": 4000
     },
     {
       "label": "Mensagens fixadas por canal",

@@ -20,6 +20,8 @@ export const conversa = {
     choose: "Vyberte možnost",
     onlyYou: "Tohle vidíte jen vy",
     dismiss: "Zavřít",
+    formFrom: "Formulář od {{nome}}",
+    optional: "nepovinné",
   },
   reacao: {
     carregando: "Zjišťuji, kdo reagoval s {{emoji}}…",

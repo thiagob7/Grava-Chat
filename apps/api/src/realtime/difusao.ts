@@ -40,6 +40,20 @@ export async function startInteraction(userId: string, input: Parameters<typeof 
   return { interactionId: interaction.id };
 }
 
+export async function submitModal(userId: string, input: Parameters<typeof interactionService.prepareModalSubmit>[1]) {
+  const { interaction, event } = await interactionService.prepareModalSubmit(userId, input);
+
+  const listening = await io().in(rooms.user(interaction.botUserId)).fetchSockets();
+  if (!listening.length) throw new AppError("O bot está desligado agora", 409);
+
+  if (!(await interactionService.consumeModal(input.modalId))) throw new AppError("Esse formulário já foi enviado", 409);
+
+  await interactionService.store(interaction);
+  io().to(rooms.user(interaction.botUserId)).emit("interaction:created", event);
+
+  return { interactionId: interaction.id };
+}
+
 export async function sendEphemeral(
   botUserId: string,
   target: { userId: string; channelId: string },
@@ -173,6 +187,7 @@ export async function invokeCommand(
 
   const { interaction, token } = interactionService.open({
     kind: "command",
+    updatable: false,
     sourceEphemeral: false,
     botUserId: bot.botUserId,
     userId,

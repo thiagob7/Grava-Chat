@@ -49,7 +49,7 @@ Base URL: https://gravaechat-api.duckdns.org/api
 - Moderação (moderacao) — 0 fields, 4 routes, 0 events
 - Expressão (expressao) — 5 fields, 4 routes, 1 events
 - Voz (voz) — 14 fields, 0 routes, 9 events
-- Aplicativo (aplicativo) — 3 fields, 3 routes, 4 events
+- Aplicativo (aplicativo) — 3 fields, 3 routes, 5 events
 - Webhook (webhook) — 0 fields, 2 routes, 0 events
 - Convite (convite) — 0 fields, 1 routes, 0 events
 - Auditoria (auditoria) — 0 fields, 1 routes, 0 events
@@ -114,6 +114,7 @@ Base URL: https://gravaechat-api.duckdns.org/api
 - typing:start
 - command:invoke
 - component:interact
+- modal:submit
 - presence:update
 - presence:afk
 - voice:join
@@ -139,6 +140,7 @@ Base URL: https://gravaechat-api.duckdns.org/api
 - commands:changed
 - interaction:created
 - interaction:finished
+- interaction:modal
 - presence:changed
 - presence:self
 - user:updated

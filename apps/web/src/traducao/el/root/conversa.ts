@@ -20,6 +20,8 @@ export const conversa = {
     choose: "Κάντε μια επιλογή",
     onlyYou: "Μόνο εσείς το βλέπετε αυτό",
     dismiss: "Απόρριψη",
+    formFrom: "Φόρμα από {{nome}}",
+    optional: "προαιρετικό",
   },
   reacao: {
     carregando: "Βλέπω ποιος αντέδρασε με {{emoji}}…",

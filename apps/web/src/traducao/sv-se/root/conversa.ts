@@ -20,6 +20,8 @@ export const conversa = {
     choose: "Gör ett val",
     onlyYou: "Bara du kan se det här",
     dismiss: "Stäng",
+    formFrom: "Formulär från {{nome}}",
+    optional: "valfritt",
   },
   reacao: {
     carregando: "Kollar vilka som reagerade med {{emoji}}…",

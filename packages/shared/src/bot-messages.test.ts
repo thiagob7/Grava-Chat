@@ -1,7 +1,14 @@
 import { describe, expect, it } from "vitest";
 
 import { LIMITS } from "./constants.js";
-import { botEditMessageInput, botSendMessageInput, componentsInput, embedsInput, interactionCallbackInput } from "./models.js";
+import {
+  botEditMessageInput,
+  botSendMessageInput,
+  componentsInput,
+  embedsInput,
+  interactionCallbackInput,
+  modalInput,
+} from "./models.js";
 
 describe("embedsInput", () => {
   it("accepts a card with fields, color, footer and timestamp", () => {
@@ -139,5 +146,27 @@ describe("ephemeral replies", () => {
         data: { content: "", ephemeral: true, poll: { question: "?", options: [{ text: "a" }, { text: "b" }] } },
       }).success,
     ).toBe(false);
+  });
+});
+
+describe("modalInput", () => {
+  const field = (extra: object) => ({ customId: "name", label: "Name", style: "short", ...extra });
+
+  it("accepts up to five fields", () => {
+    expect(modalInput.safeParse({ customId: "m", title: "Order", fields: [field({})] }).success).toBe(true);
+    const six = Array.from({ length: 6 }, (_, i) => field({ customId: `f${i}` }));
+    expect(modalInput.safeParse({ customId: "m", title: "Order", fields: six }).success).toBe(false);
+  });
+
+  it("refuses repeated fields and impossible lengths", () => {
+    expect(modalInput.safeParse({ customId: "m", title: "x", fields: [field({}), field({})] }).success).toBe(false);
+    expect(modalInput.safeParse({ customId: "m", title: "x", fields: [field({ minLength: 10, maxLength: 5 })] }).success).toBe(false);
+    expect(modalInput.safeParse({ customId: "m", title: "x", fields: [field({ maxLength: 3, value: "long" })] }).success).toBe(false);
+  });
+
+  it("is a valid callback", () => {
+    expect(
+      interactionCallbackInput.safeParse({ type: "modal", data: { customId: "m", title: "Order", fields: [field({})] } }).success,
+    ).toBe(true);
   });
 });

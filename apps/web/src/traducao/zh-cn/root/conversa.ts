@@ -20,6 +20,8 @@ export const conversa = {
     choose: "请选择",
     onlyYou: "只有你能看到",
     dismiss: "忽略",
+    formFrom: "来自 {{nome}} 的表单",
+    optional: "可选",
   },
   reacao: {
     carregando: "正在看谁用 {{emoji}} 回应…",

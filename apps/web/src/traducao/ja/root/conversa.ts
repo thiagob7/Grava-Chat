@@ -20,6 +20,8 @@ export const conversa = {
     choose: "選択してください",
     onlyYou: "これはあなただけに表示されています",
     dismiss: "閉じる",
+    formFrom: "{{nome}} からのフォーム",
+    optional: "任意",
   },
   reacao: {
     carregando: "{{emoji}} で反応した人を確認中…",

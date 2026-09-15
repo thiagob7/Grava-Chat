@@ -20,6 +20,8 @@ export const conversa = {
     choose: "Odaberite opciju",
     onlyYou: "Ovo vidite samo vi",
     dismiss: "Odbaci",
+    formFrom: "Obrazac od {{nome}}",
+    optional: "neobavezno",
   },
   reacao: {
     carregando: "Gledam tko je reagirao s {{emoji}}…",

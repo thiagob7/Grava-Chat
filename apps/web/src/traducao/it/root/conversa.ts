@@ -20,6 +20,8 @@ export const conversa = {
     choose: "Scegli un'opzione",
     onlyYou: "Solo tu puoi vedere questo messaggio",
     dismiss: "Ignora",
+    formFrom: "Modulo di {{nome}}",
+    optional: "facoltativo",
   },
   reacao: {
     carregando: "Sto vedendo chi ha reagito con {{emoji}}…",

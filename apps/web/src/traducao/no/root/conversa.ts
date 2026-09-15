@@ -20,6 +20,8 @@ export const conversa = {
     choose: "Velg et alternativ",
     onlyYou: "Bare du kan se dette",
     dismiss: "Lukk",
+    formFrom: "Skjema fra {{nome}}",
+    optional: "valgfritt",
   },
   reacao: {
     carregando: "Ser hvem som reagerte med {{emoji}}…",

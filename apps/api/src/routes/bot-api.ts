@@ -32,6 +32,7 @@ import { banInput, nicknameInput, timeoutInput } from "~/validations/moderation.
 import { auditService } from "~/services/audit-service.js";
 import { expressionService } from "~/services/expression-service.js";
 import { webhookService } from "~/services/webhook-service.js";
+import { userRepository } from "~/repositories/user-repository.js";
 import { interactionService } from "~/services/interaction-service.js";
 import { createEmojiInput, updateEmojiInput } from "~/validations/expression.js";
 import { createChannelInput, updateChannelInput, updateGuildInput } from "~/validations/guild.js";
@@ -372,13 +373,25 @@ export async function botApiRoutes(app: FastifyInstance) {
             )
           : await sendMessage(userId, { ...data, channelId: interaction.channelId }, undefined, { embeds, components });
       } else if (body.type === "update") {
-        if (interaction.kind !== "component") {
-          throw new AppError("update only works on a component interaction; use reply for commands", 400);
+        if (!interaction.updatable) {
+          throw new AppError("update only works when the interaction came from a bot message; use reply", 400);
         }
 
         message = interaction.sourceEphemeral
           ? await editEphemeral(userId, interaction.messageId, body.data)
           : await editMessage(userId, { messageId: interaction.messageId, ...body.data });
+      }
+
+      if (body.type === "modal") {
+        const modal = await interactionService.openModal(interaction, body.data);
+        const bot = await userRepository.findById(userId);
+
+        io().to(rooms.user(interaction.userId)).emit("interaction:modal", {
+          modalId: modal.id,
+          channelId: interaction.channelId,
+          bot: toPublicUser(bot!),
+          modal: body.data,
+        });
       }
 
       io().to(rooms.user(interaction.userId)).emit("interaction:finished", {

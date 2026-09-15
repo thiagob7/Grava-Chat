@@ -20,6 +20,8 @@ export const conversa = {
     choose: "옵션을 선택하세요",
     onlyYou: "나만 볼 수 있어요",
     dismiss: "닫기",
+    formFrom: "{{nome}}의 양식",
+    optional: "선택 사항",
   },
   reacao: {
     carregando: "{{emoji}}로 반응한 사람을 보는 중…",

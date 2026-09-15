@@ -20,6 +20,8 @@ export const conversa = {
     choose: "Pilih salah satu",
     onlyYou: "Hanya kamu yang bisa melihat ini",
     dismiss: "Tutup",
+    formFrom: "Formulir dari {{nome}}",
+    optional: "opsional",
   },
   reacao: {
     carregando: "Melihat siapa yang bereaksi dengan {{emoji}}…",

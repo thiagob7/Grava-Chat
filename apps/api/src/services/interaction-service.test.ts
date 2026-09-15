@@ -30,12 +30,13 @@ vi.mock("~/lib/redis.js", () => ({
       store.set(key, value);
       return "OK";
     }),
-    del: vi.fn(async (key: string) => store.delete(key)),
+    del: vi.fn(async (key: string) => (store.delete(key) ? 1 : 0)),
   },
   keys: {
     interaction: (id: string) => `interaction:${id}`,
     interactionAnswered: (id: string) => `interaction:answered:${id}`,
     ephemeralMessage: (id: string) => `ephemeral:${id}`,
+    modal: (id: string) => `modal:${id}`,
   },
 }));
 
@@ -226,5 +227,69 @@ describe("ephemeral messages", () => {
     expect(updated.components).toEqual([]);
     expect(updated.editedAt).toBeNull();
     expect(updated.ephemeral).toBe(true);
+  });
+});
+
+describe("modals", () => {
+  const modal = {
+    customId: "report",
+    title: "Report someone",
+    fields: [
+      { customId: "who", label: "Who", style: "short" as const, maxLength: 32 },
+      { customId: "what", label: "What happened", style: "paragraph" as const, minLength: 10 },
+      { customId: "proof", label: "Proof link", style: "short" as const, required: false },
+    ],
+  };
+
+  const opened = async () => {
+    const { interaction } = await interactionService.prepare(PERSON, { messageId: MESSAGE, customId: "accept" });
+    return interactionService.openModal(interaction, modal);
+  };
+
+  it("the bot receives every field, with empty text for optional ones", async () => {
+    const stored = await opened();
+
+    const { interaction, event } = await interactionService.prepareModalSubmit(PERSON, {
+      modalId: stored.id,
+      fields: { who: "someone", what: "was spamming the chat" },
+    });
+
+    expect(event).toMatchObject({
+      type: "modal",
+      customId: "report",
+      fields: { who: "someone", what: "was spamming the chat", proof: "" },
+    });
+    expect(interaction.updatable).toBe(true);
+  });
+
+  it("checks required fields, lengths and unknown fields", async () => {
+    const stored = await opened();
+    const submit = (fields: Record<string, string>) => interactionService.prepareModalSubmit(PERSON, { modalId: stored.id, fields });
+
+    await expect(submit({ what: "was spamming the chat" })).rejects.toThrow('Preencha "Who"');
+    await expect(submit({ who: "x", what: "short" })).rejects.toThrow("de 10 a 4000");
+    await expect(submit({ who: "x".repeat(33), what: "was spamming the chat" })).rejects.toThrow("de 1 a 32");
+    await expect(submit({ who: "x", what: "was spamming the chat", extra: "?" })).rejects.toThrow("Campo desconhecido");
+  });
+
+  it("someone else cannot submit the form, and it only goes once", async () => {
+    const stored = await opened();
+
+    await expect(
+      interactionService.prepareModalSubmit(OTHER_BOT, { modalId: stored.id, fields: { who: "x", what: "was spamming the chat" } }),
+    ).rejects.toThrow("expirou");
+
+    expect(await interactionService.consumeModal(stored.id)).toBe(true);
+    expect(await interactionService.consumeModal(stored.id)).toBe(false);
+  });
+
+  it("a modal submission cannot open another modal", async () => {
+    const stored = await opened();
+    const { interaction } = await interactionService.prepareModalSubmit(PERSON, {
+      modalId: stored.id,
+      fields: { who: "x", what: "was spamming the chat" },
+    });
+
+    await expect(interactionService.openModal(interaction, modal)).rejects.toThrow("cannot open another modal");
   });
 });

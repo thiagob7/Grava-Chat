@@ -20,6 +20,8 @@ export const conversa = {
     choose: "בחרו אפשרות",
     onlyYou: "רק את/ה רואה את זה",
     dismiss: "סגירה",
+    formFrom: "טופס מאת {{nome}}",
+    optional: "לא חובה",
   },
   reacao: {
     carregando: "בודק מי הגיב עם {{emoji}}…",

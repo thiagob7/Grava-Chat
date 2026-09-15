@@ -20,6 +20,8 @@ export const conversa = {
     choose: "Выберите вариант",
     onlyYou: "Это видите только вы",
     dismiss: "Скрыть",
+    formFrom: "Форма от {{nome}}",
+    optional: "необязательно",
   },
   reacao: {
     carregando: "Смотрю, кто отреагировал с {{emoji}}…",

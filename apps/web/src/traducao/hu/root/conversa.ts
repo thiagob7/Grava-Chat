@@ -20,6 +20,8 @@ export const conversa = {
     choose: "Válassz egy lehetőséget",
     onlyYou: "Ezt csak te látod",
     dismiss: "Elvetés",
+    formFrom: "Űrlap: {{nome}}",
+    optional: "nem kötelező",
   },
   reacao: {
     carregando: "Nézem, ki reagált ezzel: {{emoji}}…",

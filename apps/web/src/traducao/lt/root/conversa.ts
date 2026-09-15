@@ -20,6 +20,8 @@ export const conversa = {
     choose: "Pasirinkite parinktį",
     onlyYou: "Tai matote tik jūs",
     dismiss: "Uždaryti",
+    formFrom: "Forma iš {{nome}}",
+    optional: "neprivaloma",
   },
   reacao: {
     carregando: "Žiūriu, kas reagavo su {{emoji}}…",

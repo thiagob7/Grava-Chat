@@ -18,6 +18,9 @@ export const votePoll = (messageId: string, optionId: string) =>
 export const interactWithComponent = (payload: ClientEventPayload<"component:interact">) =>
   emit("component:interact", payload) as Promise<{ interactionId: string }>;
 
+export const submitBotModal = (payload: ClientEventPayload<"modal:submit">) =>
+  emit("modal:submit", payload) as Promise<{ interactionId: string }>;
+
 export const closePoll = (messageId: string) => emit("poll:close", { messageId });
 
 export const ackMessage = (channelId: string, messageId: string) =>

@@ -98,6 +98,8 @@ import {
   offInteractionFinished,
 } from "~/@core/lib/websocket/on-interaction-finished";
 import { useInteractionStore } from "~/features/conversa/stores/interaction-store";
+import { onInteractionModal, offInteractionModal } from "~/@core/lib/websocket/on-interaction-modal";
+import { useBotModalStore } from "~/features/conversa/stores/bot-modal-store";
 import {
   onExpressionsChanged,
   offExpressionsChanged,
@@ -634,6 +636,7 @@ export function useRealtime(
     });
 
     onInteractionFinished(({ interactionId }) => useInteractionStore.getState().markFinished(interactionId));
+    onInteractionModal((modal) => useBotModalStore.getState().open(modal));
 
     onCommandsChanged(({ guildId }) => {
       void queryClient.invalidateQueries({
@@ -906,6 +909,7 @@ export function useRealtime(
       offGuildRefresh();
       offCommandsChanged();
       offInteractionFinished();
+      offInteractionModal();
       offExpressionsChanged();
       offEventUpdated();
       offPostCreated();

@@ -20,6 +20,8 @@ export const conversa = {
     choose: "Chọn một tùy chọn",
     onlyYou: "Chỉ bạn nhìn thấy nội dung này",
     dismiss: "Bỏ qua",
+    formFrom: "Biểu mẫu từ {{nome}}",
+    optional: "không bắt buộc",
   },
   reacao: {
     carregando: "Đang xem ai đã thả {{emoji}}…",

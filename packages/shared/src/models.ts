@@ -512,6 +512,53 @@ export const interactInput = z.object({
 });
 export type InteractInput = z.infer<typeof interactInput>;
 
+export const MODAL_FIELD_STYLES = ["short", "paragraph"] as const;
+
+export const modalFieldSchema = z.object({
+  customId,
+  label: z.string().trim().min(1).max(45),
+  style: z.enum(MODAL_FIELD_STYLES),
+  placeholder: z.string().trim().min(1).max(100).optional(),
+  required: z.boolean().optional(),
+  minLength: z.number().int().min(0).max(LIMITS.modalFieldLength).optional(),
+  maxLength: z.number().int().min(1).max(LIMITS.modalFieldLength).optional(),
+  value: z.string().max(LIMITS.modalFieldLength).optional(),
+});
+export type ModalField = z.infer<typeof modalFieldSchema>;
+
+export const modalInput = z
+  .object({
+    customId,
+    title: z.string().trim().min(1).max(45),
+    fields: z.array(modalFieldSchema).min(1).max(LIMITS.modalFields),
+  })
+  .superRefine((modal, ctx) => {
+    const seen = new Set<string>();
+
+    modal.fields.forEach((field, index) => {
+      const path = ["fields", index];
+      if (seen.has(field.customId)) ctx.addIssue({ code: "custom", path, message: `customId "${field.customId}" is repeated` });
+      seen.add(field.customId);
+
+      const max = field.maxLength ?? LIMITS.modalFieldLength;
+      if ((field.minLength ?? 0) > max) ctx.addIssue({ code: "custom", path, message: "minLength cannot be greater than maxLength" });
+      if (field.value && field.value.length > max) ctx.addIssue({ code: "custom", path, message: "value is longer than maxLength" });
+    });
+  });
+export type ModalInput = z.infer<typeof modalInput>;
+
+export const fieldLimits = (field: ModalField) => ({
+  min: field.minLength ?? (field.required === false ? 0 : 1),
+  max: field.maxLength ?? LIMITS.modalFieldLength,
+  required: field.required !== false,
+});
+
+export const modalSubmitInput = z.object({
+  modalId: z.uuid(),
+  fields: z.record(z.string().min(1).max(100), z.string().max(LIMITS.modalFieldLength)),
+});
+export type ModalSubmitInput = z.infer<typeof modalSubmitInput>;
+
 export const interactionReplyInput = botSendMessageInput
   .extend({ ephemeral: z.boolean().optional() })
   .refine(
@@ -525,6 +572,7 @@ export const interactionCallbackInput = z.discriminatedUnion("type", [
   z.object({ type: z.literal("reply"), data: interactionReplyInput }),
   z.object({ type: z.literal("update"), data: botEditMessageInput }),
   z.object({ type: z.literal("defer") }),
+  z.object({ type: z.literal("modal"), data: modalInput }),
 ]);
 export type InteractionCallbackInput = z.infer<typeof interactionCallbackInput>;
 

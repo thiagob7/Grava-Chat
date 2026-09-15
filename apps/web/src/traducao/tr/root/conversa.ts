@@ -20,6 +20,8 @@ export const conversa = {
     choose: "Bir seçenek belirle",
     onlyYou: "Bunu yalnızca sen görebilirsin",
     dismiss: "Kapat",
+    formFrom: "{{nome}} formu",
+    optional: "isteğe bağlı",
   },
   reacao: {
     carregando: "{{emoji}} ile kimin tepki verdiğine bakıyorum…",

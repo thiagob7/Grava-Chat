@@ -68,7 +68,7 @@ Tudo abaixo de um endereço só, com o cabeçalho `Authorization: Bot <token>`.
 - POST /bot/servidores/:guildId/webhooks — Cria um webhook apontado pra um canal.
 - PUT /bot/guilds/:guildId/channels/:channelId/permissions/:targetId — Define o que um cargo ou uma pessoa pode fazer num canal. Serve pra abrir um canal privado só pra alguém.
 - DELETE /bot/guilds/:guildId/channels/:channelId/permissions/:targetId — Tira a regra do cargo ou da pessoa naquele canal, voltando ao que vale no servidor.
-- POST /bot/interactions/:interactionId/:token/callback — Responde a um clique em botão ou menu, ou a um comando de barra. `reply` manda mensagem no canal (com `ephemeral: true`, só quem clicou vê), `update` edita a mensagem do botão e `defer` só avisa que recebeu. Uma resposta por interação, em até 3 segundos.
+- POST /bot/interactions/:interactionId/:token/callback — Responde a um clique em botão ou menu, ou a um comando de barra. `reply` manda mensagem no canal (com `ephemeral: true`, só quem clicou vê), `update` edita a mensagem do botão, `defer` só avisa que recebeu e `modal` abre um formulário de até 5 campos. Uma resposta por interação, em até 3 segundos.
 - PUT /bot/comandos — Registra a lista de comandos de barra do bot. Substitui a anterior.
 - POST /bot/canais/:channelId/mensagens — Manda uma mensagem no canal. Com `embeds`, ela vem em cartões com título, campos, cor, imagem e rodapé; com `components`, ganha botões e menus.
 - GET /bot/canais/:channelId/mensagens — Lê o histórico do canal, do mais novo pro mais velho. `limit` até 100, `before` pra paginar.
@@ -96,6 +96,7 @@ Tudo abaixo de um endereço só, com o cabeçalho `Authorization: Bot <token>`.
 - typing:start
 - command:invoke
 - component:interact
+- modal:submit
 - presence:update
 - presence:afk
 - voice:join
@@ -119,8 +120,9 @@ Tudo abaixo de um endereço só, com o cabeçalho `Authorization: Bot <token>`.
 - typing:started — Alguém começou a digitar no canal.
 - command:invoked — Chamaram um comando de barra do bot. Vem com `id` e `token` pra responder, inclusive só pra quem chamou.
 - commands:changed — A lista de comandos do servidor mudou.
-- interaction:created — Clicaram num botão ou escolheram num menu de uma mensagem do bot. Vem com `id` e `token` pra responder.
+- interaction:created — Clicaram num botão, escolheram num menu ou enviaram um formulário do bot (`type: modal`, com `fields`). Vem com `id` e `token` pra responder.
 - interaction:finished — O bot respondeu ao clique de quem está conectado. É o que tira o botão do estado de espera.
+- interaction:modal — O bot abriu um formulário pra quem está conectado preencher.
 - presence:changed — Alguém ficou on-line, ausente ou saiu.
 - presence:self — O estado que o servidor guardou para esta conexão.
 - user:updated — Perfil ou apelido de alguém mudou.

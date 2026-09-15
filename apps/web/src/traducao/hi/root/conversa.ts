@@ -20,6 +20,8 @@ export const conversa = {
     choose: "एक विकल्प चुनें",
     onlyYou: "यह सिर्फ़ आपको दिख रहा है",
     dismiss: "हटाएं",
+    formFrom: "{{nome}} का फ़ॉर्म",
+    optional: "वैकल्पिक",
   },
   reacao: {
     carregando: "देख रहे हैं किसने {{emoji}} से रिएक्ट किया…",
