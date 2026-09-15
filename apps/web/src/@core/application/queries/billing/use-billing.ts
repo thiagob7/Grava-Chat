@@ -2,6 +2,8 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "react-toastify";
 
 import {
+  createPixCharge,
+  findPixCharge,
   findBilling,
   openBillingPortal,
   requestRefund,
@@ -62,3 +64,17 @@ export const useRequestRefund = () => {
     onError: (error) => toast.error(apiErrorMessage(error, i18next.t("configuracoes.subscription.error"))),
   });
 };
+
+export const useCreatePixCharge = () =>
+  useMutation({
+    mutationFn: createPixCharge,
+    onError: (error) => toast.error(apiErrorMessage(error, i18next.t("configuracoes.subscription.error"))),
+  });
+
+export const usePixCharge = (id: string | null) =>
+  useQuery({
+    queryKey: ["find-pix-charge", id],
+    queryFn: () => findPixCharge(id!),
+    enabled: Boolean(id),
+    refetchInterval: (query) => (query.state.data?.status === "pending" ? 3500 : false),
+  });

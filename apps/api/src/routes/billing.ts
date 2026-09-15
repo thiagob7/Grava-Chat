@@ -1,16 +1,33 @@
 import type { FastifyInstance } from "fastify";
-import { checkoutInput } from "@gravae/shared";
+import { checkoutInput, objectId, pixChargeInput } from "@gravae/shared";
+import { z } from "zod";
 
 import { env } from "~/env.js";
 import { AppError } from "~/lib/http.js";
 import { stripe } from "~/lib/stripe.js";
 import { billingEnabled, billingService } from "~/services/billing/billing-service.js";
 import { handleStripeEvent } from "~/services/billing/stripe-events.js";
+import { pixService } from "~/services/billing/pix-service.js";
+import { webhookSignatureMatches } from "~/lib/mercadopago.js";
 
 export async function billingRoutes(app: FastifyInstance) {
   app.addHook("preHandler", app.authenticate);
 
-  app.get("/billing", (req) => billingService.status(req.userId));
+  app.get("/billing", async (req) => {
+    await pixService.refreshPendingOf(req.userId);
+    return billingService.status(req.userId);
+  });
+
+  app.post(
+    "/billing/pix",
+    { config: { rateLimit: { max: 10, timeWindow: "10 minutes" } } },
+    (req) => pixService.create(req.userId, pixChargeInput.parse(req.body)),
+  );
+
+  app.get("/billing/pix/:chargeId", (req) => {
+    const { chargeId } = z.object({ chargeId: objectId }).parse(req.params);
+    return pixService.status(req.userId, chargeId);
+  });
 
   app.post(
     "/billing/checkout",
@@ -45,5 +62,29 @@ export async function billingWebhookRoutes(app: FastifyInstance) {
 
     await handleStripeEvent(stripe, event, req.log);
     return reply.code(200).send({ received: true });
+  });
+}
+
+export async function mercadoPagoWebhookRoutes(app: FastifyInstance) {
+  app.post("/billing/mercadopago/webhook", { config: { rateLimit: false } }, async (req, reply) => {
+    const query = req.query as Record<string, string | undefined>;
+    const body = (req.body ?? {}) as { type?: string; data?: { id?: string | number } };
+
+    const type = query.type ?? query.topic ?? body.type ?? "";
+    const paymentId = query["data.id"] ?? (body.data?.id != null ? String(body.data.id) : "");
+    if (!paymentId || (type && !type.toLowerCase().includes("payment"))) return reply.code(200).send({ ok: true });
+
+    const valid =
+      !env.MERCADOPAGO_WEBHOOK_SECRET ||
+      webhookSignatureMatches({
+        signature: req.headers["x-signature"],
+        requestId: req.headers["x-request-id"],
+        dataId: paymentId,
+        secret: env.MERCADOPAGO_WEBHOOK_SECRET,
+      });
+    if (!valid) return reply.code(401).send({ ok: false });
+
+    await pixService.handleNotification(paymentId);
+    return reply.code(200).send({ ok: true });
   });
 }

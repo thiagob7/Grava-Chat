@@ -933,3 +933,21 @@ model BillingEvent {
   type        String
   processedAt DateTime @default(now())
 }
+
+/// Pix avulso cobrado pelo Mercado Pago: o QR vale até expiresAt e libera os dias quando é pago.
+model PixCharge {
+  id           String    @id @default(auto()) @map("_id") @db.ObjectId
+  userId       String    @db.ObjectId
+  interval     String
+  days         Int
+  amount       Int
+  mpPaymentId  String?   @unique
+  qrCode       String?
+  qrCodeBase64 String?
+  status       String    @default("pending")
+  expiresAt    DateTime
+  paidAt       DateTime?
+  createdAt    DateTime  @default(now())
+
+  @@index([userId, createdAt])
+}

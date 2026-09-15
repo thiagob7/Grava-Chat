@@ -2,16 +2,18 @@ import React, { useState } from "react";
 import { Check, CreditCard, Infinity as InfinityIcon, QrCode } from "lucide-react";
 import {
   PLAN_LIMITS,
+  PASS_PRICE_CENTS,
   PLAN_NAME,
   planOf,
   type BillingInterval,
   type BillingPrice,
   type BillingPrices,
-  type BillingRenewal,
+  type PixChargeView,
   type PlanLimits,
 } from "@gravae/shared";
 
-import { useBilling, useStartCheckout } from "~/@core/application/queries/billing/use-billing";
+import { useBilling, useCreatePixCharge, useStartCheckout } from "~/@core/application/queries/billing/use-billing";
+import { PixPayment } from "~/features/plan/components/PixPayment";
 import { Button } from "~/components/ui/button";
 import { Dialog, DialogContent, DialogDescription, DialogTitle } from "~/components/ui/dialog";
 import { Skeleton } from "~/components/ui/skeleton";
@@ -24,12 +26,14 @@ const INTERVALS: BillingInterval[] = ["month", "year"];
 
 const megabytes = (bytes: number) => Math.round(bytes / (1024 * 1024));
 
-const priceOf = (prices: BillingPrices | null | undefined, interval: BillingInterval): BillingPrice | null =>
-  prices?.automatic[interval] ?? prices?.none[interval] ?? null;
+type PayOption = "automatic" | "none" | "pix";
 
-export function yearlySavingPercent(prices: BillingPrices | null | undefined): number | null {
-  const month = priceOf(prices, "month");
-  const year = priceOf(prices, "year");
+const priceOf = (prices: BillingPrices | null | undefined, interval: BillingInterval, pix = false): BillingPrice | null =>
+  prices?.automatic[interval] ?? prices?.none[interval] ?? (pix ? { amount: PASS_PRICE_CENTS[interval], currency: "brl" } : null);
+
+export function yearlySavingPercent(prices: BillingPrices | null | undefined, pix = false): number | null {
+  const month = priceOf(prices, "month", pix);
+  const year = priceOf(prices, "year", pix);
   if (!month || !year || month.currency !== year.currency || month.amount <= 0) return null;
 
   const percent = Math.round((1 - year.amount / (month.amount * 12)) * 100);
@@ -53,14 +57,17 @@ const UpgradeBody: React.FC<{ onDone: () => void }> = ({ onDone }) => {
   const { t } = useTranslation();
   const billing = useBilling();
   const checkout = useStartCheckout();
+  const createPix = useCreatePixCharge();
   const openSettings = useSettings((s) => s.open);
 
   const [interval, setBillingInterval] = useState<BillingInterval>("year");
-  const [renewal, setRenewal] = useState<BillingRenewal | null>(null);
+  const [renewal, setRenewal] = useState<PayOption | null>(null);
+  const [pixCharge, setPixCharge] = useState<PixChargeView | null>(null);
 
   const status = billing.data;
   const prices = status?.prices;
-  const saving = yearlySavingPercent(prices);
+  const pixEnabled = status?.pixEnabled === true;
+  const saving = yearlySavingPercent(prices, pixEnabled);
   const premium = planOf(status?.premiumUntil) === "premium";
 
   const money = (price: BillingPrice) =>
@@ -68,8 +75,15 @@ const UpgradeBody: React.FC<{ onDone: () => void }> = ({ onDone }) => {
       price.amount / 100,
     );
 
-  const renewals = (["automatic", "none"] as const).filter((option) => prices?.[option][interval]);
+  const renewals = (["automatic", "pix", "none"] as const).filter((option) =>
+    option === "pix" ? pixEnabled : Boolean(status?.enabled && prices?.[option][interval]),
+  );
   const chosen = renewal && renewals.includes(renewal) ? renewal : renewals[0] ?? null;
+
+  const pay = () => {
+    if (chosen === "pix") createPix.mutate({ interval }, { onSuccess: setPixCharge });
+    else if (chosen) checkout.mutate({ interval, renewal: chosen });
+  };
 
   return (
     <div data-gc="plan.upgrade-modal.div" className="min-h-0 overflow-y-auto px-6 pb-6 pt-7">
@@ -103,7 +117,16 @@ const UpgradeBody: React.FC<{ onDone: () => void }> = ({ onDone }) => {
             {t("configuracoes.subscription.manage")}
           </Button>
         </div>
-      ) : !status?.enabled || !prices || !priceOf(prices, "month") && !priceOf(prices, "year") ? (
+      ) : pixCharge ? (
+        <PixPayment data-gc="plan.upgrade-modal.pix-payment.on-done"
+          initial={pixCharge}
+          onPaid={onDone}
+          onRetry={() => {
+            setPixCharge(null);
+            createPix.mutate({ interval: pixCharge.interval }, { onSuccess: setPixCharge });
+          }}
+        />
+      ) : !renewals.length ? (
         <p data-gc="plan.upgrade-modal.p--2" className="mt-6 rounded-xl border border-dashed border-line px-4 py-5 text-center text-sm text-ink-faint">
           {t("configuracoes.subscription.unavailable")}
         </p>
@@ -111,7 +134,7 @@ const UpgradeBody: React.FC<{ onDone: () => void }> = ({ onDone }) => {
         <>
           <div data-gc="plan.upgrade-modal.div--4" className="mt-6 grid gap-3 sm:grid-cols-2">
             {INTERVALS.map((option) => {
-              const price = priceOf(prices, option);
+              const price = priceOf(prices, option, pixEnabled);
               if (!price) return null;
 
               return (
@@ -147,7 +170,7 @@ const UpgradeBody: React.FC<{ onDone: () => void }> = ({ onDone }) => {
               <legend data-gc="plan.upgrade-modal.legend" className="mb-2 text-xs font-semibold uppercase tracking-wide text-ink-muted">
                 {t("configuracoes.subscription.howToPay")}
               </legend>
-              <div data-gc="plan.upgrade-modal.div--5" className="grid gap-2 sm:grid-cols-2">
+              <div data-gc="plan.upgrade-modal.div--5" className="grid gap-2 sm:grid-cols-3">
                 {renewals.map((option) => (
                   <button data-gc="plan.upgrade-modal.button--3"
                     key={option}
@@ -159,23 +182,29 @@ const UpgradeBody: React.FC<{ onDone: () => void }> = ({ onDone }) => {
                       chosen === option ? "border-brand/50 bg-brand/10 text-ink" : "border-line text-ink-muted hover:bg-hover hover:text-ink",
                     )}
                   >
-                    {option === "automatic" ? (
-                      <CreditCard data-gc="plan.upgrade-modal.credit-card" size={16} className="shrink-0" />
-                    ) : (
+                    {option === "pix" ? (
                       <QrCode data-gc="plan.upgrade-modal.qr-code" size={16} className="shrink-0" />
+                    ) : (
+                      <CreditCard data-gc="plan.upgrade-modal.credit-card" size={16} className="shrink-0" />
                     )}
-                    {t(option === "automatic" ? "configuracoes.subscription.automatic" : "configuracoes.subscription.pass")}
+                    {t(
+                      option === "automatic"
+                        ? "configuracoes.subscription.automatic"
+                        : option === "pix"
+                          ? "configuracoes.subscription.pixOption"
+                          : "configuracoes.subscription.cardPass",
+                    )}
                   </button>
                 ))}
               </div>
             </fieldset>
           )}
 
-          <Button data-gc="plan.upgrade-modal.button--4"
+          <Button data-gc="plan.upgrade-modal.button.pay"
             className="mt-5 w-full"
             disabled={!chosen}
-            loading={checkout.isPending}
-            onClick={() => chosen && checkout.mutate({ interval, renewal: chosen })}
+            loading={checkout.isPending || createPix.isPending}
+            onClick={pay}
           >
             {t("configuracoes.subscription.subscribe")}
           </Button>

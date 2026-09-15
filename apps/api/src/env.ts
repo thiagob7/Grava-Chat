@@ -61,6 +61,12 @@ const schema = z.object({
   STRIPE_PRICE_YEARLY: z.string().default(""),
   STRIPE_PRICE_MONTH_PASS: z.string().default(""),
   STRIPE_PRICE_YEAR_PASS: z.string().default(""),
+
+  MERCADOPAGO_ACCESS_TOKEN: z.string().default(""),
+  MERCADOPAGO_CLIENT_ID: z.string().default(""),
+  MERCADOPAGO_CLIENT_SECRET: z.string().default(""),
+  MERCADOPAGO_WEBHOOK_SECRET: z.string().default(""),
+  MERCADOPAGO_NOTIFICATION_URL: z.string().default(""),
 });
 
 const parsed = schema.safeParse(process.env);

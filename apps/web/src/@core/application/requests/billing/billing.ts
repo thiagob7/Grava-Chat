@@ -1,4 +1,4 @@
-import type { BillingStatus, CheckoutInput } from "@gravae/shared";
+import type { BillingStatus, CheckoutInput, PixChargeInput, PixChargeView } from "@gravae/shared";
 
 import { api } from "~/@core/lib/api";
 
@@ -10,3 +10,8 @@ export const startCheckout = async (input: CheckoutInput) =>
 export const openBillingPortal = async () => (await api.post<{ url: string }>("/billing/portal")).data;
 
 export const requestRefund = async () => (await api.post<BillingStatus>("/billing/refund")).data;
+
+export const createPixCharge = async (input: PixChargeInput) =>
+  (await api.post<PixChargeView>("/billing/pix", input)).data;
+
+export const findPixCharge = async (id: string) => (await api.get<PixChargeView>(`/billing/pix/${id}`)).data;
