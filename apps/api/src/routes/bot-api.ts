@@ -1,6 +1,6 @@
 import type { FastifyInstance, FastifyRequest } from "fastify";
 import { z } from "zod";
-import { setCommandsInput, editMessageInput, sendMessageInput, rooms } from "@gravae/shared";
+import { setCommandsInput, botEditMessageInput, botSendMessageInput, rooms } from "@gravae/shared";
 
 import { ForbiddenError, UnauthorizedError } from "~/lib/http.js";
 import { baseUrlDe } from "~/lib/endereco.js";
@@ -34,14 +34,15 @@ import {
   updateRoleInput,
 } from "~/validations/role.js";
 import { createWebhookInput } from "~/validations/webhook.js";
+import { setOverwriteInput } from "~/validations/role.js";
+import { syncGuildRooms } from "~/realtime/room-sync.js";
 
 const guildParams = z.object({ guildId: objectId });
 const channelParams = z.object({ channelId: objectId });
 const messageParams = z.object({ messageId: objectId });
 
-const sendBody = sendMessageInput.omit({ channelId: true, nonce: true, retry: true });
 
-const editBody = editMessageInput.omit({ messageId: true });
+const overwriteParams = guildParams.extend({ channelId: objectId, targetId: objectId });
 
 const reactionParams = messageParams.extend({ emoji: z.string().min(1).max(80) });
 const reactionBody = z.object({ burst: z.boolean().optional() });
@@ -75,6 +76,11 @@ async function requirePresence(botUserId: string, guildId: string) {
   const member = await memberRepository.find(guildId, botUserId);
   if (!member) throw new ForbiddenError("Esse bot não está nesse servidor");
 }
+
+const notifyPermissionChange = (guildId: string) => {
+  io().to(rooms.guild(guildId)).emit("guild:refresh", { guildId });
+  void syncGuildRooms(guildId).catch(() => undefined);
+};
 
 export async function botApiRoutes(app: FastifyInstance) {
   app.get("/bot/eu", async (req) => {
@@ -314,6 +320,26 @@ export async function botApiRoutes(app: FastifyInstance) {
     return reply.status(201).send(webhook);
   });
 
+  app.put("/bot/guilds/:guildId/channels/:channelId/permissions/:targetId", async (req) => {
+    const { userId } = await botDoToken(req);
+    const { guildId, channelId, targetId } = overwriteParams.parse(req.params);
+
+    const overwrite = await roleService.setOverwrite(userId, guildId, channelId, targetId, setOverwriteInput.parse(req.body));
+
+    notifyPermissionChange(guildId);
+    return overwrite ?? { removed: true };
+  });
+
+  app.delete("/bot/guilds/:guildId/channels/:channelId/permissions/:targetId", async (req, reply) => {
+    const { userId } = await botDoToken(req);
+    const { guildId, channelId, targetId } = overwriteParams.parse(req.params);
+
+    await roleService.removeOverwrite(userId, guildId, channelId, targetId);
+
+    notifyPermissionChange(guildId);
+    return reply.status(204).send();
+  });
+
   app.put("/bot/comandos", async (req) => {
     const { botId } = await botDoToken(req);
     const { commands } = setCommandsInput.parse(req.body);
@@ -331,10 +357,9 @@ export async function botApiRoutes(app: FastifyInstance) {
     const { userId } = await botDoToken(req);
     const { channelId } = channelParams.parse(req.params);
 
-    const message = await sendMessage(userId, {
-      ...sendBody.parse(req.body),
-      channelId,
-    });
+    const { embeds, ...body } = botSendMessageInput.parse(req.body);
+
+    const message = await sendMessage(userId, { ...body, channelId }, undefined, { embeds });
 
     return reply.status(201).send(message);
   });
@@ -371,9 +396,9 @@ export async function botApiRoutes(app: FastifyInstance) {
   app.patch("/bot/mensagens/:messageId", async (req) => {
     const { userId } = await botDoToken(req);
     const { messageId } = messageParams.parse(req.params);
-    const { content } = editBody.parse(req.body);
+    const { content, embeds } = botEditMessageInput.parse(req.body);
 
-    return editMessage(userId, { messageId, content });
+    return editMessage(userId, { messageId, content, embeds });
   });
 
   app.delete("/bot/mensagens/:messageId", async (req, reply) => {

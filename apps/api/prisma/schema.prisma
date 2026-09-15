@@ -106,6 +106,36 @@ type PollOption {
   userIds String[] @db.ObjectId
 }
 
+type EmbedField {
+  name   String
+  value  String
+  inline Boolean @default(false)
+}
+
+type EmbedAuthor {
+  name    String
+  url     String?
+  iconUrl String?
+}
+
+type EmbedFooter {
+  text    String
+  iconUrl String?
+}
+
+type Embed {
+  title        String?
+  description  String?
+  url          String?
+  color        Int?
+  author       EmbedAuthor?
+  fields       EmbedField[]
+  thumbnailUrl String?
+  imageUrl     String?
+  footer       EmbedFooter?
+  timestamp    DateTime?
+}
+
 type Poll {
   question    String @map("pergunta")
   options      PollOption[]
@@ -420,6 +450,7 @@ model Message {
   kind        MessageType  @default(USER) @map("tipo")
   attachments Attachment[]
   poll        Poll?
+  embeds      Embed[]
   stickerId   String?       @db.ObjectId
   sticker     GuildSticker? @relation(fields: [stickerId], references: [id], onDelete: SetNull)
   replyToId   String?      @db.ObjectId

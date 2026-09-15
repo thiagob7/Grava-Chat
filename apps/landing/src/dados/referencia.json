@@ -290,6 +290,30 @@
     },
     {
       "method": "PUT",
+      "path": "/bot/guilds/:guildId/channels/:channelId/permissions/:targetId",
+      "group": "Servidores e canais",
+      "description": "Define o que um cargo ou uma pessoa pode fazer num canal. Serve pra abrir um canal privado só pra alguém.",
+      "body": "{ type: ROLE | MEMBER, allow: string[], deny: string[] }",
+      "parametros": [
+        "guildId",
+        "channelId",
+        "targetId"
+      ]
+    },
+    {
+      "method": "DELETE",
+      "path": "/bot/guilds/:guildId/channels/:channelId/permissions/:targetId",
+      "group": "Servidores e canais",
+      "description": "Tira a regra do cargo ou da pessoa naquele canal, voltando ao que vale no servidor.",
+      "body": null,
+      "parametros": [
+        "guildId",
+        "channelId",
+        "targetId"
+      ]
+    },
+    {
+      "method": "PUT",
       "path": "/bot/comandos",
       "group": "Identidade",
       "description": "Registra a lista de comandos de barra do bot. Substitui a anterior.",
@@ -300,8 +324,8 @@
       "method": "POST",
       "path": "/bot/canais/:channelId/mensagens",
       "group": "Mensagens",
-      "description": "Manda uma mensagem no canal.",
-      "body": "sendMessageInput sem channelId e nonce",
+      "description": "Manda uma mensagem no canal. Com `embeds`, ela vem em cartões com título, campos, cor, imagem e rodapé.",
+      "body": "botSendMessageInput — content, embeds?, attachments?, poll?, replyToId?",
       "parametros": [
         "channelId"
       ]
@@ -350,8 +374,8 @@
       "method": "PATCH",
       "path": "/bot/mensagens/:messageId",
       "group": "Mensagens",
-      "description": "Edita uma mensagem do próprio bot.",
-      "body": "editMessageInput sem messageId",
+      "description": "Edita uma mensagem do próprio bot. Mande só `content`, só `embeds` ou os dois; o que ficar de fora não muda.",
+      "body": "botEditMessageInput — { content?, embeds? }",
       "parametros": [
         "messageId"
       ]
@@ -712,7 +736,14 @@
     },
     {
       "name": "voice:leave",
-      "fields": []
+      "fields": [
+        {
+          "name": "channelId",
+          "kind": "string",
+          "required": false,
+          "limit": null
+        }
+      ]
     },
     {
       "name": "voice:token",
@@ -757,6 +788,12 @@
           "limit": null
         },
         {
+          "name": "fromChannelId",
+          "kind": "string",
+          "required": false,
+          "limit": null
+        },
+        {
           "name": "serverMute",
           "kind": "boolean",
           "required": false,
@@ -789,6 +826,12 @@
           "kind": "string",
           "required": true,
           "limit": null
+        },
+        {
+          "name": "fromChannelId",
+          "kind": "string",
+          "required": false,
+          "limit": null
         }
       ]
     },
@@ -805,6 +848,12 @@
           "name": "channelId",
           "kind": "string",
           "required": true,
+          "limit": null
+        },
+        {
+          "name": "fromChannelId",
+          "kind": "string",
+          "required": false,
           "limit": null
         }
       ]
@@ -1036,6 +1085,11 @@
           "required": true
         },
         {
+          "name": "embeds",
+          "kind": "array",
+          "required": false
+        },
+        {
           "name": "sticker",
           "kind": "vários",
           "required": true
@@ -1096,8 +1150,8 @@
           "method": "POST",
           "path": "/bot/canais/:channelId/mensagens",
           "group": "Mensagens",
-          "description": "Manda uma mensagem no canal.",
-          "body": "sendMessageInput sem channelId e nonce",
+          "description": "Manda uma mensagem no canal. Com `embeds`, ela vem em cartões com título, campos, cor, imagem e rodapé.",
+          "body": "botSendMessageInput — content, embeds?, attachments?, poll?, replyToId?",
           "parametros": [
             "channelId"
           ]
@@ -1146,8 +1200,8 @@
           "method": "PATCH",
           "path": "/bot/mensagens/:messageId",
           "group": "Mensagens",
-          "description": "Edita uma mensagem do próprio bot.",
-          "body": "editMessageInput sem messageId",
+          "description": "Edita uma mensagem do próprio bot. Mande só `content`, só `embeds` ou os dois; o que ficar de fora não muda.",
+          "body": "botEditMessageInput — { content?, embeds? }",
           "parametros": [
             "messageId"
           ]
@@ -1339,6 +1393,30 @@
           "parametros": [
             "guildId",
             "channelId"
+          ]
+        },
+        {
+          "method": "PUT",
+          "path": "/bot/guilds/:guildId/channels/:channelId/permissions/:targetId",
+          "group": "Servidores e canais",
+          "description": "Define o que um cargo ou uma pessoa pode fazer num canal. Serve pra abrir um canal privado só pra alguém.",
+          "body": "{ type: ROLE | MEMBER, allow: string[], deny: string[] }",
+          "parametros": [
+            "guildId",
+            "channelId",
+            "targetId"
+          ]
+        },
+        {
+          "method": "DELETE",
+          "path": "/bot/guilds/:guildId/channels/:channelId/permissions/:targetId",
+          "group": "Servidores e canais",
+          "description": "Tira a regra do cargo ou da pessoa naquele canal, voltando ao que vale no servidor.",
+          "body": null,
+          "parametros": [
+            "guildId",
+            "channelId",
+            "targetId"
           ]
         }
       ],
@@ -2104,6 +2182,21 @@
       "label": "Opções por enquete",
       "format": "numero",
       "value": 5
+    },
+    {
+      "label": "Cartões (embeds) por mensagem",
+      "format": "numero",
+      "value": 10
+    },
+    {
+      "label": "Campos por cartão",
+      "format": "numero",
+      "value": 25
+    },
+    {
+      "label": "Texto somado dos cartões de uma mensagem",
+      "format": "caracteres",
+      "value": 6000
     },
     {
       "label": "Mensagens fixadas por canal",

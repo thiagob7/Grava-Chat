@@ -131,6 +131,59 @@ export const pollSchema = z.object({
 });
 export type Poll = z.infer<typeof pollSchema>;
 
+const embedUrl = z.url({ protocol: /^https?$/ }).max(2048);
+
+export const embedFieldSchema = z.object({
+  name: z.string().trim().min(1).max(256),
+  value: z.string().trim().min(1).max(1024),
+  inline: z.boolean().optional(),
+});
+export type EmbedField = z.infer<typeof embedFieldSchema>;
+
+export const embedSchema = z.object({
+  title: z.string().trim().min(1).max(256).optional(),
+  description: z.string().trim().min(1).max(4096).optional(),
+  url: embedUrl.optional(),
+  color: z.number().int().min(0).max(0xffffff).optional(),
+  author: z
+    .object({ name: z.string().trim().min(1).max(256), url: embedUrl.optional(), iconUrl: embedUrl.optional() })
+    .optional(),
+  fields: z.array(embedFieldSchema).max(LIMITS.embedFields).optional(),
+  thumbnailUrl: embedUrl.optional(),
+  imageUrl: embedUrl.optional(),
+  footer: z.object({ text: z.string().trim().min(1).max(2048), iconUrl: embedUrl.optional() }).optional(),
+  timestamp: z.iso.datetime({ offset: true }).optional(),
+});
+export type Embed = z.infer<typeof embedSchema>;
+
+export const embedLength = (embed: Embed) =>
+  (embed.title?.length ?? 0) +
+  (embed.description?.length ?? 0) +
+  (embed.author?.name.length ?? 0) +
+  (embed.footer?.text.length ?? 0) +
+  (embed.fields ?? []).reduce((total, field) => total + field.name.length + field.value.length, 0);
+
+const hasVisibleContent = (embed: Embed) =>
+  Boolean(
+    embed.title || embed.description || embed.author || embed.fields?.length || embed.imageUrl || embed.thumbnailUrl || embed.footer,
+  );
+
+export const embedsInput = z
+  .array(embedSchema)
+  .max(LIMITS.embedsPerMessage)
+  .superRefine((embeds, ctx) => {
+    embeds.forEach((embed, index) => {
+      if (!hasVisibleContent(embed)) {
+        ctx.addIssue({ code: "custom", path: [index], message: "Embed without anything to show" });
+      }
+    });
+
+    const total = embeds.reduce((sum, embed) => sum + embedLength(embed), 0);
+    if (total > LIMITS.embedTotalLength) {
+      ctx.addIssue({ code: "custom", message: `Embeds add up to ${total} characters, the limit is ${LIMITS.embedTotalLength}` });
+    }
+  });
+
 export const stickerSchema = z.object({
   id: objectId,
   guildId: objectId,
@@ -191,6 +244,7 @@ export const messageSchema = z.object({
   kind: z.enum(["USER", "JOIN", "COMANDO"]),
   attachments: z.array(attachmentSchema),
   poll: pollSchema.nullable(),
+  embeds: z.array(embedSchema).optional(),
   sticker: stickerSchema.nullable(),
   reactions: z.array(reactionSummarySchema),
   mentions: z.array(objectId),
@@ -333,6 +387,21 @@ export const editMessageInput = z.object({
   messageId: objectId,
   content: z.string().min(1).max(LIMITS.messageLength),
 });
+
+export const botSendMessageInput = sendMessageInput
+  .omit({ channelId: true, nonce: true, retry: true })
+  .extend({ embeds: embedsInput.optional() });
+export type BotSendMessageInput = z.infer<typeof botSendMessageInput>;
+
+export const botEditMessageInput = z
+  .object({
+    content: z.string().max(LIMITS.messageLength).optional(),
+    embeds: embedsInput.optional(),
+  })
+  .refine((input) => input.content !== undefined || input.embeds !== undefined, {
+    message: "Send content, embeds or both",
+  });
+export type BotEditMessageInput = z.infer<typeof botEditMessageInput>;
 
 const commandName = z
   .string()

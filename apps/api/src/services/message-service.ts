@@ -2,7 +2,8 @@ import { randomUUID } from "node:crypto";
 import type { SearchQuery } from "~/validations/message.js";
 import { guildRepository } from "~/repositories/guild-repository.js";
 import { userRepository } from "~/repositories/user-repository.js";
-import { has, LIMITS, type ReactionPeople } from "@gravae/shared";
+import { has, LIMITS, type Embed, type ReactionPeople } from "@gravae/shared";
+import { embedText, toStoredEmbed } from "~/lib/embeds.js";
 import { AppError, ForbiddenError, NotFoundError } from "~/lib/http.js";
 import {
   messageRepository,
@@ -170,7 +171,7 @@ export const messageService = {
     };
   },
 
-  async send(userId: string, input: SendMessageInput) {
+  async send(userId: string, input: SendMessageInput, extra: { embeds?: Embed[] } = {}) {
     const already = input.nonce
       ? await receiptOf(userId, { nonce: input.nonce, channelId: input.channelId, retry: input.retry })
       : null;
@@ -235,7 +236,9 @@ export const messageService = {
       throw new AppError("Esse anexo não foi enviado por você", 400);
     }
 
-    if (!content && !input.attachments?.length && !input.poll && !input.stickerId) {
+    const embeds = extra.embeds ?? [];
+
+    if (!content && !input.attachments?.length && !input.poll && !input.stickerId && !embeds.length) {
       throw new AppError("Mensagem vazia");
     }
 
@@ -252,7 +255,7 @@ export const messageService = {
         channelId: channel.id,
         userId,
         context,
-        content,
+        content: [content, ...embeds.map(embedText)].filter(Boolean).join("\n"),
       });
     }
 
@@ -280,6 +283,7 @@ export const messageService = {
         waves: a.waves ?? null,
       })),
       ...(input.poll ? { poll: buildPoll(input.poll) } : {}),
+      ...(embeds.length ? { embeds: embeds.map(toStoredEmbed) } : {}),
       ...(input.stickerId ? { stickerId: input.stickerId } : {}),
       ...(input.postId ? { postId: input.postId } : {}),
       replyToId: input.replyToId ?? null,
@@ -310,18 +314,36 @@ export const messageService = {
     return toMessage(created, userId);
   },
 
-  async edit(userId: string, input: EditMessageInput) {
+  async edit(
+    userId: string,
+    input: Omit<EditMessageInput, "content"> & { content?: string; embeds?: Embed[] },
+  ) {
     const existing = await messageRepository.findById(input.messageId);
     if (!existing || existing.deletedAt) throw new NotFoundError("Mensagem não encontrada");
     if (existing.authorId !== userId) throw new ForbiddenError("Você só pode editar as suas mensagens");
 
-    const content = input.content.trim();
+    const content = input.content !== undefined ? input.content.trim() : existing.content;
+    const embedsLeft = input.embeds !== undefined ? input.embeds.length : (existing.embeds ?? []).length;
+    const otherContent = existing.attachments.length > 0 || Boolean(existing.poll) || Boolean(existing.stickerId);
+
+    if (!content && !embedsLeft && !otherContent) throw new AppError("Mensagem vazia");
 
     const { context } = await accessService.requireChannelAccess(userId, existing.channelId);
     const channel = await channelRepository.findById(existing.channelId);
 
+    if (channel?.guildId && context && input.embeds?.length) {
+      await autoModService.evaluate({
+        guildId: channel.guildId,
+        channelId: channel.id,
+        userId,
+        context,
+        content: [content, ...input.embeds.map(embedText)].filter(Boolean).join("\n"),
+      });
+    }
+
     const updated = await messageRepository.update(input.messageId, {
       content,
+      ...(input.embeds !== undefined ? { embeds: input.embeds.map(toStoredEmbed) } : {}),
       editedAt: new Date(),
       mentions: extractMentions(content),
       ...(await resolveMentions(content, channel?.guildId ?? null, context)),

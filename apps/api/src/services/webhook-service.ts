@@ -13,6 +13,7 @@ import type {
   ExecuteWebhookInput,
   UpdateWebhookInput,
 } from "~/validations/webhook.js";
+import { toStoredEmbed } from "~/lib/embeds.js";
 
 const sameToken = (expected: string, given: string) => {
   const a = Buffer.from(expected);
@@ -128,7 +129,8 @@ export const webhookService = {
     if (!sameToken(webhook.token, token)) throw new UnauthorizedError("Token inválido");
 
     const content = (input.content ?? "").trim();
-    if (!content) throw new AppError("Mensagem vazia");
+    const embeds = input.embeds ?? [];
+    if (!content && !embeds.length) throw new AppError("Mensagem vazia");
 
     const uses = await redis.incr(keys.webhookRate(webhookId));
     if (uses === 1) await redis.expire(keys.webhookRate(webhookId), WINDOW_S);
@@ -146,6 +148,7 @@ export const webhookService = {
       authorId: webhook.botUserId,
       content,
       attachments: [],
+      ...(embeds.length ? { embeds: embeds.map(toStoredEmbed) } : {}),
       replyToId: null,
       mentions: [],
     });

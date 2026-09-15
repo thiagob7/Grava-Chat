@@ -41,8 +41,8 @@ Base URL: https://gravaechat-api.duckdns.org/api
 
 ## Objects
 
-- Mensagem (mensagem) — 19 fields, 9 routes, 6 events
-- Canal (canal) — 16 fields, 4 routes, 5 events
+- Mensagem (mensagem) — 20 fields, 9 routes, 6 events
+- Canal (canal) — 16 fields, 6 routes, 5 events
 - Servidor (servidor) — 7 fields, 2 routes, 4 events
 - Membro (membro) — 7 fields, 4 routes, 5 events
 - Cargo (cargo) — 13 fields, 5 routes, 0 events
@@ -84,6 +84,8 @@ Base URL: https://gravaechat-api.duckdns.org/api
 - DELETE /bot/servidores/:guildId/emojis/:emojiId
 - GET /bot/servidores/:guildId/webhooks
 - POST /bot/servidores/:guildId/webhooks
+- PUT /bot/guilds/:guildId/channels/:channelId/permissions/:targetId
+- DELETE /bot/guilds/:guildId/channels/:channelId/permissions/:targetId
 - PUT /bot/comandos
 - POST /bot/canais/:channelId/mensagens
 - GET /bot/canais/:channelId/mensagens

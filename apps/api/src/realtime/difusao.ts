@@ -13,8 +13,9 @@ export async function sendMessage(
   userId: string,
   input: Parameters<typeof messageService.send>[1],
   except?: string,
+  extra?: Parameters<typeof messageService.send>[2],
 ) {
-  const message = await messageService.send(userId, input);
+  const message = await messageService.send(userId, input, extra);
   if (wasReplay(message)) return message;
 
   const room = io().to(rooms.channel(input.channelId));

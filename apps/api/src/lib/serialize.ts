@@ -1,5 +1,6 @@
 import type { Prisma } from "@prisma/client";
 import type {
+  Embed,
   Message,
   PublicUser,
   SelfUser,
@@ -175,6 +176,29 @@ type MessageRow = Prisma.MessageGetPayload<{
   include: { author: true; reactions: true; sticker: true };
 }>;
 
+function toEmbed(e: MessageRow["embeds"][number]): Embed {
+  return {
+    ...(e.title ? { title: e.title } : {}),
+    ...(e.description ? { description: e.description } : {}),
+    ...(e.url ? { url: e.url } : {}),
+    ...(e.color !== null && e.color !== undefined ? { color: e.color } : {}),
+    ...(e.author
+      ? {
+          author: {
+            name: e.author.name,
+            ...(e.author.url ? { url: e.author.url } : {}),
+            ...(e.author.iconUrl ? { iconUrl: e.author.iconUrl } : {}),
+          },
+        }
+      : {}),
+    ...(e.fields.length ? { fields: e.fields.map((f) => ({ name: f.name, value: f.value, inline: f.inline })) } : {}),
+    ...(e.thumbnailUrl ? { thumbnailUrl: e.thumbnailUrl } : {}),
+    ...(e.imageUrl ? { imageUrl: e.imageUrl } : {}),
+    ...(e.footer ? { footer: { text: e.footer.text, ...(e.footer.iconUrl ? { iconUrl: e.footer.iconUrl } : {}) } } : {}),
+    ...(e.timestamp ? { timestamp: e.timestamp.toISOString() } : {}),
+  };
+}
+
 export function toMessage(m: MessageRow, viewerId: string): Message {
   const grouped = new Map<
     string,
@@ -223,6 +247,7 @@ export function toMessage(m: MessageRow, viewerId: string): Message {
           closedAt: m.poll.closedAt?.toISOString() ?? null,
         }
       : null,
+    embeds: (m.embeds ?? []).map(toEmbed),
     sticker: m.sticker ? toSticker(m.sticker) : null,
     reactions: [...grouped.entries()].map(([emoji, v]) => ({
       emoji,

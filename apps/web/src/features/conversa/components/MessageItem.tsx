@@ -47,6 +47,7 @@ import { removeAttachment } from "~/@core/application/requests/message/remover-a
 import { useMe } from "~/@core/application/queries/auth/use-me";
 import { MessageContent } from "~/features/conversa/components/MessageContent";
 import { LinkEmbeds } from "~/features/conversa/components/LinkEmbed";
+import { BotEmbeds } from "~/features/conversa/components/BotEmbed";
 import { Tooltip } from "~/components/ui/tooltip";
 import { useWhoReacted } from "~/@core/application/queries/message/use-quem-reagiu";
 import { PollCard } from "~/features/conversa/components/PollCard";
@@ -452,6 +453,10 @@ export const MessageItem: React.FC<MessageItemProps> = ({
 
         {!editing && !(ignored && !revealed) && message.content && (
           <LinkEmbeds data-gc="conversa.message-item.link-embeds" content={message.content} />
+        )}
+
+        {!(ignored && !revealed) && message.embeds && message.embeds.length > 0 && (
+          <BotEmbeds data-gc="conversa.message-item.bot-embeds" embeds={message.embeds} emojis={emojis} mentions={mentions} mentionProfiles={{ guildId }} />
         )}
 
         {message.sticker && (
@@ -1068,6 +1073,8 @@ const Quote: React.FC<{
         <span data-gc="conversa.message-item.span--26" {...flx("quoteText", "texto-da-citacao min-w-0 truncate text-ink-muted transition [&_img]:inline-block [&_img]:size-4 [&_img]:align-text-bottom")}>
           {replied.content ? (
             <MessageContent data-gc="conversa.message-item.message-content--4" content={replied.content} emojis={emojis} mentions={mentions} />
+          ) : replied.embeds?.[0]?.title ? (
+            replied.embeds[0].title
           ) : (
             t("conversa.mensagem.citacaoAnexo")
           )}

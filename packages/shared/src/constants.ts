@@ -42,6 +42,9 @@ export const LIMITS = {
   messagesPinned: 50,
   modeSlowMax: 21_600,
   postTitle: 100,
+  embedsPerMessage: 10,
+  embedFields: 25,
+  embedTotalLength: 6000,
 } as const;
 
 export const NOTE_LIMIT = 120;
