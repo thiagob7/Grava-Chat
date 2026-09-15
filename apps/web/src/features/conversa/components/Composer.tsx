@@ -531,6 +531,14 @@ export const Composer: React.FC<ComposerProps> = ({
               command={invocation.command}
               filled={invocation.options}
               missing={invocation.missing}
+              onChoose={(choice) => {
+                const next = `${value.replace(/\s*$/, " ")}${choice} `;
+                setValue(next);
+                requestAnimationFrame(() => {
+                  textarea.current?.focus();
+                  textarea.current?.setSelectionRange(next.length, next.length);
+                });
+              }}
             />
           )}
 

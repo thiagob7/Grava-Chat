@@ -22,6 +22,8 @@ export const conversa = {
     dismiss: "Απόρριψη",
     formFrom: "Φόρμα από {{nome}}",
     optional: "προαιρετικό",
+    yes: "Ναι",
+    no: "Όχι",
   },
   reacao: {
     carregando: "Βλέπω ποιος αντέδρασε με {{emoji}}…",

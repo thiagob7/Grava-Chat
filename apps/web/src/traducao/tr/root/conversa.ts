@@ -22,6 +22,8 @@ export const conversa = {
     dismiss: "Kapat",
     formFrom: "{{nome}} formu",
     optional: "isteğe bağlı",
+    yes: "Evet",
+    no: "Hayır",
   },
   reacao: {
     carregando: "{{emoji}} ile kimin tepki verdiğine bakıyorum…",

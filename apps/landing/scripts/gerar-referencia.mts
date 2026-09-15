@@ -70,6 +70,8 @@ const DESCRIPTIONS = {
   "PUT /bot/comandos": "Registra a lista de comandos de barra do bot. Substitui a anterior.",
   "POST /bot/canais/:channelId/mensagens":
     "Manda uma mensagem no canal. Com `embeds`, ela vem em cartões com título, campos, cor, imagem e rodapé; com `components`, ganha botões e menus.",
+  "POST /bot/users/:userId/messages":
+    "Manda uma mensagem direta pra alguém que divide servidor com o bot. Segue as regras de DM da pessoa: pode cair nos pedidos ou ser recusada. Até 30 por minuto.",
   "GET /bot/canais/:channelId/mensagens":
     "Lê o histórico do canal, do mais novo pro mais velho. `limit` até 100, `before` pra paginar.",
   "GET /bot/canais/:channelId/fixadas": "As mensagens fixadas do canal.",
@@ -164,7 +166,9 @@ const BODIES = {
   "PUT /bot/servidores/:guildId/membros/:userId/cargos": "{ roleIds: string[] }",
   "PUT /bot/servidores/:guildId/castigos/:userId": "{ minutos: number, reason?: string }",
   "PUT /bot/servidores/:guildId/banimentos/:userId": "{ reason?: string, apagarHoras?: number }",
-  "PUT /bot/comandos": "definirComandosInput",
+  "PUT /bot/comandos":
+    "setCommandsInput — cada opção tem kind (texto | numero | usuario | canal | role | boolean) e, em texto e numero, choices?",
+  "POST /bot/users/:userId/messages": "botSendMessageInput — content, embeds?, components?",
   "POST /bot/canais/:channelId/mensagens":
     "botSendMessageInput — content, embeds?, components?, attachments?, poll?, replyToId?",
   "PATCH /bot/mensagens/:messageId": "botEditMessageInput — { content?, embeds?, components? }",
@@ -271,7 +275,7 @@ const OBJETOS = [
     name: "Mensagem",
     summary: "O que o bot escreve, edita, fixa e reage. É o objeto mais movimentado da API.",
     esquema: "messageSchema",
-    routes: /^\/bot\/(mensagens|canais\/:channelId\/(mensagens|fixadas))/,
+    routes: /^\/bot\/(mensagens|canais\/:channelId\/(mensagens|fixadas)|users\/:userId\/messages$)/,
     events: [
       "message:created",
       "message:updated",
@@ -385,6 +389,7 @@ const GRUPOS_DE_ROTA = [
   { title: "Identidade", test: /^\/bot\/(eu|comandos)$/ },
   { title: "Interações", test: /^\/bot\/interactions\// },
   { title: "Mensagens", test: /^\/bot\/(mensagens|canais\/:channelId\/(mensagens|fixadas))/ },
+  { title: "Mensagens", test: /^\/bot\/users\/:userId\/messages$/ },
   { title: "Servidores e canais", test: /^\/bot\/servidores(\/:guildId(\/canais|\/convites)?)?$/ },
   { title: "Membros e moderação", test: /^\/bot\/servidores\/:guildId\/(membros|castigos|banimentos|auditoria)/ },
   { title: "Cargos", test: /^\/bot\/servidores\/:guildId\/cargos/ },

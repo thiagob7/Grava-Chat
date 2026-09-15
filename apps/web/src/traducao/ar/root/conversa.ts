@@ -22,6 +22,8 @@ export const conversa = {
     dismiss: "تجاهل",
     formFrom: "نموذج من {{nome}}",
     optional: "اختياري",
+    yes: "نعم",
+    no: "لا",
   },
   reacao: {
     carregando: "جارٍ معرفة من تفاعل بـ {{emoji}}…",

@@ -31,6 +31,7 @@ export const keys = {
   interactionAnswered: (interactionId: string) => `interaction:answered:${interactionId}`,
   ephemeralMessage: (messageId: string) => `ephemeral:${messageId}`,
   modal: (modalId: string) => `modal:${modalId}`,
+  botDmRate: (botUserId: string) => `bot:dm:rate:${botUserId}`,
   slowmode: (channelId: string, userId: string) => `slow:${channelId}:${userId}`,
   uploadQuota: (userId: string) => `upload:bytes:${userId}`,
   messagesFlow: (userId: string) => `fluxo:msg:${userId}`,

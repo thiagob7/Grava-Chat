@@ -22,6 +22,8 @@ export const conversa = {
     dismiss: "忽略",
     formFrom: "来自 {{nome}} 的表单",
     optional: "可选",
+    yes: "是",
+    no: "否",
   },
   reacao: {
     carregando: "正在看谁用 {{emoji}} 回应…",

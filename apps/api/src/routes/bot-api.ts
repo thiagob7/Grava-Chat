@@ -34,6 +34,7 @@ import { expressionService } from "~/services/expression-service.js";
 import { webhookService } from "~/services/webhook-service.js";
 import { userRepository } from "~/repositories/user-repository.js";
 import { interactionService } from "~/services/interaction-service.js";
+import { botDmService } from "~/services/bot-dm-service.js";
 import { createEmojiInput, updateEmojiInput } from "~/validations/expression.js";
 import { createChannelInput, updateChannelInput, updateGuildInput } from "~/validations/guild.js";
 import { auditQuery } from "~/validations/moderation.js";
@@ -53,6 +54,8 @@ const messageParams = z.object({ messageId: objectId });
 
 
 const overwriteParams = guildParams.extend({ channelId: objectId, targetId: objectId });
+
+const userParams = z.object({ userId: objectId });
 
 const interactionParams = z.object({ interactionId: z.uuid(), token: z.string().min(1).max(128) });
 
@@ -426,6 +429,17 @@ export async function botApiRoutes(app: FastifyInstance) {
 
     const { embeds, components, ...body } = botSendMessageInput.parse(req.body);
 
+    const message = await sendMessage(userId, { ...body, channelId }, undefined, { embeds, components });
+
+    return reply.status(201).send(message);
+  });
+
+  app.post("/bot/users/:userId/messages", async (req, reply) => {
+    const { userId } = await botDoToken(req);
+    const { userId: targetId } = userParams.parse(req.params);
+    const { embeds, components, ...body } = botSendMessageInput.parse(req.body);
+
+    const channelId = await botDmService.openFor(userId, targetId);
     const message = await sendMessage(userId, { ...body, channelId }, undefined, { embeds, components });
 
     return reply.status(201).send(message);

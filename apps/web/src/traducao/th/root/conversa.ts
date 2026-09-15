@@ -22,6 +22,8 @@ export const conversa = {
     dismiss: "ปิด",
     formFrom: "แบบฟอร์มจาก {{nome}}",
     optional: "ไม่บังคับ",
+    yes: "ใช่",
+    no: "ไม่",
   },
   reacao: {
     carregando: "กำลังดูว่าใครแสดงความรู้สึกด้วย {{emoji}}…",

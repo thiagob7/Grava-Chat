@@ -71,6 +71,7 @@ Tudo abaixo de um endereço só, com o cabeçalho `Authorization: Bot <token>`.
 - POST /bot/interactions/:interactionId/:token/callback — Responde a um clique em botão ou menu, ou a um comando de barra. `reply` manda mensagem no canal (com `ephemeral: true`, só quem clicou vê), `update` edita a mensagem do botão, `defer` só avisa que recebeu e `modal` abre um formulário de até 5 campos. Uma resposta por interação, em até 3 segundos.
 - PUT /bot/comandos — Registra a lista de comandos de barra do bot. Substitui a anterior.
 - POST /bot/canais/:channelId/mensagens — Manda uma mensagem no canal. Com `embeds`, ela vem em cartões com título, campos, cor, imagem e rodapé; com `components`, ganha botões e menus.
+- POST /bot/users/:userId/messages — Manda uma mensagem direta pra alguém que divide servidor com o bot. Segue as regras de DM da pessoa: pode cair nos pedidos ou ser recusada. Até 30 por minuto.
 - GET /bot/canais/:channelId/mensagens — Lê o histórico do canal, do mais novo pro mais velho. `limit` até 100, `before` pra paginar.
 - GET /bot/canais/:channelId/fixadas — As mensagens fixadas do canal.
 - PUT /bot/mensagens/:messageId/fixar — Fixa a mensagem no canal.

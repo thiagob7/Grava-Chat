@@ -22,6 +22,8 @@ export const conversa = {
     dismiss: "हटाएं",
     formFrom: "{{nome}} का फ़ॉर्म",
     optional: "वैकल्पिक",
+    yes: "हाँ",
+    no: "नहीं",
   },
   reacao: {
     carregando: "देख रहे हैं किसने {{emoji}} से रिएक्ट किया…",

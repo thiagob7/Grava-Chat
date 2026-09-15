@@ -130,7 +130,7 @@ export async function react(
   return { messageId, emoji, channelId, reactions };
 }
 
-function asStaysWritten(command: BotCommand, options: Record<string, string | number>) {
+function asStaysWritten(command: BotCommand, options: Record<string, string | number | boolean>) {
   const parts = command.options
     .filter((o) => options[o.name] !== undefined)
     .map((o) => {
@@ -138,6 +138,7 @@ function asStaysWritten(command: BotCommand, options: Record<string, string | nu
 
       if (o.kind === "usuario") return `<@${value}>`;
       if (o.kind === "canal") return `<#${value}>`;
+      if (o.kind === "role") return `<@&${value}>`;
 
       return value;
     });

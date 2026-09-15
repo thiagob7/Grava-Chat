@@ -22,6 +22,8 @@ export const conversa = {
     dismiss: "Затвори",
     formFrom: "Формуляр от {{nome}}",
     optional: "по избор",
+    yes: "Да",
+    no: "Не",
   },
   reacao: {
     carregando: "Гледам кой реагира с {{emoji}}…",

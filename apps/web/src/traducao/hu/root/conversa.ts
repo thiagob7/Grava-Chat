@@ -22,6 +22,8 @@ export const conversa = {
     dismiss: "Elvetés",
     formFrom: "Űrlap: {{nome}}",
     optional: "nem kötelező",
+    yes: "Igen",
+    no: "Nem",
   },
   reacao: {
     carregando: "Nézem, ki reagált ezzel: {{emoji}}…",

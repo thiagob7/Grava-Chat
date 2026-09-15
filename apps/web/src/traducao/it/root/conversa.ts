@@ -22,6 +22,8 @@ export const conversa = {
     dismiss: "Ignora",
     formFrom: "Modulo di {{nome}}",
     optional: "facoltativo",
+    yes: "Sì",
+    no: "No",
   },
   reacao: {
     carregando: "Sto vedendo chi ha reagito con {{emoji}}…",

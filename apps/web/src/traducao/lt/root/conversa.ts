@@ -22,6 +22,8 @@ export const conversa = {
     dismiss: "Uždaryti",
     formFrom: "Forma iš {{nome}}",
     optional: "neprivaloma",
+    yes: "Taip",
+    no: "Ne",
   },
   reacao: {
     carregando: "Žiūriu, kas reagavo su {{emoji}}…",

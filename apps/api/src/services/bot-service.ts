@@ -8,6 +8,7 @@ import {
   type AppDiscovered,
   type AppPublic,
   type BotCommand,
+  type CommandOption,
   type Permission,
 } from "@gravae/shared";
 import { AppError, ForbiddenError, NotFoundError } from "~/lib/http.js";
@@ -415,7 +416,11 @@ export const botService = {
       if (!declared.has(name)) throw new AppError(`/${command.name} não tem "${name}"`, 400);
     }
 
-    const values: Record<string, string | number> = {};
+    const values: Record<string, string | number | boolean> = {};
+    const needsRoles = command.options.some((option) => option.kind === "role" && params.options[option.name]?.trim());
+    const roleIds = needsRoles
+      ? new Set((await roleRepository.findManyByGuild(params.guildId)).map((role) => role.id))
+      : new Set<string>();
 
     for (const option of command.options) {
       const raw = params.options[option.name]?.trim() ?? "";
@@ -425,7 +430,7 @@ export const botService = {
         continue;
       }
 
-      values[option.name] = convert(option, raw, command.name);
+      values[option.name] = convert(option, raw, command.name, roleIds);
     }
 
     return { bot, command, options: values };
@@ -457,11 +462,42 @@ export const botService = {
 
 const soId = (value: string) => /^<[@#]&?([a-f\d]{24})>$/i.exec(value)?.[1] ?? value;
 
+const TRUE_WORDS = new Set(["true", "sim", "s", "yes", "y", "1", "on"]);
+const FALSE_WORDS = new Set(["false", "nao", "não", "n", "no", "0", "off"]);
+
 function convert(
-  option: { name: string; kind: string },
+  option: CommandOption,
   raw: string,
   command: string,
-): string | number {
+  roleIds: Set<string>,
+): string | number | boolean {
+  if (option.choices) {
+    const wanted = raw.toLowerCase();
+    const choice = option.choices.find(
+      (c) => c.name.toLowerCase() === wanted || String(c.value).toLowerCase() === wanted,
+    );
+    if (!choice) {
+      throw new AppError(
+        `"${option.name}" em /${command} precisa ser: ${option.choices.map((c) => c.name).join(", ")}`,
+        400,
+      );
+    }
+    return choice.value;
+  }
+
+  if (option.kind === "boolean") {
+    const word = raw.toLowerCase();
+    if (TRUE_WORDS.has(word)) return true;
+    if (FALSE_WORDS.has(word)) return false;
+    throw new AppError(`"${option.name}" em /${command} precisa ser sim ou não`, 400);
+  }
+
+  if (option.kind === "role") {
+    const id = soId(raw);
+    if (!roleIds.has(id)) throw new AppError(`"${option.name}" em /${command} precisa ser um cargo deste servidor`, 400);
+    return id;
+  }
+
   if (option.kind === "numero") {
     const number = Number(raw.replace(",", "."));
     if (!Number.isFinite(number)) {

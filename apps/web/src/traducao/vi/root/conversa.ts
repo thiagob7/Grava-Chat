@@ -22,6 +22,8 @@ export const conversa = {
     dismiss: "Bỏ qua",
     formFrom: "Biểu mẫu từ {{nome}}",
     optional: "không bắt buộc",
+    yes: "Có",
+    no: "Không",
   },
   reacao: {
     carregando: "Đang xem ai đã thả {{emoji}}…",

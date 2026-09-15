@@ -580,15 +580,36 @@ const commandName = z
   .string()
   .regex(/^[a-z0-9_-]{1,32}$/, "Só minúsculas, números, hífen e sublinhado");
 
-export const OPTION_KINDS = ["texto", "numero", "usuario", "canal"] as const;
+export const OPTION_KINDS = ["texto", "numero", "usuario", "canal", "role", "boolean"] as const;
 export type OptionKind = (typeof OPTION_KINDS)[number];
 
-export const commandOptionSchema = z.object({
-  name: commandName,
-  description: z.string().min(1).max(100),
-  kind: z.enum(OPTION_KINDS),
-  required: z.boolean().optional(),
+export const commandChoiceSchema = z.object({
+  name: z.string().trim().min(1).max(100),
+  value: z.union([z.string().min(1).max(100), z.number()]),
 });
+export type CommandChoice = z.infer<typeof commandChoiceSchema>;
+
+export const commandOptionSchema = z
+  .object({
+    name: commandName,
+    description: z.string().min(1).max(100),
+    kind: z.enum(OPTION_KINDS),
+    required: z.boolean().optional(),
+    choices: z.array(commandChoiceSchema).min(1).max(25).optional(),
+  })
+  .superRefine((option, ctx) => {
+    if (!option.choices) return;
+
+    if (option.kind !== "texto" && option.kind !== "numero") {
+      ctx.addIssue({ code: "custom", path: ["choices"], message: "Only text and number options take choices" });
+      return;
+    }
+
+    const expected = option.kind === "numero" ? "number" : "string";
+    if (option.choices.some((choice) => typeof choice.value !== expected)) {
+      ctx.addIssue({ code: "custom", path: ["choices"], message: `Choices of a ${option.kind} option need ${expected} values` });
+    }
+  });
 export type CommandOption = z.infer<typeof commandOptionSchema>;
 
 export const botCommandSchema = z.object({

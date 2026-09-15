@@ -22,6 +22,8 @@ export const conversa = {
     dismiss: "닫기",
     formFrom: "{{nome}}의 양식",
     optional: "선택 사항",
+    yes: "예",
+    no: "아니요",
   },
   reacao: {
     carregando: "{{emoji}}로 반응한 사람을 보는 중…",

@@ -22,6 +22,8 @@ export const conversa = {
     dismiss: "סגירה",
     formFrom: "טופס מאת {{nome}}",
     optional: "לא חובה",
+    yes: "כן",
+    no: "לא",
   },
   reacao: {
     carregando: "בודק מי הגיב עם {{emoji}}…",

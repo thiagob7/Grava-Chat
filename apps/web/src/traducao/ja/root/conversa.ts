@@ -22,6 +22,8 @@ export const conversa = {
     dismiss: "閉じる",
     formFrom: "{{nome}} からのフォーム",
     optional: "任意",
+    yes: "はい",
+    no: "いいえ",
   },
   reacao: {
     carregando: "{{emoji}} で反応した人を確認中…",

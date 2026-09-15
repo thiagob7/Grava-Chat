@@ -22,6 +22,8 @@ export const conversa = {
     dismiss: "Luk",
     formFrom: "Formular fra {{nome}}",
     optional: "valgfrit",
+    yes: "Ja",
+    no: "Nej",
   },
   reacao: {
     carregando: "Ser efter, hvem der reagerede med {{emoji}}…",

@@ -7,6 +7,7 @@ import {
   componentsInput,
   embedsInput,
   interactionCallbackInput,
+  commandOptionSchema,
   modalInput,
 } from "./models.js";
 
@@ -168,5 +169,21 @@ describe("modalInput", () => {
     expect(
       interactionCallbackInput.safeParse({ type: "modal", data: { customId: "m", title: "Order", fields: [field({})] } }).success,
     ).toBe(true);
+  });
+});
+
+describe("command option choices", () => {
+  const option = (extra: object) => ({ name: "size", description: "Size", kind: "texto", ...extra });
+
+  it("only text and number options take choices, with matching value types", () => {
+    expect(commandOptionSchema.safeParse(option({ choices: [{ name: "Small", value: "s" }] })).success).toBe(true);
+    expect(commandOptionSchema.safeParse(option({ kind: "numero", choices: [{ name: "One", value: 1 }] })).success).toBe(true);
+    expect(commandOptionSchema.safeParse(option({ kind: "numero", choices: [{ name: "One", value: "1" }] })).success).toBe(false);
+    expect(commandOptionSchema.safeParse(option({ kind: "boolean", choices: [{ name: "Yes", value: "y" }] })).success).toBe(false);
+  });
+
+  it("accepts the new role and boolean kinds", () => {
+    expect(commandOptionSchema.safeParse(option({ kind: "role" })).success).toBe(true);
+    expect(commandOptionSchema.safeParse(option({ kind: "boolean" })).success).toBe(true);
   });
 });

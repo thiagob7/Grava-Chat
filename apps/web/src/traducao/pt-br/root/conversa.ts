@@ -23,6 +23,8 @@ export const conversa = {
     dismiss: "Dispensar",
     formFrom: "Formulário de {{nome}}",
     optional: "opcional",
+    yes: "Sim",
+    no: "Não",
   },
   reacao: {
     carregando: "Vendo quem reagiu com {{emoji}}…",

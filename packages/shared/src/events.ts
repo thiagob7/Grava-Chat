@@ -127,7 +127,7 @@ export type ServerToClientEvents = {
     guildId: string;
     messageId: string;
     command: string;
-    options: Record<string, string | number>;
+    options: Record<string, string | number | boolean>;
     user: z.infer<typeof publicUserSchema>;
   }) => void;
 

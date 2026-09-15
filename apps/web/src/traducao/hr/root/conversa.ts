@@ -22,6 +22,8 @@ export const conversa = {
     dismiss: "Odbaci",
     formFrom: "Obrazac od {{nome}}",
     optional: "neobavezno",
+    yes: "Da",
+    no: "Ne",
   },
   reacao: {
     carregando: "Gledam tko je reagirao s {{emoji}}…",

@@ -22,6 +22,8 @@ export const conversa = {
     dismiss: "Zavřít",
     formFrom: "Formulář od {{nome}}",
     optional: "nepovinné",
+    yes: "Ano",
+    no: "Ne",
   },
   reacao: {
     carregando: "Zjišťuji, kdo reagoval s {{emoji}}…",

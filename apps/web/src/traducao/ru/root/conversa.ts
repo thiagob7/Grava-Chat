@@ -22,6 +22,8 @@ export const conversa = {
     dismiss: "Скрыть",
     formFrom: "Форма от {{nome}}",
     optional: "необязательно",
+    yes: "Да",
+    no: "Нет",
   },
   reacao: {
     carregando: "Смотрю, кто отреагировал с {{emoji}}…",

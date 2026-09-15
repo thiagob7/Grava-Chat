@@ -22,6 +22,8 @@ export const conversa = {
     dismiss: "Tutup",
     formFrom: "Formulir dari {{nome}}",
     optional: "opsional",
+    yes: "Ya",
+    no: "Tidak",
   },
   reacao: {
     carregando: "Melihat siapa yang bereaksi dengan {{emoji}}…",
