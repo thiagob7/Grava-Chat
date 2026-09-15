@@ -290,20 +290,65 @@
     },
     {
       "method": "PUT",
+      "path": "/bot/guilds/:guildId/channels/:channelId/permissions/:targetId",
+      "group": "Servidores e canais",
+      "description": "Define o que um cargo ou uma pessoa pode fazer num canal. Serve pra abrir um canal privado só pra alguém.",
+      "body": "{ type: ROLE | MEMBER, allow: string[], deny: string[] }",
+      "parametros": [
+        "guildId",
+        "channelId",
+        "targetId"
+      ]
+    },
+    {
+      "method": "DELETE",
+      "path": "/bot/guilds/:guildId/channels/:channelId/permissions/:targetId",
+      "group": "Servidores e canais",
+      "description": "Tira a regra do cargo ou da pessoa naquele canal, voltando ao que vale no servidor.",
+      "body": null,
+      "parametros": [
+        "guildId",
+        "channelId",
+        "targetId"
+      ]
+    },
+    {
+      "method": "POST",
+      "path": "/bot/interactions/:interactionId/:token/callback",
+      "group": "Interações",
+      "description": "Responde a um clique em botão ou menu, ou a um comando de barra. `reply` manda mensagem no canal (com `ephemeral: true`, só quem clicou vê), `update` edita a mensagem do botão, `defer` só avisa que recebeu e `modal` abre um formulário de até 5 campos. Uma resposta por interação, em até 3 segundos.",
+      "body": "{ type: reply, data: botSendMessageInput & { ephemeral? } } | { type: update, data: botEditMessageInput } | { type: defer } | { type: modal, data: modalInput }",
+      "parametros": [
+        "interactionId",
+        "token"
+      ]
+    },
+    {
+      "method": "PUT",
       "path": "/bot/comandos",
       "group": "Identidade",
       "description": "Registra a lista de comandos de barra do bot. Substitui a anterior.",
-      "body": "definirComandosInput",
+      "body": "setCommandsInput — cada opção tem kind (texto | numero | usuario | canal | role | boolean) e, em texto e numero, choices?",
       "parametros": []
     },
     {
       "method": "POST",
       "path": "/bot/canais/:channelId/mensagens",
       "group": "Mensagens",
-      "description": "Manda uma mensagem no canal.",
-      "body": "sendMessageInput sem channelId e nonce",
+      "description": "Manda uma mensagem no canal. Com `embeds`, ela vem em cartões com título, campos, cor, imagem e rodapé; com `components`, ganha botões e menus.",
+      "body": "botSendMessageInput — content, embeds?, components?, attachments?, poll?, replyToId?",
       "parametros": [
         "channelId"
+      ]
+    },
+    {
+      "method": "POST",
+      "path": "/bot/users/:userId/messages",
+      "group": "Mensagens",
+      "description": "Manda uma mensagem direta pra alguém que divide servidor com o bot. Segue as regras de DM da pessoa: pode cair nos pedidos ou ser recusada. Até 30 por minuto.",
+      "body": "botSendMessageInput — content, embeds?, components?",
+      "parametros": [
+        "userId"
       ]
     },
     {
@@ -350,8 +395,8 @@
       "method": "PATCH",
       "path": "/bot/mensagens/:messageId",
       "group": "Mensagens",
-      "description": "Edita uma mensagem do próprio bot.",
-      "body": "editMessageInput sem messageId",
+      "description": "Edita uma mensagem do próprio bot. Mande `content`, `embeds`, `components` ou uma mistura; o que ficar de fora não muda.",
+      "body": "botEditMessageInput — { content?, embeds?, components? }",
       "parametros": [
         "messageId"
       ]
@@ -660,6 +705,46 @@
       ]
     },
     {
+      "name": "component:interact",
+      "fields": [
+        {
+          "name": "messageId",
+          "kind": "string",
+          "required": true,
+          "limit": null
+        },
+        {
+          "name": "customId",
+          "kind": "string",
+          "required": true,
+          "limit": 100
+        },
+        {
+          "name": "values",
+          "kind": "array",
+          "required": false,
+          "limit": null
+        }
+      ]
+    },
+    {
+      "name": "modal:submit",
+      "fields": [
+        {
+          "name": "modalId",
+          "kind": "string",
+          "required": true,
+          "limit": null
+        },
+        {
+          "name": "fields",
+          "kind": "object",
+          "required": true,
+          "limit": null
+        }
+      ]
+    },
+    {
       "name": "presence:update",
       "fields": [
         {
@@ -712,7 +797,14 @@
     },
     {
       "name": "voice:leave",
-      "fields": []
+      "fields": [
+        {
+          "name": "channelId",
+          "kind": "string",
+          "required": false,
+          "limit": null
+        }
+      ]
     },
     {
       "name": "voice:token",
@@ -757,6 +849,12 @@
           "limit": null
         },
         {
+          "name": "fromChannelId",
+          "kind": "string",
+          "required": false,
+          "limit": null
+        },
+        {
           "name": "serverMute",
           "kind": "boolean",
           "required": false,
@@ -789,6 +887,12 @@
           "kind": "string",
           "required": true,
           "limit": null
+        },
+        {
+          "name": "fromChannelId",
+          "kind": "string",
+          "required": false,
+          "limit": null
         }
       ]
     },
@@ -805,6 +909,12 @@
           "name": "channelId",
           "kind": "string",
           "required": true,
+          "limit": null
+        },
+        {
+          "name": "fromChannelId",
+          "kind": "string",
+          "required": false,
           "limit": null
         }
       ]
@@ -866,11 +976,23 @@
     },
     {
       "name": "command:invoked",
-      "description": "Chamaram um comando de barra do bot. É por aqui que ele trabalha."
+      "description": "Chamaram um comando de barra do bot. Vem com `id` e `token` pra responder, inclusive só pra quem chamou."
     },
     {
       "name": "commands:changed",
       "description": "A lista de comandos do servidor mudou."
+    },
+    {
+      "name": "interaction:created",
+      "description": "Clicaram num botão, escolheram num menu ou enviaram um formulário do bot (`type: modal`, com `fields`). Vem com `id` e `token` pra responder."
+    },
+    {
+      "name": "interaction:finished",
+      "description": "O bot respondeu ao clique de quem está conectado. É o que tira o botão do estado de espera."
+    },
+    {
+      "name": "interaction:modal",
+      "description": "O bot abriu um formulário pra quem está conectado preencher."
     },
     {
       "name": "presence:changed",
@@ -1036,6 +1158,21 @@
           "required": true
         },
         {
+          "name": "embeds",
+          "kind": "array",
+          "required": false
+        },
+        {
+          "name": "components",
+          "kind": "array",
+          "required": false
+        },
+        {
+          "name": "ephemeral",
+          "kind": "boolean",
+          "required": false
+        },
+        {
           "name": "sticker",
           "kind": "vários",
           "required": true
@@ -1096,10 +1233,20 @@
           "method": "POST",
           "path": "/bot/canais/:channelId/mensagens",
           "group": "Mensagens",
-          "description": "Manda uma mensagem no canal.",
-          "body": "sendMessageInput sem channelId e nonce",
+          "description": "Manda uma mensagem no canal. Com `embeds`, ela vem em cartões com título, campos, cor, imagem e rodapé; com `components`, ganha botões e menus.",
+          "body": "botSendMessageInput — content, embeds?, components?, attachments?, poll?, replyToId?",
           "parametros": [
             "channelId"
+          ]
+        },
+        {
+          "method": "POST",
+          "path": "/bot/users/:userId/messages",
+          "group": "Mensagens",
+          "description": "Manda uma mensagem direta pra alguém que divide servidor com o bot. Segue as regras de DM da pessoa: pode cair nos pedidos ou ser recusada. Até 30 por minuto.",
+          "body": "botSendMessageInput — content, embeds?, components?",
+          "parametros": [
+            "userId"
           ]
         },
         {
@@ -1146,8 +1293,8 @@
           "method": "PATCH",
           "path": "/bot/mensagens/:messageId",
           "group": "Mensagens",
-          "description": "Edita uma mensagem do próprio bot.",
-          "body": "editMessageInput sem messageId",
+          "description": "Edita uma mensagem do próprio bot. Mande `content`, `embeds`, `components` ou uma mistura; o que ficar de fora não muda.",
+          "body": "botEditMessageInput — { content?, embeds?, components? }",
           "parametros": [
             "messageId"
           ]
@@ -1339,6 +1486,30 @@
           "parametros": [
             "guildId",
             "channelId"
+          ]
+        },
+        {
+          "method": "PUT",
+          "path": "/bot/guilds/:guildId/channels/:channelId/permissions/:targetId",
+          "group": "Servidores e canais",
+          "description": "Define o que um cargo ou uma pessoa pode fazer num canal. Serve pra abrir um canal privado só pra alguém.",
+          "body": "{ type: ROLE | MEMBER, allow: string[], deny: string[] }",
+          "parametros": [
+            "guildId",
+            "channelId",
+            "targetId"
+          ]
+        },
+        {
+          "method": "DELETE",
+          "path": "/bot/guilds/:guildId/channels/:channelId/permissions/:targetId",
+          "group": "Servidores e canais",
+          "description": "Tira a regra do cargo ou da pessoa naquele canal, voltando ao que vale no servidor.",
+          "body": null,
+          "parametros": [
+            "guildId",
+            "channelId",
+            "targetId"
           ]
         }
       ],
@@ -1962,22 +2133,45 @@
           "parametros": []
         },
         {
+          "method": "POST",
+          "path": "/bot/interactions/:interactionId/:token/callback",
+          "group": "Interações",
+          "description": "Responde a um clique em botão ou menu, ou a um comando de barra. `reply` manda mensagem no canal (com `ephemeral: true`, só quem clicou vê), `update` edita a mensagem do botão, `defer` só avisa que recebeu e `modal` abre um formulário de até 5 campos. Uma resposta por interação, em até 3 segundos.",
+          "body": "{ type: reply, data: botSendMessageInput & { ephemeral? } } | { type: update, data: botEditMessageInput } | { type: defer } | { type: modal, data: modalInput }",
+          "parametros": [
+            "interactionId",
+            "token"
+          ]
+        },
+        {
           "method": "PUT",
           "path": "/bot/comandos",
           "group": "Identidade",
           "description": "Registra a lista de comandos de barra do bot. Substitui a anterior.",
-          "body": "definirComandosInput",
+          "body": "setCommandsInput — cada opção tem kind (texto | numero | usuario | canal | role | boolean) e, em texto e numero, choices?",
           "parametros": []
         }
       ],
       "events": [
         {
           "name": "command:invoked",
-          "description": "Chamaram um comando de barra do bot. É por aqui que ele trabalha."
+          "description": "Chamaram um comando de barra do bot. Vem com `id` e `token` pra responder, inclusive só pra quem chamou."
         },
         {
           "name": "commands:changed",
           "description": "A lista de comandos do servidor mudou."
+        },
+        {
+          "name": "interaction:created",
+          "description": "Clicaram num botão, escolheram num menu ou enviaram um formulário do bot (`type: modal`, com `fields`). Vem com `id` e `token` pra responder."
+        },
+        {
+          "name": "interaction:finished",
+          "description": "O bot respondeu ao clique de quem está conectado. É o que tira o botão do estado de espera."
+        },
+        {
+          "name": "interaction:modal",
+          "description": "O bot abriu um formulário pra quem está conectado preencher."
         }
       ]
     },
@@ -2104,6 +2298,46 @@
       "label": "Opções por enquete",
       "format": "numero",
       "value": 5
+    },
+    {
+      "label": "Cartões (embeds) por mensagem",
+      "format": "numero",
+      "value": 10
+    },
+    {
+      "label": "Campos por cartão",
+      "format": "numero",
+      "value": 25
+    },
+    {
+      "label": "Texto somado dos cartões de uma mensagem",
+      "format": "caracteres",
+      "value": 6000
+    },
+    {
+      "label": "Linhas de botões e menus por mensagem",
+      "format": "numero",
+      "value": 5
+    },
+    {
+      "label": "Botões por linha",
+      "format": "numero",
+      "value": 5
+    },
+    {
+      "label": "Opções por menu",
+      "format": "numero",
+      "value": 25
+    },
+    {
+      "label": "Campos por formulário",
+      "format": "numero",
+      "value": 5
+    },
+    {
+      "label": "Texto de um campo do formulário",
+      "format": "caracteres",
+      "value": 4000
     },
     {
       "label": "Mensagens fixadas por canal",

@@ -1,4 +1,15 @@
 export const servidor = {
+  perfilNoServidor: {
+    titulo: "Profil na ovom poslužitelju",
+    descricao: "Avatar, banner i bio koji se vide samo na {{server}}.",
+    soInfinity: "Profili po zajednici dio su plana {{plan}}. Dodirnite za planove.",
+    trocarFoto: "Promijeni avatar",
+    trocarFaixa: "Promijeni banner",
+    usarDaConta: "Koristi onaj s računa",
+    bio: "Bio na ovom poslužitelju",
+    bioDica: "Recite nešto samo ovoj zajednici",
+    salvo: "Profil poslužitelja spremljen.",
+  },
   comunidade: {
     ativa: "Zajednica je otvorena",
     ativaDesde: "Otvorena od {{quando}}",

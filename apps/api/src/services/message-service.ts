@@ -2,7 +2,9 @@ import { randomUUID } from "node:crypto";
 import type { SearchQuery } from "~/validations/message.js";
 import { guildRepository } from "~/repositories/guild-repository.js";
 import { userRepository } from "~/repositories/user-repository.js";
-import { has, LIMITS, type ReactionPeople } from "@gravae/shared";
+import { has, LIMITS, type ComponentRow, type Embed, type ReactionPeople } from "@gravae/shared";
+import { embedText, toStoredEmbed } from "~/lib/embeds.js";
+import { toStoredComponents } from "~/lib/components.js";
 import { AppError, ForbiddenError, NotFoundError } from "~/lib/http.js";
 import {
   messageRepository,
@@ -25,6 +27,8 @@ import {
   verifiedRequireEmail,
 } from "./message-guards.js";
 import { uploadService } from "./upload-service.js";
+import { planService } from "./plan-service.js";
+import { expressionAccess } from "./expression-access.js";
 import { friendshipService } from "./friendship-service.js";
 import type { EditMessageInput, SendMessageInput } from "~/validations/message.js";
 
@@ -170,7 +174,11 @@ export const messageService = {
     };
   },
 
-  async send(userId: string, input: SendMessageInput) {
+  async send(
+    userId: string,
+    input: SendMessageInput,
+    extra: { embeds?: Embed[]; components?: ComponentRow[] } = {},
+  ) {
     const already = input.nonce
       ? await receiptOf(userId, { nonce: input.nonce, channelId: input.channelId, retry: input.retry })
       : null;
@@ -230,21 +238,26 @@ export const messageService = {
     await ensureFlow(userId);
 
     const content = input.content.trim();
+    await planService.requireMessageLength(userId, content);
 
     if (input.attachments?.some((a) => !uploadService.ownsKey(userId, a.id))) {
       throw new AppError("Esse anexo não foi enviado por você", 400);
     }
 
-    if (!content && !input.attachments?.length && !input.poll && !input.stickerId) {
+    const embeds = extra.embeds ?? [];
+    const components = extra.components ?? [];
+
+    if (!content && !input.attachments?.length && !input.poll && !input.stickerId && !embeds.length && !components.length) {
       throw new AppError("Mensagem vazia");
     }
 
     if (input.stickerId) {
       const sticker = await expressionRepository.findStickerById(input.stickerId);
-      if (!sticker || sticker.guildId !== channel.guildId) {
-        throw new NotFoundError("Figurinha não encontrada");
-      }
+      if (!sticker) throw new NotFoundError("Figurinha não encontrada");
+      await expressionAccess.requireSticker(userId, channel.guildId, sticker);
     }
+
+    if (content) await expressionAccess.requireEmojisInText(userId, channel.guildId, content);
 
     if (channel.guildId && context) {
       await autoModService.evaluate({
@@ -252,7 +265,7 @@ export const messageService = {
         channelId: channel.id,
         userId,
         context,
-        content,
+        content: [content, ...embeds.map(embedText)].filter(Boolean).join("\n"),
       });
     }
 
@@ -280,6 +293,8 @@ export const messageService = {
         waves: a.waves ?? null,
       })),
       ...(input.poll ? { poll: buildPoll(input.poll) } : {}),
+      ...(embeds.length ? { embeds: embeds.map(toStoredEmbed) } : {}),
+      ...(components.length ? { components: toStoredComponents(components) } : {}),
       ...(input.stickerId ? { stickerId: input.stickerId } : {}),
       ...(input.postId ? { postId: input.postId } : {}),
       replyToId: input.replyToId ?? null,
@@ -310,19 +325,48 @@ export const messageService = {
     return toMessage(created, userId);
   },
 
-  async edit(userId: string, input: EditMessageInput) {
+  async edit(
+    userId: string,
+    input: Omit<EditMessageInput, "content"> & { content?: string; embeds?: Embed[]; components?: ComponentRow[] },
+  ) {
     const existing = await messageRepository.findById(input.messageId);
     if (!existing || existing.deletedAt) throw new NotFoundError("Mensagem não encontrada");
     if (existing.authorId !== userId) throw new ForbiddenError("Você só pode editar as suas mensagens");
 
-    const content = input.content.trim();
+    const content = input.content !== undefined ? input.content.trim() : existing.content;
+    if (input.content !== undefined && content.length > existing.content.length) {
+      await planService.requireMessageLength(userId, content);
+    }
+    const embedsLeft = input.embeds !== undefined ? input.embeds.length : (existing.embeds ?? []).length;
+    const componentsLeft =
+      input.components !== undefined ? input.components.length : (existing.components ?? []).length;
+    const otherContent =
+      existing.attachments.length > 0 || Boolean(existing.poll) || Boolean(existing.stickerId) || componentsLeft > 0;
+
+    if (!content && !embedsLeft && !otherContent) throw new AppError("Mensagem vazia");
 
     const { context } = await accessService.requireChannelAccess(userId, existing.channelId);
     const channel = await channelRepository.findById(existing.channelId);
 
+    if (input.content !== undefined && content) {
+      await expressionAccess.requireEmojisInText(userId, channel?.guildId ?? null, content);
+    }
+
+    if (channel?.guildId && context && input.embeds?.length) {
+      await autoModService.evaluate({
+        guildId: channel.guildId,
+        channelId: channel.id,
+        userId,
+        context,
+        content: [content, ...input.embeds.map(embedText)].filter(Boolean).join("\n"),
+      });
+    }
+
     const updated = await messageRepository.update(input.messageId, {
       content,
-      editedAt: new Date(),
+      ...(input.embeds !== undefined ? { embeds: input.embeds.map(toStoredEmbed) } : {}),
+      ...(input.components !== undefined ? { components: toStoredComponents(input.components) } : {}),
+      ...(input.content !== undefined || input.embeds !== undefined ? { editedAt: new Date() } : {}),
       mentions: extractMentions(content),
       ...(await resolveMentions(content, channel?.guildId ?? null, context)),
     });
@@ -474,10 +518,12 @@ export const messageService = {
     const message = await messageRepository.findById(messageId);
     if (!message || message.deletedAt) throw new NotFoundError("Mensagem não encontrada");
 
-    const { context } = await accessService.requireChannelAccess(userId, message.channelId);
+    const { channel, context } = await accessService.requireChannelAccess(userId, message.channelId);
     if (add && context && !has(context.permissions, "ADD_REACTIONS")) {
       throw new ForbiddenError("Você não pode reagir neste canal");
     }
+
+    if (add) await expressionAccess.requireReaction(userId, channel.guildId, emoji);
 
     if (add) await reactionRepository.add(messageId, userId, emoji, burst);
     else await reactionRepository.remove(messageId, userId, emoji);

@@ -25,7 +25,7 @@ export const FloatingScreenShare: React.FC = () => {
   const guildId = useVoiceStore((s) => s.guildId);
   const navigate = useNavigate();
 
-  const target = watching ? tiles.find((t) => t.identity === watching && t.screenTrack) : null;
+  const target = watching ? tiles.find((t) => t.identity === watching && t.sharingScreen) : null;
   const show = Boolean(target) && !visibleStage;
 
   const area = useCallback(
@@ -96,7 +96,7 @@ export const FloatingScreenShare: React.FC = () => {
         landing && !fullScreen.active && "transition-[left,top] duration-200 ease-out",
       )}
     >
-      <VoiceVideo data-gc="voz.floating-screen-share.voice-video" track={target.screenTrack!} />
+      {target.screenTrack && <VoiceVideo data-gc="voz.floating-screen-share.voice-video" track={target.screenTrack} />}
 
       <div data-gc="voz.floating-screen-share.div--2"
         onPointerDown={(e) => {

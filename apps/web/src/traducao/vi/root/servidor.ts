@@ -1,4 +1,15 @@
 export const servidor = {
+  perfilNoServidor: {
+    titulo: "Hồ sơ trong máy chủ này",
+    descricao: "Ảnh đại diện, biểu ngữ và giới thiệu chỉ hiện trong {{server}}.",
+    soInfinity: "Hồ sơ theo cộng đồng thuộc gói {{plan}}. Chạm để xem các gói.",
+    trocarFoto: "Đổi ảnh đại diện",
+    trocarFaixa: "Đổi biểu ngữ",
+    usarDaConta: "Dùng của tài khoản",
+    bio: "Giới thiệu trong máy chủ này",
+    bioDica: "Viết điều gì đó chỉ cho cộng đồng này",
+    salvo: "Đã lưu hồ sơ máy chủ.",
+  },
   comunidade: {
     ativa: "Cộng đồng đã mở",
     ativaDesde: "Mở từ {{quando}}",

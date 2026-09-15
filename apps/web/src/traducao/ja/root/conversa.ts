@@ -15,6 +15,16 @@ export const conversa = {
     carregando: "リンクの中身を確認中…",
     destino: "{{destino}} へ行きます",
   },
+  botComponents: {
+    noResponse: "ボットが応答しませんでした。",
+    choose: "選択してください",
+    onlyYou: "これはあなただけに表示されています",
+    dismiss: "閉じる",
+    formFrom: "{{nome}} からのフォーム",
+    optional: "任意",
+    yes: "はい",
+    no: "いいえ",
+  },
   reacao: {
     carregando: "{{emoji}} で反応した人を確認中…",
     uma: "{{nome}} が {{emoji}} で反応しました",
@@ -141,6 +151,7 @@ export const conversa = {
   },
 
   falha: {
+    premium: "送信できませんでした — Infinityの機能です",
     tentarDeNovo: "もう一度試す",
     erro: "送信できませんでした",
     semConexao: "送信できませんでした：接続がありません",

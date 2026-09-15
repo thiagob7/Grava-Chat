@@ -3,6 +3,7 @@ import multipart from "@fastify/multipart";
 import { LIMITS, CEILING_BY_PURPOSE } from "@gravae/shared";
 import { env } from "~/env.js";
 import { AppError } from "~/lib/http.js";
+import { planService } from "~/services/plan-service.js";
 import { uploadService } from "~/services/upload-service.js";
 import { uploadPurpose, importImageInput, presignInput } from "~/validations/upload.js";
 
@@ -33,6 +34,8 @@ export async function uploadRoutes(app: FastifyInstance) {
     if (body.length > ceiling) {
       throw new AppError(`Passa do limite de ${Math.round(ceiling / 1024)} KB para ${purpose}`, 413);
     }
+
+    if (purpose === "anexo") await planService.requireAttachmentSize(req.userId, body.length);
 
     return uploadService.upload(
       req.userId,

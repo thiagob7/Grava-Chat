@@ -1,5 +1,6 @@
 import type { Prisma } from "@prisma/client";
 import type {
+  Embed,
   Message,
   PublicUser,
   SelfUser,
@@ -12,9 +13,12 @@ import type {
   ProfilePublic,
   CustomStatus,
   DesiredStatus,
+  PremiumSource,
 } from "@gravae/shared";
+import { planOf } from "@gravae/shared";
 import { env } from "~/env.js";
 import { unset } from "./mongo.js";
+import { toComponentRows } from "./components.js";
 
 type UserRow = Prisma.UserGetPayload<object>;
 
@@ -28,6 +32,7 @@ export function toPublicUser(u: UserRow): PublicUser {
     isBot: u.isBot,
     ...(u.system ? { system: true } : {}),
     ...(u.profile?.decoration && u.profile.decoration !== "nenhuma" ? { decoration: u.profile.decoration } : {}),
+    ...(planOf(u.premiumUntil) === "premium" ? { premium: true } : {}),
   };
 }
 
@@ -115,6 +120,8 @@ export function toSelfUser(
     showsFriendsCommon: u.showsFriendsCommon,
     deleteAt: u.deleteAt ? u.deleteAt.toISOString() : null,
     verifiedEmail: Boolean(u.emailVerifiedAt),
+    premiumUntil: u.premiumUntil ? u.premiumUntil.toISOString() : null,
+    premiumSource: (u.premiumSource as PremiumSource | null) ?? null,
   };
 }
 
@@ -166,6 +173,13 @@ export function toMember(
     user: toPublicUser(m.user),
     roleIds: m.roleIds,
     nickname: m.nickname,
+    ...(planOf(m.user.premiumUntil) === "premium"
+      ? {
+          ...(m.avatarUrl ? { avatarUrl: m.avatarUrl } : {}),
+          ...(m.bannerUrl ? { bannerUrl: m.bannerUrl } : {}),
+          ...(m.bio ? { bio: m.bio } : {}),
+        }
+      : {}),
     timeoutUntil: m.timeoutUntil?.toISOString() ?? null,
     joinedAt: m.joinedAt.toISOString(),
   };
@@ -174,6 +188,29 @@ export function toMember(
 type MessageRow = Prisma.MessageGetPayload<{
   include: { author: true; reactions: true; sticker: true };
 }>;
+
+function toEmbed(e: MessageRow["embeds"][number]): Embed {
+  return {
+    ...(e.title ? { title: e.title } : {}),
+    ...(e.description ? { description: e.description } : {}),
+    ...(e.url ? { url: e.url } : {}),
+    ...(e.color !== null && e.color !== undefined ? { color: e.color } : {}),
+    ...(e.author
+      ? {
+          author: {
+            name: e.author.name,
+            ...(e.author.url ? { url: e.author.url } : {}),
+            ...(e.author.iconUrl ? { iconUrl: e.author.iconUrl } : {}),
+          },
+        }
+      : {}),
+    ...(e.fields.length ? { fields: e.fields.map((f) => ({ name: f.name, value: f.value, inline: f.inline })) } : {}),
+    ...(e.thumbnailUrl ? { thumbnailUrl: e.thumbnailUrl } : {}),
+    ...(e.imageUrl ? { imageUrl: e.imageUrl } : {}),
+    ...(e.footer ? { footer: { text: e.footer.text, ...(e.footer.iconUrl ? { iconUrl: e.footer.iconUrl } : {}) } } : {}),
+    ...(e.timestamp ? { timestamp: e.timestamp.toISOString() } : {}),
+  };
+}
 
 export function toMessage(m: MessageRow, viewerId: string): Message {
   const grouped = new Map<
@@ -223,6 +260,8 @@ export function toMessage(m: MessageRow, viewerId: string): Message {
           closedAt: m.poll.closedAt?.toISOString() ?? null,
         }
       : null,
+    embeds: (m.embeds ?? []).map(toEmbed),
+    components: toComponentRows(m.components),
     sticker: m.sticker ? toSticker(m.sticker) : null,
     reactions: [...grouped.entries()].map(([emoji, v]) => ({
       emoji,

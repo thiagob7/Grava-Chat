@@ -85,12 +85,14 @@ export const chamada = {
     quadros: "{{quadros}} FPS",
     qualidadeDica: "Upplösningen är ett tak: ett mindre fönster behåller sin storlek. Mer upplösning och fler bilder kräver mer bandbredd, din och tittarnas. Gäller även en pågående stream.",
   },
+  cameraLimit: "Samtalet har redan {{limite}} kameror på. Vänta tills någon stänger av sin.",
   live: {
     etiqueta: "Live",
     etiquetaMaiuscula: "LIVE",
     assistir: "Titta på sändningen",
     assistirPessoa: "Titta på {{nome}}",
     pararDeAssistir: "Sluta titta",
+    conectando: "Ansluter till strömmen…",
   },
   membro: {
     mudarMeuApelido: "Byt mitt smeknamn",

@@ -16,6 +16,16 @@ export const conversa = {
     carregando: "Vendo o que tem no link…",
     destino: "Vai para {{destino}}",
   },
+  botComponents: {
+    noResponse: "O bot não respondeu.",
+    choose: "Escolha uma opção",
+    onlyYou: "Só você está vendo isto",
+    dismiss: "Dispensar",
+    formFrom: "Formulário de {{nome}}",
+    optional: "opcional",
+    yes: "Sim",
+    no: "Não",
+  },
   reacao: {
     carregando: "Vendo quem reagiu com {{emoji}}…",
     uma: "{{nome}} reagiu com {{emoji}}",
@@ -143,6 +153,7 @@ export const conversa = {
   },
 
   falha: {
+    premium: "Não foi entregue — isso é do Infinity",
     tentarDeNovo: "Tentar de novo",
     erro: "Não foi entregue",
     semConexao: "Não foi entregue — você está sem conexão",

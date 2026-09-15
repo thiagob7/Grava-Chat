@@ -1,4 +1,15 @@
 export const servidor = {
+  perfilNoServidor: {
+    titulo: "このサーバーでのプロフィール",
+    descricao: "{{server}}だけで表示されるアバター、バナー、自己紹介。",
+    soInfinity: "コミュニティごとのプロフィールは{{plan}}の機能です。タップしてプランを見る。",
+    trocarFoto: "アバターを変更",
+    trocarFaixa: "バナーを変更",
+    usarDaConta: "アカウントのものを使う",
+    bio: "このサーバーでの自己紹介",
+    bioDica: "このコミュニティだけに向けて書く",
+    salvo: "サーバープロフィールを保存しました。",
+  },
   comunidade: {
     ativa: "コミュニティは開いています",
     ativaDesde: "{{quando}} から公開",

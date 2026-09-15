@@ -15,6 +15,16 @@ export const conversa = {
     carregando: "Katson, mitä linkin takana on…",
     destino: "Vie osoitteeseen {{destino}}",
   },
+  botComponents: {
+    noResponse: "Botti ei vastannut.",
+    choose: "Tee valinta",
+    onlyYou: "Vain sinä näet tämän",
+    dismiss: "Sulje",
+    formFrom: "Lomake: {{nome}}",
+    optional: "valinnainen",
+    yes: "Kyllä",
+    no: "Ei",
+  },
   reacao: {
     carregando: "Katson, kuka reagoi merkillä {{emoji}}…",
     uma: "{{nome}} reagoi merkillä {{emoji}}",
@@ -141,6 +151,7 @@ export const conversa = {
   },
 
   falha: {
+    premium: "Ei toimitettu – tämä vaatii Infinityn",
     tentarDeNovo: "Yritä uudelleen",
     erro: "Ei toimitettu",
     semConexao: "Ei toimitettu — sinulla ei ole yhteyttä",

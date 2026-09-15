@@ -43,6 +43,7 @@ export const perfil = {
     falhou: "Impossible d'envoyer. Essayez depuis la conversation.",
   },
   cartao: {
+    infinity: "Membre Infinity",
     equipe: "Équipe Gravaê",
     trocarFaixa: "Changer la bannière de la carte",
     trocarFaixaCurto: "Changer la bannière",

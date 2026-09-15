@@ -94,6 +94,13 @@ import {
   offCommandsChanged,
 } from "~/@core/lib/websocket/on-commands-changed";
 import {
+  onInteractionFinished,
+  offInteractionFinished,
+} from "~/@core/lib/websocket/on-interaction-finished";
+import { useInteractionStore } from "~/features/conversa/stores/interaction-store";
+import { onInteractionModal, offInteractionModal } from "~/@core/lib/websocket/on-interaction-modal";
+import { useBotModalStore } from "~/features/conversa/stores/bot-modal-store";
+import {
   onExpressionsChanged,
   offExpressionsChanged,
 } from "~/@core/lib/websocket/on-expressions-changed";
@@ -371,6 +378,7 @@ export function useRealtime(
 
     const handleMessageCreated = (message: PendingMessageModel) => {
       cache.appendMessage(queryClient, message);
+      if (message.ephemeral) return;
 
       /*
         Guarda a mensagem nova no disco na hora em que ela chega, e não só
@@ -453,6 +461,10 @@ export function useRealtime(
       queryClient.invalidateQueries({
         queryKey: queryKeys.user.profile(user.id),
       });
+
+      if (queryClient.getQueryData<SelfUserModel>([queryKeys.auth.me])?.id === user.id) {
+        void queryClient.invalidateQueries({ queryKey: [queryKeys.auth.me] });
+      }
     };
 
     const handlePresenceSelf = ({
@@ -543,7 +555,7 @@ export function useRealtime(
     onMessageCreated(handleMessageCreated);
     onMessageUpdated((message) => {
       cache.patchMessage(queryClient, message.channelId, message.id, message);
-      void conversationOnDisk.write(message.channelId, [message]);
+      if (!message.ephemeral) void conversationOnDisk.write(message.channelId, [message]);
     });
     onMessageDeleted(({ channelId, messageId }) => {
       cache.removeMessage(queryClient, channelId, messageId);
@@ -626,6 +638,9 @@ export function useRealtime(
         queryKey: queryKeys.expression.find_many(guildId),
       });
     });
+
+    onInteractionFinished(({ interactionId }) => useInteractionStore.getState().markFinished(interactionId));
+    onInteractionModal((modal) => useBotModalStore.getState().open(modal));
 
     onCommandsChanged(({ guildId }) => {
       void queryClient.invalidateQueries({
@@ -897,6 +912,8 @@ export function useRealtime(
       offGuildDeleted();
       offGuildRefresh();
       offCommandsChanged();
+      offInteractionFinished();
+      offInteractionModal();
       offExpressionsChanged();
       offEventUpdated();
       offPostCreated();

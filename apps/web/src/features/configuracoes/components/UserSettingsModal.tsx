@@ -29,7 +29,7 @@ import {
   SlidersHorizontal,
   User,
   X,
-  LogOut, Shield } from "lucide-react";
+  LogOut, Shield, Infinity as InfinityIcon } from "lucide-react";
 
 import { useNavigate } from "react-router";
 
@@ -39,6 +39,7 @@ import { AccountSection } from "~/features/configuracoes/components/AccountSecti
 import { AppearanceSection } from "~/features/configuracoes/components/AppearanceSection";
 import { NotificationsSection } from "~/features/configuracoes/components/NotificationsSection";
 import { VoiceSection } from "~/features/configuracoes/components/VoiceSection";
+import { SubscriptionSection } from "~/features/plan/components/SubscriptionSection";
 import { ConnectionsSection } from "~/features/configuracoes/components/ConexoesSection";
 import { AppsSection } from "~/features/configuracoes/components/aplicativos/AplicativosSection";
 import { ShortcutsSection } from "~/features/configuracoes/components/AtalhosSection";
@@ -94,6 +95,12 @@ const groupsFor = (admin: boolean): { key: string; items: Item[] }[] => [
         key: "configuracoes.telas.conta",
         icon: User,
         subitems: SUBSECTIONS.account,
+      },
+      {
+        id: "subscription",
+        key: "configuracoes.telas.subscription",
+        icon: InfinityIcon,
+        subitems: SUBSECTIONS.subscription,
       },
       {
         id: "privacy",
@@ -201,6 +208,7 @@ const groupsFor = (admin: boolean): { key: string; items: Item[] }[] => [
 
 const TITLES: Record<Section, string> = {
   account: "configuracoes.telas.conta",
+  subscription: "configuracoes.telas.subscription",
   privacy: "configuracoes.telas.privacidade",
   connections: "configuracoes.telas.conexoes",
   voice: "configuracoes.telas.voz",
@@ -500,6 +508,7 @@ export const UserSettingsModal: React.FC<UserSettingsModalProps> = ({
                     {section === "privacy" && (
                       <PrivacySection data-gc="configuracoes.user-settings-modal.privacy-section" user={user} />
                     )}
+                    {section === "subscription" && <SubscriptionSection data-gc="configuracoes.user-settings-modal.subscription-section" />}
                     {section === "connections" && <ConnectionsSection data-gc="configuracoes.user-settings-modal.connections-section" user={user} />}
                     {section === "voice" && <VoiceSection data-gc="configuracoes.user-settings-modal.voice-section" part="audio" />}
                     {section === "video" && <VoiceSection data-gc="configuracoes.user-settings-modal.voice-section--2" part="video" />}

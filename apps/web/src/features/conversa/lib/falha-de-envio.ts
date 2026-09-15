@@ -11,6 +11,7 @@ const KEYS: Record<FailureReason, string> = {
   recusada: "conversa.falha.recusada",
   "nao-entregue": "conversa.falha.naoEntregue",
   erro: "conversa.falha.erro",
+  premium: "conversa.falha.premium",
 };
 
 export const failureReason = (error: unknown): FailureReason => {

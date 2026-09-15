@@ -87,12 +87,14 @@ export const chamada = {
     quadros: "{{quadros}} FPS",
     qualidadeDica: "A resolução é um teto: uma janela menor vai do tamanho que tem. Mais resolução e mais quadros pedem mais internet, sua e de quem assiste. Vale também para a transmissão no ar.",
   },
+  cameraLimit: "A chamada já tem {{limite}} câmeras ligadas. Espere alguém desligar a sua.",
   live: {
     etiqueta: "Ao vivo",
     etiquetaMaiuscula: "AO VIVO",
     assistir: "Assistir à transmissão",
     assistirPessoa: "Assistir a {{nome}}",
     pararDeAssistir: "Parar de assistir",
+    conectando: "Conectando à transmissão…",
   },
   membro: {
     mudarMeuApelido: "Mudar meu apelido",

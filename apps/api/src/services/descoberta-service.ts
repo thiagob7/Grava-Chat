@@ -10,6 +10,7 @@ import { banRepository } from "~/repositories/ban-repository.js";
 import { discoveryRepository, memberRepository } from "~/repositories/guild-repository.js";
 import { presenceService } from "~/services/presence-service.js";
 import { toMember } from "~/lib/serialize.js";
+import { planService } from "~/services/plan-service.js";
 
 const isCategory = (value: string | null): value is CommunityCategory =>
   value !== null && (COMMUNITY_CATEGORIES as readonly string[]).includes(value);
@@ -74,6 +75,8 @@ export const discoveryService = {
 
     const existing = await memberRepository.find(guildId, userId);
     if (existing) return { guildId, alreadyWasMember: true as const, member: null };
+
+    await planService.requireCommunityRoom(userId);
 
     const member = await memberRepository.create({ guildId, userId });
 

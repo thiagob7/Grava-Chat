@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
-import { BarChart3, FileUp, Paperclip, Plus, Send, Timer, X } from "lucide-react";
-import { LIMITS, type NameFont, type Sticker } from "@gravae/shared";
+import { BarChart3, FileUp, Infinity as InfinityIcon, Paperclip, Plus, Send, Timer, X } from "lucide-react";
+import { PLAN_LIMITS, type NameFont, type Sticker } from "@gravae/shared";
 
 import { ComposerMirror } from "~/features/conversa/components/EspelhoDoCompositor";
 import { withMentionTokens, type MentionLabel } from "~/features/conversa/lib/mention-labels";
@@ -60,6 +60,7 @@ import { convertEmoticons } from "~/features/conversa/lib/emoticons";
 import { useTranslation } from "~/traducao";
 import { toast } from "react-toastify";
 import { flx, flxAttr, flxCls } from "~/lib/compat-de-tema";
+import { usePlanLimits, usePlanStore } from "~/features/plan/stores/plan-store";
 
 interface ComposerProps {
   channelId: string;
@@ -99,6 +100,8 @@ export const Composer: React.FC<ComposerProps> = ({
   const [textLong, setTextLong] = useState<string | null>(null);
 
   const queryClient = useQueryClient();
+  const limits = usePlanLimits();
+  const openUpgrade = usePlanStore((s) => s.openUpgrade);
   const requestEdit = useEditStore((s) => s.askFor);
 
   const openLastForEdit = () => {
@@ -357,7 +360,7 @@ export const Composer: React.FC<ComposerProps> = ({
       value.length -
       ((textField?.selectionEnd ?? 0) - (textField?.selectionStart ?? 0));
 
-    if (alreadyHas + text.length > LIMITS.messageLength) {
+    if (alreadyHas + text.length > limits.messageLength) {
       event.preventDefault();
       setTextLong(text);
       return;
@@ -412,13 +415,19 @@ export const Composer: React.FC<ComposerProps> = ({
         onClose={() => setTextLong(null)}
         art={<TextLongArt data-gc="conversa.composer.text-long-art" />}
         title={t("conversa.caixa.longaTitulo")}
-        description={t("conversa.caixa.longaDescricao", { limite: LIMITS.messageLength })}
+        description={t("conversa.caixa.longaDescricao", { limite: limits.messageLength })}
       >
         <Button data-gc="conversa.composer.button.send-as-file" onClick={sendAsFile}>
           <Paperclip data-gc="conversa.composer.paperclip" size={16} /> {t("conversa.caixa.enviarComoArquivo")}
         </Button>
 
-        <Button data-gc="conversa.composer.button" variant="ghost" onClick={() => setTextLong(null)}>
+        {limits.messageLength < PLAN_LIMITS.premium.messageLength && (
+          <Button data-gc="conversa.composer.button" variant="surface" onClick={() => { setTextLong(null); openUpgrade(); }}>
+            <InfinityIcon data-gc="conversa.composer.infinity-icon" size={16} /> {t("configuracoes.subscription.upsell")}
+          </Button>
+        )}
+
+        <Button data-gc="conversa.composer.button--2" variant="ghost" onClick={() => setTextLong(null)}>
           {t("comum.cancelar")}
         </Button>
       </IllustratedModal>
@@ -429,11 +438,16 @@ export const Composer: React.FC<ComposerProps> = ({
         art={<FileLargeArt data-gc="conversa.composer.file-large-art" />}
         title={t("conversa.caixa.arquivoGrandeTitulo")}
         description={t("conversa.caixa.arquivoGrandeDescricao", {
-          arquivo: attachments.largeToo ?? "",
-          limite: Math.round(LIMITS.attachmentBytes / (1024 * 1024)),
+          arquivo: attachments.largeToo?.filename ?? "",
+          limite: Math.round((attachments.largeToo?.limit ?? limits.attachmentBytes) / (1024 * 1024)),
         })}
       >
-        <Button data-gc="conversa.composer.button.forget-large-too" onClick={attachments.forgetLargeToo}>{t("comum.fechar")}</Button>
+        {attachments.largeToo?.premiumFits && (
+          <Button data-gc="conversa.composer.button--3" onClick={() => { attachments.forgetLargeToo(); openUpgrade(); }}>
+            <InfinityIcon data-gc="conversa.composer.infinity-icon--2" size={16} /> {t("configuracoes.subscription.upsell")}
+          </Button>
+        )}
+        <Button data-gc="conversa.composer.button.forget-large-too" variant={attachments.largeToo?.premiumFits ? "ghost" : undefined} onClick={attachments.forgetLargeToo}>{t("comum.fechar")}</Button>
       </IllustratedModal>
       {missing > 0 && (
         <div data-gc="conversa.composer.div" {...flx("noticeRail", "mb-1 flex items-center justify-end")}>
@@ -531,12 +545,20 @@ export const Composer: React.FC<ComposerProps> = ({
               command={invocation.command}
               filled={invocation.options}
               missing={invocation.missing}
+              onChoose={(choice) => {
+                const next = `${value.replace(/\s*$/, " ")}${choice} `;
+                setValue(next);
+                requestAnimationFrame(() => {
+                  textarea.current?.focus();
+                  textarea.current?.setSelectionRange(next.length, next.length);
+                });
+              }}
             />
           )}
 
           <DropdownMenu data-gc="conversa.composer.dropdown-menu">
             <DropdownMenuTrigger data-gc="conversa.composer.dropdown-menu-trigger" asChild disabled={!canWrite}>
-              <button data-gc="conversa.composer.button--2"
+              <button data-gc="conversa.composer.button--4"
                 aria-label={t("conversa.caixa.mais")}
                 className={cn(
                   flxCls("boxButton"),
@@ -596,7 +618,7 @@ export const Composer: React.FC<ComposerProps> = ({
             ref={textarea}
             value={value}
             rows={1}
-            maxLength={LIMITS.messageLength}
+            maxLength={limits.messageLength}
             disabled={!canWrite}
             placeholder={
               !canWrite

@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router";
-import { ArrowDownToLine, Compass, Download, Plus, RotateCw } from "lucide-react";
+import { ArrowDownToLine, Compass, Download, Infinity as InfinityIcon, Plus, RotateCw } from "lucide-react";
+import { PLAN_NAME } from "@gravae/shared";
 
 import { useFindManyGuilds } from "~/@core/application/queries/guild/use-find-many-guilds";
 import { useReadStatesByServer } from "~/@core/application/queries/message/use-read-states";
@@ -19,6 +20,7 @@ import { useShortcutGlobal } from "~/features/app/hooks/use-atalho-global";
 import { useUpdate } from "~/features/app/hooks/use-atualizacao";
 import { useSettings } from "~/features/configuracoes/stores/configuracoes";
 import { flx, flxAttr, flxCls, type Places } from "~/lib/compat-de-tema";
+import { usePlanStore } from "~/features/plan/stores/plan-store";
 
 interface GuildRailProps {
   activeGuildId: string | null;
@@ -54,6 +56,8 @@ export const GuildRail: React.FC<GuildRailProps> = ({
   const inExplore = pathname.startsWith("/explorar") || pathname.startsWith("/apps/");
   const inChats = activeGuildId === null && !inExplore;
   const update = useUpdate();
+  const upgradeOpen = usePlanStore((s) => s.upgradeOpen);
+  const openUpgrade = usePlanStore((s) => s.openUpgrade);
 
   useShortcutGlobal("servidor-novo", () => setCreating(true));
   useShortcutGlobal("configuracoes", () => openSettings("account"));
@@ -226,6 +230,14 @@ export const GuildRail: React.FC<GuildRailProps> = ({
             </Tooltip>
           )
         )}
+
+        <RailAction data-gc="servidor.guild-rail.rail-action.open-upgrade"
+          label={PLAN_NAME}
+          active={upgradeOpen}
+          onClick={openUpgrade}
+        >
+          <InfinityIcon data-gc="servidor.guild-rail.infinity-icon" size={22} />
+        </RailAction>
         </div>
         </div>
       </nav>

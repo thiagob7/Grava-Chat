@@ -54,6 +54,13 @@ const schema = z.object({
   HOUSE_OWNER_SERVER: z.string().default(""),
 
   DOCS_ISOPEN: z.stringbool().default(false),
+
+  STRIPE_SECRET_KEY: z.string().default(""),
+  STRIPE_WEBHOOK_SECRET: z.string().default(""),
+  STRIPE_PRICE_MONTHLY: z.string().default(""),
+  STRIPE_PRICE_YEARLY: z.string().default(""),
+  STRIPE_PRICE_MONTH_PASS: z.string().default(""),
+  STRIPE_PRICE_YEAR_PASS: z.string().default(""),
 });
 
 const parsed = schema.safeParse(process.env);

@@ -1,5 +1,5 @@
 import React from "react";
-import { CircleStop, Lock, MonitorPlay, MonitorUp, Settings } from "lucide-react";
+import { CircleStop, Infinity as InfinityIcon, Lock, MonitorPlay, MonitorUp, Settings } from "lucide-react";
 
 import {
   DropdownMenuCheckboxItem,
@@ -25,6 +25,7 @@ import {
 import { useVoicePrefs } from "~/features/voz/stores/voice-prefs";
 import { useVoiceStore } from "~/features/voz/stores/voice-store";
 import { useTranslation } from "~/traducao";
+import { usePlanLimits, usePlanStore } from "~/features/plan/stores/plan-store";
 
 export const ScreenShareMenuItems: React.FC<{ withSettings?: boolean }> = ({ withSettings = false }) => {
   const { t } = useTranslation();
@@ -39,7 +40,9 @@ export const ScreenShareMenuItems: React.FC<{ withSettings?: boolean }> = ({ wit
   const screenSound = useVoicePrefs((s) => s.screenSound);
   const screenResolution = useVoicePrefs((s) => s.screenResolution);
   const screenFrameRate = useVoicePrefs((s) => s.screenFrameRate);
-  const quality = screenQuality(screenResolution, screenFrameRate);
+  const limits = usePlanLimits();
+  const openUpgrade = usePlanStore((s) => s.openUpgrade);
+  const quality = screenQuality(screenResolution, screenFrameRate, limits);
 
   return (
     <>
@@ -69,10 +72,10 @@ export const ScreenShareMenuItems: React.FC<{ withSettings?: boolean }> = ({ wit
             onValueChange={(value) => void setScreenQuality({ screenFrameRate: Number(value) as ScreenFrameRate })}
           >
             {SCREEN_FRAME_RATES.map((fps) => (
-              <DropdownMenuRadioItem data-gc="voz.menu-da-transmissao.dropdown-menu-radio-item" key={fps} value={String(fps)} disabled={isScreenFrameRateLocked(fps)} onSelect={(e) => e.preventDefault()}>
+              <DropdownMenuRadioItem data-gc="voz.menu-da-transmissao.dropdown-menu-radio-item" key={fps} value={String(fps)} disabled={isScreenFrameRateLocked(fps, limits)} onSelect={(e) => e.preventDefault()}>
                 <span data-gc="voz.menu-da-transmissao.span" className="flex w-full items-center justify-between gap-2">
                   {t("chamada.tela.quadros", { quadros: fps })}
-                  {isScreenFrameRateLocked(fps) && <Lock data-gc="voz.menu-da-transmissao.lock" size={13} className="shrink-0 text-ink-faint" />}
+                  {isScreenFrameRateLocked(fps, limits) && <Lock data-gc="voz.menu-da-transmissao.lock" size={13} className="shrink-0 text-ink-faint" />}
                 </span>
               </DropdownMenuRadioItem>
             ))}
@@ -86,14 +89,23 @@ export const ScreenShareMenuItems: React.FC<{ withSettings?: boolean }> = ({ wit
             onValueChange={(value) => void setScreenQuality({ screenResolution: value as ScreenResolution })}
           >
             {SCREEN_RESOLUTIONS.map((resolution) => (
-              <DropdownMenuRadioItem data-gc="voz.menu-da-transmissao.dropdown-menu-radio-item--2" key={resolution} value={resolution} disabled={isScreenResolutionLocked(resolution)} onSelect={(e) => e.preventDefault()}>
+              <DropdownMenuRadioItem data-gc="voz.menu-da-transmissao.dropdown-menu-radio-item--2" key={resolution} value={resolution} disabled={isScreenResolutionLocked(resolution, limits)} onSelect={(e) => e.preventDefault()}>
                 <span data-gc="voz.menu-da-transmissao.span--2" className="flex w-full items-center justify-between gap-2">
                   {resolution === "original" ? t("chamada.tela.original") : `${resolution}p`}
-                  {isScreenResolutionLocked(resolution) && <Lock data-gc="voz.menu-da-transmissao.lock--2" size={13} className="shrink-0 text-ink-faint" />}
+                  {isScreenResolutionLocked(resolution, limits) && <Lock data-gc="voz.menu-da-transmissao.lock--2" size={13} className="shrink-0 text-ink-faint" />}
                 </span>
               </DropdownMenuRadioItem>
             ))}
           </DropdownMenuRadioGroup>
+
+          {limits.screenResolutions.length < SCREEN_RESOLUTIONS.length && (
+            <>
+              <DropdownMenuSeparator data-gc="voz.menu-da-transmissao.dropdown-menu-separator--2" />
+              <DropdownMenuItem data-gc="voz.menu-da-transmissao.dropdown-menu-item.open-upgrade" onSelect={openUpgrade}>
+                {t("configuracoes.subscription.screenUpsell")} <InfinityIcon data-gc="voz.menu-da-transmissao.infinity-icon" size={15} />
+              </DropdownMenuItem>
+            </>
+          )}
         </DropdownMenuSubContent>
       </DropdownMenuSub>
 
@@ -107,7 +119,7 @@ export const ScreenShareMenuItems: React.FC<{ withSettings?: boolean }> = ({ wit
 
       {withSettings && (
         <>
-          <DropdownMenuSeparator data-gc="voz.menu-da-transmissao.dropdown-menu-separator--2" />
+          <DropdownMenuSeparator data-gc="voz.menu-da-transmissao.dropdown-menu-separator--3" />
           <DropdownMenuItem data-gc="voz.menu-da-transmissao.dropdown-menu-item--4" onSelect={() => openSettings("voice")}>
             {t("chamada.tela.configCompartilhamento")} <Settings data-gc="voz.menu-da-transmissao.settings" size={15} />
           </DropdownMenuItem>

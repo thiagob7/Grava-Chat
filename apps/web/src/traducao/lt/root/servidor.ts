@@ -1,4 +1,15 @@
 export const servidor = {
+  perfilNoServidor: {
+    titulo: "Profilis šiame serveryje",
+    descricao: "Avataras, juosta ir aprašas, matomi tik {{server}}.",
+    soInfinity: "Profiliai bendruomenėms yra {{plan}} dalis. Palieskite, kad pamatytumėte planus.",
+    trocarFoto: "Keisti avatarą",
+    trocarFaixa: "Keisti juostą",
+    usarDaConta: "Naudoti paskyros",
+    bio: "Aprašas šiame serveryje",
+    bioDica: "Parašykite ką nors tik šiai bendruomenei",
+    salvo: "Serverio profilis išsaugotas.",
+  },
   comunidade: {
     ativa: "Bendruomenė atidaryta",
     ativaDesde: "Atidaryta nuo {{quando}}",

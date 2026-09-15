@@ -15,6 +15,16 @@ export const conversa = {
     carregando: "Βλέπω τι έχει ο σύνδεσμος…",
     destino: "Πάει στο {{destino}}",
   },
+  botComponents: {
+    noResponse: "Το bot δεν απάντησε.",
+    choose: "Κάντε μια επιλογή",
+    onlyYou: "Μόνο εσείς το βλέπετε αυτό",
+    dismiss: "Απόρριψη",
+    formFrom: "Φόρμα από {{nome}}",
+    optional: "προαιρετικό",
+    yes: "Ναι",
+    no: "Όχι",
+  },
   reacao: {
     carregando: "Βλέπω ποιος αντέδρασε με {{emoji}}…",
     uma: "Ο/Η {{nome}} αντέδρασε με {{emoji}}",
@@ -141,6 +151,7 @@ export const conversa = {
   },
 
   falha: {
+    premium: "Δεν παραδόθηκε — χρειάζεται Infinity",
     tentarDeNovo: "Δοκίμασε ξανά",
     erro: "Δεν παραδόθηκε",
     semConexao: "Δεν παραδόθηκε — δεν έχεις σύνδεση",

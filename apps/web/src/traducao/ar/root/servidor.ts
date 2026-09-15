@@ -1,4 +1,15 @@
 export const servidor = {
+  perfilNoServidor: {
+    titulo: "الملف الشخصي في هذا الخادم",
+    descricao: "صورة ولافتة ونبذة تظهر فقط في {{server}}.",
+    soInfinity: "الملفات الشخصية لكل مجتمع جزء من {{plan}}. اضغط لعرض الخطط.",
+    trocarFoto: "تغيير الصورة",
+    trocarFaixa: "تغيير اللافتة",
+    usarDaConta: "استخدم صورة الحساب",
+    bio: "نبذة في هذا الخادم",
+    bioDica: "اكتب شيئًا لهذا المجتمع فقط",
+    salvo: "حُفظ الملف الشخصي للخادم.",
+  },
   comunidade: {
     ativa: "المجتمع مفتوح",
     ativaDesde: "مفتوح منذ {{quando}}",

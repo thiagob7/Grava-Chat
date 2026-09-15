@@ -15,6 +15,16 @@ export const conversa = {
     carregando: "正在看链接里有什么…",
     destino: "通向 {{destino}}",
   },
+  botComponents: {
+    noResponse: "机器人没有响应。",
+    choose: "请选择",
+    onlyYou: "只有你能看到",
+    dismiss: "忽略",
+    formFrom: "来自 {{nome}} 的表单",
+    optional: "可选",
+    yes: "是",
+    no: "否",
+  },
   reacao: {
     carregando: "正在看谁用 {{emoji}} 回应…",
     uma: "{{nome}} 用 {{emoji}} 回应了",
@@ -141,6 +151,7 @@ export const conversa = {
   },
 
   falha: {
+    premium: "未送达 — 这是 Infinity 功能",
     tentarDeNovo: "重试",
     erro: "未送出",
     semConexao: "未送出：你没有网络连接",

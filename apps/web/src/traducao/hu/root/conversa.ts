@@ -15,6 +15,16 @@ export const conversa = {
     carregando: "Nézem, mi van a hivatkozás mögött…",
     destino: "Ide visz: {{destino}}",
   },
+  botComponents: {
+    noResponse: "A bot nem válaszolt.",
+    choose: "Válassz egy lehetőséget",
+    onlyYou: "Ezt csak te látod",
+    dismiss: "Elvetés",
+    formFrom: "Űrlap: {{nome}}",
+    optional: "nem kötelező",
+    yes: "Igen",
+    no: "Nem",
+  },
   reacao: {
     carregando: "Nézem, ki reagált ezzel: {{emoji}}…",
     uma: "{{nome}} reagált ezzel: {{emoji}}",
@@ -141,6 +151,7 @@ export const conversa = {
   },
 
   falha: {
+    premium: "Nem kézbesítve – ehhez Infinity kell",
     tentarDeNovo: "Újrapróbálom",
     erro: "Nem kézbesítve",
     semConexao: "Nem kézbesítve — nincs kapcsolatod",

@@ -85,12 +85,14 @@ export const chamada = {
     quadros: "{{quadros}} FPS",
     qualidadeDica: "해상도는 상한선이에요. 더 작은 창은 원래 크기로 보내져요. 해상도와 프레임이 높을수록 나와 시청자의 인터넷을 더 써요. 진행 중인 방송에도 적용돼요.",
   },
+  cameraLimit: "이 통화에는 이미 카메라 {{limite}}대가 켜져 있어요. 누군가 끌 때까지 기다려 주세요.",
   live: {
     etiqueta: "라이브",
     etiquetaMaiuscula: "라이브",
     assistir: "방송 보기",
     assistirPessoa: "{{nome}} 보기",
     pararDeAssistir: "그만 보기",
+    conectando: "방송에 연결하는 중…",
   },
   membro: {
     mudarMeuApelido: "내 별명 바꾸기",

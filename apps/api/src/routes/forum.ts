@@ -1,5 +1,5 @@
 import type { FastifyInstance } from "fastify";
-import { rooms, objectId, LIMITS } from "@gravae/shared";
+import { rooms, objectId, LIMITS, HIGHEST_LIMITS } from "@gravae/shared";
 import { z } from "zod";
 import { io } from "~/realtime/io.js";
 import { forumService } from "~/services/forum-service.js";
@@ -14,7 +14,7 @@ const listQuery = z.object({
 
 const createPostInput = z.object({
   title: z.string().min(1).max(LIMITS.postTitle),
-  content: z.string().min(1).max(LIMITS.messageLength),
+  content: z.string().min(1).max(HIGHEST_LIMITS.messageLength),
   tags: z.array(z.string().min(1).max(24)).max(5).optional(),
 });
 

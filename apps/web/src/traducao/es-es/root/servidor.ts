@@ -1,4 +1,15 @@
 export const servidor = {
+  perfilNoServidor: {
+    titulo: "Perfil en este servidor",
+    descricao: "Avatar, banner y biografía que solo se ven en {{server}}.",
+    soInfinity: "Los perfiles por comunidad son de {{plan}}. Toca para ver los planes.",
+    trocarFoto: "Cambiar avatar",
+    trocarFaixa: "Cambiar banner",
+    usarDaConta: "Usar el de la cuenta",
+    bio: "Biografía en este servidor",
+    bioDica: "Cuenta algo solo para esta comunidad",
+    salvo: "Perfil del servidor guardado.",
+  },
   comunidade: {
     ativa: "La comunidad está abierta",
     ativaDesde: "Abierta desde {{quando}}",

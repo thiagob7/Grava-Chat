@@ -1,5 +1,7 @@
 
-export const QUOTA_BY_HOUR = 500 * 1024 * 1024;
+import { PLAN_LIMITS } from "@gravae/shared";
+
+export const QUOTA_BY_HOUR = PLAN_LIMITS.free.uploadQuotaByHour;
 
 export const QUOTA_S_WINDOW = 3600;
 

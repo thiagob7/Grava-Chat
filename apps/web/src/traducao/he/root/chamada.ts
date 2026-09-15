@@ -85,12 +85,14 @@ export const chamada = {
     quadros: "{{quadros}} FPS",
     qualidadeDica: "הרזולוציה היא תקרה: חלון קטן יותר שומר על גודלו. יותר רזולוציה ופריימים דורשים יותר אינטרנט, שלך ושל הצופים. חל גם על שידור פעיל.",
   },
+  cameraLimit: "בשיחה כבר פועלות {{limite}} מצלמות. חכו שמישהו יכבה את שלו.",
   live: {
     etiqueta: "בשידור חי",
     etiquetaMaiuscula: "בשידור חי",
     assistir: "צפייה בשידור",
     assistirPessoa: "צפייה ב{{nome}}",
     pararDeAssistir: "הפסקת הצפייה",
+    conectando: "מתחברים לשידור…",
   },
   membro: {
     mudarMeuApelido: "שינוי הכינוי שלי",

@@ -46,6 +46,7 @@ export const perfil = {
     falhou: "Não deu pra enviar. Tente pela conversa.",
   },
   cartao: {
+    infinity: "Membro Infinity",
     equipe: "Equipe do Gravaê",
     trocarFaixa: "Trocar a faixa do cartão",
     trocarFaixaCurto: "Trocar a faixa",

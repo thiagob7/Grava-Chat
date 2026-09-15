@@ -85,12 +85,14 @@ export const chamada = {
     quadros: "{{quadros}} FPS",
     qualidadeDica: "Rezoluția este o limită: o fereastră mai mică își păstrează dimensiunea. Mai multă rezoluție și mai multe cadre cer mai mult internet, al tău și al celor care privesc. Se aplică și transmisiei în curs.",
   },
+  cameraLimit: "Apelul are deja {{limite}} camere pornite. Așteaptă ca cineva să o oprească pe a sa.",
   live: {
     etiqueta: "În direct",
     etiquetaMaiuscula: "ÎN DIRECT",
     assistir: "Vezi transmisiunea",
     assistirPessoa: "Vezi {{nome}}",
     pararDeAssistir: "Nu mai privi",
+    conectando: "Se conectează la transmisiune…",
   },
   membro: {
     mudarMeuApelido: "Schimbă-mi porecla",

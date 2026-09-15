@@ -61,7 +61,7 @@ export const ARTICLES: HelpArticle[] = [
     id: "quanto-custa",
     categoryId: "primeiros-passos",
     title: "Quanto custa usar o Gravaê",
-    summary: "Nada. Sem plano pago, sem anúncio e sem vender o que você fala.",
+    summary: "Usar é grátis, sem anúncio e sem vender o que você fala. O Infinity, opcional, aumenta limites e libera extras.",
     updatedAt: TODAY,
   },
   {

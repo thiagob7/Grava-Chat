@@ -61,14 +61,24 @@ const DESCRIPTIONS = {
   "DELETE /bot/servidores/:guildId/emojis/:emojiId": "Apaga o emoji do servidor.",
   "GET /bot/servidores/:guildId/webhooks": "Os webhooks do servidor, com a URL de cada um.",
   "POST /bot/servidores/:guildId/webhooks": "Cria um webhook apontado pra um canal.",
+  "PUT /bot/guilds/:guildId/channels/:channelId/permissions/:targetId":
+    "Define o que um cargo ou uma pessoa pode fazer num canal. Serve pra abrir um canal privado só pra alguém.",
+  "DELETE /bot/guilds/:guildId/channels/:channelId/permissions/:targetId":
+    "Tira a regra do cargo ou da pessoa naquele canal, voltando ao que vale no servidor.",
+  "POST /bot/interactions/:interactionId/:token/callback":
+    "Responde a um clique em botão ou menu, ou a um comando de barra. `reply` manda mensagem no canal (com `ephemeral: true`, só quem clicou vê), `update` edita a mensagem do botão, `defer` só avisa que recebeu e `modal` abre um formulário de até 5 campos. Uma resposta por interação, em até 3 segundos.",
   "PUT /bot/comandos": "Registra a lista de comandos de barra do bot. Substitui a anterior.",
-  "POST /bot/canais/:channelId/mensagens": "Manda uma mensagem no canal.",
+  "POST /bot/canais/:channelId/mensagens":
+    "Manda uma mensagem no canal. Com `embeds`, ela vem em cartões com título, campos, cor, imagem e rodapé; com `components`, ganha botões e menus.",
+  "POST /bot/users/:userId/messages":
+    "Manda uma mensagem direta pra alguém que divide servidor com o bot. Segue as regras de DM da pessoa: pode cair nos pedidos ou ser recusada. Até 30 por minuto.",
   "GET /bot/canais/:channelId/mensagens":
     "Lê o histórico do canal, do mais novo pro mais velho. `limit` até 100, `before` pra paginar.",
   "GET /bot/canais/:channelId/fixadas": "As mensagens fixadas do canal.",
   "PUT /bot/mensagens/:messageId/fixar": "Fixa a mensagem no canal.",
   "DELETE /bot/mensagens/:messageId/fixar": "Desafixa a mensagem.",
-  "PATCH /bot/mensagens/:messageId": "Edita uma mensagem do próprio bot.",
+  "PATCH /bot/mensagens/:messageId":
+    "Edita uma mensagem do próprio bot. Mande `content`, `embeds`, `components` ou uma mistura; o que ficar de fora não muda.",
   "DELETE /bot/mensagens/:messageId": "Apaga uma mensagem do próprio bot.",
   "PUT /bot/mensagens/:messageId/reacoes/:emoji": "Reage a uma mensagem.",
   "DELETE /bot/mensagens/:messageId/reacoes/:emoji": "Tira a reação do bot.",
@@ -81,8 +91,11 @@ const RECEBIDOS = {
   "message:reactions": "A lista de reações da mensagem inteira, já recontada.",
   "message:super": "Alguém mandou a reação em destaque.",
   "typing:started": "Alguém começou a digitar no canal.",
-  "command:invoked": "Chamaram um comando de barra do bot. É por aqui que ele trabalha.",
+  "command:invoked": "Chamaram um comando de barra do bot. Vem com `id` e `token` pra responder, inclusive só pra quem chamou.",
   "commands:changed": "A lista de comandos do servidor mudou.",
+  "interaction:created": "Clicaram num botão, escolheram num menu ou enviaram um formulário do bot (`type: modal`, com `fields`). Vem com `id` e `token` pra responder.",
+  "interaction:modal": "O bot abriu um formulário pra quem está conectado preencher.",
+  "interaction:finished": "O bot respondeu ao clique de quem está conectado. É o que tira o botão do estado de espera.",
   "presence:changed": "Alguém ficou on-line, ausente ou saiu.",
   "presence:self": "O estado que o servidor guardou para esta conexão.",
   "user:updated": "Perfil ou apelido de alguém mudou.",
@@ -153,9 +166,16 @@ const BODIES = {
   "PUT /bot/servidores/:guildId/membros/:userId/cargos": "{ roleIds: string[] }",
   "PUT /bot/servidores/:guildId/castigos/:userId": "{ minutos: number, reason?: string }",
   "PUT /bot/servidores/:guildId/banimentos/:userId": "{ reason?: string, apagarHoras?: number }",
-  "PUT /bot/comandos": "definirComandosInput",
-  "POST /bot/canais/:channelId/mensagens": "sendMessageInput sem channelId e nonce",
-  "PATCH /bot/mensagens/:messageId": "editMessageInput sem messageId",
+  "PUT /bot/comandos":
+    "setCommandsInput — cada opção tem kind (texto | numero | usuario | canal | role | boolean) e, em texto e numero, choices?",
+  "POST /bot/users/:userId/messages": "botSendMessageInput — content, embeds?, components?",
+  "POST /bot/canais/:channelId/mensagens":
+    "botSendMessageInput — content, embeds?, components?, attachments?, poll?, replyToId?",
+  "PATCH /bot/mensagens/:messageId": "botEditMessageInput — { content?, embeds?, components? }",
+  "POST /bot/interactions/:interactionId/:token/callback":
+    "{ type: reply, data: botSendMessageInput & { ephemeral? } } | { type: update, data: botEditMessageInput } | { type: defer } | { type: modal, data: modalInput }",
+  "PUT /bot/guilds/:guildId/channels/:channelId/permissions/:targetId":
+    "{ type: ROLE | MEMBER, allow: string[], deny: string[] }",
   "PUT /bot/mensagens/:messageId/reacoes/:emoji": "{ burst?: boolean }",
 };
 
@@ -171,6 +191,14 @@ const LIMITES = [
   { key: "stickersByServer", label: "Figurinhas por servidor", format: "numero" },
   { key: "soundsByServer", label: "Sons por servidor", format: "numero" },
   { key: "optionsByPoll", label: "Opções por enquete", format: "numero" },
+  { key: "embedsPerMessage", label: "Cartões (embeds) por mensagem", format: "numero" },
+  { key: "embedFields", label: "Campos por cartão", format: "numero" },
+  { key: "embedTotalLength", label: "Texto somado dos cartões de uma mensagem", format: "caracteres" },
+  { key: "componentRows", label: "Linhas de botões e menus por mensagem", format: "numero" },
+  { key: "componentsPerRow", label: "Botões por linha", format: "numero" },
+  { key: "selectOptions", label: "Opções por menu", format: "numero" },
+  { key: "modalFields", label: "Campos por formulário", format: "numero" },
+  { key: "modalFieldLength", label: "Texto de um campo do formulário", format: "caracteres" },
   { key: "messagesPinned", label: "Mensagens fixadas por canal", format: "numero" },
   { key: "modeSlowMax", label: "Modo lento, no máximo", format: "segundos" },
 ] as const;
@@ -247,7 +275,7 @@ const OBJETOS = [
     name: "Mensagem",
     summary: "O que o bot escreve, edita, fixa e reage. É o objeto mais movimentado da API.",
     esquema: "messageSchema",
-    routes: /^\/bot\/(mensagens|canais\/:channelId\/(mensagens|fixadas))/,
+    routes: /^\/bot\/(mensagens|canais\/:channelId\/(mensagens|fixadas)|users\/:userId\/messages$)/,
     events: [
       "message:created",
       "message:updated",
@@ -262,7 +290,7 @@ const OBJETOS = [
     name: "Canal",
     summary: "Onde a conversa acontece: texto, voz e fórum, com suas categorias e permissões.",
     esquema: "channelSchema",
-    routes: /^\/bot\/servidores\/:guildId\/canais/,
+    routes: /^\/bot\/(servidores\/:guildId\/canais|guilds\/:guildId\/channels)/,
     events: ["channel:created", "channel:updated", "channel:deleted", "post:created", "post:updated"],
   },
   {
@@ -328,8 +356,8 @@ const OBJETOS = [
     name: "Aplicativo",
     summary: "O próprio bot: quem ele é e quais comandos de barra ele oferece.",
     esquema: "botCommandSchema",
-    routes: /^\/bot\/(eu|comandos)$/,
-    events: ["command:invoked", "commands:changed"],
+    routes: /^\/bot\/(eu|comandos|interactions\/)/,
+    events: ["command:invoked", "commands:changed", "interaction:created", "interaction:finished", "interaction:modal"],
   },
   {
     id: "webhook",
@@ -359,13 +387,16 @@ const OBJETOS = [
 
 const GRUPOS_DE_ROTA = [
   { title: "Identidade", test: /^\/bot\/(eu|comandos)$/ },
+  { title: "Interações", test: /^\/bot\/interactions\// },
   { title: "Mensagens", test: /^\/bot\/(mensagens|canais\/:channelId\/(mensagens|fixadas))/ },
+  { title: "Mensagens", test: /^\/bot\/users\/:userId\/messages$/ },
   { title: "Servidores e canais", test: /^\/bot\/servidores(\/:guildId(\/canais|\/convites)?)?$/ },
   { title: "Membros e moderação", test: /^\/bot\/servidores\/:guildId\/(membros|castigos|banimentos|auditoria)/ },
   { title: "Cargos", test: /^\/bot\/servidores\/:guildId\/cargos/ },
   { title: "Expressões", test: /^\/bot\/servidores\/:guildId\/(expressoes|emojis)/ },
   { title: "Webhooks", test: /^\/bot\/servidores\/:guildId\/webhooks/ },
   { title: "Servidores e canais", test: /^\/bot\/servidores\/:guildId\/canais/ },
+  { title: "Servidores e canais", test: /^\/bot\/guilds\/:guildId\/channels\/:channelId\/permissions/ },
 ];
 
 const grupoDa = (path: string) =>

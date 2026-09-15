@@ -85,12 +85,14 @@ export const chamada = {
     quadros: "{{quadros}} FPS",
     qualidadeDica: "Die Auflösung ist eine Obergrenze: Ein kleineres Fenster behält seine Größe. Mehr Auflösung und Bilder brauchen mehr Bandbreite, deine und die der Zuschauer. Gilt auch für eine laufende Übertragung.",
   },
+  cameraLimit: "Im Anruf sind bereits {{limite}} Kameras an. Warte, bis jemand seine ausschaltet.",
   live: {
     etiqueta: "Live",
     etiquetaMaiuscula: "LIVE",
     assistir: "Übertragung ansehen",
     assistirPessoa: "{{nome}} ansehen",
     pararDeAssistir: "Nicht mehr ansehen",
+    conectando: "Verbindung zum Stream…",
   },
   membro: {
     mudarMeuApelido: "Meinen Spitznamen ändern",

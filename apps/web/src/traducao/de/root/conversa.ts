@@ -15,6 +15,16 @@ export const conversa = {
     carregando: "Schaue, was hinter dem Link steckt…",
     destino: "Führt zu {{destino}}",
   },
+  botComponents: {
+    noResponse: "Der Bot hat nicht geantwortet.",
+    choose: "Option auswählen",
+    onlyYou: "Nur du kannst das sehen",
+    dismiss: "Ausblenden",
+    formFrom: "Formular von {{nome}}",
+    optional: "optional",
+    yes: "Ja",
+    no: "Nein",
+  },
   reacao: {
     carregando: "Schaue nach, wer mit {{emoji}} reagiert hat…",
     uma: "{{nome}} hat mit {{emoji}} reagiert",
@@ -141,6 +151,7 @@ export const conversa = {
   },
 
   falha: {
+    premium: "Nicht zugestellt – das gehört zu Infinity",
     tentarDeNovo: "Erneut versuchen",
     erro: "Nicht zugestellt",
     semConexao: "Nicht zugestellt — du bist offline",

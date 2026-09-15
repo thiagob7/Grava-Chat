@@ -43,6 +43,7 @@ export const perfil = {
     falhou: "Nu s-a putut trimite. Încearcă din conversație.",
   },
   cartao: {
+    infinity: "Membru Infinity",
     equipe: "Echipa Gravaê",
     trocarFaixa: "Schimbă bannerul cardului",
     trocarFaixaCurto: "Schimbă bannerul",

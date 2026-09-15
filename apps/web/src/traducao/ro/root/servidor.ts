@@ -1,4 +1,15 @@
 export const servidor = {
+  perfilNoServidor: {
+    titulo: "Profil pe acest server",
+    descricao: "Avatar, banner și bio care apar doar în {{server}}.",
+    soInfinity: "Profilurile pe comunitate fac parte din {{plan}}. Atinge ca să vezi planurile.",
+    trocarFoto: "Schimbă avatarul",
+    trocarFaixa: "Schimbă bannerul",
+    usarDaConta: "Folosește-l pe cel din cont",
+    bio: "Bio pe acest server",
+    bioDica: "Spune ceva doar pentru comunitatea asta",
+    salvo: "Profilul serverului a fost salvat.",
+  },
   comunidade: {
     ativa: "Comunitatea este deschisă",
     ativaDesde: "Deschisă din {{quando}}",

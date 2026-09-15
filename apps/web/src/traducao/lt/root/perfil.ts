@@ -43,6 +43,7 @@ export const perfil = {
     falhou: "Nepavyko išsiųsti. Pabandykite iš pokalbio.",
   },
   cartao: {
+    infinity: "Infinity narys",
     equipe: "Gravaê komanda",
     trocarFaixa: "Keisti kortelės antraštę",
     trocarFaixaCurto: "Keisti antraštę",

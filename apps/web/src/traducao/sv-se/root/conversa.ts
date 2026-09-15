@@ -15,6 +15,16 @@ export const conversa = {
     carregando: "Kollar vad som finns bakom länken…",
     destino: "Går till {{destino}}",
   },
+  botComponents: {
+    noResponse: "Boten svarade inte.",
+    choose: "Gör ett val",
+    onlyYou: "Bara du kan se det här",
+    dismiss: "Stäng",
+    formFrom: "Formulär från {{nome}}",
+    optional: "valfritt",
+    yes: "Ja",
+    no: "Nej",
+  },
   reacao: {
     carregando: "Kollar vilka som reagerade med {{emoji}}…",
     uma: "{{nome}} reagerade med {{emoji}}",
@@ -141,6 +151,7 @@ export const conversa = {
   },
 
   falha: {
+    premium: "Inte levererat – det här kräver Infinity",
     tentarDeNovo: "Försök igen",
     erro: "Levererades inte",
     semConexao: "Levererades inte — du har ingen anslutning",

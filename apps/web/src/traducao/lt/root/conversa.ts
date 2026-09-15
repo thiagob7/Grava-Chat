@@ -15,6 +15,16 @@ export const conversa = {
     carregando: "Žiūriu, kas yra nuorodoje…",
     destino: "Veda į {{destino}}",
   },
+  botComponents: {
+    noResponse: "Botas neatsakė.",
+    choose: "Pasirinkite parinktį",
+    onlyYou: "Tai matote tik jūs",
+    dismiss: "Uždaryti",
+    formFrom: "Forma iš {{nome}}",
+    optional: "neprivaloma",
+    yes: "Taip",
+    no: "Ne",
+  },
   reacao: {
     carregando: "Žiūriu, kas reagavo su {{emoji}}…",
     uma: "{{nome}} reagavo su {{emoji}}",
@@ -141,6 +151,7 @@ export const conversa = {
   },
 
   falha: {
+    premium: "Nepristatyta — tam reikia Infinity",
     tentarDeNovo: "Bandyti dar kartą",
     erro: "Nepristatyta",
     semConexao: "Nepristatyta — neturi ryšio",

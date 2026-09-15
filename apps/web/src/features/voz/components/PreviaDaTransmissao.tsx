@@ -1,72 +1,36 @@
-import React, { useEffect, useRef, useState } from "react";
-import type { Track } from "livekit-client";
+import React, { useEffect, useState } from "react";
 
-const INTERVAL_MS = 3000;
+import { useVoiceStore } from "~/features/voz/stores/voice-store";
 
-export const BroadcastPreview: React.FC<{ track: Track }> = ({ track }) => {
-  const video = useRef<HTMLVideoElement>(null);
-  const frame = useRef<HTMLCanvasElement>(null);
-  const [hasFrame, setHasFrame] = useState(false);
+const REFRESH_MS = 10_000;
 
-  useEffect(() => {
-    const el = video.current;
-    if (!el) return;
-
-    setHasFrame(false);
-    track.attach(el);
-
-    return () => {
-      track.detach(el);
-    };
-  }, [track]);
+export const BroadcastPreview: React.FC<{ identity: string }> = ({ identity }) => {
+  const previews = useVoiceStore((s) => s.previews);
+  const [url, setUrl] = useState<string | null>(null);
 
   useEffect(() => {
+    if (!previews) return;
+
     let live = true;
-    let scheduled = 0;
+    let timer = 0;
 
-    const capture = () => {
+    const load = async () => {
+      const next = await previews.request(identity);
       if (!live) return;
 
-      const origin = video.current;
-      const destination = frame.current;
-
-      if (origin && destination && origin.videoWidth > 0 && origin.videoHeight > 0) {
-        if (destination.width !== origin.videoWidth) destination.width = origin.videoWidth;
-        if (destination.height !== origin.videoHeight) destination.height = origin.videoHeight;
-
-        const brush = destination.getContext("2d");
-
-        if (brush) {
-          brush.drawImage(origin, 0, 0, destination.width, destination.height);
-          setHasFrame(true);
-        }
-      }
-
-      scheduled = window.setTimeout(capture, INTERVAL_MS);
+      if (next) setUrl(next);
+      timer = window.setTimeout(load, REFRESH_MS);
     };
 
-    capture();
+    void load();
 
     return () => {
       live = false;
-      window.clearTimeout(scheduled);
+      window.clearTimeout(timer);
     };
-  }, [track]);
+  }, [previews, identity]);
 
-  return (
-    <>
-      <video data-gc="voz.previa-da-transmissao.video"
-        ref={video}
-        autoPlay
-        playsInline
-        muted
-        aria-hidden
-        className="pointer-events-none absolute left-0 top-0 size-px opacity-0"
-      />
-      <canvas data-gc="voz.previa-da-transmissao.canvas"
-        ref={frame}
-        className={hasFrame ? "absolute inset-0 size-full object-contain" : "hidden"}
-      />
-    </>
-  );
+  if (!url) return null;
+
+  return <img data-gc="voz.previa-da-transmissao.img" src={url} alt="" className="absolute inset-0 size-full object-contain" />;
 };

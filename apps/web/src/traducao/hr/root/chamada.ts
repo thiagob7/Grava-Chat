@@ -85,12 +85,14 @@ export const chamada = {
     quadros: "{{quadros}} FPS",
     qualidadeDica: "Razlučivost je gornja granica: manji prozor zadržava svoju veličinu. Veća razlučivost i više sličica traže više interneta, tvog i gledatelja. Vrijedi i za prijenos u tijeku.",
   },
+  cameraLimit: "Poziv već ima {{limite}} uključenih kamera. Pričekajte da netko isključi svoju.",
   live: {
     etiqueta: "Uživo",
     etiquetaMaiuscula: "UŽIVO",
     assistir: "Gledaj prijenos",
     assistirPessoa: "Gledaj {{nome}}",
     pararDeAssistir: "Prestani gledati",
+    conectando: "Povezivanje s prijenosom…",
   },
   membro: {
     mudarMeuApelido: "Promijeni moj nadimak",

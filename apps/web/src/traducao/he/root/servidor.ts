@@ -1,4 +1,15 @@
 export const servidor = {
+  perfilNoServidor: {
+    titulo: "פרופיל בשרת הזה",
+    descricao: "תמונה, באנר וביו שמופיעים רק ב-{{server}}.",
+    soInfinity: "פרופילים לכל קהילה הם חלק מ-{{plan}}. הקש כדי לראות את התוכניות.",
+    trocarFoto: "החלפת תמונה",
+    trocarFaixa: "החלפת באנר",
+    usarDaConta: "להשתמש בזה של החשבון",
+    bio: "ביו בשרת הזה",
+    bioDica: "ספר משהו רק לקהילה הזו",
+    salvo: "פרופיל השרת נשמר.",
+  },
   comunidade: {
     ativa: "הקהילה פתוחה",
     ativaDesde: "פתוחה מאז {{quando}}",

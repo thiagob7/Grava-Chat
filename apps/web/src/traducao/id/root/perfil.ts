@@ -43,6 +43,7 @@ export const perfil = {
     falhou: "Tidak terkirim. Coba dari percakapan.",
   },
   cartao: {
+    infinity: "Anggota Infinity",
     equipe: "Tim Gravaê",
     trocarFaixa: "Ganti banner kartu",
     trocarFaixaCurto: "Ganti banner",

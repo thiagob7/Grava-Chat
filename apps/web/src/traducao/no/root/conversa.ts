@@ -15,6 +15,16 @@ export const conversa = {
     carregando: "Ser hva som ligger bak lenken…",
     destino: "Går til {{destino}}",
   },
+  botComponents: {
+    noResponse: "Boten svarte ikke.",
+    choose: "Velg et alternativ",
+    onlyYou: "Bare du kan se dette",
+    dismiss: "Lukk",
+    formFrom: "Skjema fra {{nome}}",
+    optional: "valgfritt",
+    yes: "Ja",
+    no: "Nei",
+  },
   reacao: {
     carregando: "Ser hvem som reagerte med {{emoji}}…",
     uma: "{{nome}} reagerte med {{emoji}}",
@@ -141,6 +151,7 @@ export const conversa = {
   },
 
   falha: {
+    premium: "Ikke levert – dette krever Infinity",
     tentarDeNovo: "Prøv igjen",
     erro: "Ikke levert",
     semConexao: "Ikke levert — du har ingen tilkobling",

@@ -5,6 +5,7 @@ import { memberRepository } from "~/repositories/guild-repository.js";
 import { banRepository } from "~/repositories/ban-repository.js";
 import { toMember } from "~/lib/serialize.js";
 import { presenceService } from "~/services/presence-service.js";
+import { planService } from "~/services/plan-service.js";
 
 export const inviteService = {
   async preview(userId: string, code: string) {
@@ -46,6 +47,8 @@ export const inviteService = {
 
     const existing = await memberRepository.find(invite.guildId, userId);
     if (existing) return { guildId: invite.guildId, alreadyMember: true as const, member: null };
+
+    await planService.requireCommunityRoom(userId);
 
     const member = await memberRepository.create({
       guildId: invite.guildId,

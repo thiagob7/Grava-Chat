@@ -85,12 +85,14 @@ export const chamada = {
     quadros: "{{quadros}} FPS",
     qualidadeDica: "Resolusi adalah batas atas: jendela yang lebih kecil tetap pada ukurannya. Resolusi dan bingkai lebih tinggi butuh internet lebih besar, milikmu dan penonton. Berlaku juga untuk siaran yang sedang berjalan.",
   },
+  cameraLimit: "Panggilan ini sudah memiliki {{limite}} kamera menyala. Tunggu seseorang mematikan kameranya.",
   live: {
     etiqueta: "Siaran langsung",
     etiquetaMaiuscula: "SIARAN LANGSUNG",
     assistir: "Tonton siaran",
     assistirPessoa: "Tonton {{nome}}",
     pararDeAssistir: "Berhenti menonton",
+    conectando: "Menghubungkan ke siaran…",
   },
   membro: {
     mudarMeuApelido: "Ubah nama panggilanku",

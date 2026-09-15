@@ -85,12 +85,14 @@ export const chamada = {
     quadros: "{{quadros}} FPS",
     qualidadeDica: "Resoluutio on yläraja: pienempi ikkuna pysyy omassa koossaan. Suurempi resoluutio ja kuvataajuus vaativat enemmän kaistaa, sinulta ja katsojilta. Koskee myös käynnissä olevaa striimiä.",
   },
+  cameraLimit: "Puhelussa on jo {{limite}} kameraa päällä. Odota, että joku sulkee omansa.",
   live: {
     etiqueta: "Suorana",
     etiquetaMaiuscula: "SUORANA",
     assistir: "Katso lähetystä",
     assistirPessoa: "Katso käyttäjää {{nome}}",
     pararDeAssistir: "Lopeta katsominen",
+    conectando: "Yhdistetään lähetykseen…",
   },
   membro: {
     mudarMeuApelido: "Vaihda lempinimeni",

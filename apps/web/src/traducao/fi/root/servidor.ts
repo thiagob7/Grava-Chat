@@ -1,4 +1,15 @@
 export const servidor = {
+  perfilNoServidor: {
+    titulo: "Profiili tällä palvelimella",
+    descricao: "Profiilikuva, banneri ja bio, jotka näkyvät vain palvelimella {{server}}.",
+    soInfinity: "Yhteisökohtaiset profiilit kuuluvat {{plan}}-tilaukseen. Napauta nähdäksesi tilaukset.",
+    trocarFoto: "Vaihda profiilikuva",
+    trocarFaixa: "Vaihda banneri",
+    usarDaConta: "Käytä tilin omaa",
+    bio: "Bio tällä palvelimella",
+    bioDica: "Kerro jotain vain tälle yhteisölle",
+    salvo: "Palvelinprofiili tallennettu.",
+  },
   comunidade: {
     ativa: "Yhteisö on auki",
     ativaDesde: "Auki alkaen {{quando}}",

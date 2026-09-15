@@ -15,6 +15,16 @@ export const conversa = {
     carregando: "Dívám se, co je na odkazu…",
     destino: "Vede na {{destino}}",
   },
+  botComponents: {
+    noResponse: "Bot neodpověděl.",
+    choose: "Vyberte možnost",
+    onlyYou: "Tohle vidíte jen vy",
+    dismiss: "Zavřít",
+    formFrom: "Formulář od {{nome}}",
+    optional: "nepovinné",
+    yes: "Ano",
+    no: "Ne",
+  },
   reacao: {
     carregando: "Zjišťuji, kdo reagoval s {{emoji}}…",
     uma: "{{nome}} reagoval s {{emoji}}",
@@ -141,6 +151,7 @@ export const conversa = {
   },
 
   falha: {
+    premium: "Nedoručeno — vyžaduje Infinity",
     tentarDeNovo: "Zkusit znovu",
     erro: "Nedoručeno",
     semConexao: "Nedoručeno — nemáš připojení",

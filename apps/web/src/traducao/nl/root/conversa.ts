@@ -15,6 +15,16 @@ export const conversa = {
     carregando: "Ik kijk wat er achter de link zit…",
     destino: "Gaat naar {{destino}}",
   },
+  botComponents: {
+    noResponse: "De bot reageerde niet.",
+    choose: "Maak een keuze",
+    onlyYou: "Alleen jij kunt dit zien",
+    dismiss: "Verbergen",
+    formFrom: "Formulier van {{nome}}",
+    optional: "optioneel",
+    yes: "Ja",
+    no: "Nee",
+  },
   reacao: {
     carregando: "Ik kijk wie met {{emoji}} reageerde…",
     uma: "{{nome}} reageerde met {{emoji}}",
@@ -141,6 +151,7 @@ export const conversa = {
   },
 
   falha: {
+    premium: "Niet bezorgd — dit hoort bij Infinity",
     tentarDeNovo: "Opnieuw proberen",
     erro: "Niet bezorgd",
     semConexao: "Niet bezorgd — je hebt geen verbinding",

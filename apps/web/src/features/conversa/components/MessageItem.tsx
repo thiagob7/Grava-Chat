@@ -4,6 +4,7 @@ import { useNavigate } from "react-router";
 import { useFindGuild } from "~/@core/application/queries/guild/use-find-guild";
 import {
   Bookmark,
+  EyeOff,
   Copy,
   CornerUpLeft,
   Flag,
@@ -29,7 +30,8 @@ import {
 import { useQueryClient } from "@tanstack/react-query";
 import type { GuildDetailModel } from "~/@core/domain/models/guild-model";
 import { Dialog, DialogContent, DialogTitle } from "~/components/ui/dialog";
-import type { Attachment, GuildEmoji, Message, PublicUser, ProfilePublic } from "@gravae/shared";
+import { parseCustomEmoji, type Attachment, type GuildEmoji, type Message, type PublicUser, type ProfilePublic } from "@gravae/shared";
+import { ServerEmoji } from "~/features/expressao/components/ServerEmoji";
 
 import { Emoji } from "~/features/expressao/components/Emoji";
 import { recentEmojis } from "~/features/expressao/lib/emoji";
@@ -47,6 +49,9 @@ import { removeAttachment } from "~/@core/application/requests/message/remover-a
 import { useMe } from "~/@core/application/queries/auth/use-me";
 import { MessageContent } from "~/features/conversa/components/MessageContent";
 import { LinkEmbeds } from "~/features/conversa/components/LinkEmbed";
+import { BotEmbeds } from "~/features/conversa/components/BotEmbed";
+import { MessageComponents } from "~/features/conversa/components/MessageComponents";
+import { useDismissedStore } from "~/features/conversa/stores/dismissed-store";
 import { Tooltip } from "~/components/ui/tooltip";
 import { useWhoReacted } from "~/@core/application/queries/message/use-quem-reagiu";
 import { PollCard } from "~/features/conversa/components/PollCard";
@@ -139,6 +144,8 @@ export const MessageItem: React.FC<MessageItemProps> = ({
 
   const showAvatars = useAppearance((s) => s.avatars);
   const showReactions = useAppearance((s) => s.reactions);
+  const dismissed = useDismissedStore((s) => Boolean(message.ephemeral && s.ids[message.id]));
+  const dismiss = useDismissedStore((s) => s.dismiss);
   const shortcuts = React.useMemo(reactionShortcuts, []);
   const [revealed, setRevealed] = useState(false);
 
@@ -312,6 +319,8 @@ export const MessageItem: React.FC<MessageItemProps> = ({
     );
   }
 
+  if (dismissed) return null;
+
   return (
     <div data-gc="conversa.message-item.div--3"
       ref={root}
@@ -357,12 +366,12 @@ export const MessageItem: React.FC<MessageItemProps> = ({
             {formatTime(message.createdAt)}
           </span>
         ) : (
-          <UserProfilePopover data-gc="conversa.message-item.user-profile-popover" userId={message.author.id}>
+          <UserProfilePopover data-gc="conversa.message-item.user-profile-popover" userId={message.author.id} guildId={guildId}>
             <button data-gc="conversa.message-item.button" className="rounded-full transition hover:brightness-110">
               <Avatar data-gc="conversa.message-item.avatar"
                 id={message.author.id}
                 name={message.author.displayName}
-                url={message.author.avatarUrl}
+                url={charms?.guildAvatarUrl ?? message.author.avatarUrl}
                 charms={charms?.profile?.decoration ? charms.profile : { ...charms?.profile, decoration: message.author.decoration as ProfilePublic["decoration"] }}
                 className={flxCls("messageAvatar")}
               />
@@ -374,7 +383,7 @@ export const MessageItem: React.FC<MessageItemProps> = ({
       <div data-gc="conversa.message-item.div--5" {...flx("messageColumn", "min-w-0 flex-1")}>
         {!compact && (
           <div data-gc="conversa.message-item.div--6" {...flx("authorLine", "flex items-baseline gap-x-2")}>
-            <UserProfilePopover data-gc="conversa.message-item.user-profile-popover--2" userId={message.author.id}>
+            <UserProfilePopover data-gc="conversa.message-item.user-profile-popover--2" userId={message.author.id} guildId={guildId}>
               <button data-gc="conversa.message-item.button--2" {...flx("authorName", "min-w-0 max-w-full truncate font-medium text-ink hover:underline")}>
                 <UserName data-gc="conversa.message-item.user-name"
                   name={message.author.displayName}
@@ -453,6 +462,16 @@ export const MessageItem: React.FC<MessageItemProps> = ({
         {!editing && !(ignored && !revealed) && message.content && (
           <LinkEmbeds data-gc="conversa.message-item.link-embeds" content={message.content} />
         )}
+
+        {!(ignored && !revealed) && message.embeds && message.embeds.length > 0 && (
+          <BotEmbeds data-gc="conversa.message-item.bot-embeds" embeds={message.embeds} emojis={emojis} mentions={mentions} mentionProfiles={{ guildId }} />
+        )}
+
+        {!(ignored && !revealed) && message.components && message.components.length > 0 && (
+          <MessageComponents data-gc="conversa.message-item.message-components" messageId={message.id} rows={message.components} />
+        )}
+
+        {message.ephemeral && <EphemeralNotice data-gc="conversa.message-item.ephemeral-notice" onDismiss={() => dismiss(message.id)} />}
 
         {message.sticker && (
           <img data-gc="conversa.message-item.img"
@@ -552,7 +571,7 @@ export const MessageItem: React.FC<MessageItemProps> = ({
         )}
       </div>
 
-      {!message.pending && !message.queued && !message.failed && !editing && (
+      {!message.pending && !message.queued && !message.failed && !message.ephemeral && !editing && (
         <div data-gc="conversa.message-item.div--12"
           className={cn(
             "barra-da-mensagem absolute -top-3 right-2 z-10 max-w-[calc(100%-1rem)] items-center gap-0.5 rounded border border-line bg-surface-1 p-0.5 shadow-lg @sm:right-4",
@@ -820,7 +839,9 @@ const ReactionEmoji: React.FC<{
 }> = ({ emoji, fromServer, className = "size-5" }) => {
   const name = /^:([\w~-]+):$/.exec(emoji)?.[1];
   const match = name ? fromServer.find((e) => e.name === name) : undefined;
+  const serverRef = parseCustomEmoji(emoji);
 
+  if (serverRef) return <ServerEmoji data-gc="conversa.message-item.server-emoji" id={serverRef.id} name={serverRef.name} className={className} />;
   if (!match) return <Emoji data-gc="conversa.message-item.emoji" emoji={emoji} className={className} />;
 
   return <img data-gc="conversa.message-item.img--2" src={match.url} alt={emoji} className={cn(className, "object-contain")} />;
@@ -1068,6 +1089,8 @@ const Quote: React.FC<{
         <span data-gc="conversa.message-item.span--26" {...flx("quoteText", "texto-da-citacao min-w-0 truncate text-ink-muted transition [&_img]:inline-block [&_img]:size-4 [&_img]:align-text-bottom")}>
           {replied.content ? (
             <MessageContent data-gc="conversa.message-item.message-content--4" content={replied.content} emojis={emojis} mentions={mentions} />
+          ) : replied.embeds?.[0]?.title ? (
+            replied.embeds[0].title
           ) : (
             t("conversa.mensagem.citacaoAnexo")
           )}
@@ -1179,3 +1202,18 @@ const MessagePreview: React.FC<{
     </div>
   </div>
 );
+
+const EphemeralNotice: React.FC<{ onDismiss: () => void }> = ({ onDismiss }) => {
+  const { t } = useTranslation();
+
+  return (
+    <p data-gc="conversa.message-item.p--3" className="mt-1 flex flex-wrap items-center gap-1 text-xs text-ink-faint">
+      <EyeOff data-gc="conversa.message-item.eye-off" size={12} aria-hidden />
+      <span data-gc="conversa.message-item.span--35">{t("conversa.botComponents.onlyYou")}</span>
+      <span data-gc="conversa.message-item.span--36" aria-hidden>·</span>
+      <button data-gc="conversa.message-item.button.on-dismiss" type="button" onClick={onDismiss} className="text-link hover:underline">
+        {t("conversa.botComponents.dismiss")}
+      </button>
+    </p>
+  );
+};

@@ -39,7 +39,13 @@ export const BODIES: Record<string, React.ReactNode> = {
   "quanto-custa": (
     <>
       <p>
-        Nada. Não tem plano pago, não tem anúncio e o que você fala não é vendido para ninguém.
+        Usar é grátis. Não tem anúncio e o que você fala não é vendido para ninguém.
+      </p>
+      <p>
+        Para quem quer mais, existe o Infinity, que é opcional: R$ 18 por mês ou R$ 185 por ano. Ele
+        aumenta os limites (mensagens de até 4.000 caracteres, arquivos de até 500 MB, 200
+        comunidades, vídeo em 1080p a 60 quadros) e libera perfil por comunidade, tag
+        personalizada, avatar animado, emojis e figurinhas de qualquer servidor e o selo no perfil.
       </p>
       <p>
         O código é aberto — dá para{" "}

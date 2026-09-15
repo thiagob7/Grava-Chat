@@ -43,6 +43,7 @@ export const perfil = {
     falhou: "沒能送出。試試從對話裡傳。",
   },
   cartao: {
+    infinity: "Infinity 會員",
     equipe: "Gravaê 團隊",
     trocarFaixa: "更換卡片橫幅",
     trocarFaixaCurto: "更換橫幅",

@@ -15,6 +15,16 @@ export const conversa = {
     carregando: "Смотрю, что по ссылке…",
     destino: "Ведёт на {{destino}}",
   },
+  botComponents: {
+    noResponse: "Бот не ответил.",
+    choose: "Выберите вариант",
+    onlyYou: "Это видите только вы",
+    dismiss: "Скрыть",
+    formFrom: "Форма от {{nome}}",
+    optional: "необязательно",
+    yes: "Да",
+    no: "Нет",
+  },
   reacao: {
     carregando: "Смотрю, кто отреагировал с {{emoji}}…",
     uma: "{{nome}} отреагировал с {{emoji}}",
@@ -141,6 +151,7 @@ export const conversa = {
   },
 
   falha: {
+    premium: "Не доставлено — это доступно в Infinity",
     tentarDeNovo: "Попробовать снова",
     erro: "Не доставлено",
     semConexao: "Не доставлено — нет соединения",

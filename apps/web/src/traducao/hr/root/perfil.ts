@@ -43,6 +43,7 @@ export const perfil = {
     falhou: "Nije se moglo poslati. Pokušaj iz razgovora.",
   },
   cartao: {
+    infinity: "Član Infinityja",
     equipe: "Tim Gravaê",
     trocarFaixa: "Promijeni natpis kartice",
     trocarFaixaCurto: "Promijeni natpis",

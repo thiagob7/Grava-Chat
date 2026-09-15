@@ -195,6 +195,7 @@ const ProfileCard: React.FC<{
   const charms = useCharms(guildId);
   const badges = charms.badges(profile.id);
   const { data: serverDetail } = useFindGuild(guildId);
+  const guildMember = serverDetail?.members.find((m) => m.user.id === profile.id);
   const { can } = usePermissions(serverDetail);
   const setRoles = useSetMemberRoles(guildId);
 
@@ -516,13 +517,14 @@ const ProfileCard: React.FC<{
         isBot={profile.isBot}
         isSystem={profile.system}
         staff={profile.staff}
-        avatarUrl={profile.avatarUrl}
+        premium={profile.premium}
+        avatarUrl={guildMember?.avatarUrl ?? profile.avatarUrl}
         status={profile.status}
-        profile={profile.profile}
+        profile={guildMember?.bannerUrl ? { ...profile.profile, bannerUrl: guildMember.bannerUrl } as typeof profile.profile : profile.profile}
         serverTag={profile.serverTag}
         customStatus={profile.customStatus}
         roleColor={roleColor}
-        bio={profile.bio}
+        bio={guildMember?.bio ?? profile.bio}
         pronouns={profile.pronouns}
         detailed={profile.friendship === "SELF"}
         createdAt={profile.friendship === "SELF" ? profile.createdAt : null}

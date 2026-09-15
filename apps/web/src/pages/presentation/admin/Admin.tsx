@@ -1,6 +1,6 @@
 import React from "react";
 import { Link, Navigate, useParams } from "react-router";
-import { ArrowLeft, Crown, Flag, LockKeyhole, Megaphone, Rocket, Server, ShieldCheck, Users } from "lucide-react";
+import { ArrowLeft, Crown, Flag, Infinity as InfinityIcon, LockKeyhole, Megaphone, Rocket, Server, ShieldCheck, Users } from "lucide-react";
 import type { AdminArea } from "@gravae/shared";
 
 import { useAdminMe, useLockPanel } from "~/@core/application/queries/admin/use-painel";
@@ -9,17 +9,19 @@ import { AdminsSection } from "~/features/configuracoes/components/Administrador
 import { ReportsSection } from "~/features/configuracoes/components/DenunciasSection";
 import { PanelChangePassword, PanelUnlock } from "~/features/configuracoes/components/PainelTrancado";
 import { PostsSection } from "~/features/configuracoes/components/PublicacoesSection";
+import { PremiumSection } from "~/features/configuracoes/components/PremiumSection";
 import { ServerSection } from "~/features/configuracoes/components/ServidorSection";
 import { Splash } from "~/features/app/components/Splash";
 import { cn } from "~/lib/utils";
 
-type Display = "publicacoes" | "servidor" | "denuncias" | "comunicado" | "administradores";
+type Display = "publicacoes" | "servidor" | "denuncias" | "comunicado" | "premium" | "administradores";
 
 const SCREENS: { id: Display; area: AdminArea; name: string; icon: React.ElementType; summary: string }[] = [
   { id: "publicacoes", area: "publicacoes", name: "Publicações", icon: Rocket, summary: "o que roda e o que sobe" },
   { id: "servidor", area: "servidor", name: "Servidor", icon: Server, summary: "saúde das máquinas" },
   { id: "denuncias", area: "denuncias", name: "Denúncias", icon: Flag, summary: "a fila do que chegou" },
   { id: "comunicado", area: "comunicado", name: "Comunicado", icon: Megaphone, summary: "avisar todo mundo" },
+  { id: "premium", area: "premium", name: "Infinity", icon: InfinityIcon, summary: "dar e tirar dias de Infinity" },
   { id: "administradores", area: "administradores", name: "Administradores", icon: Users, summary: "quem entra e o que faz" },
 ];
 
@@ -111,6 +113,7 @@ export const Admin: React.FC = () => {
               {current.id === "servidor" && <ServerSection data-gc="admin.admin.server-section" />}
               {current.id === "denuncias" && <ReportsSection data-gc="admin.admin.reports-section" />}
               {current.id === "comunicado" && <AnnouncementsSection data-gc="admin.admin.announcements-section" />}
+              {current.id === "premium" && <PremiumSection data-gc="admin.admin.premium-section" />}
               {current.id === "administradores" && <AdminsSection data-gc="admin.admin.admins-section" me={me} />}
               </div>
             </div>

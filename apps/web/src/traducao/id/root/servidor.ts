@@ -1,4 +1,15 @@
 export const servidor = {
+  perfilNoServidor: {
+    titulo: "Profil di server ini",
+    descricao: "Avatar, banner, dan bio yang hanya muncul di {{server}}.",
+    soInfinity: "Profil per komunitas termasuk {{plan}}. Ketuk untuk melihat paket.",
+    trocarFoto: "Ganti avatar",
+    trocarFaixa: "Ganti banner",
+    usarDaConta: "Pakai milik akun",
+    bio: "Bio di server ini",
+    bioDica: "Ceritakan sesuatu khusus untuk komunitas ini",
+    salvo: "Profil server disimpan.",
+  },
   comunidade: {
     ativa: "Komunitas sudah terbuka",
     ativaDesde: "Terbuka sejak {{quando}}",

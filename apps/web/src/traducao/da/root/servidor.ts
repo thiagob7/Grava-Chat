@@ -1,4 +1,15 @@
 export const servidor = {
+  perfilNoServidor: {
+    titulo: "Profil på denne server",
+    descricao: "Avatar, banner og bio, der kun vises på {{server}}.",
+    soInfinity: "Profiler pr. fællesskab er en del af {{plan}}. Tryk for at se planerne.",
+    trocarFoto: "Skift avatar",
+    trocarFaixa: "Skift banner",
+    usarDaConta: "Brug kontoens",
+    bio: "Bio på denne server",
+    bioDica: "Fortæl noget kun til dette fællesskab",
+    salvo: "Serverprofil gemt.",
+  },
   comunidade: {
     ativa: "Fællesskabet er åbent",
     ativaDesde: "Åbent siden {{quando}}",

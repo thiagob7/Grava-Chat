@@ -85,12 +85,14 @@ export const chamada = {
     quadros: "{{quadros}} FPS",
     qualidadeDica: "Rozdzielczość to górny limit: mniejsze okno zachowuje swój rozmiar. Więcej rozdzielczości i klatek wymaga szybszego internetu, twojego i widzów. Dotyczy też trwającej transmisji.",
   },
+  cameraLimit: "W rozmowie jest już włączonych {{limite}} kamer. Poczekaj, aż ktoś wyłączy swoją.",
   live: {
     etiqueta: "Na żywo",
     etiquetaMaiuscula: "NA ŻYWO",
     assistir: "Oglądaj transmisję",
     assistirPessoa: "Oglądaj {{nome}}",
     pararDeAssistir: "Przestań oglądać",
+    conectando: "Łączenie z transmisją…",
   },
   membro: {
     mudarMeuApelido: "Zmień mój pseudonim",

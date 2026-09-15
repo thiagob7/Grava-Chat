@@ -43,6 +43,7 @@ export const perfil = {
     falhou: "Không gửi được. Thử từ cuộc trò chuyện.",
   },
   cartao: {
+    infinity: "Thành viên Infinity",
     equipe: "Đội ngũ Gravaê",
     trocarFaixa: "Đổi ảnh bìa của thẻ",
     trocarFaixaCurto: "Đổi ảnh bìa",

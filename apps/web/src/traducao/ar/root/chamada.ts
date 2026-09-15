@@ -85,12 +85,14 @@ export const chamada = {
     quadros: "{{quadros}} FPS",
     qualidadeDica: "الدقة حدٌّ أعلى: النافذة الأصغر تحتفظ بحجمها. دقة وإطارات أكثر تحتاج إنترنت أكثر، لديك ولدى المشاهدين. ينطبق أيضًا على البث الجاري.",
   },
+  cameraLimit: "المكالمة بها {{limite}} كاميرات مفعّلة بالفعل. انتظر حتى يغلق أحدهم كاميرته.",
   live: {
     etiqueta: "مباشر",
     etiquetaMaiuscula: "مباشر",
     assistir: "مشاهدة البث",
     assistirPessoa: "مشاهدة {{nome}}",
     pararDeAssistir: "إيقاف المشاهدة",
+    conectando: "جارٍ الاتصال بالبث…",
   },
   membro: {
     mudarMeuApelido: "تغيير لقبي",

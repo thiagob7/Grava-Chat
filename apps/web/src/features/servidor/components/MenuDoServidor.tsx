@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router";
 import { useTranslation } from "react-i18next";
 import { toast } from "react-toastify";
-import { Bell, BellOff, Check, CheckCheck, Copy, DoorOpen, EyeOff, Flag, Settings, UserPlus, UserRoundPen } from "lucide-react";
+import { Bell, BellOff, Check, CheckCheck, Copy, DoorOpen, EyeOff, Flag, Settings, UserPlus, Infinity as InfinityIcon, UserRoundPen } from "lucide-react";
 
 import { useMe } from "~/@core/application/queries/auth/use-me";
 import { useReportGuild } from "~/@core/application/queries/guild/use-denunciar-guild";
@@ -28,6 +28,7 @@ import { SelectField } from "~/components/ui/select";
 import { useServerSettingsStore } from "~/features/servidor/stores/server-settings-store";
 import { copyText } from "~/lib/copiar";
 import { serverMuted, useNotices, type ChannelMode } from "~/stores/notificacoes";
+import { usePlanStore } from "~/features/plan/stores/plan-store";
 
 const MINUTE = 60_000;
 const DURATIONS: { key: string; ms: number }[] = [
@@ -54,6 +55,7 @@ export const ServerMenu: React.FC<{
   const markRead = useMarkServerRead();
   const leave = useRemoveMember();
   const openSettings = useServerSettingsStore((s) => s.open);
+  const openGuildProfile = usePlanStore((s) => s.openGuildProfile);
   const prefs = useNotices((s) => s.byServer[guild.id]);
   const muted = useNotices((s) => serverMuted(s, guild.id));
   const setServer = useNotices((s) => s.setServer);
@@ -145,31 +147,35 @@ export const ServerMenu: React.FC<{
 
           <ContextMenuSeparator data-gc="servidor.menu-do-servidor.context-menu-separator--2" />
 
+          <ContextMenuItem data-gc="servidor.menu-do-servidor.context-menu-item--6" onSelect={() => openGuildProfile(guild.id)}>
+            {t("servidor.perfilNoServidor.titulo")} <InfinityIcon data-gc="servidor.menu-do-servidor.infinity-icon" size={14} />
+          </ContextMenuItem>
+
           {can("MANAGE_GUILD") && (
-            <ContextMenuItem data-gc="servidor.menu-do-servidor.context-menu-item--6" onSelect={() => openSettings(guild.id, "profile")}>
+            <ContextMenuItem data-gc="servidor.menu-do-servidor.context-menu-item--7" onSelect={() => openSettings(guild.id, "profile")}>
               {t("servidor.menu.editarPerfil")} <UserRoundPen data-gc="servidor.menu-do-servidor.user-round-pen" size={14} />
             </ContextMenuItem>
           )}
 
-          <ContextMenuItem data-gc="servidor.menu-do-servidor.context-menu-item--7" onSelect={() => openSettings(guild.id)}>
+          <ContextMenuItem data-gc="servidor.menu-do-servidor.context-menu-item--8" onSelect={() => openSettings(guild.id)}>
             {t("servidor.menu.configuracoes")} <Settings data-gc="servidor.menu-do-servidor.settings" size={14} />
           </ContextMenuItem>
 
           <ContextMenuSeparator data-gc="servidor.menu-do-servidor.context-menu-separator--3" />
 
           {!guild.isOwner && (
-            <ContextMenuItem data-gc="servidor.menu-do-servidor.context-menu-item--8" danger onSelect={() => void leaveCommunity()}>
+            <ContextMenuItem data-gc="servidor.menu-do-servidor.context-menu-item--9" danger onSelect={() => void leaveCommunity()}>
               {t("servidor.menu.sair")} <DoorOpen data-gc="servidor.menu-do-servidor.door-open" size={14} />
             </ContextMenuItem>
           )}
 
-          <ContextMenuItem data-gc="servidor.menu-do-servidor.context-menu-item--9" danger onSelect={() => setReporting(true)}>
+          <ContextMenuItem data-gc="servidor.menu-do-servidor.context-menu-item--10" danger onSelect={() => setReporting(true)}>
             {t("servidor.menu.denunciar")} <Flag data-gc="servidor.menu-do-servidor.flag" size={14} />
           </ContextMenuItem>
 
           <ContextMenuSeparator data-gc="servidor.menu-do-servidor.context-menu-separator--4" />
 
-          <ContextMenuItem data-gc="servidor.menu-do-servidor.context-menu-item--10"
+          <ContextMenuItem data-gc="servidor.menu-do-servidor.context-menu-item--11"
             onSelect={() => {
               void copyText(guild.id);
               toast.success(t("servidor.menu.idCopiado"));

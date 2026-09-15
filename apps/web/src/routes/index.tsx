@@ -8,6 +8,7 @@ import { Splash } from "~/features/app/components/Splash";
 import { useSendQueue } from "~/features/conversa/hooks/use-fila-de-envio";
 
 import { CallReceived } from "~/features/voz/components/ChamadaRecebida";
+import { BotModal } from "~/features/conversa/components/BotModal";
 import { FloatingScreenShare } from "~/features/voz/components/FloatingScreenShare";
 import { ThemeOffNotice } from "~/features/configuracoes/components/AvisoDeTemaDesligado";
 import { StudioWindow } from "~/features/configuracoes/components/estudio/JanelaDoEstudio";
@@ -164,6 +165,7 @@ export const AppRoutes: React.FC = () => {
     <CursorsWindow data-gc="routes.cursors-window" />
     <ThemeOffNotice data-gc="routes.theme-off-notice" />
     <CallReceived data-gc="routes.call-received" />
+    <BotModal data-gc="routes.bot-modal" />
     <LinksDoDesktop data-gc="routes.links-do-desktop" />
   </BrowserRouter>
   );

@@ -103,9 +103,17 @@ api.interceptors.response.use(
       }
     }
 
+    if ((error.response?.data as { reason?: string } | undefined)?.reason === "premium") onPremiumRequired?.();
+
     return Promise.reject(error);
   },
 );
+
+let onPremiumRequired: (() => void) | null = null;
+
+export const setPremiumRequiredHandler = (handler: (() => void) | null) => {
+  onPremiumRequired = handler;
+};
 
 export function apiErrorMessage(error: unknown, fallback = "Algo deu errado"): string {
   if (axios.isAxiosError(error)) {

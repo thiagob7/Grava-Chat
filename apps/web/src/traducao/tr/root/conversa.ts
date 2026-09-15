@@ -15,6 +15,16 @@ export const conversa = {
     carregando: "Bağlantının ardında ne var bakıyorum…",
     destino: "{{destino}} adresine gider",
   },
+  botComponents: {
+    noResponse: "Bot yanıt vermedi.",
+    choose: "Bir seçenek belirle",
+    onlyYou: "Bunu yalnızca sen görebilirsin",
+    dismiss: "Kapat",
+    formFrom: "{{nome}} formu",
+    optional: "isteğe bağlı",
+    yes: "Evet",
+    no: "Hayır",
+  },
   reacao: {
     carregando: "{{emoji}} ile kimin tepki verdiğine bakıyorum…",
     uma: "{{nome}} {{emoji}} ile tepki verdi",
@@ -141,6 +151,7 @@ export const conversa = {
   },
 
   falha: {
+    premium: "Teslim edilmedi — bu Infinity'ye özel",
     tentarDeNovo: "Yeniden dene",
     erro: "İletilmedi",
     semConexao: "İletilmedi — bağlantın yok",

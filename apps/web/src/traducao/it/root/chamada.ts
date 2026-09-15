@@ -85,12 +85,14 @@ export const chamada = {
     quadros: "{{quadros}} FPS",
     qualidadeDica: "La risoluzione è un limite: una finestra più piccola mantiene la sua dimensione. Più risoluzione e fotogrammi richiedono più banda, tua e di chi guarda. Vale anche per la trasmissione in corso.",
   },
+  cameraLimit: "La chiamata ha già {{limite}} fotocamere accese. Aspetta che qualcuno spenga la sua.",
   live: {
     etiqueta: "In diretta",
     etiquetaMaiuscula: "IN DIRETTA",
     assistir: "Guarda la diretta",
     assistirPessoa: "Guarda {{nome}}",
     pararDeAssistir: "Smetti di guardare",
+    conectando: "Connessione alla trasmissione…",
   },
   membro: {
     mudarMeuApelido: "Cambia il mio soprannome",

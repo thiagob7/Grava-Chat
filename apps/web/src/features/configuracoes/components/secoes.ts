@@ -2,6 +2,7 @@
 
 export type Section =
   | "account"
+  | "subscription"
   | "privacy"
   | "voice"
   | "video"
@@ -106,4 +107,5 @@ export const SUBSECTIONS: Record<Section, SubSection[]> = {
   desktop: [],
   shortcuts: [],
   advanced: [],
+  subscription: [],
 };

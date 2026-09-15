@@ -15,6 +15,16 @@ export const conversa = {
     carregando: "링크에 뭐가 있는지 보는 중…",
     destino: "{{destino}}(으)로 갑니다",
   },
+  botComponents: {
+    noResponse: "봇이 응답하지 않았습니다.",
+    choose: "옵션을 선택하세요",
+    onlyYou: "나만 볼 수 있어요",
+    dismiss: "닫기",
+    formFrom: "{{nome}}의 양식",
+    optional: "선택 사항",
+    yes: "예",
+    no: "아니요",
+  },
   reacao: {
     carregando: "{{emoji}}로 반응한 사람을 보는 중…",
     uma: "{{nome}}님이 {{emoji}}로 반응했습니다",
@@ -141,6 +151,7 @@ export const conversa = {
   },
 
   falha: {
+    premium: "전송 실패 — Infinity 전용 기능입니다",
     tentarDeNovo: "다시 시도",
     erro: "전송되지 않음",
     semConexao: "전송되지 않음: 연결이 없습니다",

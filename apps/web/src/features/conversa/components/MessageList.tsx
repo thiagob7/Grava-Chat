@@ -193,7 +193,7 @@ export const MessageList: React.FC<MessageListProps> = ({
   }, [fresh, messages]);
 
   const markCurrentRead = () => {
-    const last = messages.findLast((m) => !m.pending && !m.failed);
+    const last = messages.findLast((m) => !m.pending && !m.failed && !m.ephemeral);
     if (last) markRead(channelId, last.id);
   };
 
