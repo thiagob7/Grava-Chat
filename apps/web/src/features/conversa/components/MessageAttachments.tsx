@@ -13,7 +13,7 @@ import {
   itemColumns,
 } from "~/features/conversa/lib/grade-de-anexos";
 import { ImageMenu } from "~/features/conversa/components/MenuDaImagem";
-import { useLightbox } from "~/stores/lightbox";
+import { useLightbox, type LightboxMessage } from "~/stores/lightbox";
 import { useAppearance } from "~/features/configuracoes/stores/aparencia";
 import { useTranslation } from "~/traducao";
 import { flx } from "~/lib/compat-de-tema";
@@ -23,12 +23,21 @@ import { cn } from "~/lib/utils";
 interface MessageAttachmentsProps {
   attachments: Attachment[];
   onRemove?: (attachment: Attachment) => void;
+  source?: LightboxMessage;
 }
+
+const ImageSource = React.createContext<LightboxMessage | null>(null);
 
 const MAX_W = MAX_IMAGE_W;
 const MAX_H = MAX_IMAGE_H;
 
-export const MessageAttachments: React.FC<MessageAttachmentsProps> = ({
+export const MessageAttachments: React.FC<MessageAttachmentsProps> = ({ source, ...props }) => (
+  <ImageSource.Provider value={source ?? null}>
+    <MessageAttachmentsBody data-gc="conversa.message-attachments.message-attachments-body" {...props} />
+  </ImageSource.Provider>
+);
+
+const MessageAttachmentsBody: React.FC<Omit<MessageAttachmentsProps, "source">> = ({
   attachments,
   onRemove,
 }) => {
@@ -163,6 +172,7 @@ const WithSpoiler: React.FC<{ attachment: Attachment; children: React.ReactNode 
 const ImageAttachment: React.FC<{ attachment: Attachment }> = ({ attachment }) => {
   const { t } = useTranslation();
   const open = useLightbox((s) => s.open);
+  const source = React.useContext(ImageSource);
 
   const measure =
     attachment.width && attachment.height
@@ -175,7 +185,7 @@ const ImageAttachment: React.FC<{ attachment: Attachment }> = ({ attachment }) =
   return (
     <ImageMenu data-gc="conversa.message-attachments.image-menu" attachment={attachment}>
       <button data-gc="conversa.message-attachments.button--2"
-        onClick={() => open(attachment.url, attachment.description || attachment.filename, { name: attachment.filename, size: attachment.size })}
+        onClick={() => open(attachment.url, attachment.description || attachment.filename, { name: attachment.filename, size: attachment.size, id: attachment.id }, source)}
         aria-label={t("conversa.anexos.ver", { arquivo: attachment.filename })}
         className="block max-w-full overflow-hidden rounded-lg transition hover:brightness-110"
         style={measure ? { width: measure.width } : { maxWidth: MAX_W }}
@@ -196,12 +206,13 @@ const ImageAttachment: React.FC<{ attachment: Attachment }> = ({ attachment }) =
 const GridImage: React.FC<{ attachment: Attachment }> = ({ attachment }) => {
   const { t } = useTranslation();
   const open = useLightbox((s) => s.open);
+  const source = React.useContext(ImageSource);
 
   return (
     <ImageMenu data-gc="conversa.message-attachments.image-menu--2" attachment={attachment}>
       <button data-gc="conversa.message-attachments.button--3"
         type="button"
-        onClick={() => open(attachment.url, attachment.description || attachment.filename)}
+        onClick={() => open(attachment.url, attachment.description || attachment.filename, { name: attachment.filename, size: attachment.size, id: attachment.id }, source)}
         aria-label={t("conversa.anexos.ver", { arquivo: attachment.filename })}
         className="block aspect-square overflow-hidden rounded transition hover:brightness-110"
       >
