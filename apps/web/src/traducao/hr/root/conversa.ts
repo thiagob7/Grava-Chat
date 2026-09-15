@@ -21,6 +21,8 @@ export const conversa = {
     duas: "{{primeiro}} i {{segundo}} reagirali su s {{emoji}}",
     varias: "{{nomes}} i još {{quantos}} reagiralo je s {{emoji}}",
     dicaSuper: "Drži za super reakciju",
+    verTodas: "Click to see all reactions",
+    titulo: "Reactions",
   },
   recado: {
     gravar: "Snimi glasovnu poruku",
@@ -67,6 +69,7 @@ export const conversa = {
     apagarAcao: "Izbriši",
     citacaoAnexo: "klikni da vidiš privitak",
     citacaoSumiu: "Izvorne poruke više nema ovdje.",
+    encaminhada: "Proslijeđeno",
     encaminhadaDe: "Proslijeđeno iz",
     irParaOriginal: "Na izvornik",
     bloqueadas: "{{quantas}} blokiranih poruka",

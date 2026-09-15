@@ -21,6 +21,8 @@ export const conversa = {
     duas: "{{primeiro}}님과 {{segundo}}님이 {{emoji}}로 반응했습니다",
     varias: "{{nomes}}님 외 {{quantos}}명이 {{emoji}}로 반응했습니다",
     dicaSuper: "길게 눌러 슈퍼 반응",
+    verTodas: "Click to see all reactions",
+    titulo: "Reactions",
   },
   recado: {
     gravar: "음성 메모 녹음",
@@ -67,6 +69,7 @@ export const conversa = {
     apagarAcao: "삭제",
     citacaoAnexo: "클릭하면 첨부 파일을 볼 수 있어요",
     citacaoSumiu: "원래 메시지는 더 이상 여기 없습니다.",
+    encaminhada: "전달됨",
     encaminhadaDe: "전달됨:",
     irParaOriginal: "원본으로 이동",
     bloqueadas: "차단된 메시지 {{quantas}}개",

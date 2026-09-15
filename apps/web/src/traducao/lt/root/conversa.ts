@@ -21,6 +21,8 @@ export const conversa = {
     duas: "{{primeiro}} ir {{segundo}} reagavo su {{emoji}}",
     varias: "{{nomes}} ir dar {{quantos}} reagavo su {{emoji}}",
     dicaSuper: "Palaikykite super reakcijai",
+    verTodas: "Click to see all reactions",
+    titulo: "Reactions",
   },
   recado: {
     gravar: "Įrašyti balso žinutę",
@@ -67,6 +69,7 @@ export const conversa = {
     apagarAcao: "Ištrinti",
     citacaoAnexo: "spustelėkite, kad pamatytumėte priedą",
     citacaoSumiu: "Pirminės žinutės čia nebėra.",
+    encaminhada: "Persiųsta",
     encaminhadaDe: "Persiųsta iš",
     irParaOriginal: "Į originalą",
     bloqueadas: "{{quantas}} užblokuotų žinučių",
