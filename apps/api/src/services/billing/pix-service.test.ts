@@ -1,33 +1,27 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 const USER = "6a8781da7415b08f427be1a4";
-type Charge = { id: string; userId: string; interval: string; days: number; amount: number; mpPaymentId: string | null; qrCode: string | null; qrCodeBase64: string | null; status: string; expiresAt: Date; paidAt: Date | null; createdAt: Date };
+type Charge = { id: string; userId: string; interval: string; days: number; amount: number; mpPaymentId: string | null; mpOrderId: string | null; qrCode: string | null; qrCodeBase64: string | null; status: string; expiresAt: Date; paidAt: Date | null; createdAt: Date };
 
 let charges: Charge[];
-let mpStatus = "pending";
+let mpStatus = "created";
 let mpAmount = 18;
 const passes: { sourceId: string; days: number }[] = [];
 
 vi.mock("~/lib/mercadopago.js", () => ({
   mercadoPagoEnabled: () => true,
-  createPixPayment: async (args: { externalReference: string }) => ({
-    id: `mp-${args.externalReference}`,
-    status: "pending",
-    amount: 18,
+  createPixOrder: async (args: { externalReference: string; amountCents: number }) => ({
+    id: `ord-${args.externalReference}`,
+    status: "created",
+    amountCents: args.amountCents,
     externalReference: args.externalReference,
-    qrCode: "00020126pix",
-    qrCodeBase64: "base64",
+    qrData: "00020126pix",
   }),
-  getPayment: async (id: string) => ({
-    id,
-    status: mpStatus,
-    amount: mpAmount,
-    externalReference: charges.find((c) => c.mpPaymentId === id)?.id ?? null,
-  }),
-}));
-
-vi.mock("~/repositories/user-repository.js", () => ({
-  userRepository: { findById: async () => ({ id: USER, email: "pessoa@exemplo.com" }) },
+  getOrder: async (id: string) => {
+    const charge = charges.find((c) => c.mpOrderId === id);
+    return { id, status: mpStatus, amountCents: mpAmount * 100, externalReference: charge?.id ?? null, qrData: null };
+  },
+  getPayment: async () => null,
 }));
 
 vi.mock("./billing-service.js", () => ({
@@ -37,13 +31,14 @@ vi.mock("./billing-service.js", () => ({
 vi.mock("~/repositories/billing-repository.js", () => ({
   billingRepository: {
     createPixCharge: async (data: Omit<Charge, "id" | "status" | "mpPaymentId" | "qrCode" | "qrCodeBase64" | "paidAt" | "createdAt">) => {
-      const row: Charge = { ...data, id: `c${charges.length + 1}`, status: "pending", mpPaymentId: null, qrCode: null, qrCodeBase64: null, paidAt: null, createdAt: new Date() };
+      const row: Charge = { ...data, id: `c${charges.length + 1}`, status: "pending", mpPaymentId: null, mpOrderId: null, qrCode: null, qrCodeBase64: null, paidAt: null, createdAt: new Date() };
       charges.push(row);
       return row;
     },
     updatePixCharge: async (id: string, data: Partial<Charge>) => Object.assign(charges.find((c) => c.id === id)!, data),
     pixCharge: async (id: string) => charges.find((c) => c.id === id) ?? null,
     pixChargeByPayment: async (id: string) => charges.find((c) => c.mpPaymentId === id) ?? null,
+    pixChargeByOrder: async (id: string) => charges.find((c) => c.mpOrderId === id) ?? null,
     openPixCharge: async (userId: string, interval: string, now: Date) =>
       charges.find((c) => c.userId === userId && c.interval === interval && c.status === "pending" && c.expiresAt > now) ?? null,
     pendingPixCharges: async () => charges.filter((c) => c.status === "pending"),
@@ -55,7 +50,7 @@ vi.mock("~/repositories/billing-repository.js", () => ({
   },
 }));
 
-const { pixService, paymentMatchesCharge } = await import("./pix-service.js");
+const { pixService, paymentMatchesCharge, orderMatchesCharge } = await import("./pix-service.js");
 
 beforeEach(() => {
   charges = [];
@@ -76,18 +71,18 @@ describe("Pix avulso pelo Mercado Pago", () => {
 
   it("pago confirma uma vez só, mesmo com aviso e consulta chegando juntos", async () => {
     const view = await pixService.create(USER, { interval: "month" });
-    mpStatus = "approved";
+    mpStatus = "processed";
 
-    await Promise.all([pixService.handleNotification(`mp-${view.id}`), pixService.status(USER, view.id)]);
-    await pixService.handleNotification(`mp-${view.id}`);
+    await Promise.all([pixService.handleNotification(`ord-${view.id}`), pixService.status(USER, view.id)]);
+    await pixService.handleNotification(`ord-${view.id}`);
 
     expect(charges[0]!.status).toBe("paid");
-    expect(passes).toEqual([expect.objectContaining({ sourceId: `mp:mp-${view.id}`, days: 30 })]);
+    expect(passes).toEqual([expect.objectContaining({ sourceId: `mpo:ord-${view.id}`, days: 30 })]);
   });
 
   it("valor diferente não libera nada", async () => {
     const view = await pixService.create(USER, { interval: "year" });
-    mpStatus = "approved";
+    mpStatus = "processed";
     mpAmount = 1;
 
     const status = await pixService.status(USER, view.id);
@@ -106,6 +101,13 @@ describe("Pix avulso pelo Mercado Pago", () => {
   it("outra pessoa não consulta o Pix", async () => {
     const view = await pixService.create(USER, { interval: "month" });
     await expect(pixService.status("6a8781f57415b08f427be1ad", view.id)).rejects.toThrow(/não encontrado/);
+  });
+
+  it("ordem só vale processada, da cobrança e com o valor certo", () => {
+    const charge = { id: "c1", amount: 1800 };
+    expect(orderMatchesCharge({ id: "o", status: "processed", amountCents: 1800, externalReference: "c1", qrData: null }, charge)).toBe(true);
+    expect(orderMatchesCharge({ id: "o", status: "created", amountCents: 1800, externalReference: "c1", qrData: null }, charge)).toBe(false);
+    expect(orderMatchesCharge({ id: "o", status: "processed", amountCents: 1700, externalReference: "c1", qrData: null }, charge)).toBe(false);
   });
 
   it("confere referência e valor em centavos", () => {

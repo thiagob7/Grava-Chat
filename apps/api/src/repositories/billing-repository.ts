@@ -52,6 +52,10 @@ export const billingRepository = {
     return prisma.pixCharge.findUnique({ where: { id } });
   },
 
+  pixChargeByOrder(mpOrderId: string) {
+    return prisma.pixCharge.findUnique({ where: { mpOrderId } });
+  },
+
   pixChargeByPayment(mpPaymentId: string) {
     return prisma.pixCharge.findUnique({ where: { mpPaymentId } });
   },

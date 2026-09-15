@@ -66,7 +66,8 @@ const schema = z.object({
   MERCADOPAGO_CLIENT_ID: z.string().default(""),
   MERCADOPAGO_CLIENT_SECRET: z.string().default(""),
   MERCADOPAGO_WEBHOOK_SECRET: z.string().default(""),
-  MERCADOPAGO_NOTIFICATION_URL: z.string().default(""),
+  MERCADOPAGO_POS_EXTERNAL_ID: z.string().default(""),
+  MERCADOPAGO_STORE_ID: z.string().default(""),
 });
 
 const parsed = schema.safeParse(process.env);

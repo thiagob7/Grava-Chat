@@ -10,7 +10,7 @@ import {
 
 import { env } from "~/env.js";
 import { AppError, NotFoundError } from "~/lib/http.js";
-import { mercadoPagoEnabled, refundPayment } from "~/lib/mercadopago.js";
+import { mercadoPagoEnabled, refundOrder, refundPayment } from "~/lib/mercadopago.js";
 import { stripe, type Stripe } from "~/lib/stripe.js";
 import { announceUserUpdated } from "~/realtime/difusao.js";
 import { billingRepository } from "~/repositories/billing-repository.js";
@@ -46,8 +46,10 @@ function requireStripe(): Stripe {
 
 export const mercadoPagoPaymentOf = (sourceId: string) => (sourceId.startsWith("mp:") ? sourceId.slice(3) : null);
 
+export const mercadoPagoOrderOf = (sourceId: string) => (sourceId.startsWith("mpo:") ? sourceId.slice(4) : null);
+
 const refundable = (payment: { paymentIntentId: string | null; sourceId: string }) =>
-  Boolean(payment.paymentIntentId || mercadoPagoPaymentOf(payment.sourceId));
+  Boolean(payment.paymentIntentId || mercadoPagoPaymentOf(payment.sourceId) || mercadoPagoOrderOf(payment.sourceId));
 
 const toDate = (seconds: number | null | undefined) => (seconds ? new Date(seconds * 1000) : null);
 
@@ -214,9 +216,11 @@ export const billingService = {
       throw new AppError("Não há pagamento dentro dos 7 dias para reembolsar", 400);
     }
 
+    const mpOrderId = mercadoPagoOrderOf(payment.sourceId);
     const mpPaymentId = mercadoPagoPaymentOf(payment.sourceId);
-    if (mpPaymentId) {
-      await refundPayment(mpPaymentId);
+    if (mpOrderId || mpPaymentId) {
+      if (mpOrderId) await refundOrder(mpOrderId);
+      else await refundPayment(mpPaymentId!);
       await billingService.removeRecorded(payment);
       return billingService.status(userId);
     }
