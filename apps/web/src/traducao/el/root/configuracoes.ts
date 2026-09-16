@@ -51,7 +51,20 @@ export const configuracoes = {
     copiar: "Κάνε κλικ για αντιγραφή",
     copiado: "Αντιγράφηκε",
   },
+  appColors: {
+    title: "Χρώματα της εφαρμογής",
+    detail: "Διαλέξτε έως τρία χρώματα και όλη η εφαρμογή παίρνει αυτή τη διαβάθμιση.",
+    locked: "Ο επεξεργαστής χρωμάτων ανήκει στο {{plan}}.",
+    color: "Χρώμα {{number}}",
+    addColor: "Προσθήκη χρώματος",
+    removeColor: "Αφαίρεση χρώματος",
+    surprise: "Έκπληξέ με",
+    direction: "Κατεύθυνση διαβάθμισης",
+    intensity: "Ένταση",
+    reset: "Επαναφορά",
+  },
   subscription: {
+    colorsRow: "Επεξεργαστής χρωμάτων",
     seePlans: "Δείτε τα πακέτα",
     upgradeSubtitle: "Μεγαλύτερα όρια και αποκλειστικές λειτουργίες για γραφή, αρχεία και μετάδοση.",
     perMonth: "τον μήνα",
@@ -159,6 +172,7 @@ export const configuracoes = {
     administracao: "Διαχείριση",
   },
   secoes: {
+    coresDoApp: "Χρώματα της εφαρμογής",
     detalhesDeLogin: "Στοιχεία σύνδεσης",
     dispositivos: "Συσκευές",
     usuariosBloqueados: "Αποκλεισμένοι χρήστες",

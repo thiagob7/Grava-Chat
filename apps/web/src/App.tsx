@@ -19,6 +19,7 @@ import { VoiceAudioSink } from "~/features/voz/components/VoiceAudioSink";
 import { ScreenPicker } from "~/features/voz/components/SeletorDeTela";
 import { ImageViewer } from "~/components/VisualizadorDeImagem";
 import { useAppearanceApplied } from "~/features/configuracoes/hooks/use-aparencia";
+import { useAppColorsApplied } from "~/features/tema/hooks/use-app-colors";
 import { usePushToTalk } from "~/features/voz/hooks/use-push-to-talk";
 import { flxCls } from "~/lib/compat-de-tema";
 
@@ -35,6 +36,7 @@ export const queryClient = new QueryClient({
 export const App: React.FC = () => {
   usePushToTalk();
   useAppearanceApplied();
+  useAppColorsApplied();
 
   return (
     <ErrorBoundary where="aplicação">

@@ -51,7 +51,20 @@ export const configuracoes = {
     copiar: "Zum Kopieren klicken",
     copiado: "Kopiert",
   },
+  appColors: {
+    title: "App-Farben",
+    detail: "Wähle bis zu drei Farben, und die ganze App bekommt diesen Verlauf.",
+    locked: "Der Farbeditor gehört zu {{plan}}.",
+    color: "Farbe {{number}}",
+    addColor: "Farbe hinzufügen",
+    removeColor: "Farbe entfernen",
+    surprise: "Überrasch mich",
+    direction: "Verlaufsrichtung",
+    intensity: "Intensität",
+    reset: "Zurücksetzen",
+  },
   subscription: {
+    colorsRow: "Farbeditor der App",
     seePlans: "Pläne ansehen",
     upgradeSubtitle: "Höhere Grenzen und exklusive Funktionen zum Schreiben, Senden von Dateien und Übertragen.",
     perMonth: "pro Monat",
@@ -159,6 +172,7 @@ export const configuracoes = {
     administracao: "Verwaltung",
   },
   secoes: {
+    coresDoApp: "App-Farben",
     detalhesDeLogin: "Anmeldedaten",
     dispositivos: "Geräte",
     usuariosBloqueados: "Blockierte Nutzer",

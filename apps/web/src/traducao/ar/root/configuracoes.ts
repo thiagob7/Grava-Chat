@@ -51,7 +51,20 @@ export const configuracoes = {
     copiar: "انقر للنسخ",
     copiado: "تم النسخ",
   },
+  appColors: {
+    title: "ألوان التطبيق",
+    detail: "اختر حتى ثلاثة ألوان ليأخذ التطبيق كله هذا التدرج.",
+    locked: "محرر الألوان من مزايا {{plan}}.",
+    color: "اللون {{number}}",
+    addColor: "إضافة لون",
+    removeColor: "إزالة اللون",
+    surprise: "فاجئني",
+    direction: "اتجاه التدرج",
+    intensity: "الشدة",
+    reset: "إعادة الضبط",
+  },
   subscription: {
+    colorsRow: "محرر ألوان التطبيق",
     seePlans: "عرض الخطط",
     upgradeSubtitle: "حدود أعلى وميزات حصرية للكتابة وإرسال الملفات والبث.",
     perMonth: "شهريًا",
@@ -159,6 +172,7 @@ export const configuracoes = {
     administracao: "الإدارة",
   },
   secoes: {
+    coresDoApp: "ألوان التطبيق",
     detalhesDeLogin: "بيانات تسجيل الدخول",
     dispositivos: "الأجهزة",
     usuariosBloqueados: "المستخدمون المحظورون",

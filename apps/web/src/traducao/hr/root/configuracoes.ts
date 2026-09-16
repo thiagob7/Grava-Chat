@@ -51,7 +51,20 @@ export const configuracoes = {
     copiar: "Klikni za kopiranje",
     copiado: "Kopirano",
   },
+  appColors: {
+    title: "Boje aplikacije",
+    detail: "Odaberite do tri boje i cijela aplikacija dobiva taj gradijent.",
+    locked: "Uređivač boja dio je plana {{plan}}.",
+    color: "Boja {{number}}",
+    addColor: "Dodaj boju",
+    removeColor: "Ukloni boju",
+    surprise: "Iznenadi me",
+    direction: "Smjer gradijenta",
+    intensity: "Jačina",
+    reset: "Vrati zadano",
+  },
   subscription: {
+    colorsRow: "Uređivač boja aplikacije",
     seePlans: "Pogledaj planove",
     upgradeSubtitle: "Veća ograničenja i ekskluzivne značajke za pisanje, slanje datoteka i prijenos.",
     perMonth: "mjesečno",
@@ -159,6 +172,7 @@ export const configuracoes = {
     administracao: "Administracija",
   },
   secoes: {
+    coresDoApp: "Boje aplikacije",
     detalhesDeLogin: "Podaci za prijavu",
     dispositivos: "Uređaji",
     usuariosBloqueados: "Blokirani korisnici",

@@ -51,7 +51,20 @@ export const configuracoes = {
     copiar: "클릭해서 복사",
     copiado: "복사됨",
   },
+  appColors: {
+    title: "앱 색상",
+    detail: "최대 세 가지 색을 고르면 앱 전체가 그 그라데이션을 씁니다.",
+    locked: "색상 편집기는 {{plan}} 기능입니다.",
+    color: "색 {{number}}",
+    addColor: "색 추가",
+    removeColor: "색 제거",
+    surprise: "랜덤으로",
+    direction: "그라데이션 방향",
+    intensity: "강도",
+    reset: "초기화",
+  },
   subscription: {
+    colorsRow: "앱 색상 편집기",
     seePlans: "플랜 보기",
     upgradeSubtitle: "글쓰기, 파일 전송, 방송 한도가 커지고 전용 기능을 쓸 수 있어요.",
     perMonth: "월",
@@ -159,6 +172,7 @@ export const configuracoes = {
     administracao: "관리",
   },
   secoes: {
+    coresDoApp: "앱 색상",
     detalhesDeLogin: "로그인 정보",
     dispositivos: "기기",
     usuariosBloqueados: "차단한 사용자",

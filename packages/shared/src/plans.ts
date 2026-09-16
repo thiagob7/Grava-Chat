@@ -25,6 +25,7 @@ export interface PlanLimits {
   profileBadge: boolean;
   animatedProfile: boolean;
   expressionsAnywhere: boolean;
+  customColors: boolean;
   earlyAccess: boolean;
 }
 
@@ -42,6 +43,7 @@ export const PLAN_LIMITS: Record<Plan, PlanLimits> = {
     profileBadge: false,
     animatedProfile: false,
     expressionsAnywhere: false,
+    customColors: false,
     earlyAccess: false,
   },
   premium: {
@@ -57,6 +59,7 @@ export const PLAN_LIMITS: Record<Plan, PlanLimits> = {
     profileBadge: true,
     animatedProfile: true,
     expressionsAnywhere: true,
+    customColors: true,
     earlyAccess: true,
   },
 };

@@ -51,7 +51,20 @@ export const configuracoes = {
     copiar: "Dă clic ca să copiezi",
     copiado: "Copiat",
   },
+  appColors: {
+    title: "Culorile aplicației",
+    detail: "Alege până la trei culori și toată aplicația primește acel degrade.",
+    locked: "Editorul de culori face parte din {{plan}}.",
+    color: "Culoarea {{number}}",
+    addColor: "Adaugă culoare",
+    removeColor: "Elimină culoarea",
+    surprise: "Surprinde-mă",
+    direction: "Direcția degradeului",
+    intensity: "Intensitate",
+    reset: "Resetează",
+  },
   subscription: {
+    colorsRow: "Editorul de culori al aplicației",
     seePlans: "Vezi planurile",
     upgradeSubtitle: "Limite mai mari și funcții exclusive pentru scris, trimis fișiere și transmis.",
     perMonth: "pe lună",
@@ -159,6 +172,7 @@ export const configuracoes = {
     administracao: "Administrare",
   },
   secoes: {
+    coresDoApp: "Culorile aplicației",
     detalhesDeLogin: "Date de conectare",
     dispositivos: "Dispozitive",
     usuariosBloqueados: "Utilizatori blocați",

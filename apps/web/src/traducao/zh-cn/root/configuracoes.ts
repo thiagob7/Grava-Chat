@@ -51,7 +51,20 @@ export const configuracoes = {
     copiar: "点击复制",
     copiado: "已复制",
   },
+  appColors: {
+    title: "应用颜色",
+    detail: "最多选三种颜色，整个应用都会用这个渐变。",
+    locked: "颜色编辑器是 {{plan}} 的功能。",
+    color: "颜色 {{number}}",
+    addColor: "添加颜色",
+    removeColor: "移除颜色",
+    surprise: "随便来一个",
+    direction: "渐变方向",
+    intensity: "强度",
+    reset: "重置",
+  },
   subscription: {
+    colorsRow: "应用颜色编辑器",
     seePlans: "查看方案",
     upgradeSubtitle: "写消息、发文件和直播都有更高上限和专属功能。",
     perMonth: "每月",
@@ -159,6 +172,7 @@ export const configuracoes = {
     administracao: "管理",
   },
   secoes: {
+    coresDoApp: "应用颜色",
     detalhesDeLogin: "登录信息",
     dispositivos: "设备",
     usuariosBloqueados: "已屏蔽的用户",

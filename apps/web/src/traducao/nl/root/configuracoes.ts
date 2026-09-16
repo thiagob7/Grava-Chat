@@ -51,7 +51,20 @@ export const configuracoes = {
     copiar: "Klik om te kopiëren",
     copiado: "Gekopieerd",
   },
+  appColors: {
+    title: "App-kleuren",
+    detail: "Kies maximaal drie kleuren en de hele app krijgt dat verloop.",
+    locked: "De kleureneditor hoort bij {{plan}}.",
+    color: "Kleur {{number}}",
+    addColor: "Kleur toevoegen",
+    removeColor: "Kleur verwijderen",
+    surprise: "Verras me",
+    direction: "Richting van het verloop",
+    intensity: "Intensiteit",
+    reset: "Herstellen",
+  },
   subscription: {
+    colorsRow: "Kleureneditor van de app",
     seePlans: "Abonnementen bekijken",
     upgradeSubtitle: "Hogere limieten en exclusieve functies voor schrijven, bestanden sturen en streamen.",
     perMonth: "per maand",
@@ -159,6 +172,7 @@ export const configuracoes = {
     administracao: "Beheer",
   },
   secoes: {
+    coresDoApp: "App-kleuren",
     detalhesDeLogin: "Inloggegevens",
     dispositivos: "Apparaten",
     usuariosBloqueados: "Geblokkeerde gebruikers",

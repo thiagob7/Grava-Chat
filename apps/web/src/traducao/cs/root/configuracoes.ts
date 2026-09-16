@@ -51,7 +51,20 @@ export const configuracoes = {
     copiar: "Klikni pro kopírování",
     copiado: "Zkopírováno",
   },
+  appColors: {
+    title: "Barvy aplikace",
+    detail: "Vyberte až tři barvy a celá aplikace dostane tento přechod.",
+    locked: "Editor barev patří k {{plan}}.",
+    color: "Barva {{number}}",
+    addColor: "Přidat barvu",
+    removeColor: "Odebrat barvu",
+    surprise: "Překvap mě",
+    direction: "Směr přechodu",
+    intensity: "Intenzita",
+    reset: "Obnovit",
+  },
   subscription: {
+    colorsRow: "Editor barev aplikace",
     seePlans: "Zobrazit tarify",
     upgradeSubtitle: "Vyšší limity a exkluzivní funkce pro psaní, posílání souborů a vysílání.",
     perMonth: "měsíčně",
@@ -159,6 +172,7 @@ export const configuracoes = {
     administracao: "Správa",
   },
   secoes: {
+    coresDoApp: "Barvy aplikace",
     detalhesDeLogin: "Přihlašovací údaje",
     dispositivos: "Zařízení",
     usuariosBloqueados: "Blokovaní uživatelé",

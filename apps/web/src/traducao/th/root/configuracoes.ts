@@ -51,7 +51,20 @@ export const configuracoes = {
     copiar: "คลิกเพื่อคัดลอก",
     copiado: "คัดลอกแล้ว",
   },
+  appColors: {
+    title: "สีของแอป",
+    detail: "เลือกได้สูงสุดสามสี แล้วทั้งแอปจะใช้ไล่สีนั้น",
+    locked: "ตัวแก้ไขสีเป็นของ {{plan}}",
+    color: "สีที่ {{number}}",
+    addColor: "เพิ่มสี",
+    removeColor: "ลบสี",
+    surprise: "สุ่มให้หน่อย",
+    direction: "ทิศทางไล่สี",
+    intensity: "ความเข้ม",
+    reset: "รีเซ็ต",
+  },
   subscription: {
+    colorsRow: "ตัวแก้ไขสีของแอป",
     seePlans: "ดูแพ็กเกจ",
     upgradeSubtitle: "ขีดจำกัดที่สูงขึ้นและฟีเจอร์พิเศษสำหรับการเขียน ส่งไฟล์ และสตรีม",
     perMonth: "ต่อเดือน",
@@ -159,6 +172,7 @@ export const configuracoes = {
     administracao: "การดูแลระบบ",
   },
   secoes: {
+    coresDoApp: "สีของแอป",
     detalhesDeLogin: "ข้อมูลเข้าสู่ระบบ",
     dispositivos: "อุปกรณ์",
     usuariosBloqueados: "ผู้ใช้ที่ถูกบล็อก",

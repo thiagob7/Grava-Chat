@@ -51,7 +51,20 @@ export const configuracoes = {
     copiar: "Klik untuk menyalin",
     copiado: "Disalin",
   },
+  appColors: {
+    title: "Warna aplikasi",
+    detail: "Pilih hingga tiga warna dan seluruh aplikasi memakai gradasi itu.",
+    locked: "Editor warna adalah fitur {{plan}}.",
+    color: "Warna {{number}}",
+    addColor: "Tambah warna",
+    removeColor: "Hapus warna",
+    surprise: "Kejutkan aku",
+    direction: "Arah gradasi",
+    intensity: "Intensitas",
+    reset: "Setel ulang",
+  },
   subscription: {
+    colorsRow: "Editor warna aplikasi",
     seePlans: "Lihat paket",
     upgradeSubtitle: "Batas lebih besar dan fitur eksklusif untuk menulis, mengirim file, dan streaming.",
     perMonth: "per bulan",
@@ -159,6 +172,7 @@ export const configuracoes = {
     administracao: "Administrasi",
   },
   secoes: {
+    coresDoApp: "Warna aplikasi",
     detalhesDeLogin: "Detail masuk",
     dispositivos: "Perangkat",
     usuariosBloqueados: "Pengguna diblokir",

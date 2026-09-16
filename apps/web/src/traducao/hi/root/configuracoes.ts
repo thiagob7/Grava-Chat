@@ -51,7 +51,20 @@ export const configuracoes = {
     copiar: "कॉपी करने के लिए क्लिक करें",
     copiado: "कॉपी हो गया",
   },
+  appColors: {
+    title: "ऐप के रंग",
+    detail: "तीन रंग तक चुनें और पूरा ऐप वही ग्रेडिएंट ले लेगा।",
+    locked: "रंग संपादक {{plan}} का हिस्सा है।",
+    color: "रंग {{number}}",
+    addColor: "रंग जोड़ें",
+    removeColor: "रंग हटाएँ",
+    surprise: "चौंका दो",
+    direction: "ग्रेडिएंट की दिशा",
+    intensity: "तीव्रता",
+    reset: "रीसेट करें",
+  },
   subscription: {
+    colorsRow: "ऐप का रंग संपादक",
     seePlans: "प्लान देखें",
     upgradeSubtitle: "लिखने, फ़ाइल भेजने और स्ट्रीम करने के लिए ज़्यादा सीमाएँ और खास सुविधाएँ।",
     perMonth: "प्रति माह",
@@ -159,6 +172,7 @@ export const configuracoes = {
     administracao: "प्रशासन",
   },
   secoes: {
+    coresDoApp: "ऐप के रंग",
     detalhesDeLogin: "लॉगिन विवरण",
     dispositivos: "डिवाइस",
     usuariosBloqueados: "अवरुद्ध उपयोगकर्ता",

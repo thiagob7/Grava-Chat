@@ -51,7 +51,20 @@ export const configuracoes = {
     copiar: "Kattints a másoláshoz",
     copiado: "Másolva",
   },
+  appColors: {
+    title: "Alkalmazás színei",
+    detail: "Válassz legfeljebb három színt, és az egész app ezt a színátmenetet kapja.",
+    locked: "A színszerkesztő az {{plan}} része.",
+    color: "{{number}}. szín",
+    addColor: "Szín hozzáadása",
+    removeColor: "Szín eltávolítása",
+    surprise: "Lepj meg",
+    direction: "Színátmenet iránya",
+    intensity: "Erősség",
+    reset: "Visszaállítás",
+  },
   subscription: {
+    colorsRow: "Az app színszerkesztője",
     seePlans: "Csomagok megtekintése",
     upgradeSubtitle: "Nagyobb korlátok és exkluzív funkciók íráshoz, fájlküldéshez és közvetítéshez.",
     perMonth: "havonta",
@@ -159,6 +172,7 @@ export const configuracoes = {
     administracao: "Adminisztráció",
   },
   secoes: {
+    coresDoApp: "Alkalmazás színei",
     detalhesDeLogin: "Bejelentkezési adatok",
     dispositivos: "Eszközök",
     usuariosBloqueados: "Letiltott felhasználók",
