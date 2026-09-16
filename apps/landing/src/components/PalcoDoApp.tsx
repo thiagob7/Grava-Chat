@@ -1,4 +1,4 @@
-import { Hash, Mic, Monitor, ChevronDown, Plus, Smile } from "lucide-react";
+import { Crown, Hash, Mic, Monitor, ChevronDown, Plus, Smile } from "lucide-react";
 
 import { StatusIcon, type StatusKind } from "~/components/StatusIcon";
 
@@ -11,12 +11,27 @@ const CHAT = [
   { name: "Thi", color: "#6467f2", text: "ouvindo demais, teu microfone tá ótimo 🎧" },
 ];
 
-const MEMBERS: { name: string; color: string; state: StatusKind }[] = [
-  { name: "Caio", color: "#e0568a", state: "online" },
-  { name: "Léo", color: "#4f8cf0", state: "online" },
-  { name: "Thi", color: "#6467f2", state: "dnd" },
-  { name: "Max", color: "#f0a63c", state: "idle" },
+interface Person {
+  name: string;
+  color: string;
+  state: StatusKind;
+  roleColor?: string;
+  owner?: boolean;
+}
+
+const CAIO: Person = { name: "Caio", color: "#e0568a", state: "online" };
+const LEO: Person = { name: "Léo", color: "#4f8cf0", state: "online" };
+const THI: Person = { name: "Thi", color: "#6467f2", state: "dnd", roleColor: "#6467f2", owner: true };
+const MAX: Person = { name: "Max", color: "#f0a63c", state: "idle" };
+const RAFA: Person = { name: "Rafa", color: "#3ba55c", state: "offline" };
+
+const GROUPS: { title: string; people: Person[]; dim?: boolean }[] = [
+  { title: "Fundadores — 1", people: [THI] },
+  { title: "Online — 3", people: [CAIO, LEO, MAX] },
+  { title: "Offline — 1", people: [RAFA], dim: true },
 ];
+
+const VOICE = [CAIO, LEO];
 
 const STEP_S = 0.45;
 const START_S = 0.35;
@@ -87,7 +102,7 @@ export const AppStage = () => (
             </div>
 
             <div className="space-y-1 pl-6 pt-1">
-              {MEMBERS.slice(0, 2).map(({ name, color }, i) => (
+              {VOICE.map(({ name, color }, i) => (
                 <div key={name} className="flex items-center gap-2">
                   <span className="relative flex">
                     <Dot color={color} letter={name[0]!} />
@@ -138,7 +153,7 @@ export const AppStage = () => (
               style={{ animationDelay: `${START_S + CHAT.length * STEP_S}s` }}
             >
               <span className="flex -space-x-1.5">
-                {MEMBERS.slice(0, 2).map(({ name, color }) => (
+                {VOICE.map(({ name, color }) => (
                   <span key={name} className="ring-2 ring-surface-2">
                     <Dot color={color} letter={name[0]!} />
                   </span>
@@ -169,24 +184,35 @@ export const AppStage = () => (
           </div>
         </div>
 
-        <div className="hidden w-40 shrink-0 flex-col gap-1 border-l border-line bg-surface-1 p-3 lg:flex">
-          <p className="px-1 pb-1 text-[11px] font-semibold uppercase tracking-wide text-ink-faint">
-            Na sala — 4
-          </p>
-          {MEMBERS.map(({ name, color, state }, i) => (
-            <div
-              key={name}
-              className="surge flex items-center gap-2 rounded-md px-1 py-1"
-              style={{ animationDelay: `${START_S + i * 0.1}s` }}
-            >
-              <span className="relative">
-                <Dot color={color} letter={name[0]!} />
-                <span className="absolute -bottom-0.5 -right-0.5 flex rounded-full bg-surface-1 p-0.5">
-                  <StatusIcon kind={state} uid={name} />
-                </span>
-              </span>
-              <span className="truncate text-sm font-medium text-ink-muted">{name}</span>
-            </div>
+        <div className="hidden w-40 shrink-0 flex-col overflow-hidden border-l border-line bg-surface-1 px-2 py-3 lg:flex">
+          {GROUPS.map(({ title, people, dim }) => (
+            <section key={title} className="mb-4">
+              <h3 className="mb-1 px-2 text-[11px] font-semibold uppercase tracking-wide text-ink-faint">
+                {title}
+              </h3>
+
+              {people.map(({ name, color, state, roleColor, owner }, i) => (
+                <div
+                  key={name}
+                  className={`surge flex items-center gap-2.5 rounded px-2 py-1 ${dim ? "opacity-40" : ""}`}
+                  style={{ animationDelay: `${START_S + i * 0.1}s` }}
+                >
+                  <span className="relative">
+                    <Dot color={color} letter={name[0]!} />
+                    <span className="absolute -bottom-0.5 -right-0.5 flex rounded-full bg-surface-1 p-0.5">
+                      <StatusIcon kind={state} uid={name} />
+                    </span>
+                  </span>
+                  <span
+                    className={`min-w-0 truncate text-sm font-medium ${roleColor ? "" : "text-ink-muted"}`}
+                    style={roleColor ? { color: roleColor } : undefined}
+                  >
+                    {name}
+                  </span>
+                  {owner && <Crown size={13} fill="currentColor" className="shrink-0 text-[#eac532]" />}
+                </div>
+              ))}
+            </section>
           ))}
         </div>
       </div>
