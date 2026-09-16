@@ -32,6 +32,10 @@ export const billingRepository = {
     return prisma.billingPayment.findFirst({ where: { userId }, orderBy: { paidAt: "desc" } });
   },
 
+  recentPayments(userId: string, take = 10) {
+    return prisma.billingPayment.findMany({ where: { userId }, orderBy: { paidAt: "desc" }, take });
+  },
+
   createPayment(data: Prisma.BillingPaymentCreateInput) {
     return prisma.billingPayment.create({ data });
   },

@@ -12,6 +12,7 @@ import { reportService } from "~/services/denuncia-service.js";
 import { githubService } from "~/services/github-service.js";
 import { systemService } from "~/services/sistema-service.js";
 import { planService } from "~/services/plan-service.js";
+import { billingService } from "~/services/billing/billing-service.js";
 
 const announcement = z.object({
   content: z.string().trim().min(1).max(4000),
@@ -219,6 +220,7 @@ export async function adminRoutes(app: FastifyInstance) {
     const actor = await requireAdmin(req, "premium");
     const { userId } = z.object({ userId: objectId }).parse(req.params);
 
+    await billingService.endSubscription(userId);
     const user = await planService.revoke(userId);
     await announceUserUpdated(user);
     await adminService.log(actor.userId, "revoked-premium", { userId });

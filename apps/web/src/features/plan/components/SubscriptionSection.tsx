@@ -71,10 +71,10 @@ export const SubscriptionSection: React.FC = () => {
                 : t("configuracoes.subscription.free")}
           </p>
 
-          {subscription?.status === "past_due" && (
+          {premium && subscription?.status === "past_due" && (
             <p data-gc="plan.subscription-section.p--2" className="text-aviso">{t("configuracoes.subscription.pastDue")}</p>
           )}
-          {subscription?.currentPeriodEnd && subscription.status !== "past_due" && (
+          {premium && subscription?.currentPeriodEnd && subscription.status !== "past_due" && (
             <p data-gc="plan.subscription-section.p--3" className="text-ink-muted">
               {subscription.cancelAtPeriodEnd
                 ? t("configuracoes.subscription.endsAt", { date: date(subscription.currentPeriodEnd) })
