@@ -1,19 +1,21 @@
 import { Hash, Mic, Monitor, ChevronDown, Plus, Smile } from "lucide-react";
 
+import { StatusIcon, type StatusKind } from "~/components/StatusIcon";
+
 const CHANNELS = ["avisos", "geral", "jogatina", "musica"];
 
 const CHAT = [
-  { name: "Bia", color: "#e0568a", text: "gente, tô subindo o servidor de voz agora" },
+  { name: "Caio", color: "#e0568a", text: "gente, tô subindo o servidor de voz agora" },
   { name: "Léo", color: "#4f8cf0", text: "opa, entra lá que eu tô esperando" },
-  { name: "Bia", color: "#e0568a", text: "cheguei! tá ouvindo?" },
+  { name: "Caio", color: "#e0568a", text: "cheguei! tá ouvindo?" },
   { name: "Thi", color: "#6467f2", text: "ouvindo demais, teu microfone tá ótimo 🎧" },
 ];
 
-const MEMBERS = [
-  { name: "Bia", color: "#e0568a", state: "online" },
+const MEMBERS: { name: string; color: string; state: StatusKind }[] = [
+  { name: "Caio", color: "#e0568a", state: "online" },
   { name: "Léo", color: "#4f8cf0", state: "online" },
-  { name: "Thi", color: "#6467f2", state: "online" },
-  { name: "Duda", color: "#f0a63c", state: "ausente" },
+  { name: "Thi", color: "#6467f2", state: "dnd" },
+  { name: "Max", color: "#f0a63c", state: "idle" },
 ];
 
 const STEP_S = 0.45;
@@ -41,7 +43,7 @@ export const AppStage = () => (
       <div className="flex h-[22rem] text-left sm:h-[26rem]">
         <div className="flex w-14 shrink-0 flex-col items-center gap-2 border-r border-line bg-surface-1 py-3">
           <span className="flex size-9 items-center justify-center rounded-xl bg-brand text-sm font-black text-white">
-            G
+            A
           </span>
           <span className="h-px w-6 rounded bg-surface-3" />
           {["#4f8cf0", "#e0568a", "#f0a63c"].map((color, i) => (
@@ -151,7 +153,7 @@ export const AppStage = () => (
                   />
                 ))}
               </span>
-              <span className="text-xs text-ink-faint">Bia e Léo estão digitando…</span>
+              <span className="text-xs text-ink-faint">Caio e Léo estão digitando…</span>
             </div>
           </div>
 
@@ -179,11 +181,9 @@ export const AppStage = () => (
             >
               <span className="relative">
                 <Dot color={color} letter={name[0]!} />
-                <span
-                  className={`absolute -bottom-0.5 -right-0.5 size-2.5 rounded-full ring-2 ring-surface-1 ${
-                    state === "online" ? "bg-online" : "bg-[#f0a63c]"
-                  }`}
-                />
+                <span className="absolute -bottom-0.5 -right-0.5 flex rounded-full bg-surface-1 p-0.5">
+                  <StatusIcon kind={state} uid={name} />
+                </span>
               </span>
               <span className="truncate text-sm font-medium text-ink-muted">{name}</span>
             </div>

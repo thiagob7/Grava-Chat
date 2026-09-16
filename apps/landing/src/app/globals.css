@@ -25,7 +25,9 @@
   --color-brand: #6467f2;
   --color-brand-hover: #4f52d9;
 
-  --color-online: #17c964;
+  --color-online: #1daf6b;
+  --color-idle: #f6bb09;
+  --color-dnd: #ef4343;
 
   --font-sans: "Inter", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
 }
