@@ -158,6 +158,11 @@ export const configuracoes = {
     giftDoneTitle: "{{plan}} aktif!",
     giftOpenApp: "Buka aplikasi",
     giftSignIn: "Masuk untuk menukarkan",
+    giftReviewStep: "Pembayaran · Tinjau",
+    giftTotalToday: "Total hari ini",
+    giftCardWhy: "Kartu hanya untuk memastikan ini memang kamu. Tidak ada yang ditagih sekarang dan tidak ada yang diperpanjang sendiri.",
+    giftAgree: "Saya sudah membaca dan menerima ketentuan penggunaan",
+    giftActivating: "Mengaktifkan…",
   },
   telas: {
     subscription: "Infinity",

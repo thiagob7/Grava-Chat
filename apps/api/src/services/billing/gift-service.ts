@@ -12,6 +12,7 @@ import { AppError, NotFoundError } from "~/lib/http.js";
 import { newGiftCode } from "~/lib/gift-code.js";
 import { announceUserUpdated } from "~/realtime/difusao.js";
 import { billingRepository } from "~/repositories/billing-repository.js";
+import { cardCheckService } from "./card-check.js";
 import { userRepository } from "~/repositories/user-repository.js";
 
 type GiftRow = NonNullable<Awaited<ReturnType<typeof billingRepository.giftByCode>>>;
@@ -58,6 +59,7 @@ export const giftService = {
       days: gift.days,
       claimed: Boolean(gift.claimedAt),
       alreadyPremium: planOf(user?.premiumUntil) === "premium",
+      needsCard: !(await cardCheckService.hasCardOnFile(userId)),
       premiumUntil: user?.premiumUntil?.toISOString() ?? null,
       from: buyer ? { id: buyer.id, displayName: buyer.displayName, avatarUrl: buyer.avatarUrl } : null,
     };
@@ -78,7 +80,7 @@ export const giftService = {
     };
   },
 
-  async claim(userId: string, rawCode: string): Promise<GiftView> {
+  async claim(userId: string, rawCode: string, setupIntentId?: string): Promise<GiftView> {
     const gift = await billingRepository.giftByCode(rawCode);
     if (!gift) throw new NotFoundError("Código de presente não encontrado");
     if (gift.claimedAt) throw new AppError("Esse presente já foi resgatado", 409);
@@ -86,6 +88,11 @@ export const giftService = {
     const person = await userRepository.findById(userId);
     if (planOf(person?.premiumUntil) === "premium") {
       throw new AppError("Você já tem o Infinity ativo. Guarde o link para dar a um amigo.", 409);
+    }
+
+    if (!(await cardCheckService.hasCardOnFile(userId))) {
+      const confirmed = setupIntentId && (await cardCheckService.passed(userId, setupIntentId));
+      if (!confirmed) throw new AppError("Confirme um cartão para ativar o presente", 400);
     }
 
     const { count } = await billingRepository.claimGift(gift.id, userId, new Date());

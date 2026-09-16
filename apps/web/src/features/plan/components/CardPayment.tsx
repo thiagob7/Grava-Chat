@@ -1,38 +1,15 @@
 import React, { useMemo, useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { Elements, PaymentElement, useElements, useStripe } from "@stripe/react-stripe-js";
-import { loadStripe, type Appearance } from "@stripe/stripe-js";
 import { toast } from "react-toastify";
 import type { CardIntent } from "@gravae/shared";
 
 import { BILLING_KEY, GIFTS_KEY } from "~/@core/application/queries/billing/use-billing";
 import { queryKeys } from "~/@core/infra/constants/query-keys";
 import { Button } from "~/components/ui/button";
+import { appearanceFromTheme, stripeOf } from "~/features/plan/lib/stripe-elements";
 import { usePlanStore } from "~/features/plan/stores/plan-store";
 import { currentLanguage, useTranslation } from "~/traducao";
-
-const cached = new Map<string, ReturnType<typeof loadStripe>>();
-
-const stripeOf = (publishableKey: string) => {
-  if (!cached.has(publishableKey)) cached.set(publishableKey, loadStripe(publishableKey));
-  return cached.get(publishableKey)!;
-};
-
-const readVariable = (name: string, fallback: string) =>
-  getComputedStyle(document.documentElement).getPropertyValue(name).trim() || fallback;
-
-const appearanceFromTheme = (): Appearance => ({
-  theme: "night",
-  variables: {
-    colorPrimary: readVariable("--color-brand", "#5865f2"),
-    colorBackground: readVariable("--color-surface-2", "#1e1f22"),
-    colorText: readVariable("--color-ink", "#f2f3f5"),
-    colorTextSecondary: readVariable("--color-ink-muted", "#b5bac1"),
-    colorDanger: readVariable("--color-danger", "#f23f43"),
-    borderRadius: "8px",
-    fontFamily: readVariable("--font-sans", "system-ui, sans-serif"),
-  },
-});
 
 export const CardPayment: React.FC<{ intent: CardIntent; publishableKey: string; onPaid: () => void }> = ({
   intent,

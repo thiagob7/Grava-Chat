@@ -10,6 +10,7 @@ import {
   findBilling,
   openBillingPortal,
   requestRefund,
+  startCardCheck,
   startCardPayment,
   startCheckout,
 } from "~/@core/application/requests/billing/billing";
@@ -102,6 +103,12 @@ export const useClaimGift = () => {
     onError: (error) => toast.error(apiErrorMessage(error, i18next.t("configuracoes.subscription.error"))),
   });
 };
+
+export const useStartCardCheck = () =>
+  useMutation({
+    mutationFn: startCardCheck,
+    onError: (error) => toast.error(apiErrorMessage(error, i18next.t("configuracoes.subscription.error"))),
+  });
 
 export const useStartCardPayment = () =>
   useMutation({

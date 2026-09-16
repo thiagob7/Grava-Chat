@@ -158,6 +158,11 @@ export const configuracoes = {
     giftDoneTitle: "{{plan}}が有効になりました！",
     giftOpenApp: "アプリを開く",
     giftSignIn: "ログインして受け取る",
+    giftReviewStep: "支払い · 確認",
+    giftTotalToday: "本日の合計",
+    giftCardWhy: "カードはご本人確認のためだけに使います。いま請求されるものはなく、自動で更新されることもありません。",
+    giftAgree: "利用規約を読み、同意します",
+    giftActivating: "有効にしています…",
   },
   telas: {
     subscription: "Infinity",

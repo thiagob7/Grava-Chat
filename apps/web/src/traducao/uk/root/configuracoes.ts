@@ -158,6 +158,11 @@ export const configuracoes = {
     giftDoneTitle: "{{plan}} активовано!",
     giftOpenApp: "Відкрити застосунок",
     giftSignIn: "Увійдіть, щоб активувати",
+    giftReviewStep: "Оплата · Перевірка",
+    giftTotalToday: "Разом сьогодні",
+    giftCardWhy: "Картка потрібна лише щоб підтвердити, що це ви. Зараз нічого не списується і нічого не продовжується саме.",
+    giftAgree: "Я прочитав і приймаю умови користування",
+    giftActivating: "Активуємо…",
   },
   telas: {
     subscription: "Infinity",

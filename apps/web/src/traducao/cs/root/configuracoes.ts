@@ -158,6 +158,11 @@ export const configuracoes = {
     giftDoneTitle: "{{plan}} aktivováno!",
     giftOpenApp: "Otevřít aplikaci",
     giftSignIn: "Přihlaste se a uplatněte",
+    giftReviewStep: "Platba · Kontrola",
+    giftTotalToday: "Dnes celkem",
+    giftCardWhy: "Karta slouží jen k potvrzení, že jsi to ty. Teď se nic nestrhává a nic se samo neobnovuje.",
+    giftAgree: "Přečetl jsem si podmínky použití a souhlasím s nimi",
+    giftActivating: "Aktivuje se…",
   },
   telas: {
     subscription: "Infinity",

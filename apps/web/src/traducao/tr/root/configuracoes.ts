@@ -158,6 +158,11 @@ export const configuracoes = {
     giftDoneTitle: "{{plan}} etkinleştirildi!",
     giftOpenApp: "Uygulamayı aç",
     giftSignIn: "Kullanmak için giriş yap",
+    giftReviewStep: "Ödeme · Gözden geçir",
+    giftTotalToday: "Bugünün toplamı",
+    giftCardWhy: "Kart yalnızca senin olduğunu doğrulamak için. Şimdi hiçbir şey tahsil edilmez ve hiçbir şey kendi kendine yenilenmez.",
+    giftAgree: "Kullanım koşullarını okudum ve kabul ediyorum",
+    giftActivating: "Etkinleştiriliyor…",
   },
   telas: {
     subscription: "Infinity",

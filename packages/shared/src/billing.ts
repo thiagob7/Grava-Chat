@@ -45,6 +45,14 @@ export const GIFT_CODE_SIZE = 12;
 export const giftCodeInput = z.object({ code: z.string().trim().min(GIFT_CODE_SIZE).max(32) });
 export type GiftCodeInput = z.infer<typeof giftCodeInput>;
 
+export const giftClaimInput = giftCodeInput.extend({ setupIntentId: z.string().trim().min(1).max(120).optional() });
+export type GiftClaimInput = z.infer<typeof giftClaimInput>;
+
+export interface CardCheck {
+  clientSecret: string;
+  publishableKey: string;
+}
+
 export const cleanGiftCode = (code: string) => code.toUpperCase().replace(/[^A-Z0-9]/g, "");
 
 export const prettyGiftCode = (code: string) => (code.match(/.{1,4}/g) ?? [code]).join("-");
@@ -63,6 +71,7 @@ export interface GiftPreview {
   days: number;
   claimed: boolean;
   alreadyPremium: boolean;
+  needsCard: boolean;
   premiumUntil: string | null;
   from: { id: string; displayName: string; avatarUrl: string | null } | null;
 }

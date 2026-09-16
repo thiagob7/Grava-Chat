@@ -158,6 +158,11 @@ export const configuracoes = {
     giftDoneTitle: "{{plan}} הופעל!",
     giftOpenApp: "לפתוח את האפליקציה",
     giftSignIn: "התחבר כדי לממש",
+    giftReviewStep: "תשלום · בדיקה",
+    giftTotalToday: "סך הכול היום",
+    giftCardWhy: "הכרטיס משמש רק כדי לאשר שזה אתה. לא נגבה שום דבר עכשיו ושום דבר לא מתחדש מעצמו.",
+    giftAgree: "קראתי ואני מקבל את תנאי השימוש",
+    giftActivating: "מפעילים…",
   },
   telas: {
     subscription: "Infinity",

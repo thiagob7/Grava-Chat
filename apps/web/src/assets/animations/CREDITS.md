@@ -9,6 +9,7 @@
 | `speech-bubbles.json` | — | [LottieFiles](https://lottiefiles.com/animations/comments-ujYUv7EpCN) | [Lottie Simple License](https://lottiefiles.com/page/license) |
 | `cat-crying.json` | Abdul Latif | [LottieFiles](https://lottiefiles.com/free-animation/cat-crying-emojisticker-animation-xvvswYf0RW) | [Lottie Simple License](https://lottiefiles.com/page/license) |
 | `not-found.json` | Abdul Latif | [LottieFiles](https://lottiefiles.com/free-animation/404-error-page-with-cat-ZltNpefmQj) | [Lottie Simple License](https://lottiefiles.com/page/license) |
+| `loader-success.json` | Imran Khan | [LottieFiles](https://lottiefiles.com/free-animation/loader-and-success-ErL7PDpcXz) | [Lottie Simple License](https://lottiefiles.com/page/license) |
 | `thank-you.json` | Yusuf Adekunbi | [LottieFiles](https://lottiefiles.com/free-animation/thank-you-fS3GotkvX1) | [Lottie Simple License](https://lottiefiles.com/page/license) |
 | `../lottie/infinity-hero.json` | Abdul Latif | [LottieFiles](https://lottiefiles.com/free-animation/cute-astronaut-super-hero-flying-ClDlABy0Hn) | [Lottie Simple License](https://lottiefiles.com/page/license) |
 | `../lottie/infinity.json` | nosso | — | — |

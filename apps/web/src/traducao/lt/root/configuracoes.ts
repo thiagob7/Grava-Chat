@@ -158,6 +158,11 @@ export const configuracoes = {
     giftDoneTitle: "{{plan}} aktyvuotas!",
     giftOpenApp: "Atidaryti programą",
     giftSignIn: "Prisijunkite, kad panaudotumėte",
+    giftReviewStep: "Mokėjimas · Peržiūra",
+    giftTotalToday: "Iš viso šiandien",
+    giftCardWhy: "Kortelė reikalinga tik patvirtinti, kad tai tu. Dabar nieko nenuskaičiuojama ir niekas savaime neatsinaujina.",
+    giftAgree: "Perskaičiau ir sutinku su naudojimo sąlygomis",
+    giftActivating: "Aktyvuojama…",
   },
   telas: {
     subscription: "Infinity",

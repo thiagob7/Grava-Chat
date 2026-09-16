@@ -2,11 +2,12 @@ import React from "react";
 import { toast } from "react-toastify";
 import { cleanGiftCode, PLAN_NAME, prettyGiftCode } from "@gravae/shared";
 
-import { useClaimGift, useGiftPreview } from "~/@core/application/queries/billing/use-billing";
+import { useGiftPreview } from "~/@core/application/queries/billing/use-billing";
 import { Button } from "~/components/ui/button";
 import { Dialog, DialogContent, DialogDescription, DialogTitle } from "~/components/ui/dialog";
 import { Skeleton } from "~/components/ui/skeleton";
 import { Avatar } from "~/features/perfil/components/Avatar";
+import { GiftReview } from "~/features/plan/components/GiftReview";
 import { InfinityArt } from "~/features/plan/components/InfinityArt";
 import { usePlanStore } from "~/features/plan/stores/plan-store";
 import { currentLanguage, useTranslation } from "~/traducao";
@@ -27,7 +28,6 @@ export const GiftClaimModal: React.FC = () => {
 const GiftClaimBody: React.FC<{ code: string; onClose: () => void }> = ({ code, onClose }) => {
   const { t } = useTranslation();
   const preview = useGiftPreview(cleanGiftCode(code));
-  const claim = useClaimGift();
 
   const gift = preview.data;
   const day = (iso: string) => new Date(iso).toLocaleDateString(currentLanguage(), { dateStyle: "long" });
@@ -93,30 +93,11 @@ const GiftClaimBody: React.FC<{ code: string; onClose: () => void }> = ({ code, 
           <DialogTitle data-gc="plan.gift-claim-modal.dialog-title--4" className="mt-4 text-lg font-bold">
             {t("configuracoes.subscription.giftClaimTitle", { plan: PLAN_NAME })}
           </DialogTitle>
-          <DialogDescription data-gc="plan.gift-claim-modal.dialog-description--4">
+          <DialogDescription data-gc="plan.gift-claim-modal.dialog-description--4" className="sr-only">
             {t("configuracoes.subscription.giftClaimDetail", { days: gift.days })}
           </DialogDescription>
 
-          {gift.from && (
-            <p data-gc="plan.gift-claim-modal.p" className="mt-4 flex items-center justify-center gap-2 text-sm text-ink-muted">
-              <Avatar data-gc="plan.gift-claim-modal.avatar" id={gift.from.id} name={gift.from.displayName} url={gift.from.avatarUrl} size={22} />
-              {t("configuracoes.subscription.giftFrom", { name: gift.from.displayName })}
-            </p>
-          )}
-
-          <p data-gc="plan.gift-claim-modal.p--2" className="mt-3 font-mono text-xs tracking-wider text-ink-faint">{prettyGiftCode(cleanGiftCode(code))}</p>
-
-          <div data-gc="plan.gift-claim-modal.div--5" className="mt-6 flex flex-col gap-2">
-            <Button data-gc="plan.gift-claim-modal.button--2"
-              loading={claim.isPending}
-              onClick={() => claim.mutate(cleanGiftCode(code), { onSuccess: onClose })}
-            >
-              {t("configuracoes.subscription.giftActivate")}
-            </Button>
-            <Button data-gc="plan.gift-claim-modal.button.on-close--4" variant="ghost" onClick={onClose}>
-              {t("comum.cancelar")}
-            </Button>
-          </div>
+          <GiftReview data-gc="plan.gift-claim-modal.gift-review.on-close" code={cleanGiftCode(code)} gift={gift} onClose={onClose} />
         </>
       )}
       </div>
