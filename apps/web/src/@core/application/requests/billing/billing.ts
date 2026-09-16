@@ -1,4 +1,12 @@
-import type { BillingStatus, CardIntent, CheckoutInput, GiftView, PixChargeInput, PixChargeView } from "@gravae/shared";
+import type {
+  BillingStatus,
+  CardIntent,
+  CheckoutInput,
+  GiftPreview,
+  GiftView,
+  PixChargeInput,
+  PixChargeView,
+} from "@gravae/shared";
 
 import { api } from "~/@core/lib/api";
 
@@ -22,3 +30,5 @@ export const claimGift = async (code: string) => (await api.post<GiftView>("/bil
 
 export const startCardPayment = async (input: CheckoutInput) =>
   (await api.post<CardIntent>("/billing/card", input)).data;
+
+export const findGiftPreview = async (code: string) => (await api.get<GiftPreview>(`/billing/gifts/${code}`)).data;

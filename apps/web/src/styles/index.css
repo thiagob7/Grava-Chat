@@ -1117,3 +1117,43 @@ textarea:not(:disabled),
 [contenteditable="true"] {
   cursor: var(--cursor-texto, text);
 }
+
+/*
+  O fundo da página do Infinity: manchas de cor que passeiam devagar atrás do
+  conteúdo. É enfeite, então some inteiro para quem pede menos movimento.
+*/
+.infinity-blob {
+  animation: infinity-drift 18s ease-in-out infinite alternate;
+}
+
+.infinity-blob--slow {
+  animation-duration: 26s;
+  animation-delay: -8s;
+}
+
+.infinity-shine {
+  background-size: 200% 200%;
+  animation: infinity-shine 12s linear infinite;
+}
+
+@keyframes infinity-drift {
+  from {
+    transform: translate3d(-4%, -2%, 0) scale(1);
+  }
+  to {
+    transform: translate3d(5%, 4%, 0) scale(1.12);
+  }
+}
+
+@keyframes infinity-shine {
+  to {
+    background-position: 200% 50%;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .infinity-blob,
+  .infinity-shine {
+    animation: none;
+  }
+}

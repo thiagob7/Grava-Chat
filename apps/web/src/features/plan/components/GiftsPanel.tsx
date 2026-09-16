@@ -3,7 +3,7 @@ import { Copy, Gift } from "lucide-react";
 import { toast } from "react-toastify";
 import { cleanGiftCode, GIFT_CODE_SIZE } from "@gravae/shared";
 
-import { useClaimGift, useGifts } from "~/@core/application/queries/billing/use-billing";
+import { useGifts } from "~/@core/application/queries/billing/use-billing";
 import { Button } from "~/components/ui/button";
 import { Input } from "~/components/ui/input";
 import { Avatar } from "~/features/perfil/components/Avatar";
@@ -15,7 +15,7 @@ const linkOf = (code: string) => `${window.location.origin}/channels/@me?gift=${
 export const GiftsPanel: React.FC = () => {
   const { t } = useTranslation();
   const gifts = useGifts();
-  const claim = useClaimGift();
+  const askClaim = usePlanStore((s) => s.claimGift);
   const pending = usePlanStore((s) => s.giftCode);
   const setGiftCode = usePlanStore((s) => s.setGiftCode);
   const [code, setCode] = useState("");
@@ -42,7 +42,8 @@ export const GiftsPanel: React.FC = () => {
         className="flex gap-2"
         onSubmit={(e) => {
           e.preventDefault();
-          claim.mutate(cleanGiftCode(code), { onSuccess: () => setCode("") });
+          askClaim(cleanGiftCode(code));
+          setCode("");
         }}
       >
         <Input data-gc="plan.gifts-panel.input"
@@ -52,7 +53,7 @@ export const GiftsPanel: React.FC = () => {
           maxLength={32}
           onChange={(e) => setCode(e.target.value)}
         />
-        <Button data-gc="plan.gifts-panel.button" type="submit" disabled={!ready} loading={claim.isPending}>
+        <Button data-gc="plan.gifts-panel.button" type="submit" disabled={!ready}>
           {t("configuracoes.subscription.giftRedeem")}
         </Button>
       </form>

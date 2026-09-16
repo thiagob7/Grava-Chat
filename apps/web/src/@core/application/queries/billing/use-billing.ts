@@ -4,6 +4,7 @@ import { toast } from "react-toastify";
 import {
   claimGift,
   createPixCharge,
+  findGiftPreview,
   findGifts,
   findPixCharge,
   findBilling,
@@ -106,4 +107,12 @@ export const useStartCardPayment = () =>
   useMutation({
     mutationFn: startCardPayment,
     onError: (error) => toast.error(apiErrorMessage(error, i18next.t("configuracoes.subscription.error"))),
+  });
+
+export const useGiftPreview = (code: string | null) =>
+  useQuery({
+    queryKey: ["find-gift-preview", code],
+    queryFn: () => findGiftPreview(code!),
+    enabled: Boolean(code),
+    retry: false,
   });

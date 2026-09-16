@@ -1,6 +1,6 @@
-import React from "react";
-import { Check, Gift, Infinity as InfinityIcon } from "lucide-react";
-import { PASS_PRICE_CENTS, PLAN_NAME, planOf, type BillingInterval } from "@gravae/shared";
+import React, { useRef } from "react";
+import { Check, Gift, Infinity as InfinityIcon, Menu } from "lucide-react";
+import { PASS_PRICE_CENTS, PLAN_LIMITS, PLAN_NAME, planOf, type BillingInterval, type PlanLimits } from "@gravae/shared";
 
 import { useBilling } from "~/@core/application/queries/billing/use-billing";
 import { Button } from "~/components/ui/button";
@@ -11,10 +11,17 @@ import { currentLanguage, useTranslation } from "~/traducao";
 
 const INTERVALS: BillingInterval[] = ["month", "year"];
 
+const SECTIONS = [
+  { id: "inicio", key: "configuracoes.subscription.pageStart" },
+  { id: "planos", key: "configuracoes.subscription.pagePlans" },
+  { id: "comparar", key: "configuracoes.subscription.pageCompare" },
+] as const;
+
 export const InfinityPage: React.FC<{ onOpenMenu?: () => void }> = ({ onOpenMenu }) => {
   const { t } = useTranslation();
   const billing = useBilling();
   const openUpgrade = usePlanStore((s) => s.openUpgrade);
+  const scroller = useRef<HTMLElement>(null);
 
   const status = billing.data;
   const premium = planOf(status?.premiumUntil) === "premium";
@@ -25,92 +32,142 @@ export const InfinityPage: React.FC<{ onOpenMenu?: () => void }> = ({ onOpenMenu
   const priceOf = (interval: BillingInterval) =>
     status?.prices?.automatic[interval] ?? status?.prices?.none[interval] ?? { amount: PASS_PRICE_CENTS[interval], currency: "brl" };
 
-  const perks = [
-    t("configuracoes.subscription.messageRow"),
-    t("configuracoes.subscription.attachmentRow"),
-    t("configuracoes.subscription.guildProfilesRow"),
-    t("configuracoes.subscription.expressionsRow"),
-    t("configuracoes.subscription.screenRow"),
-    t("configuracoes.subscription.badgeRow"),
+  const perks: { name: string; value: (limits: PlanLimits) => string }[] = [
+    { name: t("configuracoes.subscription.messageRow"), value: (l) => `${l.messageLength}` },
+    { name: t("configuracoes.subscription.attachmentRow"), value: (l) => `${Math.round(l.attachmentBytes / (1024 * 1024))} MB` },
+    { name: t("configuracoes.subscription.communitiesRow"), value: (l) => `${l.communities}` },
+    { name: t("configuracoes.subscription.savedRow"), value: (l) => `${l.savedMessages}` },
+    { name: t("configuracoes.subscription.screenRow"), value: (l) => `${l.screenResolutions.at(-1)}p · ${l.screenFrameRates.at(-1)} fps` },
+    { name: t("configuracoes.subscription.guildProfilesRow"), value: () => "" },
+    { name: t("configuracoes.subscription.expressionsRow"), value: () => "" },
+    { name: t("configuracoes.subscription.colorsRow"), value: () => "" },
   ];
 
+  const goTo = (id: string) => document.getElementById(`infinity-${id}`)?.scrollIntoView({ behavior: "smooth", block: "start" });
+
   return (
-    <main data-gc="plan.infinity-page.main" className="min-h-0 flex-1 overflow-y-auto bg-surface-2">
-      {onOpenMenu && (
-        <button data-gc="plan.infinity-page.button.on-open-menu" type="button" onClick={onOpenMenu} className="p-3 text-sm text-ink-muted @md:hidden">
-          {t("comum.voltar")}
-        </button>
-      )}
+    <main data-gc="plan.infinity-page.main" ref={scroller} className="relative min-h-0 flex-1 overflow-y-auto bg-surface-0">
+      <header data-gc="plan.infinity-page.header" className="sticky top-0 z-10 flex h-[var(--layout-header-height)] items-center gap-3 border-b border-divisor bg-surface-2/85 px-4 backdrop-blur">
+        {onOpenMenu && (
+          <button data-gc="plan.infinity-page.button.on-open-menu" type="button" onClick={onOpenMenu} aria-label={t("comum.voltar")} className="text-ink-muted @md:hidden">
+            <Menu data-gc="plan.infinity-page.menu" size={18} />
+          </button>
+        )}
 
-      <section data-gc="plan.infinity-page.section" className="relative overflow-hidden px-6 py-14 text-center">
-        <div data-gc="plan.infinity-page.div" aria-hidden className="pointer-events-none absolute inset-0 bg-gradient-to-b from-brand/25 via-brand/5 to-transparent" />
+        <span data-gc="plan.infinity-page.span" className="flex items-center gap-2 font-semibold">
+          <InfinityIcon data-gc="plan.infinity-page.infinity-icon" size={18} className="text-brand" /> {PLAN_NAME}
+        </span>
 
-        <div data-gc="plan.infinity-page.div--2" className="relative mx-auto max-w-2xl">
-          <span data-gc="plan.infinity-page.span" className="mx-auto flex size-16 items-center justify-center rounded-3xl bg-brand/20 text-brand">
-            <InfinityIcon data-gc="plan.infinity-page.infinity-icon" size={34} />
+        <nav data-gc="plan.infinity-page.nav" className="ml-2 hidden items-center gap-1 @md:flex">
+          {SECTIONS.map((section) => (
+            <button data-gc="plan.infinity-page.button"
+              key={section.id}
+              type="button"
+              onClick={() => goTo(section.id)}
+              className="rounded px-2.5 py-1.5 text-sm text-ink-muted transition hover:bg-hover hover:text-ink"
+            >
+              {t(section.key)}
+            </button>
+          ))}
+        </nav>
+
+        <Button data-gc="plan.infinity-page.button.open-upgrade" size="sm" variant="surface" className="ml-auto" onClick={openUpgrade}>
+          <Gift data-gc="plan.infinity-page.gift" size={15} /> {t("configuracoes.subscription.buyGift")}
+        </Button>
+      </header>
+
+      <section data-gc="plan.infinity-page.section" id="infinity-inicio" className="relative overflow-hidden px-6 pb-16 pt-20 text-center">
+        <div data-gc="plan.infinity-page.div" aria-hidden className="pointer-events-none absolute inset-0 overflow-hidden">
+          <span data-gc="plan.infinity-page.span--2" className="infinity-blob absolute -left-24 -top-24 size-96 rounded-full bg-brand/30 blur-3xl" />
+          <span data-gc="plan.infinity-page.span--3" className="infinity-blob infinity-blob--slow absolute -right-20 top-10 size-80 rounded-full bg-mencao/25 blur-3xl" />
+          <span data-gc="plan.infinity-page.span--4" className="infinity-blob absolute bottom-0 left-1/3 size-72 rounded-full bg-brand/20 blur-3xl" />
+        </div>
+
+        <div data-gc="plan.infinity-page.div--2" className="relative mx-auto max-w-3xl">
+          <span data-gc="plan.infinity-page.span--5" className="mx-auto flex size-20 items-center justify-center rounded-[1.75rem] bg-brand/20 text-brand shadow-lg shadow-sombra">
+            <InfinityIcon data-gc="plan.infinity-page.infinity-icon--2" size={44} />
           </span>
 
-          <h1 data-gc="plan.infinity-page.h1" className="mt-5 text-balance text-4xl font-black uppercase tracking-tight">
+          <h1 data-gc="plan.infinity-page.h1"
+            className="infinity-shine mt-6 bg-gradient-to-r from-ink via-brand to-ink bg-clip-text text-balance text-5xl font-black uppercase leading-[0.95] tracking-tight text-transparent @md:text-6xl"
+          >
             {t("configuracoes.subscription.pageTitle", { plan: PLAN_NAME })}
           </h1>
-          <p data-gc="plan.infinity-page.p" className="mx-auto mt-3 max-w-md text-balance text-sm text-ink-muted">
+
+          <p data-gc="plan.infinity-page.p" className="mx-auto mt-5 max-w-lg text-balance text-sm text-ink-muted @md:text-base">
             {t("configuracoes.subscription.upgradeSubtitle")}
           </p>
 
           {premium && status?.premiumUntil ? (
-            <p data-gc="plan.infinity-page.p--2" className="mt-6 text-sm font-medium text-brand">
+            <p data-gc="plan.infinity-page.p--2" className="mt-8 inline-flex rounded-full border border-brand/40 bg-brand/10 px-4 py-2 text-sm font-medium text-brand">
               {t("configuracoes.subscription.activeUntil", {
                 date: new Date(status.premiumUntil).toLocaleDateString(currentLanguage(), { dateStyle: "long" }),
               })}
             </p>
           ) : (
-            <div data-gc="plan.infinity-page.div--3" className="mt-7 flex flex-wrap items-center justify-center gap-2">
-              <Button data-gc="plan.infinity-page.button.open-upgrade" onClick={openUpgrade}>
-                <InfinityIcon data-gc="plan.infinity-page.infinity-icon--2" size={16} /> {t("configuracoes.subscription.subscribe")}
+            <div data-gc="plan.infinity-page.div--3" className="mt-9 flex flex-wrap items-center justify-center gap-2">
+              <Button data-gc="plan.infinity-page.button.open-upgrade--2" size="lg" onClick={openUpgrade}>
+                <InfinityIcon data-gc="plan.infinity-page.infinity-icon--3" size={17} /> {t("configuracoes.subscription.subscribe")}
               </Button>
-              <Button data-gc="plan.infinity-page.button.open-upgrade--2" variant="surface" onClick={openUpgrade}>
-                <Gift data-gc="plan.infinity-page.gift" size={16} /> {t("configuracoes.subscription.buyGift")}
+              <Button data-gc="plan.infinity-page.button.open-upgrade--3" size="lg" variant="surface" onClick={openUpgrade}>
+                <Gift data-gc="plan.infinity-page.gift--2" size={17} /> {t("configuracoes.subscription.buyGift")}
               </Button>
             </div>
           )}
+
+          <p data-gc="plan.infinity-page.p--3" className="mt-4 text-xs text-ink-faint">{t("configuracoes.subscription.legal")}</p>
         </div>
       </section>
 
-      <div data-gc="plan.infinity-page.div--4" className="mx-auto w-full max-w-3xl px-6 pb-16">
-        <div data-gc="plan.infinity-page.div--5" className="grid gap-3 sm:grid-cols-2">
-          {INTERVALS.map((interval) => {
-            const price = priceOf(interval);
+      <div data-gc="plan.infinity-page.div--4" className="mx-auto w-full max-w-3xl px-6 pb-20">
+        <section data-gc="plan.infinity-page.section--2" id="infinity-planos" className="scroll-mt-16">
+          <h2 data-gc="plan.infinity-page.h2" className="mb-3 text-center text-sm font-semibold uppercase tracking-widest text-ink-faint">
+            {t("configuracoes.subscription.pagePlans")}
+          </h2>
 
-            return (
-              <button data-gc="plan.infinity-page.button.open-upgrade--3"
-                key={interval}
-                type="button"
-                onClick={openUpgrade}
-                className={cn(
-                  "rounded-xl border border-line bg-surface-1 px-5 py-6 text-center transition hover:border-brand/60 hover:bg-brand/5",
+          <div data-gc="plan.infinity-page.div--5" className="grid gap-3 sm:grid-cols-2">
+            {INTERVALS.map((interval) => {
+              const price = priceOf(interval);
+              const yearly = interval === "year";
+
+              return (
+                <button data-gc="plan.infinity-page.button.open-upgrade--4"
+                  key={interval}
+                  type="button"
+                  onClick={openUpgrade}
+                  className={cn(
+                    "relative rounded-2xl border px-5 py-7 text-center transition",
+                    yearly ? "border-brand/60 bg-brand/10 hover:bg-brand/15" : "border-line bg-surface-1 hover:border-brand/40",
+                  )}
+                >
+                  <p data-gc="plan.infinity-page.p--4" className="text-sm font-semibold">
+                    {t(yearly ? "configuracoes.subscription.yearly" : "configuracoes.subscription.monthly")}
+                  </p>
+                  <p data-gc="plan.infinity-page.p--5" className="mt-1 text-3xl font-bold tabular-nums">{money(price.amount, price.currency)}</p>
+                  <p data-gc="plan.infinity-page.p--6" className="text-xs text-ink-faint">
+                    {t(yearly ? "configuracoes.subscription.perYear" : "configuracoes.subscription.perMonth")}
+                  </p>
+                </button>
+              );
+            })}
+          </div>
+
+          <ul data-gc="plan.infinity-page.ul" className="mt-6 grid gap-2 sm:grid-cols-2">
+            {perks.map((perk) => (
+              <li data-gc="plan.infinity-page.li" key={perk.name} className="flex items-center gap-2 rounded-xl border border-line-sutil bg-surface-1 px-3 py-3 text-sm">
+                <Check data-gc="plan.infinity-page.check" size={16} className="shrink-0 text-brand" />
+                <span data-gc="plan.infinity-page.span--6" className="min-w-0 flex-1 truncate">{perk.name}</span>
+                {perk.value(PLAN_LIMITS.premium) && (
+                  <span data-gc="plan.infinity-page.span--7" className="shrink-0 text-xs font-semibold text-brand">{perk.value(PLAN_LIMITS.premium)}</span>
                 )}
-              >
-                <p data-gc="plan.infinity-page.p--3" className="text-sm font-semibold">
-                  {t(interval === "month" ? "configuracoes.subscription.monthly" : "configuracoes.subscription.yearly")}
-                </p>
-                <p data-gc="plan.infinity-page.p--4" className="mt-1 text-3xl font-bold tabular-nums">{money(price.amount, price.currency)}</p>
-                <p data-gc="plan.infinity-page.p--5" className="text-xs text-ink-faint">
-                  {t(interval === "month" ? "configuracoes.subscription.perMonth" : "configuracoes.subscription.perYear")}
-                </p>
-              </button>
-            );
-          })}
-        </div>
+              </li>
+            ))}
+          </ul>
+        </section>
 
-        <ul data-gc="plan.infinity-page.ul" className="mt-8 grid gap-2 sm:grid-cols-2">
-          {perks.map((perk) => (
-            <li data-gc="plan.infinity-page.li" key={perk} className="flex items-center gap-2 rounded-lg bg-surface-1 px-3 py-2.5 text-sm">
-              <Check data-gc="plan.infinity-page.check" size={16} className="shrink-0 text-brand" /> {perk}
-            </li>
-          ))}
-        </ul>
-
-        <ComparisonTable data-gc="plan.infinity-page.comparison-table" />
+        <section data-gc="plan.infinity-page.section--3" id="infinity-comparar" className="scroll-mt-16">
+          <ComparisonTable data-gc="plan.infinity-page.comparison-table" />
+        </section>
       </div>
     </main>
   );
