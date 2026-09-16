@@ -9,6 +9,10 @@ export const comum = {
     titulo: "Gravaê suklupo.",
     detalhe: "Kažkas sugedo pakeliui ir ekranas nesugebėjo nusipiešti. Jūsų pokalbis neprarastas — viskas yra serveryje.",
   },
+  perdido: {
+    titulo: "Šis adresas niekur neveda.",
+    detalhe: "Arba nuoroda klaidinga, arba puslapis persikėlė.",
+  },
   conexao: {
     voltou: "Vėl prisijungta",
     reconectando: "Jungiamasi iš naujo",

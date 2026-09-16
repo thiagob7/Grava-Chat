@@ -9,6 +9,10 @@ export const comum = {
     titulo: "Gravaê struikelde.",
     detalhe: "Er ging onderweg iets stuk en het scherm kon zichzelf niet tekenen. Je gesprek is niet weg — alles staat op de server.",
   },
+  perdido: {
+    titulo: "Dit adres leidt nergens heen.",
+    detalhe: "Of de link klopt niet, of de pagina is verplaatst.",
+  },
   conexao: {
     voltou: "Weer verbonden",
     reconectando: "Opnieuw verbinden",

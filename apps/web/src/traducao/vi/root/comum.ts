@@ -9,6 +9,10 @@ export const comum = {
     titulo: "Gravaê vấp một cái.",
     detalhe: "Có gì đó hỏng giữa đường và màn hình không vẽ được. Cuộc trò chuyện của bạn không mất — mọi thứ đều nằm trên máy chủ.",
   },
+  perdido: {
+    titulo: "Địa chỉ này không dẫn đến đâu cả.",
+    detalhe: "Hoặc là liên kết bị sai, hoặc là trang đã chuyển chỗ.",
+  },
   conexao: {
     voltou: "Đã kết nối lại",
     reconectando: "Đang kết nối lại",

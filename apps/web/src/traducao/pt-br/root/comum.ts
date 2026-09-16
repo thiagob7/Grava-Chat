@@ -10,6 +10,10 @@ export const comum = {
     titulo: "O Gravaê tropeçou.",
     detalhe: "Alguma coisa quebrou no meio do caminho e a tela não conseguiu se desenhar. Sua conversa não se perdeu — está tudo no servidor.",
   },
+  perdido: {
+    titulo: "Esse endereço não leva a lugar nenhum.",
+    detalhe: "Ou o link veio errado, ou a página mudou de lugar.",
+  },
   conexao: {
     voltou: "Conectado de novo",
     reconectando: "Reconectando",

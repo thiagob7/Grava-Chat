@@ -42,6 +42,7 @@ import { lazyPage } from "~/lib/lazy-page";
 import { flx, flxAttr, flxCls } from "~/lib/compat-de-tema";
 import { isDesktop } from "~/lib/desktop";
 import { Gift } from "~/pages/presentation/gift/Gift";
+import { NotFound } from "~/pages/presentation/not-found/NotFound";
 
 export const AppRoutes: React.FC = () => {
   useConfigByUrl();
@@ -165,7 +166,8 @@ export const AppRoutes: React.FC = () => {
           </Protected>
         }
       />
-      <Route path="*" element={<Navigate to="/channels" replace />} />
+      <Route path="/" element={<Navigate to="/channels" replace />} />
+      <Route path="*" element={<NotFound data-gc="routes.not-found" />} />
     </Routes>
       </div>
       </AppShell>
@@ -186,6 +188,9 @@ const WINDOWS_OWN = ["/estudio", "/cursores"];
 
 const BRAND_SCREENS = [/^\/gift\//, /^\/login$/, /^\/login\/app$/, /^\/redefinir$/, /^\/verificar-email$/, /^\/oauth2\/autorizar$/, /^\/bots\/[^/]+\/adicionar$/];
 
+const KNOWN_PLACES =
+  /^\/$|^\/(channels|dm|invite|apps|oauth2|bots|tema|estudio|cursores|explorar|evento|admin|gift|login|redefinir|verificar-email)(\/|$)/;
+
 const AppShell: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const { pathname } = useLocation();
 
@@ -200,6 +205,12 @@ const AppShell: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   if (WINDOWS_OWN.includes(pathname)) return <>{children}</>;
 
   if (!isDesktop() && BRAND_SCREENS.some((display) => display.test(pathname))) return <>{children}</>;
+
+  /*
+    Endereço que não é nosso não ganha a moldura do aplicativo: quem caiu de um
+    link torto vê só a tela dizendo isso, e não uma casca de app vazia em volta.
+  */
+  if (!isDesktop() && !KNOWN_PLACES.test(pathname)) return <>{children}</>;
 
   /*
     No navegador a barra de título do painel não tem o que dizer nem botão de

@@ -9,6 +9,10 @@ export const comum = {
     titulo: "Gravaê tripped up.",
     detalhe: "Something broke along the way and the screen couldn't draw itself. Your conversation isn't lost — it's all on the server.",
   },
+  perdido: {
+    titulo: "This address doesn't lead anywhere.",
+    detalhe: "Either the link came out wrong, or the page moved.",
+  },
   conexao: {
     voltou: "Connected again",
     reconectando: "Reconnecting",

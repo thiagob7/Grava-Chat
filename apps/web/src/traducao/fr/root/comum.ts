@@ -9,6 +9,10 @@ export const comum = {
     titulo: "Gravaê a trébuché.",
     detalhe: "Quelque chose a cassé en chemin et l'écran n'a pas pu se dessiner. Votre conversation n'est pas perdue — tout est sur le serveur.",
   },
+  perdido: {
+    titulo: "Cette adresse ne mène nulle part.",
+    detalhe: "Soit le lien est erroné, soit la page a changé de place.",
+  },
   conexao: {
     voltou: "De nouveau connecté",
     reconectando: "Reconnexion",

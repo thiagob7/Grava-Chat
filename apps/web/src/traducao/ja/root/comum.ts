@@ -9,6 +9,10 @@ export const comum = {
     titulo: "Gravaê がつまずきました。",
     detalhe: "途中で何かが壊れ、画面を描けませんでした。会話は失われていません — すべてサーバーにあります。",
   },
+  perdido: {
+    titulo: "このアドレスはどこにもつながりません。",
+    detalhe: "リンクが間違っているか、ページが移動しました。",
+  },
   conexao: {
     voltou: "また接続しました",
     reconectando: "再接続中",

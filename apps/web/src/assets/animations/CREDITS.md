@@ -8,6 +8,10 @@
 | `add-friend.json` | — | [LottieFiles](https://lottiefiles.com/animations/emptylist-friends-M8hYgCFJjX) | [Lottie Simple License](https://lottiefiles.com/page/license) |
 | `speech-bubbles.json` | — | [LottieFiles](https://lottiefiles.com/animations/comments-ujYUv7EpCN) | [Lottie Simple License](https://lottiefiles.com/page/license) |
 | `cat-crying.json` | Abdul Latif | [LottieFiles](https://lottiefiles.com/free-animation/cat-crying-emojisticker-animation-xvvswYf0RW) | [Lottie Simple License](https://lottiefiles.com/page/license) |
+| `not-found.json` | Abdul Latif | [LottieFiles](https://lottiefiles.com/free-animation/404-error-page-with-cat-ZltNpefmQj) | [Lottie Simple License](https://lottiefiles.com/page/license) |
+| `thank-you.json` | Yusuf Adekunbi | [LottieFiles](https://lottiefiles.com/free-animation/thank-you-fS3GotkvX1) | [Lottie Simple License](https://lottiefiles.com/page/license) |
+| `../lottie/infinity-hero.json` | Abdul Latif | [LottieFiles](https://lottiefiles.com/free-animation/cute-astronaut-super-hero-flying-ClDlABy0Hn) | [Lottie Simple License](https://lottiefiles.com/page/license) |
+| `../lottie/infinity.json` | nosso | — | — |
 
 A Lottie Simple License libera uso comercial e não exige crédito. Exige que
 qualquer versão modificada seja distribuída sob os mesmos termos. O crédito aqui
@@ -26,6 +30,15 @@ menor que um pixel. A contagem de objetos e de keyframes é a mesma do original.
 
 O peso vem de seis camadas de um segundo cada, com o gato inteiro remodelado
 quadro a quadro. Não há como deduplicar: as seis são desenhos diferentes.
+
+`not-found.json`, `thank-you.json` e `infinity-hero.json` passaram pelo mesmo
+enxugamento do `cat-crying.json`, e a contagem de objetos e de keyframes
+continua igual à do original: 164 → 124 KB, 132 → 69 KB e 905 → 587 KB.
+
+O `thank-you.json` veio com a frase "Your account has been successfully
+registered" desenhada dentro da animação, em inglês. As duas camadas de texto
+foram removidas — por isso ele tem menos objetos que o original. O que aparece
+na tela é o visto e o confete; a frase é nossa, traduzida, escrita embaixo.
 
 ## Cursores
 

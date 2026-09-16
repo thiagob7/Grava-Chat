@@ -9,6 +9,10 @@ export const comum = {
     titulo: "Gravaê se spotaknuo.",
     detalhe: "Nešto se putem pokvarilo i zaslon se nije uspio iscrtati. Tvoj razgovor nije izgubljen — sve je na poslužitelju.",
   },
+  perdido: {
+    titulo: "Ova adresa ne vodi nikamo.",
+    detalhe: "Ili je poveznica pogrešna, ili se stranica premjestila.",
+  },
   conexao: {
     voltou: "Opet povezano",
     reconectando: "Ponovno se povezujem",

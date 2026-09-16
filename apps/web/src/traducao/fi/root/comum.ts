@@ -9,6 +9,10 @@ export const comum = {
     titulo: "Gravaê kompastui.",
     detalhe: "Jokin hajosi matkalla eikä näkymä pystynyt piirtymään. Keskustelusi ei kadonnut — kaikki on palvelimella.",
   },
+  perdido: {
+    titulo: "Tämä osoite ei vie mihinkään.",
+    detalhe: "Joko linkki on väärä tai sivu on siirtynyt.",
+  },
   conexao: {
     voltou: "Yhteys palasi",
     reconectando: "Yhdistetään uudelleen",

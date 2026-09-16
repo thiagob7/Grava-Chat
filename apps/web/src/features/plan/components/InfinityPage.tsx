@@ -5,12 +5,14 @@ import { PASS_PRICE_CENTS, PLAN_LIMITS, PLAN_NAME, planOf, type BillingInterval,
 import { useBilling } from "~/@core/application/queries/billing/use-billing";
 import { Button } from "~/components/ui/button";
 import { ComparisonTable } from "~/features/plan/components/UpgradeModal";
-import { InfinityArt } from "~/features/plan/components/InfinityArt";
+import { LottieArt } from "~/components/LottieArt";
 import { usePlanStore } from "~/features/plan/stores/plan-store";
 import { cn } from "~/lib/utils";
 import { currentLanguage, useTranslation } from "~/traducao";
 
 const INTERVALS: BillingInterval[] = ["month", "year"];
+
+const loadHero = () => import("~/assets/lottie/infinity-hero.json").then((mod) => mod.default);
 
 const SECTIONS = [
   { id: "inicio", key: "configuracoes.subscription.pageStart" },
@@ -81,7 +83,7 @@ export const InfinityPage: React.FC<{ onOpenMenu?: () => void }> = ({ onOpenMenu
         <div data-gc="plan.infinity-page.div" aria-hidden className="pointer-events-none absolute inset-0 infinity-glow" />
 
         <div data-gc="plan.infinity-page.div--2" className="relative mx-auto max-w-3xl">
-          <InfinityArt data-gc="plan.infinity-page.infinity-art" className="mx-auto size-40" />
+          <LottieArt data-gc="plan.infinity-page.lottie-art" name="infinity-hero" load={loadHero} label={PLAN_NAME} className="mx-auto w-48" />
 
           <h1 data-gc="plan.infinity-page.h1"
             className="mt-6 text-balance text-5xl font-black uppercase leading-[0.95] tracking-tight text-ink drop-shadow-[0_2px_18px_rgb(0_0_0/0.35)] @md:text-6xl"
