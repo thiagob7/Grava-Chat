@@ -283,6 +283,7 @@ export const ComparisonTable: React.FC<{ className?: string }> = ({ className })
     { name: t("configuracoes.subscription.expressionsRow"), value: (l) => l.expressionsAnywhere },
     { name: t("configuracoes.subscription.screenRow"), value: screen },
     { name: t("configuracoes.subscription.animatedProfileRow"), value: (l) => l.animatedProfile },
+    { name: t("configuracoes.subscription.colorsRow"), value: (l) => l.customColors },
     { name: t("configuracoes.subscription.earlyAccessRow"), value: (l) => l.earlyAccess },
     { name: t("configuracoes.subscription.themesRow"), value: () => true },
   ];

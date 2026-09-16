@@ -51,7 +51,20 @@ export const configuracoes = {
     copiar: "Klicka för att kopiera",
     copiado: "Kopierat",
   },
+  appColors: {
+    title: "Appens färger",
+    detail: "Välj upp till tre färger så får hela appen den gradienten.",
+    locked: "Färgredigeraren ingår i {{plan}}.",
+    color: "Färg {{number}}",
+    addColor: "Lägg till färg",
+    removeColor: "Ta bort färg",
+    surprise: "Överraska mig",
+    direction: "Gradientens riktning",
+    intensity: "Intensitet",
+    reset: "Återställ",
+  },
   subscription: {
+    colorsRow: "Appens färgredigerare",
     seePlans: "Se planer",
     upgradeSubtitle: "Högre gränser och exklusiva funktioner för att skriva, skicka filer och strömma.",
     perMonth: "per månad",
@@ -159,6 +172,7 @@ export const configuracoes = {
     administracao: "Administration",
   },
   secoes: {
+    coresDoApp: "Appens färger",
     detalhesDeLogin: "Inloggningsuppgifter",
     dispositivos: "Enheter",
     usuariosBloqueados: "Blockerade användare",

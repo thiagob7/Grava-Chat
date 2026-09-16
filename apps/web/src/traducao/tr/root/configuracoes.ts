@@ -51,7 +51,20 @@ export const configuracoes = {
     copiar: "Kopyalamak için tıkla",
     copiado: "Kopyalandı",
   },
+  appColors: {
+    title: "Uygulama renkleri",
+    detail: "En fazla üç renk seç, tüm uygulama o geçişi alsın.",
+    locked: "Renk düzenleyici {{plan}} özelliğidir.",
+    color: "{{number}}. renk",
+    addColor: "Renk ekle",
+    removeColor: "Rengi kaldır",
+    surprise: "Şaşırt beni",
+    direction: "Geçiş yönü",
+    intensity: "Yoğunluk",
+    reset: "Sıfırla",
+  },
   subscription: {
+    colorsRow: "Uygulama renk düzenleyicisi",
     seePlans: "Planları gör",
     upgradeSubtitle: "Yazmak, dosya göndermek ve yayın yapmak için daha yüksek sınırlar ve özel özellikler.",
     perMonth: "aylık",
@@ -159,6 +172,7 @@ export const configuracoes = {
     administracao: "Yönetim",
   },
   secoes: {
+    coresDoApp: "Uygulama renkleri",
     detalhesDeLogin: "Giriş bilgileri",
     dispositivos: "Cihazlar",
     usuariosBloqueados: "Engellenen kullanıcılar",

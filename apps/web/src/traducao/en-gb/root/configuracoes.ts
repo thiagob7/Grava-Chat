@@ -51,7 +51,20 @@ export const configuracoes = {
     copiar: "Click to copy",
     copiado: "Copied",
   },
+  appColors: {
+    title: "App colours",
+    detail: "Pick up to three colours and the whole app takes that gradient.",
+    locked: "The colour editor is part of {{plan}}.",
+    color: "Colour {{number}}",
+    addColor: "Add colour",
+    removeColor: "Remove colour",
+    surprise: "Surprise me",
+    direction: "Gradient direction",
+    intensity: "Intensity",
+    reset: "Reset",
+  },
   subscription: {
+    colorsRow: "App colour editor",
     seePlans: "See plans",
     upgradeSubtitle: "Bigger limits and exclusive features for writing, sending files and streaming.",
     perMonth: "per month",
@@ -159,6 +172,7 @@ export const configuracoes = {
     administracao: "Administration",
   },
   secoes: {
+    coresDoApp: "App colours",
     detalhesDeLogin: "Login details",
     dispositivos: "Devices",
     usuariosBloqueados: "Blocked users",

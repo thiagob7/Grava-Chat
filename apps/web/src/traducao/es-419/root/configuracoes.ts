@@ -51,7 +51,20 @@ export const configuracoes = {
     copiar: "Haz clic para copiar",
     copiado: "Copiado",
   },
+  appColors: {
+    title: "Colores de la app",
+    detail: "Elige hasta tres colores y toda la app toma ese degradado.",
+    locked: "El editor de colores es de {{plan}}.",
+    color: "Color {{number}}",
+    addColor: "Agregar color",
+    removeColor: "Quitar color",
+    surprise: "Sorpréndeme",
+    direction: "Dirección del degradado",
+    intensity: "Intensidad",
+    reset: "Restablecer",
+  },
   subscription: {
+    colorsRow: "Editor de colores de la app",
     seePlans: "Ver planes",
     upgradeSubtitle: "Límites más altos y funciones exclusivas para escribir, enviar archivos y transmitir.",
     perMonth: "por mes",
@@ -159,6 +172,7 @@ export const configuracoes = {
     administracao: "Administración",
   },
   secoes: {
+    coresDoApp: "Colores de la app",
     detalhesDeLogin: "Datos de acceso",
     dispositivos: "Dispositivos",
     usuariosBloqueados: "Usuarios bloqueados",

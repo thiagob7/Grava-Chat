@@ -51,7 +51,20 @@ export const configuracoes = {
     copiar: "Нажмите, чтобы копировать",
     copiado: "Скопировано",
   },
+  appColors: {
+    title: "Цвета приложения",
+    detail: "Выберите до трёх цветов, и всё приложение получит этот градиент.",
+    locked: "Редактор цветов входит в {{plan}}.",
+    color: "Цвет {{number}}",
+    addColor: "Добавить цвет",
+    removeColor: "Убрать цвет",
+    surprise: "Удиви меня",
+    direction: "Направление градиента",
+    intensity: "Интенсивность",
+    reset: "Сбросить",
+  },
   subscription: {
+    colorsRow: "Редактор цветов приложения",
     seePlans: "Посмотреть планы",
     upgradeSubtitle: "Больше лимитов и эксклюзивные функции для сообщений, файлов и трансляций.",
     perMonth: "в месяц",
@@ -159,6 +172,7 @@ export const configuracoes = {
     administracao: "Администрирование",
   },
   secoes: {
+    coresDoApp: "Цвета приложения",
     detalhesDeLogin: "Данные для входа",
     dispositivos: "Устройства",
     usuariosBloqueados: "Заблокированные пользователи",

@@ -51,7 +51,20 @@ export const configuracoes = {
     copiar: "Щракни, за да копираш",
     copiado: "Копирано",
   },
+  appColors: {
+    title: "Цветове на приложението",
+    detail: "Изберете до три цвята и цялото приложение получава този градиент.",
+    locked: "Редакторът на цветове е част от {{plan}}.",
+    color: "Цвят {{number}}",
+    addColor: "Добави цвят",
+    removeColor: "Премахни цвета",
+    surprise: "Изненадай ме",
+    direction: "Посока на градиента",
+    intensity: "Интензивност",
+    reset: "Нулиране",
+  },
   subscription: {
+    colorsRow: "Редактор на цветовете",
     seePlans: "Виж плановете",
     upgradeSubtitle: "По-високи лимити и изключителни функции за писане, файлове и излъчване.",
     perMonth: "на месец",
@@ -159,6 +172,7 @@ export const configuracoes = {
     administracao: "Администрация",
   },
   secoes: {
+    coresDoApp: "Цветове на приложението",
     detalhesDeLogin: "Данни за вход",
     dispositivos: "Устройства",
     usuariosBloqueados: "Блокирани потребители",

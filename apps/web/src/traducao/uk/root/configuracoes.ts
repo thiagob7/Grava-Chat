@@ -51,7 +51,20 @@ export const configuracoes = {
     copiar: "Натисніть, щоб копіювати",
     copiado: "Скопійовано",
   },
+  appColors: {
+    title: "Кольори застосунку",
+    detail: "Виберіть до трьох кольорів, і весь застосунок отримає цей градієнт.",
+    locked: "Редактор кольорів входить до {{plan}}.",
+    color: "Колір {{number}}",
+    addColor: "Додати колір",
+    removeColor: "Прибрати колір",
+    surprise: "Здивуй мене",
+    direction: "Напрямок градієнта",
+    intensity: "Інтенсивність",
+    reset: "Скинути",
+  },
   subscription: {
+    colorsRow: "Редактор кольорів застосунку",
     seePlans: "Переглянути плани",
     upgradeSubtitle: "Більші ліміти й ексклюзивні функції для повідомлень, файлів і трансляцій.",
     perMonth: "на місяць",
@@ -159,6 +172,7 @@ export const configuracoes = {
     administracao: "Адміністрування",
   },
   secoes: {
+    coresDoApp: "Кольори застосунку",
     detalhesDeLogin: "Дані для входу",
     dispositivos: "Пристрої",
     usuariosBloqueados: "Заблоковані користувачі",

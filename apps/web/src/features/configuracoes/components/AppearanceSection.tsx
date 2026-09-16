@@ -28,10 +28,12 @@ import { cn } from "~/lib/utils";
 import { flxCls } from "~/lib/compat-de-tema";
 import { isDesktop } from "~/lib/desktop";
 import { ConfigSection as Section } from "~/features/configuracoes/components/SecaoDeConfig";
+import { AppColorsPanel } from "~/features/tema/components/CoresDoApp";
 import { ScaleControl } from "~/features/configuracoes/components/ControleDeEscala";
 import { EffectsSection } from "~/features/configuracoes/components/SecaoDeEfeitos";
 import { Line, Choice } from "~/features/configuracoes/components/campos-de-config";
 import themeSamples from "~/features/configuracoes/lib/amostras-de-tema.json";
+import { useTranslation } from "~/traducao";
 
 interface ListTheme {
   id: Theme;
@@ -75,6 +77,7 @@ const THEMES: ListTheme[] = [
 ];
 
 export const AppearanceSection: React.FC = () => {
+  const { t } = useTranslation();
   const prefs = useAppearance();
   const openStudio = useStudioWindow((s) => s.open);
   const openCursors = useCursorsWindow((s) => s.open);
@@ -176,6 +179,14 @@ export const AppearanceSection: React.FC = () => {
       </Section>
 
       <Section data-gc="configuracoes.appearance-section.section--2"
+        id="cores-do-app"
+        title={t("configuracoes.appColors.title")}
+        detail={t("configuracoes.appColors.detail")}
+      >
+        <AppColorsPanel data-gc="configuracoes.appearance-section.app-colors-panel" />
+      </Section>
+
+      <Section data-gc="configuracoes.appearance-section.section--3"
         id="cor-de-destaque"
         title="Cor de destaque"
         detail="A cor dos botões, dos links e de tudo o que o app quer que você veja primeiro."
@@ -206,7 +217,7 @@ export const AppearanceSection: React.FC = () => {
         </div>
       </Section>
 
-      <Section data-gc="configuracoes.appearance-section.section--3"
+      <Section data-gc="configuracoes.appearance-section.section--4"
         id="zoom-do-app"
         title="Nível de zoom do app"
         detail="Cresce a interface inteira — texto, ícones, avatares e espaçamentos, na mesma proporção."
@@ -221,7 +232,7 @@ export const AppearanceSection: React.FC = () => {
         />
       </Section>
 
-      <Section data-gc="configuracoes.appearance-section.section--4"
+      <Section data-gc="configuracoes.appearance-section.section--5"
         id="escala-da-fonte"
         title="Escala da fonte do chat"
         detail="Cresce só o texto das mensagens. Os menus e a lista de canais ficam como estão."
@@ -238,7 +249,7 @@ export const AppearanceSection: React.FC = () => {
 
       <EffectsSection data-gc="configuracoes.appearance-section.effects-section" />
 
-      <Section data-gc="configuracoes.appearance-section.section--5"
+      <Section data-gc="configuracoes.appearance-section.section--6"
         id="interface"
         title="Interface"
         detail="O contorno da janela e as colunas que ficam em volta da conversa."
@@ -262,7 +273,7 @@ export const AppearanceSection: React.FC = () => {
         />
       </Section>
 
-      <Section data-gc="configuracoes.appearance-section.section--6"
+      <Section data-gc="configuracoes.appearance-section.section--7"
         id="lista-de-canais"
         title="Lista de canais"
         detail="A coluna da esquerda, dentro de um servidor."
@@ -284,7 +295,7 @@ export const AppearanceSection: React.FC = () => {
         />
       </Section>
 
-      <Section data-gc="configuracoes.appearance-section.section--7"
+      <Section data-gc="configuracoes.appearance-section.section--8"
         id="modo-streamer"
         title="Privacidade de transmissão"
         detail="Para quando a sua tela está sendo vista por gente que não está na conversa."

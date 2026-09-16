@@ -51,7 +51,20 @@ export const configuracoes = {
     copiar: "Kopioi napsauttamalla",
     copiado: "Kopioitu",
   },
+  appColors: {
+    title: "Sovelluksen värit",
+    detail: "Valitse enintään kolme väriä, ja koko sovellus saa sen liukuvärin.",
+    locked: "Värieditori kuuluu {{plan}}-tilaukseen.",
+    color: "Väri {{number}}",
+    addColor: "Lisää väri",
+    removeColor: "Poista väri",
+    surprise: "Yllätä minut",
+    direction: "Liukuvärin suunta",
+    intensity: "Voimakkuus",
+    reset: "Palauta",
+  },
   subscription: {
+    colorsRow: "Sovelluksen värieditori",
     seePlans: "Katso tilaukset",
     upgradeSubtitle: "Isommat rajat ja omat ominaisuudet kirjoittamiseen, tiedostoihin ja lähetyksiin.",
     perMonth: "kuukaudessa",
@@ -159,6 +172,7 @@ export const configuracoes = {
     administracao: "Hallinta",
   },
   secoes: {
+    coresDoApp: "Sovelluksen värit",
     detalhesDeLogin: "Kirjautumistiedot",
     dispositivos: "Laitteet",
     usuariosBloqueados: "Estetyt käyttäjät",

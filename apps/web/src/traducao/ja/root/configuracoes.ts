@@ -51,7 +51,20 @@ export const configuracoes = {
     copiar: "クリックでコピー",
     copiado: "コピーしました",
   },
+  appColors: {
+    title: "アプリの色",
+    detail: "最大3色を選ぶと、アプリ全体がそのグラデーションになります。",
+    locked: "カラーエディターは{{plan}}の機能です。",
+    color: "色 {{number}}",
+    addColor: "色を追加",
+    removeColor: "色を削除",
+    surprise: "おまかせ",
+    direction: "グラデーションの向き",
+    intensity: "強さ",
+    reset: "リセット",
+  },
   subscription: {
+    colorsRow: "アプリのカラーエディター",
     seePlans: "プランを見る",
     upgradeSubtitle: "文章、ファイル送信、配信の上限が広がり、限定機能も使えます。",
     perMonth: "/月",
@@ -159,6 +172,7 @@ export const configuracoes = {
     administracao: "管理",
   },
   secoes: {
+    coresDoApp: "アプリの色",
     detalhesDeLogin: "ログイン情報",
     dispositivos: "デバイス",
     usuariosBloqueados: "ブロックしたユーザー",

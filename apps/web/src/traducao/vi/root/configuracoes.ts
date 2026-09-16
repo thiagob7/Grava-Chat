@@ -51,7 +51,20 @@ export const configuracoes = {
     copiar: "Nhấn để sao chép",
     copiado: "Đã sao chép",
   },
+  appColors: {
+    title: "Màu của ứng dụng",
+    detail: "Chọn tối đa ba màu và cả ứng dụng sẽ dùng dải màu đó.",
+    locked: "Trình chỉnh màu thuộc {{plan}}.",
+    color: "Màu {{number}}",
+    addColor: "Thêm màu",
+    removeColor: "Bỏ màu",
+    surprise: "Gợi ý ngẫu nhiên",
+    direction: "Hướng dải màu",
+    intensity: "Độ đậm",
+    reset: "Đặt lại",
+  },
   subscription: {
+    colorsRow: "Trình chỉnh màu ứng dụng",
     seePlans: "Xem các gói",
     upgradeSubtitle: "Giới hạn cao hơn và tính năng độc quyền để viết, gửi tệp và phát trực tiếp.",
     perMonth: "mỗi tháng",
@@ -159,6 +172,7 @@ export const configuracoes = {
     administracao: "Quản trị",
   },
   secoes: {
+    coresDoApp: "Màu của ứng dụng",
     detalhesDeLogin: "Thông tin đăng nhập",
     dispositivos: "Thiết bị",
     usuariosBloqueados: "Người dùng bị chặn",

@@ -51,7 +51,20 @@ export const configuracoes = {
     copiar: "點一下複製",
     copiado: "已複製",
   },
+  appColors: {
+    title: "應用程式顏色",
+    detail: "最多選三種顏色，整個應用程式都會用這個漸層。",
+    locked: "顏色編輯器是 {{plan}} 的功能。",
+    color: "顏色 {{number}}",
+    addColor: "新增顏色",
+    removeColor: "移除顏色",
+    surprise: "隨機來一個",
+    direction: "漸層方向",
+    intensity: "強度",
+    reset: "重設",
+  },
   subscription: {
+    colorsRow: "應用程式顏色編輯器",
     seePlans: "查看方案",
     upgradeSubtitle: "寫訊息、傳檔案和直播都有更高上限與專屬功能。",
     perMonth: "每月",
@@ -159,6 +172,7 @@ export const configuracoes = {
     administracao: "管理",
   },
   secoes: {
+    coresDoApp: "應用程式顏色",
     detalhesDeLogin: "登入資訊",
     dispositivos: "裝置",
     usuariosBloqueados: "已封鎖的使用者",

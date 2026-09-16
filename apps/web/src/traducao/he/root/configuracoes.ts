@@ -51,7 +51,20 @@ export const configuracoes = {
     copiar: "לחץ כדי להעתיק",
     copiado: "הועתק",
   },
+  appColors: {
+    title: "צבעי האפליקציה",
+    detail: "בחר עד שלושה צבעים וכל האפליקציה תקבל את המעבר הזה.",
+    locked: "עורך הצבעים הוא חלק מ-{{plan}}.",
+    color: "צבע {{number}}",
+    addColor: "הוספת צבע",
+    removeColor: "הסרת צבע",
+    surprise: "הפתע אותי",
+    direction: "כיוון המעבר",
+    intensity: "עוצמה",
+    reset: "איפוס",
+  },
   subscription: {
+    colorsRow: "עורך צבעי האפליקציה",
     seePlans: "לצפייה בתוכניות",
     upgradeSubtitle: "מגבלות גבוהות יותר ותכונות בלעדיות לכתיבה, שליחת קבצים ושידור.",
     perMonth: "לחודש",
@@ -159,6 +172,7 @@ export const configuracoes = {
     administracao: "ניהול",
   },
   secoes: {
+    coresDoApp: "צבעי האפליקציה",
     detalhesDeLogin: "פרטי כניסה",
     dispositivos: "מכשירים",
     usuariosBloqueados: "משתמשים חסומים",

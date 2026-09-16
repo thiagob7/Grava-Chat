@@ -51,7 +51,20 @@ export const configuracoes = {
     copiar: "Spustelėkite, kad nukopijuotumėte",
     copiado: "Nukopijuota",
   },
+  appColors: {
+    title: "Programos spalvos",
+    detail: "Pasirinkite iki trijų spalvų ir visa programa gaus šį perėjimą.",
+    locked: "Spalvų redaktorius yra {{plan}} dalis.",
+    color: "{{number}} spalva",
+    addColor: "Pridėti spalvą",
+    removeColor: "Pašalinti spalvą",
+    surprise: "Nustebink mane",
+    direction: "Perėjimo kryptis",
+    intensity: "Intensyvumas",
+    reset: "Atstatyti",
+  },
   subscription: {
+    colorsRow: "Programos spalvų redaktorius",
     seePlans: "Peržiūrėti planus",
     upgradeSubtitle: "Didesni limitai ir išskirtinės funkcijos rašyti, siųsti failus ir transliuoti.",
     perMonth: "per mėnesį",
@@ -159,6 +172,7 @@ export const configuracoes = {
     administracao: "Administravimas",
   },
   secoes: {
+    coresDoApp: "Programos spalvos",
     detalhesDeLogin: "Prisijungimo duomenys",
     dispositivos: "Įrenginiai",
     usuariosBloqueados: "Užblokuoti naudotojai",
