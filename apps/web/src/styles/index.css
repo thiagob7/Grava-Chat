@@ -1119,72 +1119,30 @@ textarea:not(:disabled),
 }
 
 /*
-  O fundo da página do Infinity: manchas de cor que passeiam devagar atrás do
-  conteúdo. É enfeite, então some inteiro para quem pede menos movimento.
+  O fundo do topo da página do Infinity. São luzes redondas, na cor da marca,
+  que passeiam devagar. A máscara faz a luz sumir antes da borda de baixo, se
+  não ela terminava num corte reto atravessado na tela.
 */
-.infinity-blob {
-  animation: infinity-drift 18s ease-in-out infinite alternate;
-}
-
-.infinity-blob--slow {
-  animation-duration: 26s;
-  animation-delay: -8s;
-}
-
-.infinity-shine {
-  background-size: 200% 200%;
-  animation: infinity-shine 12s linear infinite;
+.infinity-glow {
+  background:
+    radial-gradient(38rem 26rem at 18% 12%, color-mix(in srgb, var(--color-brand) 42%, transparent), transparent 70%),
+    radial-gradient(34rem 24rem at 82% 28%, color-mix(in srgb, var(--color-brand-hover) 34%, transparent), transparent 72%),
+    radial-gradient(30rem 20rem at 50% 88%, color-mix(in srgb, var(--color-brand) 26%, transparent), transparent 75%);
+  mask-image: linear-gradient(to bottom, #000 55%, transparent 100%);
+  animation: infinity-drift 22s ease-in-out infinite alternate;
 }
 
 @keyframes infinity-drift {
   from {
-    transform: translate3d(-4%, -2%, 0) scale(1);
+    background-position: 0% 0%, 0% 0%, 0% 0%;
   }
   to {
-    transform: translate3d(5%, 4%, 0) scale(1.12);
-  }
-}
-
-@keyframes infinity-shine {
-  to {
-    background-position: 200% 50%;
+    background-position: 6% 4%, -5% 3%, 3% -4%;
   }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .infinity-blob,
-  .infinity-shine {
-    animation: none;
-  }
-}
-
-/*
-  Os enfeites que flutuam no alto da página do Infinity. Mesma regra das
-  manchas: é decoração, então para de vez quando a pessoa pede menos movimento.
-*/
-.infinity-float {
-  animation: infinity-float 9s ease-in-out infinite alternate;
-}
-
-.infinity-float--slow {
-  animation-duration: 13s;
-}
-
-.infinity-float--late {
-  animation-delay: -4s;
-}
-
-@keyframes infinity-float {
-  from {
-    transform: translate3d(0, 10px, 0) rotate(-6deg);
-  }
-  to {
-    transform: translate3d(0, -14px, 0) rotate(6deg);
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .infinity-float {
+  .infinity-glow {
     animation: none;
   }
 }

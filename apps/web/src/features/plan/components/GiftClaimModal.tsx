@@ -39,9 +39,8 @@ const GiftClaimBody: React.FC<{ code: string; onClose: () => void }> = ({ code, 
 
   return (
     <div data-gc="plan.gift-claim-modal.div" className="pb-6 text-center">
-      <div data-gc="plan.gift-claim-modal.div--2" className="relative h-36 overflow-hidden bg-gradient-to-br from-brand/50 via-brand/25 to-mencao/40">
-        <span data-gc="plan.gift-claim-modal.span" aria-hidden className="infinity-blob absolute -left-10 -top-10 size-40 rounded-full bg-brand/45 blur-2xl" />
-        <span data-gc="plan.gift-claim-modal.span--2" aria-hidden className="infinity-blob infinity-blob--slow absolute -right-8 bottom-0 size-36 rounded-full bg-mencao/40 blur-2xl" />
+      <div data-gc="plan.gift-claim-modal.div--2" className="relative h-36 overflow-hidden bg-gradient-to-br from-brand/45 via-brand/20 to-surface-2">
+        <span data-gc="plan.gift-claim-modal.span" aria-hidden className="infinity-glow absolute inset-0" />
         <InfinityArt data-gc="plan.gift-claim-modal.infinity-art" className="absolute inset-0 m-auto size-32" />
       </div>
 

@@ -22,8 +22,8 @@ export const GiftLinkCard: React.FC<{ code: string }> = ({ code }) => {
         </Button>
       </div>
 
-      <div data-gc="plan.gift-link-card.div--3" className="relative hidden w-44 shrink-0 overflow-hidden bg-gradient-to-br from-brand/45 via-brand/20 to-mencao/35 @sm:block">
-        <span data-gc="plan.gift-link-card.span" aria-hidden className="infinity-blob absolute -right-10 -top-8 size-32 rounded-full bg-brand/40 blur-2xl" />
+      <div data-gc="plan.gift-link-card.div--3" className="relative hidden w-44 shrink-0 overflow-hidden bg-gradient-to-br from-brand/40 via-brand/20 to-surface-2 @sm:block">
+        <span data-gc="plan.gift-link-card.span" aria-hidden className="infinity-glow absolute inset-0" />
         <InfinityArt data-gc="plan.gift-link-card.infinity-art" className="absolute inset-0 m-auto size-32" />
       </div>
     </div>
