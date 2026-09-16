@@ -126,6 +126,9 @@ export const configuracoes = {
     giftHint: "有禮物碼嗎？在這裡兌換。你購買的禮物顯示在下方。",
     cardPaid: "付款成功！你的 Infinity 已啟用。",
     payAmount: "支付 {{amount}}",
+    giftLinkTitle: "你收到了一份 {{plan}} 禮物！",
+    giftLinkDetail: "點擊兌換，天數就會加到你的帳號。",
+    pageTitle: "用 {{plan}} 解鎖更多特權",
   },
   telas: {
     subscription: "Infinity",

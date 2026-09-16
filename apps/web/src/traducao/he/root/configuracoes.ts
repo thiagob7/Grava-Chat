@@ -126,6 +126,9 @@ export const configuracoes = {
     giftHint: "יש לך קוד מתנה? ממש אותו כאן. המתנות שקנית מופיעות למטה.",
     cardPaid: "התשלום אושר! ה-Infinity שלך פעיל.",
     payAmount: "לשלם {{amount}}",
+    giftLinkTitle: "קיבלת מתנת {{plan}}!",
+    giftLinkDetail: "הקש על מימוש והימים ייכנסו לחשבון שלך.",
+    pageTitle: "פתח עולם של הטבות עם {{plan}}",
   },
   telas: {
     subscription: "Infinity",

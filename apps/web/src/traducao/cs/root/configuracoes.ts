@@ -126,6 +126,9 @@ export const configuracoes = {
     giftHint: "Máte kód dárku? Uplatněte ho tady. Koupené dárky jsou níže.",
     cardPaid: "Platba schválena! Vaše Infinity je aktivní.",
     payAmount: "Zaplatit {{amount}}",
+    giftLinkTitle: "Dostali jste dárek {{plan}}!",
+    giftLinkDetail: "Klepněte na uplatnit a dny přistanou na vašem účtu.",
+    pageTitle: "Odemkněte svět výhod s {{plan}}",
   },
   telas: {
     subscription: "Infinity",

@@ -126,6 +126,9 @@ export const configuracoes = {
     giftHint: "उपहार कोड है? यहाँ भुनाएँ। आपने जो उपहार खरीदे वे नीचे हैं।",
     cardPaid: "भुगतान स्वीकृत! आपका Infinity सक्रिय है।",
     payAmount: "{{amount}} भुगतान करें",
+    giftLinkTitle: "आपको {{plan}} का उपहार मिला!",
+    giftLinkDetail: "भुनाएँ दबाएँ और दिन आपके खाते में आ जाएँगे।",
+    pageTitle: "{{plan}} के साथ फ़ायदों की दुनिया खोलें",
   },
   telas: {
     subscription: "Infinity",

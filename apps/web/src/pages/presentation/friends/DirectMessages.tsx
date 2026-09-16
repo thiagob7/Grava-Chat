@@ -58,8 +58,9 @@ import { useRealtime } from "~/hooks/use-realtime";
 import { Friends } from "~/pages/presentation/friends/Friends";
 import { MessagesRequests } from "~/features/amizades/components/SolicitacoesDeMensagens";
 import { flx, flxCls } from "~/lib/compat-de-tema";
+import { InfinityPage } from "~/features/plan/components/InfinityPage";
 
-export const DirectMessages: React.FC<{ requests?: boolean }> = ({ requests = false }) => {
+export const DirectMessages: React.FC<{ requests?: boolean; infinity?: boolean }> = ({ requests = false, infinity = false }) => {
   const { channelId } = useParams();
   const navigate = useNavigate();
 
@@ -181,7 +182,9 @@ export const DirectMessages: React.FC<{ requests?: boolean }> = ({ requests = fa
         width={side.width}
         fluid={screenNarrow}
         requestsIsOpen={requests}
+        infinityIsOpen={infinity}
         onOpenRequests={() => navigate("/dm/solicitacoes")}
+        onOpenInfinity={() => navigate("/dm/infinity")}
         readStates={readStates}
         user={user}
         onOpenFriends={() => navigate("/dm")}
@@ -432,6 +435,8 @@ export const DirectMessages: React.FC<{ requests?: boolean }> = ({ requests = fa
             )}
           </div>
         </div>
+      ) : infinity ? (
+        <InfinityPage data-gc="friends.direct-messages.infinity-page" onOpenMenu={screenNarrow ? () => setMenuIsOpen(true) : undefined} />
       ) : requests ? (
         <MessagesRequests data-gc="friends.direct-messages.messages-requests" />
       ) : (

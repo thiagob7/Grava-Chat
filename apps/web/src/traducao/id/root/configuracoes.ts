@@ -126,6 +126,9 @@ export const configuracoes = {
     giftHint: "Punya kode hadiah? Tukarkan di sini. Hadiah yang kamu beli ada di bawah.",
     cardPaid: "Pembayaran disetujui! Infinity kamu aktif.",
     payAmount: "Bayar {{amount}}",
+    giftLinkTitle: "Kamu menerima hadiah {{plan}}!",
+    giftLinkDetail: "Ketuk tukarkan dan harinya masuk ke akunmu.",
+    pageTitle: "Buka dunia keuntungan dengan {{plan}}",
   },
   telas: {
     subscription: "Infinity",

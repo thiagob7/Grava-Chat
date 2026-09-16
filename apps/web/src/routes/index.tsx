@@ -98,25 +98,33 @@ export const AppRoutes: React.FC = () => {
         }
       />
       <Route
-        path="/dm/solicitacoes"
+        path="/dm/infinity"
         element={
           <Protected data-gc="routes.protected--6">
-            <DirectMessages data-gc="routes.direct-messages" requests />
+            <DirectMessages data-gc="routes.direct-messages" infinity />
+          </Protected>
+        }
+      />
+      <Route
+        path="/dm/solicitacoes"
+        element={
+          <Protected data-gc="routes.protected--7">
+            <DirectMessages data-gc="routes.direct-messages--2" requests />
           </Protected>
         }
       />
       <Route
         path="/dm/:channelId?"
         element={
-          <Protected data-gc="routes.protected--7">
-            <DirectMessages data-gc="routes.direct-messages--2" />
+          <Protected data-gc="routes.protected--8">
+            <DirectMessages data-gc="routes.direct-messages--3" />
           </Protected>
         }
       />
       <Route
         path="/tema/:themeId"
         element={
-          <Protected data-gc="routes.protected--8">
+          <Protected data-gc="routes.protected--9">
             <SeeTheme data-gc="routes.see-theme" />
           </Protected>
         }
@@ -124,7 +132,7 @@ export const AppRoutes: React.FC = () => {
       <Route
         path="/estudio"
         element={
-          <Protected data-gc="routes.protected--9">
+          <Protected data-gc="routes.protected--10">
             <StudioInWindow data-gc="routes.studio-in-window" />
           </Protected>
         }
@@ -132,7 +140,7 @@ export const AppRoutes: React.FC = () => {
       <Route
         path="/cursores"
         element={
-          <Protected data-gc="routes.protected--10">
+          <Protected data-gc="routes.protected--11">
             <CursorsInWindow data-gc="routes.cursors-in-window" />
           </Protected>
         }
@@ -140,7 +148,7 @@ export const AppRoutes: React.FC = () => {
       <Route
         path="/explorar"
         element={
-          <Protected data-gc="routes.protected--11">
+          <Protected data-gc="routes.protected--12">
             <Explore data-gc="routes.explore--2" />
           </Protected>
         }
@@ -149,7 +157,7 @@ export const AppRoutes: React.FC = () => {
       <Route
         path="/channels/:guildId?/:channelId?"
         element={
-          <Protected data-gc="routes.protected--12">
+          <Protected data-gc="routes.protected--13">
             <Chat data-gc="routes.chat" />
           </Protected>
         }

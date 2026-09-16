@@ -126,6 +126,9 @@ export const configuracoes = {
     giftHint: "Imaš kod poklona? Iskoristi ga ovdje. Kupljeni pokloni su ispod.",
     cardPaid: "Plaćanje odobreno! Vaš Infinity je aktivan.",
     payAmount: "Plati {{amount}}",
+    giftLinkTitle: "Dobili ste poklon {{plan}}!",
+    giftLinkDetail: "Dodirnite iskoristi i dani stižu na vaš račun.",
+    pageTitle: "Otključajte svijet pogodnosti uz {{plan}}",
   },
   telas: {
     subscription: "Infinity",

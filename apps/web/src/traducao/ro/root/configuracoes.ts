@@ -126,6 +126,9 @@ export const configuracoes = {
     giftHint: "Ai un cod cadou? Revendică-l aici. Cadourile cumpărate apar mai jos.",
     cardPaid: "Plată aprobată! Infinity e activ.",
     payAmount: "Plătește {{amount}}",
+    giftLinkTitle: "Ai primit un cadou {{plan}}!",
+    giftLinkDetail: "Atinge revendică și zilele ajung în contul tău.",
+    pageTitle: "Deblochează o lume de avantaje cu {{plan}}",
   },
   telas: {
     subscription: "Infinity",

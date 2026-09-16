@@ -5,6 +5,8 @@ import { TextLink } from "~/features/conversa/components/LinkDoTexto";
 import { Emoji } from "~/features/expressao/components/Emoji";
 import { EMOJI } from "~/features/expressao/lib/twemoji";
 import { ServerEmoji } from "~/features/expressao/components/ServerEmoji";
+import { GiftLinkCard } from "~/features/plan/components/GiftLinkCard";
+import { giftCodeInLink } from "~/features/plan/lib/gift-link";
 
 import { CodeBlock } from "~/features/conversa/components/BlocoDeCodigo";
 import type { ResolveMentions } from "~/features/conversa/hooks/use-mencoes";
@@ -320,6 +322,9 @@ const MessageContentBody: React.FC<MessageContentProps> = ({
   if (!content) return null;
 
   const alone = content.trim();
+  const giftCode = giftCodeInLink(alone);
+  if (giftCode) return <GiftLinkCard data-gc="conversa.message-content.gift-link-card" code={giftCode} />;
+
   if (openLinksImages && SO_UM_LINK.test(alone) && IS_IMAGE.test(clearLink(alone))) {
     return (
       <button data-gc="conversa.message-content.button--2"

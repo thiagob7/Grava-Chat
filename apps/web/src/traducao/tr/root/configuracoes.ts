@@ -126,6 +126,9 @@ export const configuracoes = {
     giftHint: "Hediye kodun var mı? Burada kullan. Aldığın hediyeler aşağıda.",
     cardPaid: "Ödeme onaylandı! Infinity'n aktif.",
     payAmount: "{{amount}} öde",
+    giftLinkTitle: "Bir {{plan}} hediyesi aldın!",
+    giftLinkDetail: "Kullan'a dokun, günler hesabına gelsin.",
+    pageTitle: "{{plan}} ile avantaj dolu bir dünyanın kilidini aç",
   },
   telas: {
     subscription: "Infinity",

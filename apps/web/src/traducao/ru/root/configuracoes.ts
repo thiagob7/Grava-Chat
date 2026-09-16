@@ -126,6 +126,9 @@ export const configuracoes = {
     giftHint: "Есть код подарка? Активируйте его здесь. Купленные подарки — ниже.",
     cardPaid: "Оплата прошла! Ваш Infinity активен.",
     payAmount: "Оплатить {{amount}}",
+    giftLinkTitle: "Вам подарили {{plan}}!",
+    giftLinkDetail: "Нажмите активировать, и дни появятся на вашем аккаунте.",
+    pageTitle: "Откройте мир преимуществ с {{plan}}",
   },
   telas: {
     subscription: "Infinity",
