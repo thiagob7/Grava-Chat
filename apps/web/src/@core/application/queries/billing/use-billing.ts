@@ -9,6 +9,7 @@ import {
   findBilling,
   openBillingPortal,
   requestRefund,
+  startCardPayment,
   startCheckout,
 } from "~/@core/application/requests/billing/billing";
 import { planOf } from "@gravae/shared";
@@ -100,3 +101,9 @@ export const useClaimGift = () => {
     onError: (error) => toast.error(apiErrorMessage(error, i18next.t("configuracoes.subscription.error"))),
   });
 };
+
+export const useStartCardPayment = () =>
+  useMutation({
+    mutationFn: startCardPayment,
+    onError: (error) => toast.error(apiErrorMessage(error, i18next.t("configuracoes.subscription.error"))),
+  });

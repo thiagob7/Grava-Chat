@@ -81,4 +81,12 @@ export interface BillingStatus {
   canManage: boolean;
   prices: BillingPrices | null;
   pixEnabled: boolean;
+  publishableKey: string | null;
+}
+
+export interface CardIntent {
+  clientSecret: string;
+  amount: number;
+  currency: string;
+  mode: "subscription" | "payment";
 }

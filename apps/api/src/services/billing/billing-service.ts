@@ -1,9 +1,12 @@
 import {
   PASS_DAYS,
+  PASS_PRICE_CENTS,
+  PLAN_NAME,
   extendPremium,
   type BillingInterval,
   type BillingPrices,
   type BillingStatus,
+  type CardIntent,
   type PurchaseTarget,
   type CheckoutInput,
   type PremiumSource,
@@ -151,6 +154,7 @@ export const billingService = {
       canManage: Boolean(customer),
       prices,
       pixEnabled: mercadoPagoEnabled(),
+      publishableKey: env.STRIPE_PUBLISHABLE_KEY || null,
     };
   },
 
@@ -196,6 +200,54 @@ export const billingService = {
 
     if (!session.url) throw new AppError("Não deu para abrir o pagamento", 502);
     return { url: session.url };
+  },
+
+  async cardIntent(userId: string, input: CheckoutInput): Promise<CardIntent> {
+    const client = requireStripe();
+    const customer = await ensureCustomer(client, userId);
+
+    if (input.target === "gift" || input.renewal === "none") {
+      const days = PASS_DAYS[input.interval];
+      const intent = await client.paymentIntents.create({
+        amount: PASS_PRICE_CENTS[input.interval],
+        currency: "brl",
+        customer,
+        description: `${PLAN_NAME} · ${days} dias`,
+        automatic_payment_methods: { enabled: true, allow_redirects: "never" },
+        metadata: { userId, kind: "pass", days: String(days), interval: input.interval, target: input.target },
+      });
+
+      if (!intent.client_secret) throw new AppError("Não deu para abrir o pagamento", 502);
+      return { clientSecret: intent.client_secret, amount: intent.amount, currency: intent.currency, mode: "payment" };
+    }
+
+    const price = PRICES.automatic[input.interval];
+    if (!price) throw new AppError("Esse plano não está disponível", 400);
+
+    const existing = await billingRepository.customerOfUser(userId);
+    if (existing?.subscriptionId && !ENDED_STATUSES.has(existing.subscriptionStatus ?? "")) {
+      throw new AppError("Você já tem uma assinatura. Gerencie por ela.", 409);
+    }
+
+    const subscription = await client.subscriptions.create({
+      customer,
+      items: [{ price }],
+      payment_behavior: "default_incomplete",
+      payment_settings: { save_default_payment_method: "on_subscription" },
+      expand: ["latest_invoice.confirmation_secret"],
+      metadata: { userId },
+    });
+
+    const invoice = subscription.latest_invoice;
+    const secret = typeof invoice === "string" ? null : invoice?.confirmation_secret?.client_secret;
+    if (!secret) throw new AppError("Não deu para abrir o pagamento", 502);
+
+    return {
+      clientSecret: secret,
+      amount: typeof invoice === "string" ? 0 : (invoice?.amount_due ?? 0),
+      currency: typeof invoice === "string" ? "brl" : (invoice?.currency ?? "brl"),
+      mode: "subscription",
+    };
   },
 
   async portal(userId: string) {
@@ -296,6 +348,8 @@ export const billingService = {
     target: PurchaseTarget;
   }) {
     const { interval, target, ...payment } = pass;
+    if (await billingRepository.paymentBySource(pass.sourceId)) return;
+
     await billingRepository.createPayment({ ...payment, kind: "pass", paidAt: new Date() });
 
     if (target === "gift") {

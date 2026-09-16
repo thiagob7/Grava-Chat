@@ -57,6 +57,7 @@ const schema = z.object({
 
   STRIPE_SECRET_KEY: z.string().default(""),
   STRIPE_WEBHOOK_SECRET: z.string().default(""),
+  STRIPE_PUBLISHABLE_KEY: z.string().default(""),
   STRIPE_PRICE_MONTHLY: z.string().default(""),
   STRIPE_PRICE_YEARLY: z.string().default(""),
   STRIPE_PRICE_MONTH_PASS: z.string().default(""),

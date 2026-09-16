@@ -9,11 +9,18 @@ import {
   type BillingInterval,
   type BillingPrice,
   type BillingPrices,
+  type CardIntent,
   type PixChargeView,
   type PlanLimits,
 } from "@gravae/shared";
 
-import { useBilling, useCreatePixCharge, useStartCheckout } from "~/@core/application/queries/billing/use-billing";
+import {
+  useBilling,
+  useCreatePixCharge,
+  useStartCardPayment,
+  useStartCheckout,
+} from "~/@core/application/queries/billing/use-billing";
+import { CardPayment } from "~/features/plan/components/CardPayment";
 import { PixPayment } from "~/features/plan/components/PixPayment";
 import { Button } from "~/components/ui/button";
 import { Dialog, DialogContent, DialogDescription, DialogTitle } from "~/components/ui/dialog";
@@ -59,12 +66,14 @@ const UpgradeBody: React.FC<{ onDone: () => void }> = ({ onDone }) => {
   const billing = useBilling();
   const checkout = useStartCheckout();
   const createPix = useCreatePixCharge();
+  const startCard = useStartCardPayment();
   const openSettings = useSettings((s) => s.open);
 
   const [target, setTarget] = useState<PurchaseTarget>("me");
   const [interval, setBillingInterval] = useState<BillingInterval>("year");
   const [renewal, setRenewal] = useState<PayOption | null>(null);
   const [pixCharge, setPixCharge] = useState<PixChargeView | null>(null);
+  const [cardIntent, setCardIntent] = useState<CardIntent | null>(null);
 
   const status = billing.data;
   const prices = status?.prices;
@@ -83,8 +92,12 @@ const UpgradeBody: React.FC<{ onDone: () => void }> = ({ onDone }) => {
   const chosen = renewal && renewals.includes(renewal) ? renewal : renewals[0] ?? null;
 
   const pay = () => {
+    const renewal = target === "gift" ? ("none" as const) : ("automatic" as const);
+
     if (chosen === "pix") createPix.mutate({ interval, target }, { onSuccess: setPixCharge });
-    else if (chosen) checkout.mutate({ interval, renewal: target === "gift" ? "none" : chosen, target });
+    else if (!chosen) return;
+    else if (status?.publishableKey) startCard.mutate({ interval, renewal, target }, { onSuccess: setCardIntent });
+    else checkout.mutate({ interval, renewal, target });
   };
 
   return (
@@ -98,7 +111,7 @@ const UpgradeBody: React.FC<{ onDone: () => void }> = ({ onDone }) => {
           {t("configuracoes.subscription.upgradeSubtitle")}
         </DialogDescription>
 
-        {!pixCharge && (
+        {!pixCharge && !cardIntent && (
           <div data-gc="plan.upgrade-modal.div--3" className="mt-4 inline-flex rounded-lg border border-line p-0.5">
             {(["me", "gift"] as const).map((option) => (
               <button data-gc="plan.upgrade-modal.button"
@@ -138,6 +151,12 @@ const UpgradeBody: React.FC<{ onDone: () => void }> = ({ onDone }) => {
             {t("configuracoes.subscription.manage")}
           </Button>
         </div>
+      ) : cardIntent && status?.publishableKey ? (
+        <CardPayment data-gc="plan.upgrade-modal.card-payment.on-done"
+          intent={cardIntent}
+          publishableKey={status.publishableKey}
+          onPaid={onDone}
+        />
       ) : pixCharge ? (
         <PixPayment data-gc="plan.upgrade-modal.pix-payment.on-done"
           initial={pixCharge}
@@ -219,7 +238,7 @@ const UpgradeBody: React.FC<{ onDone: () => void }> = ({ onDone }) => {
           <Button data-gc="plan.upgrade-modal.button.pay"
             className="mt-5 w-full"
             disabled={!chosen}
-            loading={checkout.isPending || createPix.isPending}
+            loading={checkout.isPending || createPix.isPending || startCard.isPending}
             onClick={pay}
           >
             {t(target === "gift" ? "configuracoes.subscription.buyGift" : "configuracoes.subscription.subscribe")}
