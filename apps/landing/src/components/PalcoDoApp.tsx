@@ -14,17 +14,29 @@ const CHAT = [
 
 interface Person {
   name: string;
+  handle: string;
+  since: string;
   color: string;
   state: StatusKind;
   roleColor?: string;
+  role?: string;
   owner?: boolean;
 }
 
-const CAIO: Person = { name: "Caio", color: "#e0568a", state: "online" };
-const LEO: Person = { name: "Léo", color: "#4f8cf0", state: "online" };
-const THI: Person = { name: "Thi", color: "#6467f2", state: "dnd", roleColor: "#6467f2", owner: true };
-const MAX: Person = { name: "Max", color: "#f0a63c", state: "idle" };
-const RAFA: Person = { name: "Rafa", color: "#3ba55c", state: "offline" };
+const CAIO: Person = { name: "Caio", handle: "caio", since: "março de 2026", color: "#e0568a", state: "online" };
+const LEO: Person = { name: "Léo", handle: "leo", since: "abril de 2026", color: "#4f8cf0", state: "online" };
+const THI: Person = {
+  name: "Thi",
+  handle: "thi",
+  since: "janeiro de 2026",
+  color: "#6467f2",
+  state: "dnd",
+  roleColor: "#6467f2",
+  role: "Fundadores",
+  owner: true,
+};
+const MAX: Person = { name: "Max", handle: "max", since: "maio de 2026", color: "#f0a63c", state: "idle" };
+const RAFA: Person = { name: "Rafa", handle: "rafa", since: "junho de 2026", color: "#3ba55c", state: "offline" };
 
 const GROUPS: { title: string; people: Person[]; dim?: boolean }[] = [
   { title: "Fundadores — 1", people: [THI] },
@@ -37,12 +49,51 @@ const VOICE = [CAIO, LEO];
 const STEP_S = 0.45;
 const START_S = 0.35;
 
-const Dot = ({ color, letter }: { color: string; letter: string }) => (
+const Dot = ({ color, letter, className = "size-7 text-[11px]" }: { color: string; letter: string; className?: string }) => (
   <span
-    className="flex size-7 shrink-0 items-center justify-center rounded-full text-[11px] font-bold text-white"
+    className={`flex shrink-0 items-center justify-center rounded-full font-bold text-white ${className}`}
     style={{ backgroundColor: color }}
   >
     {letter}
+  </span>
+);
+
+const ProfileCard = ({ person }: { person: Person }) => (
+  <span className="absolute right-full top-0 z-50 mr-2 block w-60 overflow-hidden rounded-xl border border-line bg-surface-0 shadow-2xl shadow-black/60">
+    <span className="block h-14" style={{ backgroundColor: person.color }} />
+
+    <span className="block px-3 pb-3">
+      <span className="relative -mt-8 block w-fit">
+        <Dot color={person.color} letter={person.name[0]!} className="size-16 text-xl ring-4 ring-surface-0" />
+        <span className="absolute bottom-0.5 right-0.5 flex rounded-full bg-surface-0 p-1">
+          <StatusIcon kind={person.state} uid={`${person.handle}-card`} size={14} />
+        </span>
+      </span>
+
+      <span
+        className={`mt-2 block text-base font-bold ${person.roleColor ? "" : "text-ink"}`}
+        style={person.roleColor ? { color: person.roleColor } : undefined}
+      >
+        {person.name}
+      </span>
+      <span className="block text-xs text-ink-faint">@{person.handle}</span>
+
+      <span className="mt-3 block text-[11px] font-semibold uppercase tracking-wide text-ink-faint">
+        Membro desde
+      </span>
+      <span className="block text-xs text-ink-muted">{person.since}</span>
+
+      {person.role && (
+        <span className="mt-3 flex w-fit items-center gap-1.5 rounded bg-surface-2 px-2 py-1 text-[11px] text-ink-muted">
+          <span className="size-2 rounded-full" style={{ backgroundColor: person.roleColor }} />
+          {person.role}
+        </span>
+      )}
+
+      <span className="mt-3 block rounded-lg bg-surface-2 px-3 py-2 text-xs text-ink-faint">
+        Conversar com @{person.handle}
+      </span>
+    </span>
   </span>
 );
 
@@ -192,28 +243,37 @@ export const AppStage = () => (
                 {title}
               </h3>
 
-              {people.map(({ name, color, state, roleColor, owner }, i) => (
-                <div
-                  key={name}
-                  className={`surge flex items-center gap-2.5 rounded px-2 py-1 ${dim ? "opacity-40" : ""}`}
+              {people.map((person, i) => (
+                <details
+                  key={person.name}
+                  name="membro-da-maquete"
+                  className="surge relative"
                   style={{ animationDelay: `${START_S + i * 0.1}s` }}
                 >
-                  <span className="relative">
-                    <Dot color={color} letter={name[0]!} />
-                    <span className="absolute -bottom-0.5 -right-0.5 flex rounded-full bg-surface-1 p-0.5">
-                      <Hint label={STATUS_LABEL[state]}>
-                        <StatusIcon kind={state} uid={name} />
-                      </Hint>
-                    </span>
-                  </span>
-                  <span
-                    className={`min-w-0 truncate text-sm font-medium ${roleColor ? "" : "text-ink-muted"}`}
-                    style={roleColor ? { color: roleColor } : undefined}
+                  <summary
+                    className={`flex cursor-pointer list-none items-center gap-2.5 rounded px-2 py-1 transition hover:bg-surface-3 [&::-webkit-details-marker]:hidden ${
+                      dim ? "opacity-40 hover:opacity-100" : ""
+                    }`}
                   >
-                    {name}
-                  </span>
-                  {owner && <Crown size={13} fill="currentColor" className="shrink-0 text-[#eac532]" />}
-                </div>
+                    <span className="relative">
+                      <Dot color={person.color} letter={person.name[0]!} />
+                      <span className="absolute -bottom-0.5 -right-0.5 flex rounded-full bg-surface-1 p-0.5">
+                        <Hint label={STATUS_LABEL[person.state]}>
+                          <StatusIcon kind={person.state} uid={person.name} />
+                        </Hint>
+                      </span>
+                    </span>
+                    <span
+                      className={`min-w-0 truncate text-sm font-medium ${person.roleColor ? "" : "text-ink-muted"}`}
+                      style={person.roleColor ? { color: person.roleColor } : undefined}
+                    >
+                      {person.name}
+                    </span>
+                    {person.owner && <Crown size={13} fill="currentColor" className="shrink-0 text-[#eac532]" />}
+                  </summary>
+
+                  <ProfileCard person={person} />
+                </details>
               ))}
             </section>
           ))}
