@@ -20,6 +20,7 @@ const SOURCE_NAME: Record<NonNullable<PremiumAccount["premiumSource"]>, string> 
   grant: "dado no painel",
   stripe_subscription: "assinatura no cartão",
   stripe_pass: "período avulso",
+  gift: "presente resgatado",
 };
 
 const day = new Intl.DateTimeFormat("pt-BR", { dateStyle: "medium" });

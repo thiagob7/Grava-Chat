@@ -6,12 +6,14 @@ type PlanStore = {
   awaitingPaymentSince: number | null;
   upgradeOpen: boolean;
   guildProfileFor: string | null;
+  giftCode: string | null;
   setPremiumUntil: (premiumUntil: string | null) => void;
   awaitPayment: () => void;
   openUpgrade: () => void;
   closeUpgrade: () => void;
   openGuildProfile: (guildId: string) => void;
   closeGuildProfile: () => void;
+  setGiftCode: (code: string | null) => void;
 };
 
 export const usePlanStore = create<PlanStore>((set) => ({
@@ -25,6 +27,8 @@ export const usePlanStore = create<PlanStore>((set) => ({
   guildProfileFor: null,
   openGuildProfile: (guildId) => set({ guildProfileFor: guildId }),
   closeGuildProfile: () => set({ guildProfileFor: null }),
+  giftCode: null,
+  setGiftCode: (giftCode) => set({ giftCode }),
 }));
 
 export const usePlanLimits = (): PlanLimits => limitsOf(usePlanStore((s) => s.premiumUntil));

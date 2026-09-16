@@ -12,6 +12,7 @@ import { useConfirm } from "~/components/ui/confirm";
 import { Skeleton } from "~/components/ui/skeleton";
 import { ConfigSection } from "~/features/configuracoes/components/SecaoDeConfig";
 import { ComparisonTable } from "~/features/plan/components/UpgradeModal";
+import { GiftsPanel } from "~/features/plan/components/GiftsPanel";
 import { usePlanStore } from "~/features/plan/stores/plan-store";
 import { cn } from "~/lib/utils";
 import { currentLanguage, useTranslation } from "~/traducao";
@@ -97,8 +98,12 @@ export const SubscriptionSection: React.FC = () => {
         </Button>
       )}
 
+      <ConfigSection data-gc="plan.subscription-section.config-section" id="gifts" title={t("configuracoes.subscription.gifts")}>
+        <GiftsPanel data-gc="plan.subscription-section.gifts-panel" />
+      </ConfigSection>
+
       {status?.refund && (
-        <ConfigSection data-gc="plan.subscription-section.config-section" id="refund" title={t("configuracoes.subscription.refund")}>
+        <ConfigSection data-gc="plan.subscription-section.config-section--2" id="refund" title={t("configuracoes.subscription.refund")}>
           <p data-gc="plan.subscription-section.p--4" className="text-sm text-ink-muted">
             {t("configuracoes.subscription.refundDetail", {
               amount: money(status.refund.amount, status.refund.currency),

@@ -1,7 +1,7 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 const USER = "6a8781da7415b08f427be1a4";
-type Charge = { id: string; userId: string; interval: string; days: number; amount: number; mpPaymentId: string | null; mpOrderId: string | null; qrCode: string | null; qrCodeBase64: string | null; status: string; expiresAt: Date; paidAt: Date | null; createdAt: Date };
+type Charge = { id: string; userId: string; interval: string; target: string; days: number; amount: number; mpPaymentId: string | null; mpOrderId: string | null; qrCode: string | null; qrCodeBase64: string | null; status: string; expiresAt: Date; paidAt: Date | null; createdAt: Date };
 
 let charges: Charge[];
 let mpStatus = "created";
@@ -31,7 +31,7 @@ vi.mock("./billing-service.js", () => ({
 vi.mock("~/repositories/billing-repository.js", () => ({
   billingRepository: {
     createPixCharge: async (data: Omit<Charge, "id" | "status" | "mpPaymentId" | "qrCode" | "qrCodeBase64" | "paidAt" | "createdAt">) => {
-      const row: Charge = { ...data, id: `c${charges.length + 1}`, status: "pending", mpPaymentId: null, mpOrderId: null, qrCode: null, qrCodeBase64: null, paidAt: null, createdAt: new Date() };
+      const row: Charge = { ...data, id: `c${charges.length + 1}`, status: "pending", target: "me", mpPaymentId: null, mpOrderId: null, qrCode: null, qrCodeBase64: null, paidAt: null, createdAt: new Date() };
       charges.push(row);
       return row;
     },
@@ -39,7 +39,7 @@ vi.mock("~/repositories/billing-repository.js", () => ({
     pixCharge: async (id: string) => charges.find((c) => c.id === id) ?? null,
     pixChargeByPayment: async (id: string) => charges.find((c) => c.mpPaymentId === id) ?? null,
     pixChargeByOrder: async (id: string) => charges.find((c) => c.mpOrderId === id) ?? null,
-    openPixCharge: async (userId: string, interval: string, now: Date) =>
+    openPixCharge: async (userId: string, interval: string, _target: string, now: Date) =>
       charges.find((c) => c.userId === userId && c.interval === interval && c.status === "pending" && c.expiresAt > now) ?? null,
     pendingPixCharges: async () => charges.filter((c) => c.status === "pending"),
     claimPixCharge: async (id: string, paidAt: Date) => {
@@ -61,8 +61,8 @@ beforeEach(() => {
 
 describe("Pix avulso pelo Mercado Pago", () => {
   it("gera o QR do valor do período e reaproveita o Pix ainda aberto", async () => {
-    const first = await pixService.create(USER, { interval: "month" });
-    const again = await pixService.create(USER, { interval: "month" });
+    const first = await pixService.create(USER, { interval: "month", target: "me" });
+    const again = await pixService.create(USER, { interval: "month", target: "me" });
 
     expect(first).toMatchObject({ status: "pending", amount: 1800, qrCode: "00020126pix" });
     expect(again.id).toBe(first.id);
@@ -70,7 +70,7 @@ describe("Pix avulso pelo Mercado Pago", () => {
   });
 
   it("pago confirma uma vez só, mesmo com aviso e consulta chegando juntos", async () => {
-    const view = await pixService.create(USER, { interval: "month" });
+    const view = await pixService.create(USER, { interval: "month", target: "me" });
     mpStatus = "processed";
 
     await Promise.all([pixService.handleNotification(`ord-${view.id}`), pixService.status(USER, view.id)]);
@@ -81,7 +81,7 @@ describe("Pix avulso pelo Mercado Pago", () => {
   });
 
   it("valor diferente não libera nada", async () => {
-    const view = await pixService.create(USER, { interval: "year" });
+    const view = await pixService.create(USER, { interval: "year", target: "me" });
     mpStatus = "processed";
     mpAmount = 1;
 
@@ -92,14 +92,14 @@ describe("Pix avulso pelo Mercado Pago", () => {
   });
 
   it("vencido sem pagamento vira expirado", async () => {
-    const view = await pixService.create(USER, { interval: "month" });
+    const view = await pixService.create(USER, { interval: "month", target: "me" });
     charges[0]!.expiresAt = new Date(Date.now() - 1000);
 
     expect((await pixService.status(USER, view.id)).status).toBe("expired");
   });
 
   it("outra pessoa não consulta o Pix", async () => {
-    const view = await pixService.create(USER, { interval: "month" });
+    const view = await pixService.create(USER, { interval: "month", target: "me" });
     await expect(pixService.status("6a8781f57415b08f427be1ad", view.id)).rejects.toThrow(/não encontrado/);
   });
 

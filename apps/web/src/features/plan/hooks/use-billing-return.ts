@@ -10,6 +10,7 @@ import { usePlanStore } from "~/features/plan/stores/plan-store";
 import { i18next } from "~/traducao";
 
 export const BILLING_RETURN_PARAM = "billing";
+export const GIFT_PARAM = "gift";
 
 export function useBillingReturn() {
   const client = useQueryClient();
@@ -22,8 +23,19 @@ export function useBillingReturn() {
     return () => setPremiumRequiredHandler(null);
   }, [openUpgrade]);
 
+  const setGiftCode = usePlanStore((s) => s.setGiftCode);
+
   useEffect(() => {
     const url = new URL(window.location.href);
+    const gift = url.searchParams.get(GIFT_PARAM);
+
+    if (gift) {
+      url.searchParams.delete(GIFT_PARAM);
+      window.history.replaceState(window.history.state, "", url.pathname + url.search + url.hash);
+      setGiftCode(gift);
+      open("subscription");
+    }
+
     const outcome = url.searchParams.get(BILLING_RETURN_PARAM);
     if (!outcome) return;
 
@@ -40,5 +52,5 @@ export function useBillingReturn() {
     }
 
     open("subscription");
-  }, [client, open, awaitPayment]);
+  }, [client, open, awaitPayment, setGiftCode]);
 }

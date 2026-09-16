@@ -2,7 +2,9 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "react-toastify";
 
 import {
+  claimGift,
   createPixCharge,
+  findGifts,
   findPixCharge,
   findBilling,
   openBillingPortal,
@@ -78,3 +80,23 @@ export const usePixCharge = (id: string | null) =>
     enabled: Boolean(id),
     refetchInterval: (query) => (query.state.data?.status === "pending" ? 3500 : false),
   });
+
+export const GIFTS_KEY = ["find-gifts"];
+
+export const useGifts = (enabled = true) =>
+  useQuery({ queryKey: GIFTS_KEY, queryFn: findGifts, enabled, retry: false });
+
+export const useClaimGift = () => {
+  const client = useQueryClient();
+
+  return useMutation({
+    mutationFn: claimGift,
+    onSuccess: () => {
+      void client.invalidateQueries({ queryKey: BILLING_KEY });
+      void client.invalidateQueries({ queryKey: GIFTS_KEY });
+      void client.invalidateQueries({ queryKey: [queryKeys.auth.me] });
+      toast.success(i18next.t("configuracoes.subscription.giftClaimed"));
+    },
+    onError: (error) => toast.error(apiErrorMessage(error, i18next.t("configuracoes.subscription.error"))),
+  });
+};

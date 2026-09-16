@@ -4,6 +4,7 @@ import {
   type BillingInterval,
   type BillingPrices,
   type BillingStatus,
+  type PurchaseTarget,
   type CheckoutInput,
   type PremiumSource,
 } from "@gravae/shared";
@@ -14,6 +15,7 @@ import { mercadoPagoEnabled, refundOrder, refundPayment } from "~/lib/mercadopag
 import { stripe, type Stripe } from "~/lib/stripe.js";
 import { announceUserUpdated } from "~/realtime/difusao.js";
 import { billingRepository } from "~/repositories/billing-repository.js";
+import { giftService } from "./gift-service.js";
 import { userRepository } from "~/repositories/user-repository.js";
 import {
   ENDED_STATUSES,
@@ -188,8 +190,8 @@ export const billingService = {
             ...common,
             mode: "payment",
             integration_identifier: CHECKOUT_FLOWS.pass,
-            metadata: { userId, kind: "pass", days: String(PASS_DAYS[input.interval]) },
-            payment_intent_data: { metadata: { userId, kind: "pass" } },
+            metadata: { userId, kind: "pass", days: String(PASS_DAYS[input.interval]), target: input.target },
+            payment_intent_data: { metadata: { userId, kind: "pass", target: input.target } },
           });
 
     if (!session.url) throw new AppError("Não deu para abrir o pagamento", 502);
@@ -215,6 +217,9 @@ export const billingService = {
     if (!payment || !refundable(payment) || !canRefund(payment)) {
       throw new AppError("Não há pagamento dentro dos 7 dias para reembolsar", 400);
     }
+
+    const gift = await billingRepository.giftBySource(payment.sourceId);
+    if (gift?.claimedAt) throw new AppError("Esse presente já foi resgatado e não dá para reembolsar", 409);
 
     const mpOrderId = mercadoPagoOrderOf(payment.sourceId);
     const mpPaymentId = mercadoPagoPaymentOf(payment.sourceId);
@@ -248,15 +253,19 @@ export const billingService = {
     if (payment) await billingService.removeRecorded(payment);
   },
 
-  async removeRecorded(payment: { id: string; userId: string; kind: string; days: number | null }) {
+  async removeRecorded(payment: { id: string; userId: string; kind: string; days: number | null; sourceId: string }) {
     const { count } = await billingRepository.markRefunded(payment.id, new Date());
     if (!count) return;
+
+    const { count: gifts } = await billingRepository.removeGift(payment.sourceId);
+    if (gifts) return;
 
     await savePremium(payment.userId, (current) => afterPaymentRemoved(current, payment));
   },
 
   async grantPass(session: Stripe.Checkout.Session) {
     const userId = session.metadata?.userId ?? session.client_reference_id;
+    const target = session.metadata?.target === "gift" ? ("gift" as const) : ("me" as const);
     const days = Number(session.metadata?.days);
     if (!userId || !Number.isInteger(days) || days <= 0) return;
 
@@ -271,6 +280,8 @@ export const billingService = {
       amount: session.amount_total ?? 0,
       currency: session.currency ?? "brl",
       days,
+      interval: days >= 365 ? "year" : "month",
+      target,
     });
   },
 
@@ -281,8 +292,22 @@ export const billingService = {
     amount: number;
     currency: string;
     days: number;
+    interval: string;
+    target: PurchaseTarget;
   }) {
-    await billingRepository.createPayment({ ...pass, kind: "pass", paidAt: new Date() });
+    const { interval, target, ...payment } = pass;
+    await billingRepository.createPayment({ ...payment, kind: "pass", paidAt: new Date() });
+
+    if (target === "gift") {
+      await giftService.create({
+        buyerId: pass.userId,
+        sourceId: pass.sourceId,
+        interval,
+        days: pass.days,
+        amount: pass.amount,
+      });
+      return;
+    }
 
     await savePremium(pass.userId, (current) => ({
       premiumUntil: extendPremium(current.premiumUntil, pass.days),

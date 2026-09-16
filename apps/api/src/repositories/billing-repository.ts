@@ -60,9 +60,9 @@ export const billingRepository = {
     return prisma.pixCharge.findFirst({ where: { mpPaymentId } });
   },
 
-  openPixCharge(userId: string, interval: string, now: Date) {
+  openPixCharge(userId: string, interval: string, target: string, now: Date) {
     return prisma.pixCharge.findFirst({
-      where: { userId, interval, status: "pending", expiresAt: { gt: now } },
+      where: { userId, interval, target, status: "pending", expiresAt: { gt: now } },
       orderBy: { createdAt: "desc" },
     });
   },
@@ -73,6 +73,33 @@ export const billingRepository = {
 
   claimPixCharge(id: string, paidAt: Date) {
     return prisma.pixCharge.updateMany({ where: { id, status: "pending" }, data: { status: "paid", paidAt } });
+  },
+
+  createGift(data: Prisma.GiftCreateInput) {
+    return prisma.gift.create({ data });
+  },
+
+  giftByCode(code: string) {
+    return prisma.gift.findUnique({ where: { code } });
+  },
+
+  giftBySource(sourceId: string) {
+    return prisma.gift.findUnique({ where: { sourceId } });
+  },
+
+  giftsOf(buyerId: string) {
+    return prisma.gift.findMany({ where: { buyerId }, orderBy: { createdAt: "desc" }, take: 50 });
+  },
+
+  removeGift(sourceId: string) {
+    return prisma.gift.deleteMany({ where: { sourceId, ...unset("claimedAt") } });
+  },
+
+  claimGift(id: string, claimedById: string, claimedAt: Date) {
+    return prisma.gift.updateMany({
+      where: { id, ...unset("claimedAt") },
+      data: { claimedById, claimedAt },
+    });
   },
 
   async eventSeen(stripeId: string) {

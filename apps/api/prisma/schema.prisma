@@ -934,11 +934,28 @@ model BillingEvent {
   processedAt DateTime @default(now())
 }
 
+/// Presente do Infinity: quem paga ganha um código, e quem resgata recebe os dias.
+model Gift {
+  id          String    @id @default(auto()) @map("_id") @db.ObjectId
+  code        String    @unique
+  interval    String
+  days        Int
+  amount      Int
+  buyerId     String    @db.ObjectId
+  sourceId    String    @unique
+  claimedById String?   @db.ObjectId
+  claimedAt   DateTime?
+  createdAt   DateTime  @default(now())
+
+  @@index([buyerId, createdAt])
+}
+
 /// Pix avulso cobrado pelo Mercado Pago: o QR vale até expiresAt e libera os dias quando é pago.
 model PixCharge {
   id           String    @id @default(auto()) @map("_id") @db.ObjectId
   userId       String    @db.ObjectId
   interval     String
+  target       String    @default("me")
   days         Int
   amount       Int
   mpPaymentId  String?

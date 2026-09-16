@@ -3,7 +3,7 @@ export const PLAN_NAME = "Infinity";
 export const PLANS = ["free", "premium"] as const;
 export type Plan = (typeof PLANS)[number];
 
-export const PREMIUM_SOURCES = ["grant", "stripe_subscription", "stripe_pass"] as const;
+export const PREMIUM_SOURCES = ["grant", "stripe_subscription", "stripe_pass", "gift"] as const;
 export type PremiumSource = (typeof PREMIUM_SOURCES)[number];
 
 export const SCREEN_RESOLUTIONS = ["480", "720", "1080", "1440", "original"] as const;
