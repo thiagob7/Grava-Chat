@@ -9,6 +9,10 @@ export const comum = {
     titulo: "Gravaê s-a împiedicat.",
     detalhe: "Ceva s-a stricat pe drum și ecranul n-a reușit să se deseneze. Conversația ta nu s-a pierdut — totul e pe server.",
   },
+  perdido: {
+    titulo: "Adresa asta nu duce nicăieri.",
+    detalhe: "Ori linkul e greșit, ori pagina s-a mutat.",
+  },
   conexao: {
     voltou: "Conectat din nou",
     reconectando: "Mă reconectez",

@@ -9,6 +9,10 @@ export const comum = {
     titulo: "Gravaê snublet.",
     detalhe: "Noe røk underveis, og skjermen klarte ikke å tegne seg. Samtalen din er ikke borte — alt ligger på tjeneren.",
   },
+  perdido: {
+    titulo: "Denne adressen fører ingen steder.",
+    detalhe: "Enten er lenken feil, eller så har siden flyttet.",
+  },
   conexao: {
     voltou: "Tilkoblet igjen",
     reconectando: "Kobler til igjen",

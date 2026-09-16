@@ -9,6 +9,10 @@ export const comum = {
     titulo: "Gravaê tersandung.",
     detalhe: "Ada yang rusak di tengah jalan dan layar tidak berhasil digambar. Percakapanmu tidak hilang — semuanya ada di server.",
   },
+  perdido: {
+    titulo: "Alamat ini tidak menuju ke mana-mana.",
+    detalhe: "Entah tautannya salah, atau halamannya sudah pindah.",
+  },
   conexao: {
     voltou: "Tersambung lagi",
     reconectando: "Menyambung ulang",

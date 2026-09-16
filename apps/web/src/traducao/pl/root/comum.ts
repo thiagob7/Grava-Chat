@@ -9,6 +9,10 @@ export const comum = {
     titulo: "Gravaê się potknął.",
     detalhe: "Coś zepsuło się po drodze i ekran nie zdołał się narysować. Twoja rozmowa nie przepadła — wszystko jest na serwerze.",
   },
+  perdido: {
+    titulo: "Ten adres donikąd nie prowadzi.",
+    detalhe: "Albo link jest błędny, albo strona zmieniła miejsce.",
+  },
   conexao: {
     voltou: "Znowu połączono",
     reconectando: "Łączę ponownie",

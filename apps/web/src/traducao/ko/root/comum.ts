@@ -9,6 +9,10 @@ export const comum = {
     titulo: "Gravaê가 넘어졌습니다.",
     detalhe: "도중에 뭔가 망가져서 화면을 그리지 못했습니다. 대화는 사라지지 않았습니다 — 전부 서버에 있습니다.",
   },
+  perdido: {
+    titulo: "이 주소는 어디로도 이어지지 않아요.",
+    detalhe: "링크가 잘못됐거나 페이지가 옮겨졌어요.",
+  },
   conexao: {
     voltou: "다시 연결됨",
     reconectando: "다시 연결하는 중",

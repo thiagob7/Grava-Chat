@@ -9,6 +9,10 @@ export const comum = {
     titulo: "Gravaê tökezledi.",
     detalhe: "Yolda bir şey bozuldu ve ekran kendini çizemedi. Sohbetin kaybolmadı — hepsi sunucuda.",
   },
+  perdido: {
+    titulo: "Bu adres hiçbir yere çıkmıyor.",
+    detalhe: "Ya bağlantı yanlış geldi ya da sayfa yer değiştirdi.",
+  },
   conexao: {
     voltou: "Yeniden bağlanıldı",
     reconectando: "Yeniden bağlanılıyor",

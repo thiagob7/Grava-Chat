@@ -9,6 +9,10 @@ export const comum = {
     titulo: "Gravaê 絆了一跤。",
     detalhe: "半路上出了問題，畫面畫不出來。你的會話沒有遺失 — 一切都在伺服器上。",
   },
+  perdido: {
+    titulo: "這個網址哪裡也去不了。",
+    detalhe: "可能是連結錯了，或者頁面換了位置。",
+  },
   conexao: {
     voltou: "重新連上了",
     reconectando: "正在重新連線",

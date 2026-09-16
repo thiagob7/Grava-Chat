@@ -9,6 +9,10 @@ export const comum = {
     titulo: "Gravaê klopýtl.",
     detalhe: "Něco se cestou rozbilo a obrazovka se nedokázala vykreslit. Vaše konverzace se neztratila — vše je na serveru.",
   },
+  perdido: {
+    titulo: "Tahle adresa nikam nevede.",
+    detalhe: "Buď je odkaz špatně, nebo se stránka přesunula.",
+  },
   conexao: {
     voltou: "Zase připojeno",
     reconectando: "Připojuji znovu",

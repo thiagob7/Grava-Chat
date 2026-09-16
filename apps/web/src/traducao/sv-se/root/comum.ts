@@ -9,6 +9,10 @@ export const comum = {
     titulo: "Gravaê snubblade.",
     detalhe: "Något gick sönder på vägen och skärmen kunde inte rita upp sig. Ditt samtal är inte borta — allt ligger på servern.",
   },
+  perdido: {
+    titulo: "Den här adressen leder ingenstans.",
+    detalhe: "Antingen blev länken fel, eller så har sidan flyttat.",
+  },
   conexao: {
     voltou: "Ansluten igen",
     reconectando: "Ansluter igen",

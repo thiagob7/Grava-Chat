@@ -9,6 +9,10 @@ export const comum = {
     titulo: "A Gravaê megbotlott.",
     detalhe: "Valami eltört útközben, és a képernyő nem tudta kirajzolni magát. A beszélgetésed nem veszett el — minden a kiszolgálón van.",
   },
+  perdido: {
+    titulo: "Ez a cím nem vezet sehová.",
+    detalhe: "Vagy rossz a hivatkozás, vagy az oldal elköltözött.",
+  },
   conexao: {
     voltou: "Újra kapcsolódva",
     reconectando: "Újrakapcsolódás",
