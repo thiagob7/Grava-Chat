@@ -41,6 +41,26 @@ export async function handleStripeEvent(client: Stripe, event: Stripe.Event, log
       break;
     }
 
+    case "payment_intent.succeeded": {
+      const intent = event.data.object;
+      const days = Number(intent.metadata?.days);
+      const userId = intent.metadata?.userId;
+
+      if (intent.metadata?.kind === "pass" && userId && Number.isInteger(days) && days > 0) {
+        await billingService.recordPass({
+          userId,
+          sourceId: `pi:${intent.id}`,
+          paymentIntentId: intent.id,
+          amount: intent.amount_received || intent.amount,
+          currency: intent.currency,
+          days,
+          interval: intent.metadata.interval ?? (days >= 365 ? "year" : "month"),
+          target: intent.metadata.target === "gift" ? "gift" : "me",
+        });
+      }
+      break;
+    }
+
     case "invoice.payment_failed":
       log.warn({ invoice: event.data.object.id }, "stripe: renovação falhou");
       break;

@@ -36,6 +36,12 @@ export async function billingRoutes(app: FastifyInstance) {
     (req) => billingService.checkout(req.userId, checkoutInput.parse(req.body)),
   );
 
+  app.post(
+    "/billing/card",
+    { config: { rateLimit: { max: 10, timeWindow: "10 minutes" } } },
+    (req) => billingService.cardIntent(req.userId, checkoutInput.parse(req.body)),
+  );
+
   app.post("/billing/portal", (req) => billingService.portal(req.userId));
 
   app.get("/billing/gifts", (req) => giftService.mine(req.userId));
