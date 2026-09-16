@@ -1157,3 +1157,34 @@ textarea:not(:disabled),
     animation: none;
   }
 }
+
+/*
+  Os enfeites que flutuam no alto da página do Infinity. Mesma regra das
+  manchas: é decoração, então para de vez quando a pessoa pede menos movimento.
+*/
+.infinity-float {
+  animation: infinity-float 9s ease-in-out infinite alternate;
+}
+
+.infinity-float--slow {
+  animation-duration: 13s;
+}
+
+.infinity-float--late {
+  animation-delay: -4s;
+}
+
+@keyframes infinity-float {
+  from {
+    transform: translate3d(0, 10px, 0) rotate(-6deg);
+  }
+  to {
+    transform: translate3d(0, -14px, 0) rotate(6deg);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .infinity-float {
+    animation: none;
+  }
+}

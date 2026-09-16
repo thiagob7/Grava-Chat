@@ -8,6 +8,9 @@ export const TINTED_TOKENS = [
   "--color-cabecalho",
   "--color-painel",
   "--color-campo",
+  "--color-campo-foco",
+  "--color-selecionado",
+  "--color-line",
 ] as const;
 
 export type TintedToken = (typeof TINTED_TOKENS)[number];
@@ -62,13 +65,23 @@ export function appColorsCss(base: Partial<Record<TintedToken, string>>, picked:
   const strength = clamp(picked.intensity, 0, 100);
   if (!usable.length || strength === 0) return "";
 
-  const lines = TINTED_TOKENS.flatMap((token, index) => {
+  const tint = colorAt(usable, 0.5);
+
+  const lines = TINTED_TOKENS.flatMap((token) => {
     const original = base[token];
     if (!original) return [];
 
-    const tint = colorAt(usable, index / Math.max(1, TINTED_TOKENS.length - 1));
     return [`  ${token}: color-mix(in srgb, ${tint} ${strength}%, ${original});`];
   });
 
-  return `:root.app-colors {\n${lines.join("\n")}\n  --app-gradient: ${gradientOf(picked)};\n}`;
+  return [
+    `:root.app-colors {`,
+    ...lines,
+    `  --app-gradient: ${gradientOf(picked)};`,
+    `}`,
+    `:root.app-colors body {`,
+    `  background-image: ${gradientOf({ ...picked, colors: usable })};`,
+    `  background-attachment: fixed;`,
+    `}`,
+  ].join("\n");
 }
