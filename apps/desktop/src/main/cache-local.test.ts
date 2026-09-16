@@ -206,7 +206,7 @@ describe("prateleira de saída", () => {
   });
 
   it("desiste do que envelheceu, mesmo sem ter tentado", () => {
-    const agora = Date.parse("2026-09-13T00:00:00Z");
+    const agora = Date.now();
     queueSend("velha", CANAL, escrita("velha"));
 
     expect(pruneQueue(agora + (QUEUE_KEEP_DAYS + 1) * 86_400_000).map((q) => q.nonce)).toEqual([
