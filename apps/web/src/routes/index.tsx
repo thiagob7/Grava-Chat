@@ -23,7 +23,7 @@ import { VerifyEmail } from "~/pages/presentation/auth/VerificarEmail";
 import { DesktopLoginDone } from "~/pages/presentation/auth/LoginNoApp";
 import { SignIn } from "~/pages/presentation/auth/SignIn";
 
-const Admin = React.lazy(() => import("~/pages/presentation/admin/Admin"));
+const Admin = lazyPage(() => import("~/pages/presentation/admin/Admin"));
 
 import { Chat } from "~/pages/presentation/chat/Chat";
 import { AcceptInvite } from "~/pages/presentation/invite/AcceptInvite";
@@ -38,6 +38,7 @@ import { useConfigByUrl } from "~/features/app/hooks/use-config-por-url";
 import { AccountDeletion } from "~/features/perfil/components/ContaEmExclusao";
 import { ThemeBackground } from "~/features/tema/components/FundoDoTema";
 import { cn } from "~/lib/utils";
+import { lazyPage } from "~/lib/lazy-page";
 import { flx, flxAttr, flxCls } from "~/lib/compat-de-tema";
 import { isDesktop } from "~/lib/desktop";
 import { Gift } from "~/pages/presentation/gift/Gift";

@@ -1146,3 +1146,78 @@ textarea:not(:disabled),
     animation: none;
   }
 }
+
+.plan-scene {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  background:
+    radial-gradient(52rem 26rem at 50% -10%, color-mix(in srgb, var(--color-brand) 40%, transparent), transparent 72%),
+    radial-gradient(38rem 22rem at 10% 18%, color-mix(in srgb, var(--color-brand-hover) 24%, transparent), transparent 70%),
+    linear-gradient(
+      to bottom,
+      color-mix(in srgb, var(--color-brand) 22%, var(--color-surface-0)),
+      color-mix(in srgb, var(--color-brand) 8%, var(--color-surface-0)) 70%
+    );
+}
+
+.plan-scene-stars {
+  position: absolute;
+  inset: 0;
+  background-image:
+    radial-gradient(circle, color-mix(in srgb, var(--color-ink) 60%, transparent) 0 1px, transparent 1.6px),
+    radial-gradient(circle, color-mix(in srgb, var(--color-ink) 34%, transparent) 0 1px, transparent 1.6px);
+  background-size: 190px 170px, 270px 240px;
+  background-position: 0 0, 95px 60px;
+  mask-image: linear-gradient(to bottom, #000 0%, transparent 72%);
+  animation: plan-twinkle 7s ease-in-out infinite alternate;
+}
+
+.plan-scene-band {
+  position: absolute;
+  bottom: 0;
+  left: -20%;
+  width: 140%;
+}
+
+.plan-scene-far {
+  fill: color-mix(in srgb, var(--color-brand) 34%, var(--color-surface-1));
+  animation: plan-band 46s ease-in-out infinite alternate;
+}
+
+.plan-scene-mid {
+  fill: color-mix(in srgb, var(--color-brand) 20%, var(--color-surface-0));
+  animation: plan-band 32s ease-in-out infinite alternate-reverse;
+}
+
+.plan-scene-near {
+  fill: color-mix(in srgb, var(--color-surface-0) 78%, #000);
+  animation: plan-band 24s ease-in-out infinite alternate;
+}
+
+@keyframes plan-twinkle {
+  from {
+    opacity: 0.45;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes plan-band {
+  from {
+    transform: translate3d(0, 0, 0);
+  }
+  to {
+    transform: translate3d(2.5%, 0, 0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .plan-scene-stars,
+  .plan-scene-far,
+  .plan-scene-mid,
+  .plan-scene-near {
+    animation: none;
+  }
+}
