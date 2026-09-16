@@ -109,3 +109,14 @@ export async function mercadoPagoWebhookRoutes(app: FastifyInstance) {
     return reply.code(200).send({ ok: true });
   });
 }
+
+export async function publicGiftRoutes(app: FastifyInstance) {
+  app.get(
+    "/gifts/:code",
+    { config: { rateLimit: { max: 30, timeWindow: "5 minutes" } } },
+    (req) => {
+      const { code } = z.object({ code: z.string().min(1).max(32) }).parse(req.params);
+      return giftService.publicView(cleanGiftCode(code));
+    },
+  );
+}

@@ -155,6 +155,9 @@ export const configuracoes = {
     giftUsedDetail: "Някой активира кода преди. Поискайте друг.",
     giftNotFoundTitle: "Кодът не е намерен",
     giftNotFoundDetail: "Проверете кода или поискайте връзката отново.",
+    giftDoneTitle: "{{plan}} е активиран!",
+    giftOpenApp: "Отвори приложението",
+    giftSignIn: "Влезте, за да активирате",
   },
   telas: {
     subscription: "Infinity",

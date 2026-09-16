@@ -10,7 +10,7 @@ import { Avatar } from "~/features/perfil/components/Avatar";
 import { usePlanStore } from "~/features/plan/stores/plan-store";
 import { currentLanguage, useTranslation } from "~/traducao";
 
-const linkOf = (code: string) => `${window.location.origin}/channels/@me?gift=${cleanGiftCode(code)}`;
+const linkOf = (code: string) => `${window.location.origin}/gift/${cleanGiftCode(code)}`;
 
 export const GiftsPanel: React.FC = () => {
   const { t } = useTranslation();

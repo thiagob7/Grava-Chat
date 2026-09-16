@@ -155,6 +155,9 @@ export const configuracoes = {
     giftUsedDetail: "Alguien canjeó este código antes. Pide otro.",
     giftNotFoundTitle: "Código no encontrado",
     giftNotFoundDetail: "Revisa el código o pide el enlace otra vez.",
+    giftDoneTitle: "¡{{plan}} activado!",
+    giftOpenApp: "Abrir la app",
+    giftSignIn: "Inicia sesión para canjear",
   },
   telas: {
     subscription: "Infinity",

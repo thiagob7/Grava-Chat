@@ -155,6 +155,9 @@ export const configuracoes = {
     giftUsedDetail: "Ai đó đã dùng mã này trước. Hãy xin mã khác.",
     giftNotFoundTitle: "Không tìm thấy mã",
     giftNotFoundDetail: "Kiểm tra mã hoặc xin lại liên kết.",
+    giftDoneTitle: "Đã kích hoạt {{plan}}!",
+    giftOpenApp: "Mở ứng dụng",
+    giftSignIn: "Đăng nhập để dùng mã",
   },
   telas: {
     subscription: "Infinity",

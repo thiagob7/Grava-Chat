@@ -155,6 +155,9 @@ export const configuracoes = {
     giftUsedDetail: "Valaki korábban beváltotta a kódot. Kérj másikat.",
     giftNotFoundTitle: "A kód nem található",
     giftNotFoundDetail: "Nézd meg a kódot, vagy kérd el újra a linket.",
+    giftDoneTitle: "{{plan}} aktiválva!",
+    giftOpenApp: "App megnyitása",
+    giftSignIn: "Jelentkezz be a beváltáshoz",
   },
   telas: {
     subscription: "Infinity",

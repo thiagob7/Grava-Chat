@@ -155,6 +155,9 @@ export const configuracoes = {
     giftUsedDetail: "有人先兑换了这个码，请再要一个。",
     giftNotFoundTitle: "找不到该码",
     giftNotFoundDetail: "检查一下码，或者重新索取链接。",
+    giftDoneTitle: "{{plan}} 已启用！",
+    giftOpenApp: "打开应用",
+    giftSignIn: "登录后兑换",
   },
   telas: {
     subscription: "Infinity",

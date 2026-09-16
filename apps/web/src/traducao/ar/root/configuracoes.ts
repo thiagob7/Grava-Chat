@@ -155,6 +155,9 @@ export const configuracoes = {
     giftUsedDetail: "استخدم أحدهم هذا الرمز سابقًا. اطلب رمزًا آخر.",
     giftNotFoundTitle: "لم يُعثر على الرمز",
     giftNotFoundDetail: "تحقق من الرمز أو اطلب الرابط مرة أخرى.",
+    giftDoneTitle: "تم تفعيل {{plan}}!",
+    giftOpenApp: "افتح التطبيق",
+    giftSignIn: "سجّل الدخول للاستخدام",
   },
   telas: {
     subscription: "Infinity",

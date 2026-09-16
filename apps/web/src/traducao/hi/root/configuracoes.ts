@@ -155,6 +155,9 @@ export const configuracoes = {
     giftUsedDetail: "किसी ने यह कोड पहले भुना लिया। दूसरा माँगें।",
     giftNotFoundTitle: "कोड नहीं मिला",
     giftNotFoundDetail: "कोड जाँचें या लिंक फिर से माँगें।",
+    giftDoneTitle: "{{plan}} चालू हो गया!",
+    giftOpenApp: "ऐप खोलें",
+    giftSignIn: "भुनाने के लिए साइन इन करें",
   },
   telas: {
     subscription: "Infinity",

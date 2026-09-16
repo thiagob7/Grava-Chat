@@ -33,7 +33,7 @@ const GiftClaimBody: React.FC<{ code: string; onClose: () => void }> = ({ code, 
   const day = (iso: string) => new Date(iso).toLocaleDateString(currentLanguage(), { dateStyle: "long" });
 
   const copyLink = async () => {
-    await navigator.clipboard.writeText(`${window.location.origin}/channels/@me?gift=${cleanGiftCode(code)}`).catch(() => undefined);
+    await navigator.clipboard.writeText(`${window.location.origin}/gift/${cleanGiftCode(code)}`).catch(() => undefined);
     toast.success(t("configuracoes.subscription.giftLinkCopied"));
   };
 

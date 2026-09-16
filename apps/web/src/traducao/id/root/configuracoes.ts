@@ -155,6 +155,9 @@ export const configuracoes = {
     giftUsedDetail: "Seseorang menukarkan kode ini lebih dulu. Minta yang lain.",
     giftNotFoundTitle: "Kode tidak ditemukan",
     giftNotFoundDetail: "Periksa kodenya atau minta tautannya lagi.",
+    giftDoneTitle: "{{plan}} aktif!",
+    giftOpenApp: "Buka aplikasi",
+    giftSignIn: "Masuk untuk menukarkan",
   },
   telas: {
     subscription: "Infinity",

@@ -40,6 +40,7 @@ import { ThemeBackground } from "~/features/tema/components/FundoDoTema";
 import { cn } from "~/lib/utils";
 import { flx, flxAttr, flxCls } from "~/lib/compat-de-tema";
 import { isDesktop } from "~/lib/desktop";
+import { Gift } from "~/pages/presentation/gift/Gift";
 
 export const AppRoutes: React.FC = () => {
   useConfigByUrl();
@@ -51,6 +52,7 @@ export const AppRoutes: React.FC = () => {
       <AppShell data-gc="routes.app-shell">
       <div data-gc="routes.div--2" {...flxAttr("frameExternal")} {...flx("appFrame", cn("moldura-externa min-h-0 flex-1 overflow-x-hidden", flxCls("frameExternal")))}>
     <Routes>
+      <Route path="/gift/:code" element={<Gift data-gc="routes.gift" />} />
       <Route path="/login" element={<PublicOnly data-gc="routes.public-only" />} />
       <Route path="/redefinir" element={<ResetPassword data-gc="routes.reset-password" />} />
       <Route path="/verificar-email" element={<VerifyEmail data-gc="routes.verify-email" />} />
@@ -181,7 +183,7 @@ export const AppRoutes: React.FC = () => {
 
 const WINDOWS_OWN = ["/estudio", "/cursores"];
 
-const BRAND_SCREENS = [/^\/login$/, /^\/login\/app$/, /^\/redefinir$/, /^\/verificar-email$/, /^\/oauth2\/autorizar$/, /^\/bots\/[^/]+\/adicionar$/];
+const BRAND_SCREENS = [/^\/gift\//, /^\/login$/, /^\/login\/app$/, /^\/redefinir$/, /^\/verificar-email$/, /^\/oauth2\/autorizar$/, /^\/bots\/[^/]+\/adicionar$/];
 
 const AppShell: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const { pathname } = useLocation();
