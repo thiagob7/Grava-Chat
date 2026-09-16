@@ -126,6 +126,9 @@ export const configuracoes = {
     giftHint: "Van ajándékkódod? Váltsd be itt. A vásárolt ajándékok alább látszanak.",
     cardPaid: "Fizetés jóváhagyva! Az Infinity aktív.",
     payAmount: "{{amount}} fizetése",
+    giftLinkTitle: "Kaptál egy {{plan}} ajándékot!",
+    giftLinkDetail: "Koppints a beváltásra, és a napok a fiókodra kerülnek.",
+    pageTitle: "Nyiss meg egy világnyi előnyt az {{plan}}-nyal",
   },
   telas: {
     subscription: "Infinity",

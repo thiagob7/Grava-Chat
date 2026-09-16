@@ -126,6 +126,9 @@ export const configuracoes = {
     giftHint: "Turite dovanos kodą? Panaudokite jį čia. Pirktos dovanos – žemiau.",
     cardPaid: "Mokėjimas patvirtintas! Jūsų Infinity aktyvus.",
     payAmount: "Mokėti {{amount}}",
+    giftLinkTitle: "Gavote {{plan}} dovaną!",
+    giftLinkDetail: "Palieskite panaudoti ir dienos atsiras jūsų paskyroje.",
+    pageTitle: "Atrakinkite privalumų pasaulį su {{plan}}",
   },
   telas: {
     subscription: "Infinity",

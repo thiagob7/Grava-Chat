@@ -126,6 +126,9 @@ export const configuracoes = {
     giftHint: "Got a gift code? Redeem it here. Gifts you bought are listed below.",
     cardPaid: "Payment approved! Your Infinity is active.",
     payAmount: "Pay {{amount}}",
+    giftLinkTitle: "You got a {{plan}} gift!",
+    giftLinkDetail: "Tap redeem and the days land on your account.",
+    pageTitle: "Unlock a world of perks with {{plan}}",
   },
   telas: {
     subscription: "Infinity",

@@ -126,6 +126,9 @@ export const configuracoes = {
     giftHint: "Har du en gavekode? Løs den inn her. Gaver du har kjøpt står nedenfor.",
     cardPaid: "Betalingen ble godkjent! Infinity er aktivt.",
     payAmount: "Betal {{amount}}",
+    giftLinkTitle: "Du har fått en {{plan}}-gave!",
+    giftLinkDetail: "Trykk på løs inn, så havner dagene på kontoen din.",
+    pageTitle: "Lås opp en verden av fordeler med {{plan}}",
   },
   telas: {
     subscription: "Infinity",

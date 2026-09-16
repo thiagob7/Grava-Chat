@@ -126,6 +126,9 @@ export const configuracoes = {
     giftHint: "لديك رمز هدية؟ استخدمه هنا. الهدايا التي اشتريتها تظهر أدناه.",
     cardPaid: "تمت الموافقة على الدفع! أصبح Infinity مفعّلًا.",
     payAmount: "ادفع {{amount}}",
+    giftLinkTitle: "وصلتك هدية {{plan}}!",
+    giftLinkDetail: "اضغط على استخدام وستُضاف الأيام إلى حسابك.",
+    pageTitle: "افتح عالمًا من المزايا مع {{plan}}",
   },
   telas: {
     subscription: "Infinity",

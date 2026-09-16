@@ -126,6 +126,9 @@ export const configuracoes = {
     giftHint: "Onko sinulla lahjakoodi? Lunasta se tässä. Ostamasi lahjat näkyvät alla.",
     cardPaid: "Maksu hyväksytty! Infinity on käytössä.",
     payAmount: "Maksa {{amount}}",
+    giftLinkTitle: "Sait {{plan}}-lahjan!",
+    giftLinkDetail: "Napauta lunasta, niin päivät siirtyvät tilillesi.",
+    pageTitle: "Avaa etujen maailma {{plan}}illa",
   },
   telas: {
     subscription: "Infinity",

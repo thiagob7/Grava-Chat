@@ -126,6 +126,9 @@ export const configuracoes = {
     giftHint: "Έχετε κωδικό δώρου; Εξαργυρώστε τον εδώ. Τα δώρα που αγοράσατε είναι πιο κάτω.",
     cardPaid: "Η πληρωμή εγκρίθηκε! Το Infinity σας είναι ενεργό.",
     payAmount: "Πληρωμή {{amount}}",
+    giftLinkTitle: "Λάβατε ένα δώρο {{plan}}!",
+    giftLinkDetail: "Πατήστε εξαργύρωση και οι μέρες μπαίνουν στον λογαριασμό σας.",
+    pageTitle: "Ξεκλειδώστε έναν κόσμο προνομίων με το {{plan}}",
   },
   telas: {
     subscription: "Infinity",

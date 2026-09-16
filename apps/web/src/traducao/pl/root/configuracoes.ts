@@ -126,6 +126,9 @@ export const configuracoes = {
     giftHint: "Masz kod prezentu? Odbierz go tutaj. Kupione prezenty są poniżej.",
     cardPaid: "Płatność zatwierdzona! Twoje Infinity jest aktywne.",
     payAmount: "Zapłać {{amount}}",
+    giftLinkTitle: "Dostałeś prezent {{plan}}!",
+    giftLinkDetail: "Dotknij odbierz, a dni trafią na Twoje konto.",
+    pageTitle: "Odblokuj świat korzyści z {{plan}}",
   },
   telas: {
     subscription: "Infinity",
