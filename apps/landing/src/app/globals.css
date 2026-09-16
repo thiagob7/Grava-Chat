@@ -1,29 +1,29 @@
 @import "tailwindcss";
 
 /*
-  Os mesmos tokens do aplicativo (`apps/web/src/styles/index.css`), copiados de
-  propósito e não importados.
+  Os tokens da marca Ravox, os mesmos da Ravox Labs (`~/Documents/Dev/RAVOX`),
+  copiados de propósito e não importados.
 
   O app é Vite e este site é Next: compartilhar o arquivo obrigaria a um pacote
   de estilos entre os dois, e um pacote com onze linhas de variável é mais peça
-  pra manter do que valor entregue. São dois projetos que precisam parecer a
-  mesma marca, e a marca cabe aqui embaixo.
+  pra manter do que valor entregue. O aplicativo ainda usa a paleta antiga —
+  quando ele for renomeado também, os dois voltam a contar a mesma história.
 */
 @theme {
-  --color-surface-0: #121214;
-  --color-surface-1: #18181b;
-  --color-surface-2: #202024;
-  --color-surface-3: #27272a;
-  --color-surface-4: #353539;
+  --color-surface-0: #080a0c;
+  --color-surface-1: #111317;
+  --color-surface-2: #1a1d23;
+  --color-surface-3: #21242c;
+  --color-surface-4: #272c35;
 
-  --color-line: #29292e;
+  --color-line: #272c35;
 
-  --color-ink: #e1e1e6;
-  --color-ink-muted: #a8a8b3;
-  --color-ink-faint: #666675;
+  --color-ink: #e3e5e8;
+  --color-ink-muted: #818898;
+  --color-ink-faint: #5b6172;
 
-  --color-brand: #d30404;
-  --color-brand-hover: #a90303;
+  --color-brand: #6467f2;
+  --color-brand-hover: #4f52d9;
 
   --color-online: #17c964;
 
@@ -40,14 +40,14 @@ body {
 }
 
 /*
-  O padrão da marca, o mesmo do login e do convite do app: o "G" e o ponto
-  repetidos por cima da cor da casa. Aqui vive em CSS porque é fundo de seção,
-  e seção de página não precisa de componente React pra pintar.
+  O padrão da marca: pontinhos por cima da cor da casa. Era o "G" do Gravaê em
+  SVG, que saiu com o nome. Vive em CSS porque é fundo de seção, e seção de
+  página não precisa de componente React pra pintar.
 */
 .fundo-da-marca {
   background-color: var(--color-brand);
-  background-image: url("/brand/padrao.svg");
-  background-size: 180px 180px;
+  background-image: radial-gradient(color-mix(in oklab, #fff 14%, transparent) 1px, transparent 1px);
+  background-size: 22px 22px;
 }
 
 /*
