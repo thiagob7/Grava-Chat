@@ -1,5 +1,6 @@
 import type {
   BillingStatus,
+  CardCheck,
   CardIntent,
   CheckoutInput,
   GiftPreview,
@@ -27,7 +28,10 @@ export const findPixCharge = async (id: string) => (await api.get<PixChargeView>
 
 export const findGifts = async () => (await api.get<GiftView[]>("/billing/gifts")).data;
 
-export const claimGift = async (code: string) => (await api.post<GiftView>("/billing/gifts/claim", { code })).data;
+export const claimGift = async (input: { code: string; setupIntentId?: string }) =>
+  (await api.post<GiftView>("/billing/gifts/claim", input)).data;
+
+export const startCardCheck = async () => (await api.post<CardCheck>("/billing/card-check")).data;
 
 export const startCardPayment = async (input: CheckoutInput) =>
   (await api.post<CardIntent>("/billing/card", input)).data;

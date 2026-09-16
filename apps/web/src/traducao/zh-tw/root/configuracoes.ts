@@ -158,6 +158,11 @@ export const configuracoes = {
     giftDoneTitle: "{{plan}} 已啟用！",
     giftOpenApp: "開啟應用程式",
     giftSignIn: "登入後兌換",
+    giftReviewStep: "付款 · 確認",
+    giftTotalToday: "今日合計",
+    giftCardWhy: "卡片只是用來確認是你本人。現在不會扣款，也不會自動續約。",
+    giftAgree: "我已閱讀並同意使用條款",
+    giftActivating: "正在啟用…",
   },
   telas: {
     subscription: "Infinity",

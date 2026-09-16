@@ -158,6 +158,11 @@ export const configuracoes = {
     giftDoneTitle: "{{plan}} aktivoitu!",
     giftOpenApp: "Avaa sovellus",
     giftSignIn: "Kirjaudu lunastaaksesi",
+    giftReviewStep: "Maksu · Tarkistus",
+    giftTotalToday: "Yhteensä tänään",
+    giftCardWhy: "Kortti on vain sen vahvistamiseksi, että olet sinä. Nyt ei veloiteta mitään eikä mikään uusiudu itsestään.",
+    giftAgree: "Olen lukenut käyttöehdot ja hyväksyn ne",
+    giftActivating: "Aktivoidaan…",
   },
   telas: {
     subscription: "Infinity",

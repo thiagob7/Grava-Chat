@@ -158,6 +158,11 @@ export const configuracoes = {
     giftDoneTitle: "¡{{plan}} activado!",
     giftOpenApp: "Abrir la app",
     giftSignIn: "Inicia sesión para canjear",
+    giftReviewStep: "Pago · Revisar",
+    giftTotalToday: "Total de hoy",
+    giftCardWhy: "La tarjeta es solo para confirmar que eres tú. No se cobra nada ahora ni se renueva solo.",
+    giftAgree: "He leído y acepto los términos de uso",
+    giftActivating: "Activando…",
   },
   telas: {
     subscription: "Infinity",

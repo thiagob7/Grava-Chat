@@ -1,5 +1,5 @@
 import type { FastifyInstance } from "fastify";
-import { checkoutInput, cleanGiftCode, giftCodeInput, objectId, pixChargeInput } from "@gravae/shared";
+import { checkoutInput, cleanGiftCode, giftClaimInput, objectId, pixChargeInput } from "@gravae/shared";
 import { z } from "zod";
 
 import { env } from "~/env.js";
@@ -9,6 +9,7 @@ import { billingEnabled, billingService } from "~/services/billing/billing-servi
 import { handleStripeEvent } from "~/services/billing/stripe-events.js";
 import { pixService } from "~/services/billing/pix-service.js";
 import { giftService } from "~/services/billing/gift-service.js";
+import { cardCheckService } from "~/services/billing/card-check.js";
 import { webhookSignatureMatches } from "~/lib/mercadopago.js";
 
 export async function billingRoutes(app: FastifyInstance) {
@@ -54,7 +55,16 @@ export async function billingRoutes(app: FastifyInstance) {
   app.post(
     "/billing/gifts/claim",
     { config: { rateLimit: { max: 10, timeWindow: "10 minutes" } } },
-    (req) => giftService.claim(req.userId, cleanGiftCode(giftCodeInput.parse(req.body).code)),
+    (req) => {
+      const input = giftClaimInput.parse(req.body);
+      return giftService.claim(req.userId, cleanGiftCode(input.code), input.setupIntentId);
+    },
+  );
+
+  app.post(
+    "/billing/card-check",
+    { config: { rateLimit: { max: 10, timeWindow: "10 minutes" } } },
+    (req) => cardCheckService.start(req.userId),
   );
 
   app.post(

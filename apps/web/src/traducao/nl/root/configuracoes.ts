@@ -158,6 +158,11 @@ export const configuracoes = {
     giftDoneTitle: "{{plan}} geactiveerd!",
     giftOpenApp: "App openen",
     giftSignIn: "Inloggen om in te wisselen",
+    giftReviewStep: "Betaling · Controleren",
+    giftTotalToday: "Totaal vandaag",
+    giftCardWhy: "De kaart is alleen om te bevestigen dat jij het bent. Er wordt nu niets afgeschreven en niets verlengt vanzelf.",
+    giftAgree: "Ik heb de gebruiksvoorwaarden gelezen en accepteer ze",
+    giftActivating: "Bezig met activeren…",
   },
   telas: {
     subscription: "Infinity",

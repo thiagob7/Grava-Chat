@@ -158,6 +158,11 @@ export const configuracoes = {
     giftDoneTitle: "{{plan}} activat!",
     giftOpenApp: "Deschide aplicația",
     giftSignIn: "Conectează-te ca să revendici",
+    giftReviewStep: "Plată · Verificare",
+    giftTotalToday: "Total azi",
+    giftCardWhy: "Cardul e doar ca să confirmăm că ești tu. Nu se percepe nimic acum și nimic nu se reînnoiește singur.",
+    giftAgree: "Am citit și accept termenii de utilizare",
+    giftActivating: "Se activează…",
   },
   telas: {
     subscription: "Infinity",

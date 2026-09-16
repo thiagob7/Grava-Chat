@@ -158,6 +158,11 @@ export const configuracoes = {
     giftDoneTitle: "{{plan}} aktiválva!",
     giftOpenApp: "App megnyitása",
     giftSignIn: "Jelentkezz be a beváltáshoz",
+    giftReviewStep: "Fizetés · Áttekintés",
+    giftTotalToday: "Mai összeg",
+    giftCardWhy: "A kártya csak arra kell, hogy megerősítsük, te vagy az. Most semmit sem vonunk le, és semmi sem újul meg magától.",
+    giftAgree: "Elolvastam és elfogadom a felhasználási feltételeket",
+    giftActivating: "Aktiválás…",
   },
   telas: {
     subscription: "Infinity",

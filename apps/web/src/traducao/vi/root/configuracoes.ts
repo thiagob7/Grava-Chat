@@ -158,6 +158,11 @@ export const configuracoes = {
     giftDoneTitle: "Đã kích hoạt {{plan}}!",
     giftOpenApp: "Mở ứng dụng",
     giftSignIn: "Đăng nhập để dùng mã",
+    giftReviewStep: "Thanh toán · Xem lại",
+    giftTotalToday: "Tổng hôm nay",
+    giftCardWhy: "Thẻ chỉ để xác nhận đúng là bạn. Bây giờ không trừ gì cả và không có gì tự gia hạn.",
+    giftAgree: "Tôi đã đọc và chấp nhận điều khoản sử dụng",
+    giftActivating: "Đang kích hoạt…",
   },
   telas: {
     subscription: "Infinity",

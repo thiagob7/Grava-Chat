@@ -19,6 +19,7 @@ import { stripe, type Stripe } from "~/lib/stripe.js";
 import { announceUserUpdated } from "~/realtime/difusao.js";
 import { billingRepository } from "~/repositories/billing-repository.js";
 import { giftService } from "./gift-service.js";
+import { PRICES, billingEnabled, ensureCustomer, requireStripe } from "./stripe-account.js";
 import { userRepository } from "~/repositories/user-repository.js";
 import {
   ENDED_STATUSES,
@@ -34,20 +35,9 @@ const CHECKOUT_FLOWS = {
   pass: "premium-pass-PLXNVDSA",
 };
 
-const PRICES: Record<CheckoutInput["renewal"], Record<BillingInterval, string>> = {
-  automatic: { month: env.STRIPE_PRICE_MONTHLY, year: env.STRIPE_PRICE_YEARLY },
-  none: { month: env.STRIPE_PRICE_MONTH_PASS, year: env.STRIPE_PRICE_YEAR_PASS },
-};
+export { billingEnabled };
 
 const webBase = () => env.WEB_ORIGIN.split(",")[0]?.trim() ?? "";
-
-export const billingEnabled = () =>
-  Boolean(stripe && env.STRIPE_WEBHOOK_SECRET && Object.values(PRICES).some((p) => p.month || p.year));
-
-function requireStripe(): Stripe {
-  if (!stripe || !billingEnabled()) throw new AppError("A assinatura ainda não está disponível", 503);
-  return stripe;
-}
 
 export const mercadoPagoPaymentOf = (sourceId: string) => (sourceId.startsWith("mp:") ? sourceId.slice(3) : null);
 
@@ -92,22 +82,6 @@ async function savePremium(userId: string, change: (current: PremiumState) => Pr
   const updated = await userRepository.update(userId, next);
   await announceUserUpdated(updated);
   return updated;
-}
-
-async function ensureCustomer(client: Stripe, userId: string) {
-  const existing = await billingRepository.customerOfUser(userId);
-  if (existing) return existing.stripeCustomerId;
-
-  const user = await userRepository.findById(userId);
-  if (!user) throw new NotFoundError("Conta não encontrada");
-
-  const customer = await client.customers.create(
-    { email: user.email, name: user.displayName, metadata: { userId } },
-    { idempotencyKey: `customer-${userId}` },
-  );
-
-  await billingRepository.createCustomer(userId, customer.id);
-  return customer.id;
 }
 
 const PRICES_TTL_MS = 10 * 60 * 1000;

@@ -158,6 +158,11 @@ export const configuracoes = {
     giftDoneTitle: "{{plan}} activated!",
     giftOpenApp: "Open the app",
     giftSignIn: "Sign in to redeem",
+    giftReviewStep: "Payment · Review",
+    giftTotalToday: "Total today",
+    giftCardWhy: "The card is only to confirm it's you. Nothing is charged now and nothing renews on its own.",
+    giftAgree: "I have read and accept the terms of use",
+    giftActivating: "Activating…",
   },
   telas: {
     subscription: "Infinity",
