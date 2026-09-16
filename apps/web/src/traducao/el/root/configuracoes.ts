@@ -155,6 +155,9 @@ export const configuracoes = {
     giftUsedDetail: "Κάποιος εξαργύρωσε τον κωδικό πριν. Ζητήστε άλλον.",
     giftNotFoundTitle: "Ο κωδικός δεν βρέθηκε",
     giftNotFoundDetail: "Ελέγξτε τον κωδικό ή ζητήστε ξανά τον σύνδεσμο.",
+    giftDoneTitle: "Το {{plan}} ενεργοποιήθηκε!",
+    giftOpenApp: "Άνοιγμα εφαρμογής",
+    giftSignIn: "Συνδεθείτε για εξαργύρωση",
   },
   telas: {
     subscription: "Infinity",

@@ -155,6 +155,9 @@ export const configuracoes = {
     giftUsedDetail: "Kažkas kodą panaudojo anksčiau. Paprašykite kito.",
     giftNotFoundTitle: "Kodas nerastas",
     giftNotFoundDetail: "Patikrinkite kodą arba paprašykite nuorodos dar kartą.",
+    giftDoneTitle: "{{plan}} aktyvuotas!",
+    giftOpenApp: "Atidaryti programą",
+    giftSignIn: "Prisijunkite, kad panaudotumėte",
   },
   telas: {
     subscription: "Infinity",

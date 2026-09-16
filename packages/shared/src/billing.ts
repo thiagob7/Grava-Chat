@@ -49,6 +49,14 @@ export const cleanGiftCode = (code: string) => code.toUpperCase().replace(/[^A-Z
 
 export const prettyGiftCode = (code: string) => (code.match(/.{1,4}/g) ?? [code]).join("-");
 
+export interface PublicGiftView {
+  code: string;
+  interval: BillingInterval;
+  days: number;
+  claimed: boolean;
+  from: { displayName: string; avatarUrl: string | null } | null;
+}
+
 export interface GiftPreview {
   code: string;
   interval: BillingInterval;

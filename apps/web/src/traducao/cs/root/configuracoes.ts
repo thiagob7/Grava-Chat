@@ -155,6 +155,9 @@ export const configuracoes = {
     giftUsedDetail: "Někdo kód uplatnil dřív. Požádejte o jiný.",
     giftNotFoundTitle: "Kód nenalezen",
     giftNotFoundDetail: "Zkontrolujte kód nebo si znovu vyžádejte odkaz.",
+    giftDoneTitle: "{{plan}} aktivováno!",
+    giftOpenApp: "Otevřít aplikaci",
+    giftSignIn: "Přihlaste se a uplatněte",
   },
   telas: {
     subscription: "Infinity",

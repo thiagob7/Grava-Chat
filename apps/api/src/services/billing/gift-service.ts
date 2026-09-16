@@ -1,4 +1,12 @@
-import { extendPremium, planOf, prettyGiftCode, type BillingInterval, type GiftPreview, type GiftView } from "@gravae/shared";
+import {
+  extendPremium,
+  planOf,
+  prettyGiftCode,
+  type BillingInterval,
+  type GiftPreview,
+  type GiftView,
+  type PublicGiftView,
+} from "@gravae/shared";
 
 import { AppError, NotFoundError } from "~/lib/http.js";
 import { newGiftCode } from "~/lib/gift-code.js";
@@ -52,6 +60,21 @@ export const giftService = {
       alreadyPremium: planOf(user?.premiumUntil) === "premium",
       premiumUntil: user?.premiumUntil?.toISOString() ?? null,
       from: buyer ? { id: buyer.id, displayName: buyer.displayName, avatarUrl: buyer.avatarUrl } : null,
+    };
+  },
+
+  async publicView(rawCode: string): Promise<PublicGiftView> {
+    const gift = await billingRepository.giftByCode(rawCode);
+    if (!gift) throw new NotFoundError("Código de presente não encontrado");
+
+    const buyer = await userRepository.findById(gift.buyerId);
+
+    return {
+      code: prettyGiftCode(gift.code),
+      interval: gift.interval as BillingInterval,
+      days: gift.days,
+      claimed: Boolean(gift.claimedAt),
+      from: buyer ? { displayName: buyer.displayName, avatarUrl: buyer.avatarUrl } : null,
     };
   },
 

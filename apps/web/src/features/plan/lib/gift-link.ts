@@ -11,6 +11,8 @@ export function giftCodeInLink(text: string): string | null {
     return null;
   }
 
-  const code = cleanGiftCode(url.searchParams.get("gift") ?? "");
+  const fromPath = /^\/gift\/([A-Za-z0-9-]+)\/?$/.exec(url.pathname)?.[1] ?? "";
+  const code = cleanGiftCode(url.searchParams.get("gift") || fromPath);
+
   return code.length === GIFT_CODE_SIZE ? code : null;
 }

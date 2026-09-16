@@ -155,6 +155,9 @@ export const configuracoes = {
     giftUsedDetail: "Joku lunasti koodin aiemmin. Pyydä uusi.",
     giftNotFoundTitle: "Koodia ei löytynyt",
     giftNotFoundDetail: "Tarkista koodi tai pyydä linkki uudelleen.",
+    giftDoneTitle: "{{plan}} aktivoitu!",
+    giftOpenApp: "Avaa sovellus",
+    giftSignIn: "Kirjaudu lunastaaksesi",
   },
   telas: {
     subscription: "Infinity",

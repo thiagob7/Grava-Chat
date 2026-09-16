@@ -155,6 +155,9 @@ export const configuracoes = {
     giftUsedDetail: "Nogen har indløst koden før. Bed om en ny.",
     giftNotFoundTitle: "Koden blev ikke fundet",
     giftNotFoundDetail: "Tjek koden, eller bed om linket igen.",
+    giftDoneTitle: "{{plan}} aktiveret!",
+    giftOpenApp: "Åbn appen",
+    giftSignIn: "Log ind for at indløse",
   },
   telas: {
     subscription: "Infinity",

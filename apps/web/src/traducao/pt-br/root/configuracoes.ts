@@ -156,6 +156,9 @@ export const configuracoes = {
     giftUsedDetail: "Alguém resgatou esse código antes. Peça outro a quem te mandou.",
     giftNotFoundTitle: "Código não encontrado",
     giftNotFoundDetail: "Confira se o código está certo ou peça o link de novo.",
+    giftDoneTitle: "{{plan}} ativado!",
+    giftOpenApp: "Abrir o app",
+    giftSignIn: "Entrar para resgatar",
   },
   telas: {
     subscription: "Infinity",

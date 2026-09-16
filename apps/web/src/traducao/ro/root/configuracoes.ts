@@ -155,6 +155,9 @@ export const configuracoes = {
     giftUsedDetail: "Cineva a revendicat codul înainte. Cere altul.",
     giftNotFoundTitle: "Cod negăsit",
     giftNotFoundDetail: "Verifică codul sau cere linkul din nou.",
+    giftDoneTitle: "{{plan}} activat!",
+    giftOpenApp: "Deschide aplicația",
+    giftSignIn: "Conectează-te ca să revendici",
   },
   telas: {
     subscription: "Infinity",

@@ -155,6 +155,9 @@ export const configuracoes = {
     giftUsedDetail: "Qualcuno ha riscattato questo codice prima. Chiedine un altro.",
     giftNotFoundTitle: "Codice non trovato",
     giftNotFoundDetail: "Controlla il codice o chiedi di nuovo il link.",
+    giftDoneTitle: "{{plan}} attivato!",
+    giftOpenApp: "Apri l'app",
+    giftSignIn: "Accedi per riscattare",
   },
   telas: {
     subscription: "Infinity",
