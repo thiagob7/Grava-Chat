@@ -1,5 +1,12 @@
 export type StatusKind = "online" | "idle" | "dnd" | "offline";
 
+export const STATUS_LABEL: Record<StatusKind, string> = {
+  online: "Disponível",
+  idle: "Ausente",
+  dnd: "Não perturbar",
+  offline: "Offline",
+};
+
 const COLOR: Record<StatusKind, string> = {
   online: "var(--color-online)",
   idle: "var(--color-idle)",
