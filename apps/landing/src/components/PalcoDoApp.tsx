@@ -1,6 +1,7 @@
 import { Crown, Hash, Mic, Monitor, ChevronDown, Plus, Smile } from "lucide-react";
 
-import { StatusIcon, type StatusKind } from "~/components/StatusIcon";
+import { Hint } from "~/components/Hint";
+import { StatusIcon, STATUS_LABEL, type StatusKind } from "~/components/StatusIcon";
 
 const CHANNELS = ["avisos", "geral", "jogatina", "musica"];
 
@@ -184,7 +185,7 @@ export const AppStage = () => (
           </div>
         </div>
 
-        <div className="hidden w-40 shrink-0 flex-col overflow-hidden border-l border-line bg-surface-1 px-2 py-3 lg:flex">
+        <div className="hidden w-40 shrink-0 flex-col border-l border-line bg-surface-1 px-2 py-3 lg:flex">
           {GROUPS.map(({ title, people, dim }) => (
             <section key={title} className="mb-4">
               <h3 className="mb-1 px-2 text-[11px] font-semibold uppercase tracking-wide text-ink-faint">
@@ -200,7 +201,9 @@ export const AppStage = () => (
                   <span className="relative">
                     <Dot color={color} letter={name[0]!} />
                     <span className="absolute -bottom-0.5 -right-0.5 flex rounded-full bg-surface-1 p-0.5">
-                      <StatusIcon kind={state} uid={name} />
+                      <Hint label={STATUS_LABEL[state]}>
+                        <StatusIcon kind={state} uid={name} />
+                      </Hint>
                     </span>
                   </span>
                   <span
