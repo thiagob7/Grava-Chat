@@ -6,13 +6,13 @@ const CHAT = [
   { name: "Bia", color: "#e0568a", text: "gente, tô subindo o servidor de voz agora" },
   { name: "Léo", color: "#4f8cf0", text: "opa, entra lá que eu tô esperando" },
   { name: "Bia", color: "#e0568a", text: "cheguei! tá ouvindo?" },
-  { name: "Thi", color: "#d30404", text: "ouvindo demais, teu microfone tá ótimo 🎧" },
+  { name: "Thi", color: "#6467f2", text: "ouvindo demais, teu microfone tá ótimo 🎧" },
 ];
 
 const MEMBERS = [
   { name: "Bia", color: "#e0568a", state: "online" },
   { name: "Léo", color: "#4f8cf0", state: "online" },
-  { name: "Thi", color: "#d30404", state: "online" },
+  { name: "Thi", color: "#6467f2", state: "online" },
   { name: "Duda", color: "#f0a63c", state: "ausente" },
 ];
 
