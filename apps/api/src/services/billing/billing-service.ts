@@ -56,6 +56,21 @@ export const mercadoPagoOrderOf = (sourceId: string) => (sourceId.startsWith("mp
 const refundable = (payment: { paymentIntentId: string | null; sourceId: string }) =>
   Boolean(payment.paymentIntentId || mercadoPagoPaymentOf(payment.sourceId) || mercadoPagoOrderOf(payment.sourceId));
 
+type PaymentRow = Awaited<ReturnType<typeof billingRepository.recentPayments>>[number];
+
+async function refundablePayment(userId: string): Promise<PaymentRow | null> {
+  for (const payment of await billingRepository.recentPayments(userId)) {
+    if (!refundable(payment) || !canRefund(payment)) continue;
+
+    const gift = await billingRepository.giftBySource(payment.sourceId);
+    if (gift?.claimedAt) continue;
+
+    return payment;
+  }
+
+  return null;
+}
+
 const toDate = (seconds: number | null | undefined) => (seconds ? new Date(seconds * 1000) : null);
 
 const stateOf = (user: { premiumUntil: Date | null; premiumSource: string | null }): PremiumState => ({
@@ -128,7 +143,7 @@ export const billingService = {
     const [user, customer, latest, prices] = await Promise.all([
       userRepository.findById(userId),
       billingRepository.customerOfUser(userId),
-      billingRepository.latestPayment(userId),
+      refundablePayment(userId),
       loadPrices(),
     ]);
     if (!user) throw new NotFoundError("Conta não encontrada");
@@ -147,10 +162,9 @@ export const billingService = {
             cancelAtPeriodEnd: customer.cancelAtPeriodEnd,
           }
         : null,
-      refund:
-        latest && refundable(latest) && canRefund(latest)
-          ? { amount: latest.amount, currency: latest.currency, openUntil: refundOpenUntil(latest.paidAt).toISOString() }
-          : null,
+      refund: latest
+        ? { amount: latest.amount, currency: latest.currency, openUntil: refundOpenUntil(latest.paidAt).toISOString() }
+        : null,
       canManage: Boolean(customer),
       prices,
       pixEnabled: mercadoPagoEnabled(),
@@ -264,14 +278,8 @@ export const billingService = {
   },
 
   async refund(userId: string) {
-    const payment = await billingRepository.latestPayment(userId);
-
-    if (!payment || !refundable(payment) || !canRefund(payment)) {
-      throw new AppError("Não há pagamento dentro dos 7 dias para reembolsar", 400);
-    }
-
-    const gift = await billingRepository.giftBySource(payment.sourceId);
-    if (gift?.claimedAt) throw new AppError("Esse presente já foi resgatado e não dá para reembolsar", 409);
+    const payment = await refundablePayment(userId);
+    if (!payment) throw new AppError("Não há pagamento dentro dos 7 dias para reembolsar", 400);
 
     const mpOrderId = mercadoPagoOrderOf(payment.sourceId);
     const mpPaymentId = mercadoPagoPaymentOf(payment.sourceId);
@@ -298,6 +306,17 @@ export const billingService = {
 
     await billingService.removeRecorded(payment);
     return billingService.status(userId);
+  },
+
+  async endSubscription(userId: string) {
+    const customer = await billingRepository.customerOfUser(userId);
+    if (!stripe || !customer?.subscriptionId || ENDED_STATUSES.has(customer.subscriptionStatus ?? "")) return;
+
+    await stripe.subscriptions.cancel(customer.subscriptionId).catch((error: unknown) => {
+      console.error("[stripe] não consegui cancelar a assinatura:", (error as Error).message);
+    });
+
+    await billingRepository.updateCustomer(customer.stripeCustomerId, { subscriptionStatus: "canceled" });
   },
 
   async removePayment(paymentIntentId: string) {
