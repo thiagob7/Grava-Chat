@@ -38,6 +38,8 @@ vi.mock("~/repositories/billing-repository.js", () => ({
       if (row) row.refundedAt = at;
       return { count: row ? 1 : 0 };
     },
+    removeGift: async () => ({ count: 0 }),
+    giftBySource: async () => null,
     customerByStripeId: async () => customer,
     updateCustomer: async (_id: string, data: Record<string, unknown>) => (customer = { ...customer, ...data }),
   },

@@ -11,6 +11,7 @@ type ChargeRow = NonNullable<Awaited<ReturnType<typeof billingRepository.pixChar
 
 const toView = (charge: ChargeRow): PixChargeView => ({
   id: charge.id,
+  target: charge.target === "gift" ? "gift" : "me",
   status: charge.status as PixChargeView["status"],
   interval: charge.interval as PixChargeView["interval"],
   amount: charge.amount,
@@ -33,14 +34,21 @@ export const pixService = {
     if (!mercadoPagoEnabled()) throw new AppError("O Pix ainda não está disponível", 503);
 
     const now = new Date();
-    const open = await billingRepository.openPixCharge(userId, input.interval, now);
+    const open = await billingRepository.openPixCharge(userId, input.interval, input.target, now);
     if (open?.qrCode) return toView(open);
 
     const amount = PASS_PRICE_CENTS[input.interval];
     const days = PASS_DAYS[input.interval];
     const expiresAt = new Date(now.getTime() + PIX_CHARGE_MINUTES * 60_000);
 
-    const charge = await billingRepository.createPixCharge({ userId, interval: input.interval, days, amount, expiresAt });
+    const charge = await billingRepository.createPixCharge({
+      userId,
+      interval: input.interval,
+      target: input.target,
+      days,
+      amount,
+      expiresAt,
+    });
 
     try {
       const order = await createPixOrder({
@@ -100,6 +108,8 @@ export const pixService = {
       amount: charge.amount,
       currency: "brl",
       days: charge.days,
+      interval: charge.interval,
+      target: charge.target === "gift" ? "gift" : "me",
     });
   },
 

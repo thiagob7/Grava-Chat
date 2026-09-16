@@ -5,6 +5,7 @@ import {
   PASS_PRICE_CENTS,
   PLAN_NAME,
   planOf,
+  type PurchaseTarget,
   type BillingInterval,
   type BillingPrice,
   type BillingPrices,
@@ -26,7 +27,7 @@ const INTERVALS: BillingInterval[] = ["month", "year"];
 
 const megabytes = (bytes: number) => Math.round(bytes / (1024 * 1024));
 
-type PayOption = "automatic" | "none" | "pix";
+type PayOption = "automatic" | "pix";
 
 const priceOf = (prices: BillingPrices | null | undefined, interval: BillingInterval, pix = false): BillingPrice | null =>
   prices?.automatic[interval] ?? prices?.none[interval] ?? (pix ? { amount: PASS_PRICE_CENTS[interval], currency: "brl" } : null);
@@ -60,6 +61,7 @@ const UpgradeBody: React.FC<{ onDone: () => void }> = ({ onDone }) => {
   const createPix = useCreatePixCharge();
   const openSettings = useSettings((s) => s.open);
 
+  const [target, setTarget] = useState<PurchaseTarget>("me");
   const [interval, setBillingInterval] = useState<BillingInterval>("year");
   const [renewal, setRenewal] = useState<PayOption | null>(null);
   const [pixCharge, setPixCharge] = useState<PixChargeView | null>(null);
@@ -75,14 +77,14 @@ const UpgradeBody: React.FC<{ onDone: () => void }> = ({ onDone }) => {
       price.amount / 100,
     );
 
-  const renewals = (["automatic", "pix", "none"] as const).filter((option) =>
-    option === "pix" ? pixEnabled : Boolean(status?.enabled && prices?.[option][interval]),
+  const renewals = (["automatic", "pix"] as const).filter((option) =>
+    option === "pix" ? pixEnabled : Boolean(status?.enabled && prices?.automatic[interval]),
   );
   const chosen = renewal && renewals.includes(renewal) ? renewal : renewals[0] ?? null;
 
   const pay = () => {
-    if (chosen === "pix") createPix.mutate({ interval }, { onSuccess: setPixCharge });
-    else if (chosen) checkout.mutate({ interval, renewal: chosen });
+    if (chosen === "pix") createPix.mutate({ interval, target }, { onSuccess: setPixCharge });
+    else if (chosen) checkout.mutate({ interval, renewal: target === "gift" ? "none" : chosen, target });
   };
 
   return (
@@ -95,18 +97,37 @@ const UpgradeBody: React.FC<{ onDone: () => void }> = ({ onDone }) => {
         <DialogDescription data-gc="plan.upgrade-modal.dialog-description" className="max-w-md text-balance">
           {t("configuracoes.subscription.upgradeSubtitle")}
         </DialogDescription>
+
+        {!pixCharge && (
+          <div data-gc="plan.upgrade-modal.div--3" className="mt-4 inline-flex rounded-lg border border-line p-0.5">
+            {(["me", "gift"] as const).map((option) => (
+              <button data-gc="plan.upgrade-modal.button"
+                key={option}
+                type="button"
+                aria-pressed={target === option}
+                onClick={() => setTarget(option)}
+                className={cn(
+                  "rounded-md px-3 py-1.5 text-sm transition",
+                  target === option ? "bg-surface-3 font-medium text-ink" : "text-ink-muted hover:text-ink",
+                )}
+              >
+                {t(option === "me" ? "configuracoes.subscription.forMe" : "configuracoes.subscription.asGift")}
+              </button>
+            ))}
+          </div>
+        )}
       </div>
 
       {billing.isPending ? (
         <Skeleton data-gc="plan.upgrade-modal.skeleton" className="mt-6 h-40 rounded-xl" />
-      ) : premium && status?.premiumUntil ? (
-        <div data-gc="plan.upgrade-modal.div--3" className="mt-6 flex flex-col items-center gap-3 rounded-xl border border-brand/40 bg-brand/10 p-4 text-center text-sm">
+      ) : premium && status?.premiumUntil && target === "me" ? (
+        <div data-gc="plan.upgrade-modal.div--4" className="mt-6 flex flex-col items-center gap-3 rounded-xl border border-brand/40 bg-brand/10 p-4 text-center text-sm">
           <p data-gc="plan.upgrade-modal.p">
             {t("configuracoes.subscription.alreadyPremium", {
               date: new Date(status.premiumUntil).toLocaleDateString(currentLanguage(), { dateStyle: "long" }),
             })}
           </p>
-          <Button data-gc="plan.upgrade-modal.button"
+          <Button data-gc="plan.upgrade-modal.button--2"
             variant="surface"
             size="sm"
             onClick={() => {
@@ -121,9 +142,10 @@ const UpgradeBody: React.FC<{ onDone: () => void }> = ({ onDone }) => {
         <PixPayment data-gc="plan.upgrade-modal.pix-payment.on-done"
           initial={pixCharge}
           onPaid={onDone}
+          onGift={() => openSettings("subscription")}
           onRetry={() => {
             setPixCharge(null);
-            createPix.mutate({ interval: pixCharge.interval }, { onSuccess: setPixCharge });
+            createPix.mutate({ interval: pixCharge.interval, target: pixCharge.target }, { onSuccess: setPixCharge });
           }}
         />
       ) : !renewals.length ? (
@@ -132,13 +154,13 @@ const UpgradeBody: React.FC<{ onDone: () => void }> = ({ onDone }) => {
         </p>
       ) : (
         <>
-          <div data-gc="plan.upgrade-modal.div--4" className="mt-6 grid gap-3 sm:grid-cols-2">
+          <div data-gc="plan.upgrade-modal.div--5" className="mt-6 grid gap-3 sm:grid-cols-2">
             {INTERVALS.map((option) => {
               const price = priceOf(prices, option, pixEnabled);
               if (!price) return null;
 
               return (
-                <button data-gc="plan.upgrade-modal.button--2"
+                <button data-gc="plan.upgrade-modal.button--3"
                   key={option}
                   type="button"
                   aria-pressed={interval === option}
@@ -170,9 +192,9 @@ const UpgradeBody: React.FC<{ onDone: () => void }> = ({ onDone }) => {
               <legend data-gc="plan.upgrade-modal.legend" className="mb-2 text-xs font-semibold uppercase tracking-wide text-ink-muted">
                 {t("configuracoes.subscription.howToPay")}
               </legend>
-              <div data-gc="plan.upgrade-modal.div--5" className="grid gap-2 sm:grid-cols-3">
+              <div data-gc="plan.upgrade-modal.div--6" className="grid gap-2 sm:grid-cols-2">
                 {renewals.map((option) => (
-                  <button data-gc="plan.upgrade-modal.button--3"
+                  <button data-gc="plan.upgrade-modal.button--4"
                     key={option}
                     type="button"
                     aria-pressed={chosen === option}
@@ -187,13 +209,7 @@ const UpgradeBody: React.FC<{ onDone: () => void }> = ({ onDone }) => {
                     ) : (
                       <CreditCard data-gc="plan.upgrade-modal.credit-card" size={16} className="shrink-0" />
                     )}
-                    {t(
-                      option === "automatic"
-                        ? "configuracoes.subscription.automatic"
-                        : option === "pix"
-                          ? "configuracoes.subscription.pixOption"
-                          : "configuracoes.subscription.cardPass",
-                    )}
+                    {t(option === "automatic" ? "configuracoes.subscription.automatic" : "configuracoes.subscription.pixOption")}
                   </button>
                 ))}
               </div>
@@ -206,7 +222,7 @@ const UpgradeBody: React.FC<{ onDone: () => void }> = ({ onDone }) => {
             loading={checkout.isPending || createPix.isPending}
             onClick={pay}
           >
-            {t("configuracoes.subscription.subscribe")}
+            {t(target === "gift" ? "configuracoes.subscription.buyGift" : "configuracoes.subscription.subscribe")}
           </Button>
 
           <p data-gc="plan.upgrade-modal.p--3" className="mt-3 text-center text-xs text-ink-faint">{t("configuracoes.subscription.legal")}</p>
@@ -264,7 +280,7 @@ export const ComparisonTable: React.FC<{ className?: string }> = ({ className })
   return (
     <section data-gc="plan.upgrade-modal.section" className={cn("mt-7", className)}>
       <h3 data-gc="plan.upgrade-modal.h3" className="mb-2 text-sm font-semibold">{t("configuracoes.subscription.compare")}</h3>
-      <div data-gc="plan.upgrade-modal.div--6" className="overflow-hidden rounded-xl border border-line-sutil">
+      <div data-gc="plan.upgrade-modal.div--7" className="overflow-hidden rounded-xl border border-line-sutil">
         <table data-gc="plan.upgrade-modal.table" className="w-full text-sm">
           <thead data-gc="plan.upgrade-modal.thead" className="bg-surface-2 text-left text-xs text-ink-muted">
             <tr data-gc="plan.upgrade-modal.tr">

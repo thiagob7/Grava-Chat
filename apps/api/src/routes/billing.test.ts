@@ -9,7 +9,10 @@ const handled: string[] = [];
 const MP_SECRET = "segredo-mp";
 const notified: string[] = [];
 
-vi.mock("~/env.js", () => ({ env: { STRIPE_WEBHOOK_SECRET: SECRET, MERCADOPAGO_WEBHOOK_SECRET: MP_SECRET } }));
+vi.mock("~/env.js", () => ({
+  env: { STRIPE_WEBHOOK_SECRET: SECRET, MERCADOPAGO_WEBHOOK_SECRET: MP_SECRET, ADMIN_EMAILS: "", WEB_ORIGIN: "http://localhost:5173" },
+}));
+vi.mock("~/services/billing/gift-service.js", () => ({ giftService: {} }));
 vi.mock("~/services/billing/pix-service.js", () => ({
   pixService: { handleNotification: async (id: string) => void notified.push(id) },
 }));

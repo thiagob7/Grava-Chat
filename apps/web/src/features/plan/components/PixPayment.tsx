@@ -5,7 +5,7 @@ import QRCode from "qrcode";
 import { toast } from "react-toastify";
 import type { PixChargeView } from "@gravae/shared";
 
-import { BILLING_KEY, usePixCharge } from "~/@core/application/queries/billing/use-billing";
+import { BILLING_KEY, GIFTS_KEY, usePixCharge } from "~/@core/application/queries/billing/use-billing";
 import { queryKeys } from "~/@core/infra/constants/query-keys";
 import { Button } from "~/components/ui/button";
 import { currentLanguage, useTranslation } from "~/traducao";
@@ -15,11 +15,12 @@ const remaining = (expiresAt: string, now: number) => {
   return `${Math.floor(seconds / 60)}:${String(seconds % 60).padStart(2, "0")}`;
 };
 
-export const PixPayment: React.FC<{ initial: PixChargeView; onPaid: () => void; onRetry: () => void }> = ({
-  initial,
-  onPaid,
-  onRetry,
-}) => {
+export const PixPayment: React.FC<{
+  initial: PixChargeView;
+  onPaid: () => void;
+  onRetry: () => void;
+  onGift?: () => void;
+}> = ({ initial, onPaid, onRetry, onGift }) => {
   const { t } = useTranslation();
   const client = useQueryClient();
   const { data } = usePixCharge(initial.id);
@@ -50,10 +51,18 @@ export const PixPayment: React.FC<{ initial: PixChargeView; onPaid: () => void; 
     if (charge.status !== "paid") return;
 
     void client.invalidateQueries({ queryKey: BILLING_KEY });
+    void client.invalidateQueries({ queryKey: GIFTS_KEY });
     void client.invalidateQueries({ queryKey: [queryKeys.auth.me] });
-    toast.success(t("configuracoes.subscription.pixPaid"));
+
+    if (charge.target === "gift") {
+      toast.success(t("configuracoes.subscription.giftReady"));
+      onGift?.();
+    } else {
+      toast.success(t("configuracoes.subscription.pixPaid"));
+    }
+
     onPaid();
-  }, [charge.status, client, onPaid, t]);
+  }, [charge.status, charge.target, client, onGift, onPaid, t]);
 
   const amount = new Intl.NumberFormat(currentLanguage(), { style: "currency", currency: "BRL" }).format(charge.amount / 100);
   const expired = charge.status === "expired" || (charge.status === "pending" && new Date(charge.expiresAt).getTime() <= now);
@@ -68,7 +77,9 @@ export const PixPayment: React.FC<{ initial: PixChargeView; onPaid: () => void; 
     return (
       <div data-gc="plan.pix-payment.div" className="mt-6 flex flex-col items-center gap-2 text-center">
         <CheckCircle2 data-gc="plan.pix-payment.check-circle2" size={40} className="text-online" />
-        <p data-gc="plan.pix-payment.p" className="text-sm font-medium">{t("configuracoes.subscription.pixPaid")}</p>
+        <p data-gc="plan.pix-payment.p" className="text-sm font-medium">
+          {t(charge.target === "gift" ? "configuracoes.subscription.giftReady" : "configuracoes.subscription.pixPaid")}
+        </p>
       </div>
     );
   }

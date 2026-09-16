@@ -1,5 +1,5 @@
 import type { FastifyInstance } from "fastify";
-import { checkoutInput, objectId, pixChargeInput } from "@gravae/shared";
+import { checkoutInput, cleanGiftCode, giftCodeInput, objectId, pixChargeInput } from "@gravae/shared";
 import { z } from "zod";
 
 import { env } from "~/env.js";
@@ -8,6 +8,7 @@ import { stripe } from "~/lib/stripe.js";
 import { billingEnabled, billingService } from "~/services/billing/billing-service.js";
 import { handleStripeEvent } from "~/services/billing/stripe-events.js";
 import { pixService } from "~/services/billing/pix-service.js";
+import { giftService } from "~/services/billing/gift-service.js";
 import { webhookSignatureMatches } from "~/lib/mercadopago.js";
 
 export async function billingRoutes(app: FastifyInstance) {
@@ -36,6 +37,14 @@ export async function billingRoutes(app: FastifyInstance) {
   );
 
   app.post("/billing/portal", (req) => billingService.portal(req.userId));
+
+  app.get("/billing/gifts", (req) => giftService.mine(req.userId));
+
+  app.post(
+    "/billing/gifts/claim",
+    { config: { rateLimit: { max: 10, timeWindow: "10 minutes" } } },
+    (req) => giftService.claim(req.userId, cleanGiftCode(giftCodeInput.parse(req.body).code)),
+  );
 
   app.post(
     "/billing/refund",

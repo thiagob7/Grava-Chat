@@ -15,11 +15,17 @@ export const PASS_PRICE_CENTS: Record<BillingInterval, number> = { month: 1800, 
 export const PIX_CHARGE_STATUSES = ["pending", "paid", "expired"] as const;
 export type PixChargeStatus = (typeof PIX_CHARGE_STATUSES)[number];
 
-export const pixChargeInput = z.object({ interval: z.enum(BILLING_INTERVALS) });
+export const PURCHASE_TARGETS = ["me", "gift"] as const;
+export type PurchaseTarget = (typeof PURCHASE_TARGETS)[number];
+
+export const purchaseTarget = z.enum(PURCHASE_TARGETS).default("me");
+
+export const pixChargeInput = z.object({ interval: z.enum(BILLING_INTERVALS), target: purchaseTarget });
 export type PixChargeInput = z.infer<typeof pixChargeInput>;
 
 export interface PixChargeView {
   id: string;
+  target: PurchaseTarget;
   status: PixChargeStatus;
   interval: BillingInterval;
   amount: number;
@@ -31,7 +37,27 @@ export interface PixChargeView {
 export const checkoutInput = z.object({
   interval: z.enum(BILLING_INTERVALS),
   renewal: z.enum(BILLING_RENEWALS),
+  target: purchaseTarget,
 });
+
+export const GIFT_CODE_SIZE = 12;
+
+export const giftCodeInput = z.object({ code: z.string().trim().min(GIFT_CODE_SIZE).max(32) });
+export type GiftCodeInput = z.infer<typeof giftCodeInput>;
+
+export const cleanGiftCode = (code: string) => code.toUpperCase().replace(/[^A-Z0-9]/g, "");
+
+export const prettyGiftCode = (code: string) => (code.match(/.{1,4}/g) ?? [code]).join("-");
+
+export interface GiftView {
+  code: string;
+  interval: BillingInterval;
+  days: number;
+  amount: number;
+  createdAt: string;
+  claimedAt: string | null;
+  claimedBy: { id: string; displayName: string; avatarUrl: string | null } | null;
+}
 export type CheckoutInput = z.infer<typeof checkoutInput>;
 
 export interface BillingPrice {
