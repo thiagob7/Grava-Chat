@@ -4,7 +4,7 @@ Tudo abaixo de um endereço só, com o cabeçalho `Authorization: Bot <token>`.
 
 ## Páginas
 
-- [Introdução](/desenvolvedores): O que dá pra construir no Gravaê e por onde começar.
+- [Introdução](/desenvolvedores): O que dá pra construir no Ravox Chat e por onde começar.
 - [Aplicativos e bots](/desenvolvedores/aplicativos): Como nasce um aplicativo, e como ele entra num servidor.
 - [Autenticação](/desenvolvedores/autenticacao): O token, onde ele vai e como não deixar vazar.
 - [Permissões](/desenvolvedores/permissoes): As 33 permissões, o que cada uma libera e quais já vêm de fábrica.

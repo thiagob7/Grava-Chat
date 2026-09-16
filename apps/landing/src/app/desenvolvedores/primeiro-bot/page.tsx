@@ -5,7 +5,7 @@ import { Ahead, Section, Title, Trail } from "~/components/docs/PecasDosDocs";
 import { API } from "~/dados/docs";
 
 export const metadata: Metadata = {
-  title: "Seu primeiro bot — Documentação do Gravaê",
+  title: "Seu primeiro bot — Documentação do Ravox Chat",
   description: "Do token à primeira mensagem em três comandos.",
 };
 

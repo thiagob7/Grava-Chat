@@ -7,11 +7,11 @@ import "./globals.css";
 const APP = "https://gravae-chat.vercel.app";
 
 export const metadata: Metadata = {
-  title: "Gravaê — conversa, voz e vídeo com os seus",
+  title: "Ravox Chat — conversa, voz e vídeo com os seus",
   description:
     "Chat com voz, vídeo e transmissão de tela para grupos de amigos. De graça, sem anúncio e sem vender o que você fala.",
   openGraph: {
-    title: "Gravaê",
+    title: "Ravox Chat",
     description: "Conversa, voz e vídeo com os seus. De graça, sem anúncio.",
     type: "website",
   },

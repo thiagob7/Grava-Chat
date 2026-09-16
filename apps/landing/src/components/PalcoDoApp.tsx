@@ -35,7 +35,7 @@ export const AppStage = () => (
         <span className="size-2.5 rounded-full bg-[#ff5f57]" />
         <span className="size-2.5 rounded-full bg-[#febc2e]" />
         <span className="size-2.5 rounded-full bg-[#28c840]" />
-        <span className="ml-3 text-[10px] font-medium text-ink-faint">Gravaê</span>
+        <span className="ml-3 text-[10px] font-medium text-ink-faint">Ravox Chat</span>
       </div>
 
       <div className="flex h-[22rem] text-left sm:h-[26rem]">

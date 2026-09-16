@@ -4,7 +4,7 @@ import { Ahead, Section, Title, Trail } from "~/components/docs/PecasDosDocs";
 import { REPO } from "~/dados/docs";
 
 export const metadata: Metadata = {
-  title: "Comunidade — Documentação do Gravaê",
+  title: "Comunidade — Documentação do Ravox Chat",
   description: "Exemplos que rodam, ferramentas e onde pedir ajuda quando algo não fecha.",
 };
 

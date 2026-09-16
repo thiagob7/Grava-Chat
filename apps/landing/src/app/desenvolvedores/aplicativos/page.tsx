@@ -3,8 +3,8 @@ import type { Metadata } from "next";
 import { Ahead, Notice, Section, Title, Trail } from "~/components/docs/PecasDosDocs";
 
 export const metadata: Metadata = {
-  title: "Aplicativos e bots — Documentação do Gravaê",
-  description: "Como nasce um aplicativo do Gravaê, e como ele entra num servidor.",
+  title: "Aplicativos e bots — Documentação do Ravox Chat",
+  description: "Como nasce um aplicativo do Ravox Chat, e como ele entra num servidor.",
 };
 
 export default function Apps() {
@@ -19,10 +19,10 @@ export default function Apps() {
 
       <Section id="criar" title="Crie o aplicativo">
         <p>
-          No Gravaê, vá em <strong className="text-ink">Configurações</strong> →{" "}
+          No Ravox Chat, vá em <strong className="text-ink">Configurações</strong> →{" "}
           <strong className="text-ink">Desenvolvedor</strong> →{" "}
           <strong className="text-ink">Aplicativos</strong>. Você escolhe o nome, e junto com o
-          cadastro o Gravaê cria o usuário que vai aparecer nas conversas — com foto, apelido e
+          cadastro o Ravox Chat cria o usuário que vai aparecer nas conversas — com foto, apelido e
           perfil, como qualquer pessoa.
         </p>
         <p>

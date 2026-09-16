@@ -6,9 +6,9 @@ import { Footer } from "~/components/Rodape";
 import { ARTICLES, CATEGORIES } from "~/dados/ajuda";
 
 export const metadata: Metadata = {
-  title: "Central de ajuda — Gravaê",
+  title: "Central de ajuda — Ravox Chat",
   description:
-    "Respostas sobre a sua conta e a sua privacidade, e como usar servidores, conversas e chamadas no Gravaê.",
+    "Respostas sobre a sua conta e a sua privacidade, e como usar servidores, conversas e chamadas no Ravox Chat.",
 };
 
 export default function Help() {
@@ -20,7 +20,7 @@ export default function Help() {
         <h1 className="text-4xl font-bold sm:text-5xl">Central de ajuda</h1>
         <p className="mt-4 max-w-2xl text-base leading-relaxed text-ink-muted">
           Encontre respostas sobre a sua conta e a sua privacidade, ou peça ajuda para usar o
-          Gravaê.
+          Ravox Chat.
         </p>
 
         <HelpCentral categories={CATEGORIES} articles={ARTICLES} />

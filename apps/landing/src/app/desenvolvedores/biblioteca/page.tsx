@@ -4,7 +4,7 @@ import { Ahead, Notice, Section, Title, Trail } from "~/components/docs/PecasDos
 import { Code } from "~/components/docs/Codigo";
 
 export const metadata: Metadata = {
-  title: "Biblioteca — Documentação do Gravaê",
+  title: "Biblioteca — Documentação do Ravox Chat",
   description:
     "O cliente oficial em JavaScript: cabeçalho, formato de erro e reenvio resolvidos, com os tipos do próprio servidor.",
 };

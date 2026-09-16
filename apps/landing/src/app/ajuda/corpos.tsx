@@ -19,7 +19,7 @@ export const BODIES: Record<string, React.ReactNode> = {
   "preciso-instalar": (
     <>
       <p>
-        Não. O Gravaê{" "}
+        Não. O Ravox Chat{" "}
         <a href={APP} className={link}>
           abre no navegador
         </a>{" "}
@@ -208,7 +208,7 @@ export const BODIES: Record<string, React.ReactNode> = {
     <>
       <p>
         Primeiro o navegador: ele precisa ter recebido permissão de microfone para o endereço do
-        Gravaê.
+        Ravox Chat.
       </p>
       <p>
         Depois, em Configurações → Voz, confira se o dispositivo escolhido é o certo — a barrinha de
@@ -247,7 +247,7 @@ export const BODIES: Record<string, React.ReactNode> = {
         cancela tudo. Passados os 15 dias, aí vai.
       </p>
       <p>
-        Se você é dono de um servidor com outras pessoas dentro, o Gravaê não deixa excluir antes de
+        Se você é dono de um servidor com outras pessoas dentro, o Ravox Chat não deixa excluir antes de
         você passar a posse ou apagar o servidor — para o lugar não ficar sem dono de uma hora para
         outra.
       </p>
@@ -257,7 +257,7 @@ export const BODIES: Record<string, React.ReactNode> = {
   "limites-do-app": (
     <>
       <p>
-        Os números valem para todo mundo, e são lidos do próprio código do Gravaê — o que está aqui
+        Os números valem para todo mundo, e são lidos do próprio código do Ravox Chat — o que está aqui
         é o que o servidor aceita hoje.
       </p>
       <LimitsTable />

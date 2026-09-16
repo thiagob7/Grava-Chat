@@ -4,7 +4,7 @@ import { Ahead, Section, Title, Trail } from "~/components/docs/PecasDosDocs";
 import { EventsSent, EventsReceived } from "~/components/docs/ReferenciaDaApi";
 
 export const metadata: Metadata = {
-  title: "Eventos — Documentação do Gravaê",
+  title: "Eventos — Documentação do Ravox Chat",
   description: "Os eventos que um bot manda e os que ele recebe pela conexão de tempo real.",
 };
 

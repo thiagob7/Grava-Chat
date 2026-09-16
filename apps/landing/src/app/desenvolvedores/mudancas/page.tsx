@@ -3,7 +3,7 @@ import type { Metadata } from "next";
 import { Ahead, Notice, Section, Title, Trail } from "~/components/docs/PecasDosDocs";
 
 export const metadata: Metadata = {
-  title: "Registro de mudanças — Documentação do Gravaê",
+  title: "Registro de mudanças — Documentação do Ravox Chat",
   description: "O que mudou na API de bots, com data, e o que isso quebra do lado de quem integra.",
 };
 

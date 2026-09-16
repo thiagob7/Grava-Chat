@@ -3,7 +3,7 @@ import type { Metadata } from "next";
 import { Ahead, Notice, Section, Title, Trail } from "~/components/docs/PecasDosDocs";
 
 export const metadata: Metadata = {
-  title: "Políticas — Documentação do Gravaê",
+  title: "Políticas — Documentação do Ravox Chat",
   description: "O que é permitido fazer com dados de quem usa o seu bot, e o que tira ele do ar.",
 };
 
@@ -20,7 +20,7 @@ export default function Policies() {
       <Notice>
         <strong>Rascunho para revisão.</strong> Este texto descreve a intenção da
         plataforma e ainda não passou por revisão jurídica. Ele não substitui os
-        termos de uso do Gravaê.
+        termos de uso do Ravox Chat.
       </Notice>
 
       <Section id="dados" title="Dados de quem usa">
