@@ -5,8 +5,8 @@ import { LimitsTable } from "~/components/docs/TabelaDeLimites";
 import { REPO } from "~/dados/docs";
 
 export const metadata: Metadata = {
-  title: "Limites — Documentação do Gravaê",
-  description: "Vazão, tamanhos e tetos que o servidor do Gravaê aplica.",
+  title: "Limites — Documentação do Ravox Chat",
+  description: "Vazão, tamanhos e tetos que o servidor do Ravox Chat aplica.",
 };
 
 export default function Limits() {
@@ -39,7 +39,7 @@ export default function Limits() {
 
       <Section id="mais" title="Se você precisa de mais">
         <p>
-          O Gravaê roda em duas máquinas pequenas e o código é aberto. Se o seu bot precisa de mais
+          O Ravox Chat roda em duas máquinas pequenas e o código é aberto. Se o seu bot precisa de mais
           fôlego do que isso,{" "}
           <a
             href={`${REPO}/issues/new`}

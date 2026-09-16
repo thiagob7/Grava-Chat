@@ -17,7 +17,7 @@ export const CATEGORIES: HelpCategory[] = [
   {
     id: "primeiros-passos",
     title: "Primeiros passos",
-    description: "O que o Gravaê é, quanto custa e como entrar.",
+    description: "O que o Ravox Chat é, quanto custa e como entrar.",
     icon: "comecar",
   },
   {
@@ -54,13 +54,13 @@ export const ARTICLES: HelpArticle[] = [
     categoryId: "primeiros-passos",
     title: "Preciso instalar alguma coisa?",
     summary:
-      "O Gravaê abre no navegador e funciona inteiro por lá. O aplicativo existe para quem quer atalho, avisos do sistema e som na transmissão.",
+      "O Ravox Chat abre no navegador e funciona inteiro por lá. O aplicativo existe para quem quer atalho, avisos do sistema e som na transmissão.",
     updatedAt: TODAY,
   },
   {
     id: "quanto-custa",
     categoryId: "primeiros-passos",
-    title: "Quanto custa usar o Gravaê",
+    title: "Quanto custa usar o Ravox Chat",
     summary: "Usar é grátis, sem anúncio e sem vender o que você fala. O Infinity, opcional, aumenta limites e libera extras.",
     updatedAt: TODAY,
   },
@@ -205,7 +205,7 @@ export const ARTICLES: HelpArticle[] = [
   {
     id: "limites-do-app",
     categoryId: "problemas",
-    title: "Os limites do Gravaê",
+    title: "Os limites do Ravox Chat",
     summary:
       "Tamanho de arquivo, quantidade de canais, de cargos e o resto. Os números são lidos do próprio código.",
     updatedAt: TODAY,
@@ -213,7 +213,7 @@ export const ARTICLES: HelpArticle[] = [
   {
     id: "nao-carrega",
     categoryId: "problemas",
-    title: "O Gravaê não carrega",
+    title: "O Ravox Chat não carrega",
     summary:
       "A página de status diz se o problema é nosso e há quanto tempo, medida por fora da plataforma.",
     updatedAt: TODAY,

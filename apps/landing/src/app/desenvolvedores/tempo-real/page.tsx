@@ -4,7 +4,7 @@ import { Code } from "~/components/docs/Codigo";
 import { Ahead, Notice, Section, Title, Trail } from "~/components/docs/PecasDosDocs";
 
 export const metadata: Metadata = {
-  title: "Tempo real — Documentação do Gravaê",
+  title: "Tempo real — Documentação do Ravox Chat",
   description: "A conexão que faz o bot reagir sozinho ao que acontece no servidor.",
 };
 

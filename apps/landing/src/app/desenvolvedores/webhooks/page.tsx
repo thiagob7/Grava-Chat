@@ -5,7 +5,7 @@ import { Code } from "~/components/docs/Codigo";
 import { API } from "~/dados/docs";
 
 export const metadata: Metadata = {
-  title: "Webhooks — Documentação do Gravaê",
+  title: "Webhooks — Documentação do Ravox Chat",
   description:
     "Um endereço que escreve num canal sem bot conectado, sem token de conta e sem biblioteca.",
 };
@@ -15,7 +15,7 @@ export default function Webhooks() {
     <article className="space-y-10">
       <header>
         <Trail group="Guias" page="Webhooks" />
-        <Title call="A forma mais simples de um sistema de fora falar dentro do Gravaê: um endereço, um POST, uma mensagem.">
+        <Title call="A forma mais simples de um sistema de fora falar dentro do Ravox Chat: um endereço, um POST, uma mensagem.">
           Webhooks
         </Title>
       </header>

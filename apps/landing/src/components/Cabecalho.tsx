@@ -1,5 +1,6 @@
-import Image from "next/image";
 import Link from "next/link";
+
+import { Wordmark } from "~/components/Wordmark";
 
 const APP = "https://gravae-chat.vercel.app";
 
@@ -7,7 +8,7 @@ export const Header = () => (
   <header className="sticky top-0 z-50 border-b border-line/70 bg-surface-0/80 backdrop-blur">
     <div className="mx-auto flex h-16 max-w-6xl items-center gap-6 px-6">
       <Link href="/" className="flex shrink-0 items-center gap-2">
-        <Image src="/brand/logotipo.png" alt="Gravaê" width={112} height={28} className="h-7 w-auto" />
+        <Wordmark />
         <span className="rounded bg-brand/15 px-1.5 py-0.5 text-[10px] font-bold uppercase tracking-wide text-brand">
           beta
         </span>
@@ -20,6 +21,9 @@ export const Header = () => (
         <a href="#recursos" className="transition hover:text-ink">
           O que ele faz
         </a>
+        <Link href="/infinity" className="transition hover:text-ink">
+          Infinity
+        </Link>
         <Link href="/ajuda" className="transition hover:text-ink">
           Ajuda
         </Link>
@@ -40,7 +44,7 @@ export const Header = () => (
         href={APP}
         className="ml-auto shrink-0 rounded-lg bg-brand px-4 py-2 text-sm font-semibold text-white transition hover:bg-brand-hover"
       >
-        Abrir o Gravaê
+        Abrir o Ravox Chat
       </a>
     </div>
   </header>

@@ -5,9 +5,9 @@ import { Ahead, Notice, Section, Title, Trail } from "~/components/docs/PecasDos
 import { APP } from "~/dados/docs";
 
 export const metadata: Metadata = {
-  title: "Temas — Documentação do Gravaê",
+  title: "Temas — Documentação do Ravox Chat",
   description:
-    "Escrever um tema para o Gravaê: o cabeçalho do arquivo, os tokens de cor, os ganchos que cada elemento carrega e o que muda a forma da tela.",
+    "Escrever um tema para o Ravox Chat: o cabeçalho do arquivo, os tokens de cor, os ganchos que cada elemento carrega e o que muda a forma da tela.",
 };
 
 const HEADER = `/**
@@ -153,7 +153,7 @@ export default function Themes() {
     <article className="space-y-10">
       <header>
         <Trail group="Referência" page="Temas" />
-        <Title call="Um tema do Gravaê é um arquivo CSS. Esta página diz o que existe para mirar: as cores, os ganchos em cada elemento e as medidas que dão a forma da tela.">
+        <Title call="Um tema do Ravox Chat é um arquivo CSS. Esta página diz o que existe para mirar: as cores, os ganchos em cada elemento e as medidas que dão a forma da tela.">
           Temas
         </Title>
       </header>

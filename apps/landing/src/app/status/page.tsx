@@ -5,8 +5,8 @@ import { StatusPanel } from "~/components/PainelDeStatus";
 import { Footer } from "~/components/Rodape";
 
 export const metadata: Metadata = {
-  title: "Status do Gravaê",
-  description: "Se o Gravaê está no ar, e como ele esteve nos últimos 90 dias.",
+  title: "Status do Ravox Chat",
+  description: "Se o Ravox Chat está no ar, e como ele esteve nos últimos 90 dias.",
 };
 
 export default function PlatformStatus() {

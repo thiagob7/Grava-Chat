@@ -50,7 +50,7 @@ const Track = ({ status }: { status: Status | null }) => {
       <p className="flex items-center gap-3 rounded-xl bg-red-500/15 px-5 py-4 text-red-300">
         <X size={20} className="shrink-0" />
         <span className="font-semibold">
-          A API não está respondendo — o Gravaê está fora do ar.
+          A API não está respondendo — o Ravox Chat está fora do ar.
         </span>
       </p>
     );

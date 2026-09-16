@@ -20,7 +20,7 @@ export const GROUPS: Group[] = [
       {
         href: "/desenvolvedores",
         title: "Introdução",
-        summary: "O que dá pra construir no Gravaê e por onde começar.",
+        summary: "O que dá pra construir no Ravox Chat e por onde começar.",
       },
     ],
   },

@@ -4,8 +4,8 @@ import { Ahead, Cards, Section, Title, Trail } from "~/components/docs/PecasDosD
 import reference from "~/dados/referencia.json";
 
 export const metadata: Metadata = {
-  title: "Introdução — Documentação do Gravaê",
-  description: "O que dá pra construir no Gravaê e por onde começar.",
+  title: "Introdução — Documentação do Ravox Chat",
+  description: "O que dá pra construir no Ravox Chat e por onde começar.",
 };
 
 const BUILD = [
@@ -44,8 +44,8 @@ export default function Intro() {
     <article className="space-y-10">
       <header>
         <Trail group="Bem-vindo" page="Introdução" />
-        <Title call="Construa bots, comandos e integrações no Gravaê — o mesmo servidor que atende o aplicativo atende o seu código.">
-          Plataforma de desenvolvimento do Gravaê
+        <Title call="Construa bots, comandos e integrações no Ravox Chat — o mesmo servidor que atende o aplicativo atende o seu código.">
+          Plataforma de desenvolvimento do Ravox Chat
         </Title>
       </header>
 
@@ -71,7 +71,7 @@ export default function Intro() {
 
       <Section id="como-funciona" title="Como funciona">
         <p>
-          Um bot do Gravaê é um usuário como qualquer outro: entra em servidores, lê canais, manda
+          Um bot do Ravox Chat é um usuário como qualquer outro: entra em servidores, lê canais, manda
           mensagem, reage e responde a comandos. A diferença é que ele se identifica com um{" "}
           <strong className="text-ink">token</strong> em vez de uma sessão, e por isso não precisa
           de ninguém com uma janela aberta.

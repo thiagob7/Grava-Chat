@@ -1,11 +1,11 @@
 "use client";
 
 import { ArrowUpRight, BookOpen, Code2, House, List, PanelLeft, PanelLeftClose, X } from "lucide-react";
-import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 
+import { Wordmark } from "~/components/Wordmark";
 import { DocsSearch } from "~/components/docs/BuscaDosDocs";
 import { APP, GROUPS } from "~/dados/docs";
 
@@ -69,13 +69,7 @@ export const DocsShell = ({ children }: { children: React.ReactNode }) => {
           </button>
 
           <Link href="/desenvolvedores" className="flex shrink-0 items-center gap-2.5">
-            <Image
-              src="/brand/logotipo.png"
-              alt="Gravaê"
-              width={112}
-              height={28}
-              className="h-6 w-auto"
-            />
+            <Wordmark className="text-base" />
             <span className="hidden text-sm font-semibold uppercase tracking-wide text-ink-muted sm:block">
               Documentação
             </span>
@@ -101,7 +95,7 @@ export const DocsShell = ({ children }: { children: React.ReactNode }) => {
               href={APP}
               className="flex shrink-0 items-center gap-1 rounded-md px-3 py-2 text-sm font-medium text-brand transition hover:text-brand-hover"
             >
-              Abrir o Gravaê
+              Abrir o Ravox Chat
               <ArrowUpRight className="size-3.5" />
             </a>
           </div>
