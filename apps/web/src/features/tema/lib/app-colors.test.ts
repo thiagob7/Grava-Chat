@@ -28,12 +28,19 @@ describe("cores do app", () => {
     expect(gradientOf({ colors: [], angle: 90, intensity: 10 })).toBe("none");
   });
 
-  it("gera a folha de estilo tingindo cada superfície", () => {
-    const css = appColorsCss(base, { colors: ["#ff0000"], angle: 120, intensity: 20 });
+  it("tinge todas as superfícies com a mesma cor e força", () => {
+    const css = appColorsCss(base, { colors: ["#ff0000", "#0000ff"], angle: 120, intensity: 20 });
 
-    expect(css).toContain(":root.app-colors {");
-    expect(css).toContain("--color-surface-0: color-mix(in srgb, #ff0000 20%, #1a181e);");
-    expect(css).toContain("--app-gradient: linear-gradient(120deg, #ff0000, #ff0000);");
+    expect(css).toContain("--color-surface-0: color-mix(in srgb, #800080 20%, #1a181e);");
+    expect(css).toContain("--color-surface-1: color-mix(in srgb, #800080 20%, #1e1d23);");
+    expect(css).toContain("--app-gradient: linear-gradient(120deg, #ff0000, #0000ff);");
+  });
+
+  it("pinta o fundo da janela com o degradê, para aparecer atrás do app", () => {
+    const css = appColorsCss(base, { colors: ["#ff0000", "#0000ff"], angle: 120, intensity: 20 });
+
+    expect(css).toContain(":root.app-colors body {");
+    expect(css).toContain("background-image: linear-gradient(120deg, #ff0000, #0000ff);");
   });
 
   it("sem cor ou com intensidade zero não escreve nada", () => {
@@ -43,7 +50,7 @@ describe("cores do app", () => {
 
   it("só toca nos tokens que existem no tema aberto", () => {
     const css = appColorsCss(base, { colors: ["#ff0000"], angle: 120, intensity: 20 });
-    const written = css.match(/--color-[a-z0-9-]+:/g) ?? [];
+    const written = css.match(/^  --color-[a-z0-9-]+:/gm) ?? [];
 
     expect(written).toHaveLength(2);
     expect(TINTED_TOKENS.length).toBeGreaterThan(written.length);

@@ -1,5 +1,5 @@
 import React, { useRef } from "react";
-import { Check, Gift, Infinity as InfinityIcon, Menu } from "lucide-react";
+import { Check, Gift, Infinity as InfinityIcon, Menu, Sparkles, Star } from "lucide-react";
 import { PASS_PRICE_CENTS, PLAN_LIMITS, PLAN_NAME, planOf, type BillingInterval, type PlanLimits } from "@gravae/shared";
 
 import { useBilling } from "~/@core/application/queries/billing/use-billing";
@@ -46,7 +46,7 @@ export const InfinityPage: React.FC<{ onOpenMenu?: () => void }> = ({ onOpenMenu
   const goTo = (id: string) => document.getElementById(`infinity-${id}`)?.scrollIntoView({ behavior: "smooth", block: "start" });
 
   return (
-    <main data-gc="plan.infinity-page.main" ref={scroller} className="relative min-h-0 flex-1 overflow-y-auto bg-surface-0">
+    <main data-gc="plan.infinity-page.main" ref={scroller} className="relative min-h-0 flex-1 overflow-y-auto bg-surface-2">
       <header data-gc="plan.infinity-page.header" className="sticky top-0 z-10 flex h-[var(--layout-header-height)] items-center gap-3 border-b border-divisor bg-surface-2/85 px-4 backdrop-blur">
         {onOpenMenu && (
           <button data-gc="plan.infinity-page.button.on-open-menu" type="button" onClick={onOpenMenu} aria-label={t("comum.voltar")} className="text-ink-muted @md:hidden">
@@ -78,18 +78,22 @@ export const InfinityPage: React.FC<{ onOpenMenu?: () => void }> = ({ onOpenMenu
 
       <section data-gc="plan.infinity-page.section" id="infinity-inicio" className="relative overflow-hidden px-6 pb-16 pt-20 text-center">
         <div data-gc="plan.infinity-page.div" aria-hidden className="pointer-events-none absolute inset-0 overflow-hidden">
-          <span data-gc="plan.infinity-page.span--2" className="infinity-blob absolute -left-24 -top-24 size-96 rounded-full bg-brand/30 blur-3xl" />
-          <span data-gc="plan.infinity-page.span--3" className="infinity-blob infinity-blob--slow absolute -right-20 top-10 size-80 rounded-full bg-mencao/25 blur-3xl" />
-          <span data-gc="plan.infinity-page.span--4" className="infinity-blob absolute bottom-0 left-1/3 size-72 rounded-full bg-brand/20 blur-3xl" />
+          <span data-gc="plan.infinity-page.span--2" className="infinity-blob absolute -left-24 -top-28 size-[28rem] rounded-full bg-brand/35 blur-3xl" />
+          <span data-gc="plan.infinity-page.span--3" className="infinity-blob infinity-blob--slow absolute -right-24 top-4 size-96 rounded-full bg-mencao/30 blur-3xl" />
+          <span data-gc="plan.infinity-page.span--4" className="infinity-blob absolute -bottom-24 left-1/3 size-80 rounded-full bg-brand/25 blur-3xl" />
+          <span data-gc="plan.infinity-page.span--5" className="infinity-float absolute left-[12%] top-24 text-brand/40"><InfinityIcon data-gc="plan.infinity-page.infinity-icon--2" size={54} /></span>
+          <span data-gc="plan.infinity-page.span--6" className="infinity-float infinity-float--slow absolute right-[14%] top-40 text-mencao/40"><Sparkles data-gc="plan.infinity-page.sparkles" size={40} /></span>
+          <span data-gc="plan.infinity-page.span--7" className="infinity-float infinity-float--late absolute bottom-16 left-[22%] text-brand/30"><Star data-gc="plan.infinity-page.star" size={30} /></span>
+          <span data-gc="plan.infinity-page.span--8" className="infinity-float absolute bottom-24 right-[24%] text-brand/30"><InfinityIcon data-gc="plan.infinity-page.infinity-icon--3" size={34} /></span>
         </div>
 
         <div data-gc="plan.infinity-page.div--2" className="relative mx-auto max-w-3xl">
-          <span data-gc="plan.infinity-page.span--5" className="mx-auto flex size-20 items-center justify-center rounded-[1.75rem] bg-brand/20 text-brand shadow-lg shadow-sombra">
-            <InfinityIcon data-gc="plan.infinity-page.infinity-icon--2" size={44} />
+          <span data-gc="plan.infinity-page.span--9" className="mx-auto flex size-20 items-center justify-center rounded-[1.75rem] bg-brand/20 text-brand shadow-lg shadow-sombra">
+            <InfinityIcon data-gc="plan.infinity-page.infinity-icon--4" size={44} />
           </span>
 
           <h1 data-gc="plan.infinity-page.h1"
-            className="infinity-shine mt-6 bg-gradient-to-r from-ink via-brand to-ink bg-clip-text text-balance text-5xl font-black uppercase leading-[0.95] tracking-tight text-transparent @md:text-6xl"
+            className="mt-6 text-balance text-5xl font-black uppercase leading-[0.95] tracking-tight text-ink drop-shadow-[0_2px_18px_rgb(0_0_0/0.35)] @md:text-6xl"
           >
             {t("configuracoes.subscription.pageTitle", { plan: PLAN_NAME })}
           </h1>
@@ -107,7 +111,7 @@ export const InfinityPage: React.FC<{ onOpenMenu?: () => void }> = ({ onOpenMenu
           ) : (
             <div data-gc="plan.infinity-page.div--3" className="mt-9 flex flex-wrap items-center justify-center gap-2">
               <Button data-gc="plan.infinity-page.button.open-upgrade--2" size="lg" onClick={openUpgrade}>
-                <InfinityIcon data-gc="plan.infinity-page.infinity-icon--3" size={17} /> {t("configuracoes.subscription.subscribe")}
+                <InfinityIcon data-gc="plan.infinity-page.infinity-icon--5" size={17} /> {t("configuracoes.subscription.subscribe")}
               </Button>
               <Button data-gc="plan.infinity-page.button.open-upgrade--3" size="lg" variant="surface" onClick={openUpgrade}>
                 <Gift data-gc="plan.infinity-page.gift--2" size={17} /> {t("configuracoes.subscription.buyGift")}
@@ -156,9 +160,9 @@ export const InfinityPage: React.FC<{ onOpenMenu?: () => void }> = ({ onOpenMenu
             {perks.map((perk) => (
               <li data-gc="plan.infinity-page.li" key={perk.name} className="flex items-center gap-2 rounded-xl border border-line-sutil bg-surface-1 px-3 py-3 text-sm">
                 <Check data-gc="plan.infinity-page.check" size={16} className="shrink-0 text-brand" />
-                <span data-gc="plan.infinity-page.span--6" className="min-w-0 flex-1 truncate">{perk.name}</span>
+                <span data-gc="plan.infinity-page.span--10" className="min-w-0 flex-1 truncate">{perk.name}</span>
                 {perk.value(PLAN_LIMITS.premium) && (
-                  <span data-gc="plan.infinity-page.span--7" className="shrink-0 text-xs font-semibold text-brand">{perk.value(PLAN_LIMITS.premium)}</span>
+                  <span data-gc="plan.infinity-page.span--11" className="shrink-0 text-xs font-semibold text-brand">{perk.value(PLAN_LIMITS.premium)}</span>
                 )}
               </li>
             ))}
