@@ -5,6 +5,7 @@ import { PASS_PRICE_CENTS, PLAN_LIMITS, PLAN_NAME, planOf, type BillingInterval,
 import { useBilling } from "~/@core/application/queries/billing/use-billing";
 import { Button } from "~/components/ui/button";
 import { ComparisonTable } from "~/features/plan/components/UpgradeModal";
+import { InfinityArt } from "~/features/plan/components/InfinityArt";
 import { usePlanStore } from "~/features/plan/stores/plan-store";
 import { cn } from "~/lib/utils";
 import { currentLanguage, useTranslation } from "~/traducao";
@@ -88,9 +89,7 @@ export const InfinityPage: React.FC<{ onOpenMenu?: () => void }> = ({ onOpenMenu
         </div>
 
         <div data-gc="plan.infinity-page.div--2" className="relative mx-auto max-w-3xl">
-          <span data-gc="plan.infinity-page.span--9" className="mx-auto flex size-20 items-center justify-center rounded-[1.75rem] bg-brand/20 text-brand shadow-lg shadow-sombra">
-            <InfinityIcon data-gc="plan.infinity-page.infinity-icon--4" size={44} />
-          </span>
+          <InfinityArt data-gc="plan.infinity-page.infinity-art" className="mx-auto size-40" />
 
           <h1 data-gc="plan.infinity-page.h1"
             className="mt-6 text-balance text-5xl font-black uppercase leading-[0.95] tracking-tight text-ink drop-shadow-[0_2px_18px_rgb(0_0_0/0.35)] @md:text-6xl"
@@ -111,7 +110,7 @@ export const InfinityPage: React.FC<{ onOpenMenu?: () => void }> = ({ onOpenMenu
           ) : (
             <div data-gc="plan.infinity-page.div--3" className="mt-9 flex flex-wrap items-center justify-center gap-2">
               <Button data-gc="plan.infinity-page.button.open-upgrade--2" size="lg" onClick={openUpgrade}>
-                <InfinityIcon data-gc="plan.infinity-page.infinity-icon--5" size={17} /> {t("configuracoes.subscription.subscribe")}
+                <InfinityIcon data-gc="plan.infinity-page.infinity-icon--4" size={17} /> {t("configuracoes.subscription.subscribe")}
               </Button>
               <Button data-gc="plan.infinity-page.button.open-upgrade--3" size="lg" variant="surface" onClick={openUpgrade}>
                 <Gift data-gc="plan.infinity-page.gift--2" size={17} /> {t("configuracoes.subscription.buyGift")}
@@ -160,9 +159,9 @@ export const InfinityPage: React.FC<{ onOpenMenu?: () => void }> = ({ onOpenMenu
             {perks.map((perk) => (
               <li data-gc="plan.infinity-page.li" key={perk.name} className="flex items-center gap-2 rounded-xl border border-line-sutil bg-surface-1 px-3 py-3 text-sm">
                 <Check data-gc="plan.infinity-page.check" size={16} className="shrink-0 text-brand" />
-                <span data-gc="plan.infinity-page.span--10" className="min-w-0 flex-1 truncate">{perk.name}</span>
+                <span data-gc="plan.infinity-page.span--9" className="min-w-0 flex-1 truncate">{perk.name}</span>
                 {perk.value(PLAN_LIMITS.premium) && (
-                  <span data-gc="plan.infinity-page.span--11" className="shrink-0 text-xs font-semibold text-brand">{perk.value(PLAN_LIMITS.premium)}</span>
+                  <span data-gc="plan.infinity-page.span--10" className="shrink-0 text-xs font-semibold text-brand">{perk.value(PLAN_LIMITS.premium)}</span>
                 )}
               </li>
             ))}
