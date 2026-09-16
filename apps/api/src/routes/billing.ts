@@ -46,6 +46,11 @@ export async function billingRoutes(app: FastifyInstance) {
 
   app.get("/billing/gifts", (req) => giftService.mine(req.userId));
 
+  app.get("/billing/gifts/:code", (req) => {
+    const { code } = z.object({ code: z.string().min(1).max(32) }).parse(req.params);
+    return giftService.preview(req.userId, cleanGiftCode(code));
+  });
+
   app.post(
     "/billing/gifts/claim",
     { config: { rateLimit: { max: 10, timeWindow: "10 minutes" } } },

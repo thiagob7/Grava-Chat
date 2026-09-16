@@ -7,6 +7,7 @@ type PlanStore = {
   upgradeOpen: boolean;
   guildProfileFor: string | null;
   giftCode: string | null;
+  claimingGift: string | null;
   setPremiumUntil: (premiumUntil: string | null) => void;
   awaitPayment: () => void;
   openUpgrade: () => void;
@@ -14,6 +15,7 @@ type PlanStore = {
   openGuildProfile: (guildId: string) => void;
   closeGuildProfile: () => void;
   setGiftCode: (code: string | null) => void;
+  claimGift: (code: string | null) => void;
 };
 
 export const usePlanStore = create<PlanStore>((set) => ({
@@ -29,6 +31,8 @@ export const usePlanStore = create<PlanStore>((set) => ({
   closeGuildProfile: () => set({ guildProfileFor: null }),
   giftCode: null,
   setGiftCode: (giftCode) => set({ giftCode }),
+  claimingGift: null,
+  claimGift: (claimingGift) => set({ claimingGift }),
 }));
 
 export const usePlanLimits = (): PlanLimits => limitsOf(usePlanStore((s) => s.premiumUntil));

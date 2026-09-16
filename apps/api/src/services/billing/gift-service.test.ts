@@ -72,6 +72,25 @@ describe("presente do Infinity", () => {
     expect(announced).toEqual([FRIEND]);
   });
 
+  it("quem já tem Infinity ativo não resgata; a dica é passar para um amigo", async () => {
+    await buy();
+    users[FRIEND]!.premiumUntil = new Date(Date.now() + 10 * DAY);
+
+    await expect(giftService.claim(FRIEND, "ABCD2345EFGH")).rejects.toThrow(/já tem o Infinity ativo/);
+    expect(gifts[0]!.claimedAt).toBeNull();
+  });
+
+  it("a prévia conta o que vai acontecer antes de resgatar", async () => {
+    await buy();
+    const before = await giftService.preview(FRIEND, "ABCD2345EFGH");
+
+    expect(before).toMatchObject({ days: 30, claimed: false, alreadyPremium: false });
+    expect(before.from).toMatchObject({ displayName: "Quem deu" });
+
+    users[FRIEND]!.premiumUntil = new Date(Date.now() + 10 * DAY);
+    expect((await giftService.preview(FRIEND, "ABCD2345EFGH")).alreadyPremium).toBe(true);
+  });
+
   it("o mesmo código não vale duas vezes", async () => {
     await buy();
     await giftService.claim(FRIEND, "ABCD2345EFGH");

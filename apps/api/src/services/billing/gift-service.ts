@@ -1,4 +1,4 @@
-import { extendPremium, prettyGiftCode, type BillingInterval, type GiftView } from "@gravae/shared";
+import { extendPremium, planOf, prettyGiftCode, type BillingInterval, type GiftPreview, type GiftView } from "@gravae/shared";
 
 import { AppError, NotFoundError } from "~/lib/http.js";
 import { newGiftCode } from "~/lib/gift-code.js";
@@ -37,10 +37,33 @@ export const giftService = {
     return Promise.all(gifts.map(toView));
   },
 
+  async preview(userId: string, rawCode: string): Promise<GiftPreview> {
+    const gift = await billingRepository.giftByCode(rawCode);
+    if (!gift) throw new NotFoundError("Código de presente não encontrado");
+
+    const user = await userRepository.findById(userId);
+    const buyer = await userRepository.findById(gift.buyerId);
+
+    return {
+      code: prettyGiftCode(gift.code),
+      interval: gift.interval as BillingInterval,
+      days: gift.days,
+      claimed: Boolean(gift.claimedAt),
+      alreadyPremium: planOf(user?.premiumUntil) === "premium",
+      premiumUntil: user?.premiumUntil?.toISOString() ?? null,
+      from: buyer ? { id: buyer.id, displayName: buyer.displayName, avatarUrl: buyer.avatarUrl } : null,
+    };
+  },
+
   async claim(userId: string, rawCode: string): Promise<GiftView> {
     const gift = await billingRepository.giftByCode(rawCode);
     if (!gift) throw new NotFoundError("Código de presente não encontrado");
     if (gift.claimedAt) throw new AppError("Esse presente já foi resgatado", 409);
+
+    const person = await userRepository.findById(userId);
+    if (planOf(person?.premiumUntil) === "premium") {
+      throw new AppError("Você já tem o Infinity ativo. Guarde o link para dar a um amigo.", 409);
+    }
 
     const { count } = await billingRepository.claimGift(gift.id, userId, new Date());
     if (!count) throw new AppError("Esse presente já foi resgatado", 409);

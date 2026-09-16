@@ -21,6 +21,7 @@ import { flx, flxAttr, flxCls } from "~/lib/compat-de-tema";
 import { useBillingReturn } from "~/features/plan/hooks/use-billing-return";
 import { UpgradeModal } from "~/features/plan/components/UpgradeModal";
 import { GuildProfileModal } from "~/features/plan/components/GuildProfileModal";
+import { GiftClaimModal } from "~/features/plan/components/GiftClaimModal";
 
 interface UserPanelProps {
   user: SelfUserModel;
@@ -153,6 +154,7 @@ export const UserPanel: React.FC<UserPanelProps> = ({ user, guildId, onLogout })
 
       <UpgradeModal data-gc="perfil.user-panel.upgrade-modal" />
       <GuildProfileModal data-gc="perfil.user-panel.guild-profile-modal" />
+      <GiftClaimModal data-gc="perfil.user-panel.gift-claim-modal" />
 
       {sectionRequested && (
         <UserSettingsModal data-gc="perfil.user-panel.user-settings-modal.close-request"

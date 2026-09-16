@@ -24,6 +24,7 @@ export function useBillingReturn() {
   }, [openUpgrade]);
 
   const setGiftCode = usePlanStore((s) => s.setGiftCode);
+  const claimGift = usePlanStore((s) => s.claimGift);
 
   useEffect(() => {
     const url = new URL(window.location.href);
@@ -32,8 +33,7 @@ export function useBillingReturn() {
     if (gift) {
       url.searchParams.delete(GIFT_PARAM);
       window.history.replaceState(window.history.state, "", url.pathname + url.search + url.hash);
-      setGiftCode(gift);
-      open("subscription");
+      claimGift(gift);
     }
 
     const outcome = url.searchParams.get(BILLING_RETURN_PARAM);
@@ -52,5 +52,5 @@ export function useBillingReturn() {
     }
 
     open("subscription");
-  }, [client, open, awaitPayment, setGiftCode]);
+  }, [client, open, awaitPayment, setGiftCode, claimGift]);
 }

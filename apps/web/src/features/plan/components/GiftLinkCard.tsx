@@ -2,13 +2,13 @@ import React from "react";
 import { Infinity as InfinityIcon } from "lucide-react";
 import { PLAN_NAME, prettyGiftCode } from "@gravae/shared";
 
-import { useClaimGift } from "~/@core/application/queries/billing/use-billing";
+import { usePlanStore } from "~/features/plan/stores/plan-store";
 import { Button } from "~/components/ui/button";
 import { useTranslation } from "~/traducao";
 
 export const GiftLinkCard: React.FC<{ code: string }> = ({ code }) => {
   const { t } = useTranslation();
-  const claim = useClaimGift();
+  const askClaim = usePlanStore((s) => s.claimGift);
 
   return (
     <div data-gc="plan.gift-link-card.div" className="mt-1 max-w-md overflow-hidden rounded-xl border border-brand/40 bg-brand/10">
@@ -25,7 +25,7 @@ export const GiftLinkCard: React.FC<{ code: string }> = ({ code }) => {
       </div>
 
       <div data-gc="plan.gift-link-card.div--4" className="px-4 pb-4">
-        <Button data-gc="plan.gift-link-card.button" size="sm" loading={claim.isPending} onClick={() => claim.mutate(code)}>
+        <Button data-gc="plan.gift-link-card.button" size="sm" onClick={() => askClaim(code)}>
           {t("configuracoes.subscription.giftRedeem")}
         </Button>
       </div>
