@@ -1647,6 +1647,21 @@
           "required": true
         },
         {
+          "name": "avatarUrl",
+          "kind": "vários",
+          "required": false
+        },
+        {
+          "name": "bannerUrl",
+          "kind": "vários",
+          "required": false
+        },
+        {
+          "name": "bio",
+          "kind": "vários",
+          "required": false
+        },
+        {
           "name": "timeoutUntil",
           "kind": "vários",
           "required": true
@@ -2647,6 +2662,10 @@
       {
         "reason": "erro",
         "when": "Falha genérica. Vale tentar de novo."
+      },
+      {
+        "reason": "premium",
+        "when": "A ação é exclusiva de quem tem o Infinity."
       }
     ]
   }

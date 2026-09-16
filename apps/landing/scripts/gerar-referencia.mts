@@ -148,6 +148,7 @@ const REASONS = {
   recusada: "A conversa não aceita resposta, como as de aviso da casa.",
   "nao-entregue": "A pessoa não recebe mensagem de quem não é amigo.",
   erro: "Falha genérica. Vale tentar de novo.",
+  premium: "A ação é exclusiva de quem tem o Infinity.",
 };
 
 const BODIES = {

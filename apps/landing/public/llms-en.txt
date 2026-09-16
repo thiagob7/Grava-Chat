@@ -44,7 +44,7 @@ Base URL: https://gravaechat-api.duckdns.org/api
 - Mensagem (mensagem) — 22 fields, 10 routes, 6 events
 - Canal (canal) — 16 fields, 6 routes, 5 events
 - Servidor (servidor) — 7 fields, 2 routes, 4 events
-- Membro (membro) — 7 fields, 4 routes, 5 events
+- Membro (membro) — 10 fields, 4 routes, 5 events
 - Cargo (cargo) — 13 fields, 5 routes, 0 events
 - Moderação (moderacao) — 0 fields, 4 routes, 0 events
 - Expressão (expressao) — 5 fields, 4 routes, 1 events
@@ -184,6 +184,7 @@ Base URL: https://gravaechat-api.duckdns.org/api
 - recusada
 - nao-entregue
 - erro
+- premium
 
 ## HTTP codes
 
