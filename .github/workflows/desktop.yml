@@ -73,7 +73,7 @@ jobs:
           # É embutida no bundle durante o build (tsup), não lida em execução:
           # sem ela o app instalado procuraria um localhost que não existe na
           # máquina de quem baixou.
-          GRAVAE_APP_URL: ${{ vars.GRAVAE_APP_URL || 'https://gravae-chat.vercel.app' }}
+          GRAVAE_APP_URL: ${{ vars.GRAVAE_APP_URL || 'https://app-ravox-chat.vercel.app' }}
         run: yarn workspace @gravae/desktop empacotar
 
       - name: Anexar à release
@@ -94,7 +94,7 @@ jobs:
         # objetivo.
         run: |
           gh release view "$TAG" >/dev/null 2>&1 \
-            || gh release create "$TAG" --title "Gravaê Chat ${TAG#v}" --generate-notes \
+            || gh release create "$TAG" --title "Ravox Chat ${TAG#v}" --generate-notes \
             || true
 
           gh release upload "$TAG" ${{ matrix.arquivos }} --clobber

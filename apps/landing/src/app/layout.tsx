@@ -3,8 +3,7 @@ import type { ReactNode } from "react";
 
 import { Providers } from "~/components/Provedores";
 import "./globals.css";
-
-const APP = "https://gravae-chat.vercel.app";
+import { APP_URL as APP } from "~/lib/brand";
 
 export const metadata: Metadata = {
   title: "Ravox Chat — conversa, voz e vídeo com os seus",

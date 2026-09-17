@@ -1,8 +1,8 @@
 import type { VercelConfig } from "@vercel/config/v1";
 
 const API = {
-  production: "https://gravaechat-api.duckdns.org",
-  staging: "https://gravaechat-api-staging.duckdns.org",
+  production: "https://ravoxchat-api.duckdns.org",
+  staging: "https://ravoxchat-api-staging.duckdns.org",
 };
 
 const destination = process.env.VERCEL_ENV === "production" ? API.production : API.staging;

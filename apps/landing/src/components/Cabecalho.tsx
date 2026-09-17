@@ -1,8 +1,7 @@
 import Link from "next/link";
 
 import { Wordmark } from "~/components/Wordmark";
-
-const APP = "https://gravae-chat.vercel.app";
+import { APP_URL as APP } from "~/lib/brand";
 
 export const Header = () => (
   <header className="sticky top-0 z-50 border-b border-line/70 bg-surface-0/80 backdrop-blur">

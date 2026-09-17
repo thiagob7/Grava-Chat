@@ -5,13 +5,12 @@ import { Header } from "~/components/Cabecalho";
 import { Footer } from "~/components/Rodape";
 import { VersionPublished } from "~/components/VersaoPublicada";
 import { LINK_MAC, LINK_RELEASES, LINK_WINDOWS } from "~/lib/release";
+import { APP_URL as APP } from "~/lib/brand";
 
 export const metadata: Metadata = {
   title: "Baixar o Ravox Chat",
   description: "O Ravox Chat para macOS e Windows, ou direto no navegador.",
 };
-
-const APP = "https://gravae-chat.vercel.app";
 
 export default function Download() {
   return (

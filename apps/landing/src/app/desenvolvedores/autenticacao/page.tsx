@@ -47,7 +47,7 @@ export default function Authentication() {
           cabeçalho:
         </p>
 
-        <Code legenda="bot.js">{`const socket = io("https://gravaechat-api.duckdns.org", {
+        <Code legenda="bot.js">{`const socket = io("https://ravoxchat-api.duckdns.org", {
   transports: ["websocket"],
   auth: { token: \`Bot \${process.env.GRAVAE_TOKEN}\` },
 });`}</Code>

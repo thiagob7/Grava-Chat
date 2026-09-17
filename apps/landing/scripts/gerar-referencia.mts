@@ -597,7 +597,7 @@ const indiceEmIngles = [
   "One base URL, one header: `Authorization: Bot <token>`.",
   "The full documentation is written in Portuguese; this index is the map.",
   "",
-  "Base URL: https://gravaechat-api.duckdns.org/api",
+  "Base URL: https://ravoxchat-api.duckdns.org/api",
   "",
   "## Pages",
   "",

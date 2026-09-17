@@ -1,5 +1,5 @@
 
-const API = "https://gravaechat-api.duckdns.org/api";
+import { API_URL as API } from "~/lib/brand";
 
 export const PIECES = ["api", "banco", "cache", "sfu"] as const;
 export type Piece = (typeof PIECES)[number];
