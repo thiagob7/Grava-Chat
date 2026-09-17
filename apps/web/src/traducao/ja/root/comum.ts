@@ -6,7 +6,7 @@ export const comum = {
     recarregar: "再読み込み",
     copiarDetalhes: "詳細をコピー",
     parteQuebrou: "画面のこの部分が壊れました。",
-    titulo: "Gravaê がつまずきました。",
+    titulo: "Ravox Chat がつまずきました。",
     detalhe: "途中で何かが壊れ、画面を描けませんでした。会話は失われていません — すべてサーバーにあります。",
   },
   perdido: {
@@ -21,7 +21,7 @@ export const comum = {
   },
   avisoDoNavegador: {
     titulo: "メッセージの通知を受け取りますか？",
-    detalhe: "Gravaê が別のウィンドウの後ろにあるとき、知らせてくれます。",
+    detalhe: "Ravox Chat が別のウィンドウの後ろにあるとき、知らせてくれます。",
   },
   atualizacao: {
     titulo: "アップデート",
@@ -102,8 +102,8 @@ export const comum = {
   trocar: "変更",
   loginNoApp: {
     titulo: "準備完了！",
-    detalhe: "ログインしました。Gravaê に戻ってください。アプリが待っています。",
-    abrir: "Gravaê を開く",
+    detalhe: "ログインしました。Ravox Chat に戻ってください。アプリが待っています。",
+    abrir: "Ravox Chat を開く",
     fecharAba: "このタブは閉じてかまいません。",
     falhouTitulo: "ログインできませんでした",
     falhouDetalhe: "アプリに戻って、もう一度ログインしてください。",

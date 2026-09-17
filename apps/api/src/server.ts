@@ -24,12 +24,15 @@ try {
   stopWatchStatus = statusService.watch(app.log);
   stopWatchingEvents = guildEventService.watch(app.log);
 
-  void systemService.removeServers(app.log).catch((err) => app.log.error(err));
-  void systemService.seedThemesServer(app.log).catch((err) => app.log.error(err));
   void systemService
-    .seedDevelopersServer(app.log)
-    .catch((err) => app.log.error(err));
-  void systemService.seedHouse(app.log).catch((err) => app.log.error(err));
+    .renameLegacyBrand(app.log)
+    .catch((err) => app.log.error(err))
+    .finally(() => {
+      void systemService.removeServers(app.log).catch((err) => app.log.error(err));
+      void systemService.seedThemesServer(app.log).catch((err) => app.log.error(err));
+      void systemService.seedDevelopersServer(app.log).catch((err) => app.log.error(err));
+      void systemService.seedHouse(app.log).catch((err) => app.log.error(err));
+    });
 } catch (err) {
   app.log.error(err);
   process.exit(1);

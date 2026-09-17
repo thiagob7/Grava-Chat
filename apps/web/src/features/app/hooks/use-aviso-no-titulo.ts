@@ -4,7 +4,7 @@ import { useReadStates } from "~/@core/application/queries/message/use-read-stat
 import { useNotices } from "~/stores/notificacoes";
 import { desktop } from "~/lib/desktop";
 
-const BASE = "Gravaê";
+const BASE = "Ravox Chat";
 
 export function useNoticeTitle(active: boolean) {
   const { data: readStates } = useReadStates(active);

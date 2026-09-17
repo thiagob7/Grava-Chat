@@ -167,7 +167,7 @@ export const chamada = {
     tela: "Înregistrarea ecranului",
     telaDetalhe: "Să partajezi ecranul și ferestrele.",
     monitoramento: "Monitorizarea intrării",
-    monitoramentoDetalhe: "Să folosești apasă-ca-să-vorbești chiar și cu Gravaê în fundal.",
+    monitoramentoDetalhe: "Să folosești apasă-ca-să-vorbești chiar și cu Ravox Chat în fundal.",
   },
   jaConectado: {
     titulo: "Ești deja în acest apel",

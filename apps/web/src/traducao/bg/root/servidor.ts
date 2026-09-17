@@ -124,7 +124,7 @@ export const servidor = {
     feitoPor: "Направено от",
     publicadoEm: "Публикувано на",
     denunciarNome: "Сигнал за {{nome}}",
-    denunciaDetalhe: "Сигналът отива при екипа на Gravaê. Този, който направи приложението, няма да разбере, че сте вие.",
+    denunciaDetalhe: "Сигналът отива при екипа на Ravox Chat. Този, който направи приложението, няма да разбере, че сте вие.",
     denunciaFalhou: "Сигналът не можа да се изпрати.",
     umMembro: "1 член",
     semDescricao: "Без описание.",
@@ -216,7 +216,7 @@ export const servidor = {
   },
   denuncia: {
     titulo: "Докладвай {{nome}}",
-    descricao: "Докладът отива при екипа на Gravaê. Разкажи какво се случи.",
+    descricao: "Докладът отива при екипа на Ravox Chat. Разкажи какво се случи.",
     motivo: "Причина",
     detalhes: "Подробности (по избор)",
     enviar: "Изпрати доклад",

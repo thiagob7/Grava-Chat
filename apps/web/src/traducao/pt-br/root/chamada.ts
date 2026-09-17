@@ -179,7 +179,7 @@ export const chamada = {
     telaDetalhe: "Compartilhar a tela e as janelas.",
     monitoramento: "Monitoramento de entrada",
     monitoramentoDetalhe:
-      "Usar o push-to-talk mesmo com o Gravaê em segundo plano.",
+      "Usar o push-to-talk mesmo com o Ravox Chat em segundo plano.",
   },
   jaConectado: {
     titulo: "Você já está nesta chamada",

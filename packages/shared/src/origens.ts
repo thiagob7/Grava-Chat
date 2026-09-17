@@ -1,4 +1,6 @@
 export const APP_ORIGINS = [
+  "https://app-ravox-chat.vercel.app",
+  "https://app-ravox-chat-staging.vercel.app",
   "https://gravae-chat.vercel.app",
   "https://gravae-chat-staging.vercel.app",
 ] as const;

@@ -10,7 +10,7 @@ import knobs from "~/features/configuracoes/lib/macanetas.json";
 import tokensLive from "~/features/configuracoes/lib/tokens-vivos.json";
 
 const FOLDER = fileURLToPath(new URL("../../../../../api/temas/", import.meta.url));
-const HOUSE_AUTHOR = "Gravaê";
+const HOUSE_AUTHOR = "Ravox Chat";
 
 const HOUSE_THEMES = readdirSync(FOLDER)
   .filter((a) => a.endsWith(".css"))

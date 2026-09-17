@@ -11,7 +11,7 @@ const header = (req: FastifyRequest, name: string) => {
   return Array.isArray(value) ? value[0] : value;
 };
 
-const fromEdge = (req: FastifyRequest) => {
+export const fromEdge = (req: FastifyRequest) => {
   const given = header(req, EDGE_HEADER);
   if (!env.EDGE_SECRET || !given) return false;
 

@@ -167,7 +167,7 @@ export const chamada = {
     tela: "Perekaman layar",
     telaDetalhe: "Membagikan layar dan jendela.",
     monitoramento: "Pemantauan masukan",
-    monitoramentoDetalhe: "Memakai tekan-untuk-bicara meski Gravaê ada di latar belakang.",
+    monitoramentoDetalhe: "Memakai tekan-untuk-bicara meski Ravox Chat ada di latar belakang.",
   },
   jaConectado: {
     titulo: "Kamu sudah ada di panggilan ini",

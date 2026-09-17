@@ -44,7 +44,7 @@ export const SeeTheme: React.FC = () => {
         </div>
 
         <Button data-gc="tema.ver-tema.button.back" variant="surface" onClick={back}>
-          Voltar para o Gravaê
+          Voltar para o Ravox Chat
         </Button>
       </div>
     );

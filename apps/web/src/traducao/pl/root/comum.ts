@@ -6,7 +6,7 @@ export const comum = {
     recarregar: "Wczytaj ponownie",
     copiarDetalhes: "Skopiuj szczegóły",
     parteQuebrou: "Ta część ekranu się zepsuła.",
-    titulo: "Gravaê się potknął.",
+    titulo: "Ravox Chat się potknął.",
     detalhe: "Coś zepsuło się po drodze i ekran nie zdołał się narysować. Twoja rozmowa nie przepadła — wszystko jest na serwerze.",
   },
   perdido: {
@@ -21,7 +21,7 @@ export const comum = {
   },
   avisoDoNavegador: {
     titulo: "Chcesz powiadomienia o wiadomościach?",
-    detalhe: "Gdy Gravaê jest za innym oknem, da ci znać.",
+    detalhe: "Gdy Ravox Chat jest za innym oknem, da ci znać.",
   },
   atualizacao: {
     titulo: "Aktualizacja",
@@ -102,8 +102,8 @@ export const comum = {
   trocar: "Zmień",
   loginNoApp: {
     titulo: "Wszystko gotowe!",
-    detalhe: "Zalogowano. Wróć do Gravaê, aplikacja już na ciebie czeka.",
-    abrir: "Otwórz Gravaê",
+    detalhe: "Zalogowano. Wróć do Ravox Chat, aplikacja już na ciebie czeka.",
+    abrir: "Otwórz Ravox Chat",
     fecharAba: "Możesz już zamknąć tę kartę.",
     falhouTitulo: "Logowanie się nie udało",
     falhouDetalhe: "Wróć do aplikacji i spróbuj zalogować się ponownie.",

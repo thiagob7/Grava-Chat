@@ -1,7 +1,7 @@
 export const idioma = {
   titulo: "Język interfejsu",
   detalhe:
-    "Język, w którym Gravaê do Ciebie mówi. Dotyczy tylko tego urządzenia.",
+    "Język, w którym Ravox Chat do Ciebie mówi. Dotyczy tylko tego urządzenia.",
   procurar: "Szukaj języka…",
   nenhum: "Brak języka o tej nazwie.",
   escolher: "Wybierz język interfejsu",

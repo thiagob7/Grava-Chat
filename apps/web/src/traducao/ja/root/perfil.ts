@@ -44,7 +44,7 @@ export const perfil = {
   },
   cartao: {
     infinity: "Infinityメンバー",
-    equipe: "Gravaê チーム",
+    equipe: "Ravox Chat チーム",
     trocarFaixa: "カードのバナーを変更",
     trocarFaixaCurto: "バナーを変更",
     trocarFoto: "プロフィール画像を変更",

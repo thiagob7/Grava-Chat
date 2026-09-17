@@ -167,7 +167,7 @@ export const chamada = {
     tela: "การบันทึกหน้าจอ",
     telaDetalhe: "แชร์หน้าจอและหน้าต่าง",
     monitoramento: "การมอนิเตอร์เสียงเข้า",
-    monitoramentoDetalhe: "ใช้กดเพื่อพูดได้แม้ Gravaê อยู่เบื้องหลัง",
+    monitoramentoDetalhe: "ใช้กดเพื่อพูดได้แม้ Ravox Chat อยู่เบื้องหลัง",
   },
   jaConectado: {
     titulo: "คุณอยู่ในสายนี้อยู่แล้ว",

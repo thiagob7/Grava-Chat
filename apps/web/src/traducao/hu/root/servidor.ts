@@ -124,7 +124,7 @@ export const servidor = {
     feitoPor: "Készítette",
     publicadoEm: "Közzétéve",
     denunciarNome: "{{nome}} jelentése",
-    denunciaDetalhe: "A jelentés a Gravaê csapatához megy. Az alkalmazás készítője nem tudja meg, hogy te voltál.",
+    denunciaDetalhe: "A jelentés a Ravox Chat csapatához megy. Az alkalmazás készítője nem tudja meg, hogy te voltál.",
     denunciaFalhou: "A jelentést nem sikerült elküldeni.",
     umMembro: "1 tag",
     semDescricao: "Nincs leírás.",
@@ -216,7 +216,7 @@ export const servidor = {
   },
   denuncia: {
     titulo: "{{nome}} jelentése",
-    descricao: "A jelentés a Gravaê csapatához kerül. Mondd el, mi történt.",
+    descricao: "A jelentés a Ravox Chat csapatához kerül. Mondd el, mi történt.",
     motivo: "Ok",
     detalhes: "Részletek (nem kötelező)",
     enviar: "Jelentés küldése",

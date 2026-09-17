@@ -167,7 +167,7 @@ export const chamada = {
     tela: "Näytön tallennus",
     telaDetalhe: "Näytön ja ikkunoiden jakaminen.",
     monitoramento: "Tulon valvonta",
-    monitoramentoDetalhe: "Paina-ja-puhu myös silloin, kun Gravaê on taustalla.",
+    monitoramentoDetalhe: "Paina-ja-puhu myös silloin, kun Ravox Chat on taustalla.",
   },
   jaConectado: {
     titulo: "Olet jo tässä puhelussa",

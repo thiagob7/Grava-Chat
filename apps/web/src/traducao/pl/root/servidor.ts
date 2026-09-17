@@ -124,7 +124,7 @@ export const servidor = {
     feitoPor: "Autor",
     publicadoEm: "Opublikowano",
     denunciarNome: "Zgłoś {{nome}}",
-    denunciaDetalhe: "Zgłoszenie trafia do zespołu Gravaê. Autor aplikacji nie dowie się, że to ty.",
+    denunciaDetalhe: "Zgłoszenie trafia do zespołu Ravox Chat. Autor aplikacji nie dowie się, że to ty.",
     denunciaFalhou: "Nie udało się wysłać zgłoszenia.",
     umMembro: "1 członek",
     semDescricao: "Bez opisu.",
@@ -216,7 +216,7 @@ export const servidor = {
   },
   denuncia: {
     titulo: "Zgłoś {{nome}}",
-    descricao: "Zgłoszenie trafia do zespołu Gravaê. Opisz, co się stało.",
+    descricao: "Zgłoszenie trafia do zespołu Ravox Chat. Opisz, co się stało.",
     motivo: "Powód",
     detalhes: "Szczegóły (opcjonalnie)",
     enviar: "Wyślij zgłoszenie",

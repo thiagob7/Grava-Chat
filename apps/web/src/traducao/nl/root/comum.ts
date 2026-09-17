@@ -6,7 +6,7 @@ export const comum = {
     recarregar: "Opnieuw laden",
     copiarDetalhes: "Details kopiëren",
     parteQuebrou: "Dit stuk van het scherm ging stuk.",
-    titulo: "Gravaê struikelde.",
+    titulo: "Ravox Chat struikelde.",
     detalhe: "Er ging onderweg iets stuk en het scherm kon zichzelf niet tekenen. Je gesprek is niet weg — alles staat op de server.",
   },
   perdido: {
@@ -21,7 +21,7 @@ export const comum = {
   },
   avisoDoNavegador: {
     titulo: "Wil je bericht krijgen van berichten?",
-    detalhe: "Staat Gravaê achter een ander venster, dan roept het je.",
+    detalhe: "Staat Ravox Chat achter een ander venster, dan roept het je.",
   },
   atualizacao: {
     titulo: "Update",
@@ -102,8 +102,8 @@ export const comum = {
   trocar: "Wijzigen",
   loginNoApp: {
     titulo: "Helemaal klaar!",
-    detalhe: "Je bent ingelogd. Ga terug naar Gravaê, de app wacht al op je.",
-    abrir: "Gravaê openen",
+    detalhe: "Je bent ingelogd. Ga terug naar Ravox Chat, de app wacht al op je.",
+    abrir: "Ravox Chat openen",
     fecharAba: "Je kunt dit tabblad nu sluiten.",
     falhouTitulo: "Inloggen is mislukt",
     falhouDetalhe: "Ga terug naar de app en probeer opnieuw in te loggen.",

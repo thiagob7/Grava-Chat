@@ -167,7 +167,7 @@ export const chamada = {
     tela: "Запис екрана",
     telaDetalhe: "Показувати екран і вікна.",
     monitoramento: "Моніторинг входу",
-    monitoramentoDetalhe: "Використовувати push-to-talk, навіть коли Gravaê у фоні.",
+    monitoramentoDetalhe: "Використовувати push-to-talk, навіть коли Ravox Chat у фоні.",
   },
   jaConectado: {
     titulo: "Ви вже в цьому дзвінку",

@@ -1,6 +1,6 @@
 export const idioma = {
   titulo: "Jazyk rozhraní",
-  detalhe: "Jazyk, kterým s tebou Gravaê mluví. Platí jen na tomto zařízení.",
+  detalhe: "Jazyk, kterým s tebou Ravox Chat mluví. Platí jen na tomto zařízení.",
   procurar: "Hledat jazyk…",
   nenhum: "Žádný jazyk s tímto názvem.",
   escolher: "Vybrat jazyk rozhraní",

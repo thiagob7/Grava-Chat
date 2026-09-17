@@ -12,7 +12,7 @@ import { isDesktop } from "~/lib/desktop";
 export const CursorsInWindow: React.FC = () => {
   useEffect(() => {
     const before = document.title;
-    document.title = "Cursores — Gravaê";
+    document.title = "Cursores — Ravox Chat";
 
     return () => {
       document.title = before;

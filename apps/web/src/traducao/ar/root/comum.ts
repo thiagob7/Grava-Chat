@@ -6,7 +6,7 @@ export const comum = {
     recarregar: "إعادة التحميل",
     copiarDetalhes: "نسخ التفاصيل",
     parteQuebrou: "هذا الجزء من الشاشة تعطّل.",
-    titulo: "تعثّر Gravaê.",
+    titulo: "تعثّر Ravox Chat.",
     detalhe: "حدث خلل في الطريق ولم تتمكّن الشاشة من الظهور. محادثتك لم تضع — كل شيء محفوظ على الخادم.",
   },
   perdido: {
@@ -21,7 +21,7 @@ export const comum = {
   },
   avisoDoNavegador: {
     titulo: "هل تريد تنبيهات بالرسائل؟",
-    detalhe: "عندما يكون Gravaê خلف نافذة أخرى، سينبّهك.",
+    detalhe: "عندما يكون Ravox Chat خلف نافذة أخرى، سينبّهك.",
   },
   atualizacao: {
     titulo: "التحديث",
@@ -102,8 +102,8 @@ export const comum = {
   trocar: "تغيير",
   loginNoApp: {
     titulo: "كل شيء جاهز!",
-    detalhe: "لقد سجّلت الدخول. عُد إلى Gravaê، التطبيق بانتظارك.",
-    abrir: "فتح Gravaê",
+    detalhe: "لقد سجّلت الدخول. عُد إلى Ravox Chat، التطبيق بانتظارك.",
+    abrir: "فتح Ravox Chat",
     fecharAba: "يمكنك إغلاق علامة التبويب هذه الآن.",
     falhouTitulo: "تعذّر تسجيل الدخول",
     falhouDetalhe: "عُد إلى التطبيق وحاول تسجيل الدخول مرة أخرى.",

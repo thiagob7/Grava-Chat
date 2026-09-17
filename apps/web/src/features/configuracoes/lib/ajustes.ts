@@ -76,7 +76,7 @@ const THEMES: Record<string, string> = {
   "mais-escuro": "Mais escuro",
   light: "Claro",
   system: "Do sistema",
-  gravae: "Gravaê",
+  gravae: "Ravox Chat",
 };
 
 const READING: Record<string, string> = {

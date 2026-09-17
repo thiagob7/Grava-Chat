@@ -1,6 +1,6 @@
 export const idioma = {
   titulo: "界面语言",
-  detalhe: "Gravaê 与你交流所用的语言。仅在本设备生效。",
+  detalhe: "Ravox Chat 与你交流所用的语言。仅在本设备生效。",
   procurar: "搜索语言…",
   nenhum: "没有此名称的语言。",
   escolher: "选择界面语言",

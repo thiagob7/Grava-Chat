@@ -167,7 +167,7 @@ export const chamada = {
     tela: "הקלטת מסך",
     telaDetalhe: "לשתף את המסך והחלונות.",
     monitoramento: "ניטור קלט",
-    monitoramentoDetalhe: "להשתמש בלחץ-כדי-לדבר גם כש‑Gravaê ברקע.",
+    monitoramentoDetalhe: "להשתמש בלחץ-כדי-לדבר גם כש‑Ravox Chat ברקע.",
   },
   jaConectado: {
     titulo: "אתם כבר בשיחה הזו",

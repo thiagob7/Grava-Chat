@@ -131,7 +131,7 @@ export const conversa = {
   },
   denuncia: {
     titulo: "Mesajı bildir",
-    descricao: "Bildirim Gravaê ekibine gider. Ne olduğunu anlat.",
+    descricao: "Bildirim Ravox Chat ekibine gider. Ne olduğunu anlat.",
     de: "{{nome}} tarafından",
     semTexto: "(metin yok)",
     motivo: "Sebep",

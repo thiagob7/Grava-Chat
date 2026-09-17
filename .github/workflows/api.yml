@@ -77,7 +77,7 @@ jobs:
       contents: read
     environment:
       name: producao
-      url: https://gravaechat-api.duckdns.org/api/publico/versao
+      url: https://ravoxchat-api.duckdns.org/api/publico/versao
 
     steps:
       - uses: actions/checkout@v4
@@ -139,7 +139,7 @@ jobs:
           esperado=$(git rev-parse --short HEAD)
 
           for i in $(seq 1 20); do
-            resposta=$(curl -sS --max-time 5 https://gravaechat-api.duckdns.org/api/publico/versao || true)
+            resposta=$(curl -sS --max-time 5 https://ravoxchat-api.duckdns.org/api/publico/versao || true)
             if echo "$resposta" | grep -q "$esperado"; then
               echo "no ar: $resposta"
               exit 0

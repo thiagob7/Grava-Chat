@@ -124,7 +124,7 @@ export const servidor = {
     feitoPor: "Gjord av",
     publicadoEm: "Publicerad",
     denunciarNome: "Anmäl {{nome}}",
-    denunciaDetalhe: "Anmälan går till Gravaês team. Den som gjorde appen får inte veta att det var du.",
+    denunciaDetalhe: "Anmälan går till Ravox Chats team. Den som gjorde appen får inte veta att det var du.",
     denunciaFalhou: "Anmälan kunde inte skickas.",
     umMembro: "1 medlem",
     semDescricao: "Ingen beskrivning.",
@@ -216,7 +216,7 @@ export const servidor = {
   },
   denuncia: {
     titulo: "Anmäl {{nome}}",
-    descricao: "Anmälan går till Gravaê-teamet. Berätta vad som hände.",
+    descricao: "Anmälan går till Ravox Chat-teamet. Berätta vad som hände.",
     motivo: "Anledning",
     detalhes: "Detaljer (valfritt)",
     enviar: "Skicka anmälan",

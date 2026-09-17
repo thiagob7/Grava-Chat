@@ -24,7 +24,7 @@ export class Gravae {
   constructor(options: ClientOptions) {
     this.rest = new Rest(options);
     this.token = options.token;
-    this.base = (options.base ?? "https://gravaechat-api.duckdns.org/api").replace(/\/api\/?$/, "");
+    this.base = (options.base ?? "https://ravoxchat-api.duckdns.org/api").replace(/\/api\/?$/, "");
   }
 
   eu() {

@@ -44,7 +44,7 @@ export const perfil = {
   },
   cartao: {
     infinity: "Infinity narys",
-    equipe: "Gravaê komanda",
+    equipe: "Ravox Chat komanda",
     trocarFaixa: "Keisti kortelės antraštę",
     trocarFaixaCurto: "Keisti antraštę",
     trocarFoto: "Keisti profilio nuotrauką",

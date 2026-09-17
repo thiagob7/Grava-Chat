@@ -1,6 +1,6 @@
 export const idioma = {
   titulo: "Interface language",
-  detalhe: "The language Gravaê speaks to you in. Applies to this device only.",
+  detalhe: "The language Ravox Chat speaks to you in. Applies to this device only.",
   procurar: "Search languages…",
   nenhum: "No language with that name.",
   escolher: "Select interface language",

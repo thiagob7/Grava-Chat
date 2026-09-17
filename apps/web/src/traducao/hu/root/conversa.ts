@@ -131,7 +131,7 @@ export const conversa = {
   },
   denuncia: {
     titulo: "Üzenet jelentése",
-    descricao: "A jelentés a Gravaê csapatához kerül. Mondd el, mi történt.",
+    descricao: "A jelentés a Ravox Chat csapatához kerül. Mondd el, mi történt.",
     de: "Feladó: {{nome}}",
     semTexto: "(nincs szöveg)",
     motivo: "Ok",

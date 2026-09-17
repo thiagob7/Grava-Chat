@@ -124,7 +124,7 @@ export const servidor = {
     feitoPor: "Автор",
     publicadoEm: "Опубликовано",
     denunciarNome: "Пожаловаться на {{nome}}",
-    denunciaDetalhe: "Жалоба уходит команде Gravaê. Автор приложения не узнает, что это были вы.",
+    denunciaDetalhe: "Жалоба уходит команде Ravox Chat. Автор приложения не узнает, что это были вы.",
     denunciaFalhou: "Не удалось отправить жалобу.",
     umMembro: "1 участник",
     semDescricao: "Без описания.",
@@ -216,7 +216,7 @@ export const servidor = {
   },
   denuncia: {
     titulo: "Пожаловаться на {{nome}}",
-    descricao: "Жалоба уйдёт команде Gravaê. Расскажите, что случилось.",
+    descricao: "Жалоба уйдёт команде Ravox Chat. Расскажите, что случилось.",
     motivo: "Причина",
     detalhes: "Подробности (необязательно)",
     enviar: "Отправить жалобу",

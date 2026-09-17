@@ -15,5 +15,5 @@ Copyright © Twitter, Inc. e outros colaboradores.
 > `package.json`, mas isso cobre o EMPACOTAMENTO. A arte é CC-BY-4.0, e é a
 > licença da arte que manda aqui.
 
-Nenhum aviso de licença do Gravaê concede direitos sobre marcas ou nomes
+Nenhum aviso de licença do Ravox Chat concede direitos sobre marcas ou nomes
 comerciais de terceiros.

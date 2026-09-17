@@ -5,7 +5,7 @@ export const conversa = {
     botao: "Acenar para {{nome}}",
   },
   oficial: {
-    titulo: "Este canal é só para avisos oficiais do Gravaê.",
+    titulo: "Este canal é só para avisos oficiais do Ravox Chat.",
     detalhe: "Nunca pedimos a sua senha nem o token da sua conta.",
     saibaMais: "Saiba mais",
   },
@@ -133,7 +133,7 @@ export const conversa = {
   },
   denuncia: {
     titulo: "Denunciar mensagem",
-    descricao: "A denúncia vai para a equipe do Gravaê. Conte o que aconteceu.",
+    descricao: "A denúncia vai para a equipe do Ravox Chat. Conte o que aconteceu.",
     de: "De {{nome}}",
     semTexto: "(sem texto)",
     motivo: "Motivo",

@@ -1,7 +1,7 @@
 {
-  "name": "Gravaê Chat",
-  "short_name": "Gravaê",
-  "description": "Conversa, voz e comunidades do Gravaê.",
+  "name": "Ravox Chat",
+  "short_name": "Ravox Chat",
+  "description": "Conversa, voz e comunidades do Ravox Chat.",
   "id": "/",
   "start_url": "/",
   "scope": "/",

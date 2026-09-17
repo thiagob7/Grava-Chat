@@ -6,7 +6,7 @@ export const comum = {
     recarregar: "Reload",
     copiarDetalhes: "Copy the details",
     parteQuebrou: "This part of the screen broke.",
-    titulo: "Gravaê tripped up.",
+    titulo: "Ravox Chat tripped up.",
     detalhe: "Something broke along the way and the screen couldn't draw itself. Your conversation isn't lost — it's all on the server.",
   },
   perdido: {
@@ -21,7 +21,7 @@ export const comum = {
   },
   avisoDoNavegador: {
     titulo: "Want to be told about messages?",
-    detalhe: "With Gravaê behind another window, it will call you.",
+    detalhe: "With Ravox Chat behind another window, it will call you.",
   },
   atualizacao: {
     titulo: "Update",
@@ -102,8 +102,8 @@ export const comum = {
   trocar: "Change",
   loginNoApp: {
     titulo: "You're all set!",
-    detalhe: "You're signed in. Head back to Gravaê, the app is waiting for you.",
-    abrir: "Open Gravaê",
+    detalhe: "You're signed in. Head back to Ravox Chat, the app is waiting for you.",
+    abrir: "Open Ravox Chat",
     fecharAba: "You can close this tab now.",
     falhouTitulo: "Sign-in didn't work",
     falhouDetalhe: "Go back to the app and try signing in again.",

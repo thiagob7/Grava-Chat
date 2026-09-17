@@ -235,13 +235,13 @@
     "label": "Marca",
     "hint": "botão, link, menção, resposta e o anel de foco",
     "base": "--color-brand",
-    "fallback": "#413cdd",
+    "fallback": "#5c5ff0",
     "children": [
       {
         "name": "--color-brand-hover",
-        "dL": -4.6708,
-        "reasonC": 0.949,
-        "dH": 0.3547,
+        "dL": -6.6692,
+        "reasonC": 1.0215,
+        "dH": 1.0868,
         "alfa": null,
         "mirrors": false
       },
@@ -255,41 +255,41 @@
       },
       {
         "name": "--color-link",
-        "dL": 41.7713,
-        "reasonC": 0.3562,
-        "dH": -63.4779,
+        "dL": 30.8964,
+        "reasonC": 0.4053,
+        "dH": -60.0086,
         "alfa": null,
         "mirrors": false
       },
       {
         "name": "--color-mencao",
-        "dL": 41.7713,
-        "reasonC": 0.3562,
-        "dH": -63.4779,
+        "dL": 30.8964,
+        "reasonC": 0.4053,
+        "dH": -60.0086,
         "alfa": null,
         "mirrors": false
       },
       {
         "name": "--color-resposta",
-        "dL": 18.5628,
-        "reasonC": 0.6958,
-        "dH": -17.6532,
+        "dL": 7.6879,
+        "reasonC": 0.7917,
+        "dH": -14.1838,
         "alfa": null,
         "mirrors": false
       },
       {
         "name": "--color-everyone",
-        "dL": 26.5506,
-        "reasonC": 0.5963,
-        "dH": -2.0489,
+        "dL": 15.6757,
+        "reasonC": 0.6786,
+        "dH": 1.4205,
         "alfa": null,
         "mirrors": false
       },
       {
         "name": "--color-sobre-marca",
-        "dL": 62.9326,
+        "dL": 52.0577,
         "reasonC": 0,
-        "dH": -144.6861,
+        "dH": -141.2168,
         "alfa": null,
         "L": 100,
         "mirrors": false,

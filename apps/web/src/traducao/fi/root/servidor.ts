@@ -124,7 +124,7 @@ export const servidor = {
     feitoPor: "Tekijä",
     publicadoEm: "Julkaistu",
     denunciarNome: "Ilmianna {{nome}}",
-    denunciaDetalhe: "Ilmianto menee Gravaên tiimille. Sovelluksen tekijä ei saa tietää, että se olit sinä.",
+    denunciaDetalhe: "Ilmianto menee Ravox Chatn tiimille. Sovelluksen tekijä ei saa tietää, että se olit sinä.",
     denunciaFalhou: "Ilmiantoa ei voitu lähettää.",
     umMembro: "1 jäsen",
     semDescricao: "Ei kuvausta.",
@@ -216,7 +216,7 @@ export const servidor = {
   },
   denuncia: {
     titulo: "Ilmoita: {{nome}}",
-    descricao: "Ilmoitus menee Gravaên tiimille. Kerro mitä tapahtui.",
+    descricao: "Ilmoitus menee Ravox Chatn tiimille. Kerro mitä tapahtui.",
     motivo: "Syy",
     detalhes: "Lisätiedot (valinnainen)",
     enviar: "Lähetä ilmoitus",

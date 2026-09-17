@@ -2,8 +2,8 @@ import React from "react";
 import Link from "next/link";
 
 import { LimitsTable } from "~/components/docs/TabelaDeLimites";
+import { APP_URL as APP } from "~/lib/brand";
 
-const APP = "https://gravae-chat.vercel.app";
 const REPO = "https://github.com/thiagob7/Grava-Chat";
 
 const link = "text-brand transition hover:text-brand-hover";

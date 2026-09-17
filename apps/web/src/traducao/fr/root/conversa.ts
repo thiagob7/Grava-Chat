@@ -131,7 +131,7 @@ export const conversa = {
   },
   denuncia: {
     titulo: "Signaler le message",
-    descricao: "Le signalement est envoyé à l’équipe Gravaê. Dis-nous ce qui s’est passé.",
+    descricao: "Le signalement est envoyé à l’équipe Ravox Chat. Dis-nous ce qui s’est passé.",
     de: "De {{nome}}",
     semTexto: "(sans texte)",
     motivo: "Motif",

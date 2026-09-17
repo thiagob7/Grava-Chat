@@ -1,6 +1,6 @@
 export const idioma = {
   titulo: "Jezik sučelja",
-  detalhe: "Jezik na kojem ti Gravaê govori. Vrijedi samo na ovom uređaju.",
+  detalhe: "Jezik na kojem ti Ravox Chat govori. Vrijedi samo na ovom uređaju.",
   procurar: "Traži jezik…",
   nenhum: "Nema jezika s tim nazivom.",
   escolher: "Odaberi jezik sučelja",

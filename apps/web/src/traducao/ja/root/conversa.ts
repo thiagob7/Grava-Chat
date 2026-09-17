@@ -131,7 +131,7 @@ export const conversa = {
   },
   denuncia: {
     titulo: "メッセージを通報",
-    descricao: "通報はGravaêチームに届きます。何があったか教えてください。",
+    descricao: "通報はRavox Chatチームに届きます。何があったか教えてください。",
     de: "{{nome}} より",
     semTexto: "（本文なし）",
     motivo: "理由",

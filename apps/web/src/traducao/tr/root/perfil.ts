@@ -44,7 +44,7 @@ export const perfil = {
   },
   cartao: {
     infinity: "Infinity üyesi",
-    equipe: "Gravaê Ekibi",
+    equipe: "Ravox Ekibi",
     trocarFaixa: "Kart afişini değiştir",
     trocarFaixaCurto: "Afişi değiştir",
     trocarFoto: "Profil fotoğrafını değiştir",

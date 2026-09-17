@@ -131,7 +131,7 @@ export const conversa = {
   },
   denuncia: {
     titulo: "Raportează mesajul",
-    descricao: "Raportul ajunge la echipa Gravaê. Spune-ne ce s-a întâmplat.",
+    descricao: "Raportul ajunge la echipa Ravox Chat. Spune-ne ce s-a întâmplat.",
     de: "De la {{nome}}",
     semTexto: "(fără text)",
     motivo: "Motiv",

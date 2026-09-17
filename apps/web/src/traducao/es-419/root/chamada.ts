@@ -167,7 +167,7 @@ export const chamada = {
     tela: "Grabación de pantalla",
     telaDetalhe: "Compartir la pantalla y las ventanas.",
     monitoramento: "Monitorización de entrada",
-    monitoramentoDetalhe: "Usar el pulsar para hablar incluso con Gravaê en segundo plano.",
+    monitoramentoDetalhe: "Usar el pulsar para hablar incluso con Ravox Chat en segundo plano.",
   },
   jaConectado: {
     titulo: "Ya estás en esta llamada",

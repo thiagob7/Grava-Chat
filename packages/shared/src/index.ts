@@ -17,3 +17,4 @@ export * from "./admin.js";
 export * from "./plans.js";
 export * from "./billing.js";
 export * from "./emoji-token.js";
+export * from "./brand.js";

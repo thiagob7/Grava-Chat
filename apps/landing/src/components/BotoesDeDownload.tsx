@@ -4,8 +4,7 @@ import { Apple, Globe, Monitor } from "lucide-react";
 import { useEffect, useState } from "react";
 
 import { LINK_MAC, LINK_WINDOWS } from "~/lib/release";
-
-const APP = "https://gravae-chat.vercel.app";
+import { APP_URL as APP } from "~/lib/brand";
 
 export const DownloadButtons = () => {
   const [system, setSystem] = useState<"mac" | "windows" | null>(null);

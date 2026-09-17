@@ -167,7 +167,7 @@ export const chamada = {
     tela: "Képernyőfelvétel",
     telaDetalhe: "A képernyő és az ablakok megosztása.",
     monitoramento: "Bemenet figyelése",
-    monitoramentoDetalhe: "A nyomd-és-beszélj használata akkor is, ha a Gravaê a háttérben van.",
+    monitoramentoDetalhe: "A nyomd-és-beszélj használata akkor is, ha a Ravox Chat a háttérben van.",
   },
   jaConectado: {
     titulo: "Már bent vagy ebben a hívásban",

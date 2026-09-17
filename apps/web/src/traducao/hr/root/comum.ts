@@ -6,7 +6,7 @@ export const comum = {
     recarregar: "Učitaj ponovno",
     copiarDetalhes: "Kopiraj pojedinosti",
     parteQuebrou: "Ovaj se dio zaslona pokvario.",
-    titulo: "Gravaê se spotaknuo.",
+    titulo: "Ravox Chat se spotaknuo.",
     detalhe: "Nešto se putem pokvarilo i zaslon se nije uspio iscrtati. Tvoj razgovor nije izgubljen — sve je na poslužitelju.",
   },
   perdido: {
@@ -21,7 +21,7 @@ export const comum = {
   },
   avisoDoNavegador: {
     titulo: "Želiš obavijesti o porukama?",
-    detalhe: "Kad je Gravaê iza drugog prozora, javit će ti se.",
+    detalhe: "Kad je Ravox Chat iza drugog prozora, javit će ti se.",
   },
   atualizacao: {
     titulo: "Ažuriranje",
@@ -102,8 +102,8 @@ export const comum = {
   trocar: "Promijeni",
   loginNoApp: {
     titulo: "Sve je spremno!",
-    detalhe: "Prijavljeni ste. Vratite se u Gravaê, aplikacija vas već čeka.",
-    abrir: "Otvori Gravaê",
+    detalhe: "Prijavljeni ste. Vratite se u Ravox Chat, aplikacija vas već čeka.",
+    abrir: "Otvori Ravox Chat",
     fecharAba: "Sada možete zatvoriti ovu karticu.",
     falhouTitulo: "Prijava nije uspjela",
     falhouDetalhe: "Vratite se u aplikaciju i pokušajte ponovno.",

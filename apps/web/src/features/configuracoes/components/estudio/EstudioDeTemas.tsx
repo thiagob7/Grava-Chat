@@ -89,7 +89,7 @@ const THEME_NAME: Record<string, string> = {
   dark: "Base escura",
   "mais-escuro": "Base mais escura",
   system: "Base do sistema",
-  gravae: "Base Gravaê",
+  gravae: "Base Ravox Chat",
 };
 
 export const StudioBody: React.FC<{ action?: React.ReactNode }> = ({ action }) => {

@@ -3,7 +3,9 @@ import path from "node:path";
 
 import { APP_ORIGIN, APP_URL, isDev } from "./config.js";
 
-const BRAND = `<svg width="54" height="80" viewBox="0 0 538 802" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M0 657.14L358.358 614.064V610.397L402.349 249.29L228.212 284.118L208.965 391.352L283.203 378.519L269.455 485.753L151.225 499.499L198.883 132.895L432.595 116.398L443.592 0L89.8185 44.9095L0 657.14Z" fill="white"/><path d="M461.458 801.261C503.731 801.261 538 766.992 538 724.72C538 682.447 503.731 648.178 461.458 648.178C419.185 648.178 384.916 682.447 384.916 724.72C384.916 766.992 419.185 801.261 461.458 801.261Z" fill="#FF0000"/></svg>`;
+const systemName = () => (isDev ? "Electron" : process.platform === "darwin" ? "Ravox Chat" : app.name);
+
+const BRAND = `<div style="font-size:30px;font-weight:800;letter-spacing:-0.02em">Ravox<span style="color:#5c5ff0">Chat</span></div>`;
 
 function waitPage(reason: string) {
   return `data:text/html;charset=utf-8,${encodeURIComponent(
@@ -13,7 +15,7 @@ function waitPage(reason: string) {
          <div style="animation:respirar 2s ease-in-out infinite">${BRAND}</div>
          <h1 style="margin:28px 0 8px;font-size:17px;font-weight:600">${reason}</h1>
          <p style="margin:0;color:#a8a8b3">Isto volta sozinho assim que a conexão voltar — não precisa fechar o app.</p>
-         <a href="${APP_URL}" style="display:inline-block;margin-top:22px;padding:9px 18px;border-radius:8px;background:#d30404;color:#fff;text-decoration:none;font-weight:600">Tentar agora</a>
+         <a href="${APP_URL}" style="display:inline-block;margin-top:22px;padding:9px 18px;border-radius:8px;background:#5c5ff0;color:#fff;text-decoration:none;font-weight:600">Tentar agora</a>
        </div>
        <style>@keyframes respirar{0%,100%{opacity:1}50%{opacity:.45}}</style>
      </body>`,
@@ -64,7 +66,7 @@ export function createWindow() {
     ...(process.platform === "darwin" ? {} : { frame: false, icon: ICON }),
     webPreferences: {
       preload: path.join(__dirname, "preload.cjs"),
-      additionalArguments: [`--gravae-nome=${isDev ? "Electron" : app.name}`],
+      additionalArguments: [`--gravae-nome=${systemName()}`],
       contextIsolation: true,
       nodeIntegration: false,
       sandbox: false,
@@ -97,7 +99,7 @@ export function createWindow() {
 
     if (!isPrincipal || code === -3 || appWindow.isDestroyed()) return;
 
-    void appWindow.loadURL(waitPage("Sem conexão com o Gravaê"));
+    void appWindow.loadURL(waitPage("Sem conexão com o Ravox Chat"));
     loader.schedule();
   });
 
@@ -129,7 +131,7 @@ export function createWindow() {
         ...(process.platform === "darwin" ? {} : { icon: ICON }),
         webPreferences: {
           preload: path.join(__dirname, "preload.cjs"),
-          additionalArguments: [`--gravae-nome=${isDev ? "Electron" : app.name}`],
+          additionalArguments: [`--gravae-nome=${systemName()}`],
           contextIsolation: true,
           nodeIntegration: false,
           sandbox: false,
@@ -172,7 +174,7 @@ export function createWindow() {
     allow(our);
   });
 
-  void appWindow.loadURL(waitPage("Abrindo o Gravaê…")).then(async () => {
+  void appWindow.loadURL(waitPage("Abrindo o Ravox Chat…")).then(async () => {
     await appWindow.webContents.session.clearCache().catch(() => undefined);
     await loader.load();
   });

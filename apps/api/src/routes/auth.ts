@@ -3,7 +3,8 @@ import oauth2, { type OAuth2Namespace } from "@fastify/oauth2";
 import { z } from "zod";
 import { env, isDev } from "~/env.js";
 import { loginAttempts } from "~/lib/tentativas-de-login.js";
-import { clientIp } from "~/lib/ip-do-cliente.js";
+import { clientIp, fromEdge } from "~/lib/ip-do-cliente.js";
+import { originAllowed } from "~/lib/origins.js";
 import { googleService } from "~/services/google-service.js";
 import { authService, REFRESH_COOKIE } from "~/services/auth-service.js";
 import { desktopLoginService } from "~/services/desktop-login-service.js";
@@ -57,12 +58,22 @@ function tunnelOrigin(req: FastifyRequest): string | null {
   return `${req.protocol}://${forwardedHost}`;
 }
 
+function edgeOrigin(req: FastifyRequest): string | null {
+  if (!fromEdge(req)) return null;
+
+  const forwardedHost = req.headers["x-forwarded-host"];
+  if (typeof forwardedHost !== "string" || !forwardedHost) return null;
+
+  const origin = `https://${forwardedHost}`;
+  return originAllowed(origin) ? origin : null;
+}
+
 function callbackUrl(req: FastifyRequest) {
-  return `${tunnelOrigin(req) ?? env.API_PUBLIC_URL}/api/auth/google/callback`;
+  return `${tunnelOrigin(req) ?? edgeOrigin(req) ?? env.API_PUBLIC_URL}/api/auth/google/callback`;
 }
 
 function webAppUrl(req: FastifyRequest, path = "/") {
-  const base = tunnelOrigin(req) ?? env.WEB_ORIGIN.split(",")[0]?.trim() ?? "";
+  const base = tunnelOrigin(req) ?? edgeOrigin(req) ?? env.WEB_ORIGIN.split(",")[0]?.trim() ?? "";
   return `${base}${path}`;
 }
 

@@ -167,7 +167,7 @@ export const chamada = {
     tela: "Screen recording",
     telaDetalhe: "Sharing the screen and windows.",
     monitoramento: "Input monitoring",
-    monitoramentoDetalhe: "Using push-to-talk even with Gravaê in the background.",
+    monitoramentoDetalhe: "Using push-to-talk even with Ravox Chat in the background.",
   },
   jaConectado: {
     titulo: "You are already in this call",

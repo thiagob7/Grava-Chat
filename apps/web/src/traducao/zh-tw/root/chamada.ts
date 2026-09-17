@@ -167,7 +167,7 @@ export const chamada = {
     tela: "螢幕錄製",
     telaDetalhe: "分享螢幕和視窗。",
     monitoramento: "輸入監聽",
-    monitoramentoDetalhe: "即使 Gravaê 在背景也能使用按鍵通話。",
+    monitoramentoDetalhe: "即使 Ravox Chat 在背景也能使用按鍵通話。",
   },
   jaConectado: {
     titulo: "你已經在這個通話裡了",

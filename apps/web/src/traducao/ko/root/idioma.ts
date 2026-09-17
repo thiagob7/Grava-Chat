@@ -1,6 +1,6 @@
 export const idioma = {
   titulo: "인터페이스 언어",
-  detalhe: "Gravaê가 당신에게 말하는 언어입니다. 이 기기에서만 적용됩니다.",
+  detalhe: "Ravox Chat가 당신에게 말하는 언어입니다. 이 기기에서만 적용됩니다.",
   procurar: "언어 검색…",
   nenhum: "해당 이름의 언어가 없습니다.",
   escolher: "인터페이스 언어 선택",

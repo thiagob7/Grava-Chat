@@ -6,7 +6,7 @@ export const comum = {
     recarregar: "새로 고침",
     copiarDetalhes: "자세한 내용 복사",
     parteQuebrou: "화면의 이 부분이 망가졌습니다.",
-    titulo: "Gravaê가 넘어졌습니다.",
+    titulo: "Ravox Chat가 넘어졌습니다.",
     detalhe: "도중에 뭔가 망가져서 화면을 그리지 못했습니다. 대화는 사라지지 않았습니다 — 전부 서버에 있습니다.",
   },
   perdido: {
@@ -21,7 +21,7 @@ export const comum = {
   },
   avisoDoNavegador: {
     titulo: "메시지 알림을 받을까요?",
-    detalhe: "Gravaê가 다른 창 뒤에 있어도 알려 줍니다.",
+    detalhe: "Ravox Chat가 다른 창 뒤에 있어도 알려 줍니다.",
   },
   atualizacao: {
     titulo: "업데이트",
@@ -102,8 +102,8 @@ export const comum = {
   trocar: "바꾸기",
   loginNoApp: {
     titulo: "모두 준비됐어요!",
-    detalhe: "로그인했어요. Gravaê로 돌아가세요. 앱이 기다리고 있어요.",
-    abrir: "Gravaê 열기",
+    detalhe: "로그인했어요. Ravox Chat로 돌아가세요. 앱이 기다리고 있어요.",
+    abrir: "Ravox Chat 열기",
     fecharAba: "이제 이 탭을 닫아도 돼요.",
     falhouTitulo: "로그인하지 못했어요",
     falhouDetalhe: "앱으로 돌아가서 다시 로그인해 보세요.",

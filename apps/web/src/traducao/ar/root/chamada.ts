@@ -167,7 +167,7 @@ export const chamada = {
     tela: "تسجيل الشاشة",
     telaDetalhe: "مشاركة الشاشة والنوافذ.",
     monitoramento: "مراقبة الإدخال",
-    monitoramentoDetalhe: "استخدام اضغط-للتحدث حتى مع تشغيل Gravaê في الخلفية.",
+    monitoramentoDetalhe: "استخدام اضغط-للتحدث حتى مع تشغيل Ravox Chat في الخلفية.",
   },
   jaConectado: {
     titulo: "أنت في هذه المكالمة بالفعل",

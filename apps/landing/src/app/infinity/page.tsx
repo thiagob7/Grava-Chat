@@ -3,9 +3,7 @@ import { Check, CreditCard, Gift, Minus, QrCode } from "lucide-react";
 
 import { Footer } from "~/components/Rodape";
 import { Header } from "~/components/Cabecalho";
-import { BRAND } from "~/lib/brand";
-
-const APP = "https://gravae-chat.vercel.app";
+import { APP_URL as APP, BRAND } from "~/lib/brand";
 
 export const metadata: Metadata = {
   title: `Infinity — o plano pago do ${BRAND}`,

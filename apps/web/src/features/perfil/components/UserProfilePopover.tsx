@@ -621,7 +621,7 @@ const ProfileComposer: React.FC<{
   /*
     A mensagem sai pela conversa, e não por fora dela. Assim, se o servidor
     recusar, a recusa aparece onde a pessoa vai estar olhando — na conversa,
-    marcada, com o aviso do Gravaê explicando — em vez de um toast que some.
+    marcada, com o aviso do Ravox Chat explicando — em vez de um toast que some.
   */
   const send = async () => {
     const content = text.trim();

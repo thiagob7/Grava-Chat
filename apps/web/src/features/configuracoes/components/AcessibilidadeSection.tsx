@@ -38,7 +38,7 @@ export const AccessibilitySection: React.FC = () => {
             <p data-gc="configuracoes.acessibilidade-section.p--2" className="text-sm font-medium">Reduzir animação</p>
             <p data-gc="configuracoes.acessibilidade-section.p--3" className="mt-0.5 text-xs text-ink-faint">
               {systemAsks
-                ? "O seu sistema já pede movimento reduzido, e o Gravaê já obedece. Este botão é para quem quer o mesmo sem mexer no sistema inteiro."
+                ? "O seu sistema já pede movimento reduzido, e o Ravox Chat já obedece. Este botão é para quem quer o mesmo sem mexer no sistema inteiro."
                 : "Corta as animações do app inteiro, inclusive as dos avisos e as do painel de chamada."}
             </p>
           </div>

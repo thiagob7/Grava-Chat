@@ -124,7 +124,7 @@ export const servidor = {
     feitoPor: "Vytvořil",
     publicadoEm: "Zveřejněno",
     denunciarNome: "Nahlásit {{nome}}",
-    denunciaDetalhe: "Hlášení jde týmu Gravaê. Autor aplikace se nedozví, že jste to byli vy.",
+    denunciaDetalhe: "Hlášení jde týmu Ravox Chat. Autor aplikace se nedozví, že jste to byli vy.",
     denunciaFalhou: "Hlášení se nepodařilo odeslat.",
     umMembro: "1 člen",
     semDescricao: "Bez popisu.",
@@ -216,7 +216,7 @@ export const servidor = {
   },
   denuncia: {
     titulo: "Nahlásit {{nome}}",
-    descricao: "Hlášení jde týmu Gravaê. Popiš, co se stalo.",
+    descricao: "Hlášení jde týmu Ravox Chat. Popiš, co se stalo.",
     motivo: "Důvod",
     detalhes: "Podrobnosti (nepovinné)",
     enviar: "Odeslat hlášení",

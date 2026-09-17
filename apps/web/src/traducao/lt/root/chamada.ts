@@ -167,7 +167,7 @@ export const chamada = {
     tela: "Ekrano įrašymas",
     telaDetalhe: "Bendrinti ekraną ir langus.",
     monitoramento: "Įvesties stebėjimas",
-    monitoramentoDetalhe: "Naudoti spausk-ir-kalbėk net kai Gravaê veikia fone.",
+    monitoramentoDetalhe: "Naudoti spausk-ir-kalbėk net kai Ravox Chat veikia fone.",
   },
   jaConectado: {
     titulo: "Jūs jau esate šiame skambutyje",

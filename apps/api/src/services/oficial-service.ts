@@ -60,7 +60,7 @@ function write(notice: Notice) {
 
   if (notice.action) lines.push("", `${notice.action.label}: ${house()}${notice.action.path}`);
 
-  lines.push("", "O Gravaê nunca pede a sua senha nem o token da sua conta.");
+  lines.push("", "O Ravox Chat nunca pede a sua senha nem o token da sua conta.");
 
   return lines.join("\n");
 }

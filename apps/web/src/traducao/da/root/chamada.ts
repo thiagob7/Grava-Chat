@@ -167,7 +167,7 @@ export const chamada = {
     tela: "Skærmoptagelse",
     telaDetalhe: "Dele skærmen og vinduerne.",
     monitoramento: "Inputovervågning",
-    monitoramentoDetalhe: "Bruge tryk-for-at-tale, også når Gravaê er i baggrunden.",
+    monitoramentoDetalhe: "Bruge tryk-for-at-tale, også når Ravox Chat er i baggrunden.",
   },
   jaConectado: {
     titulo: "Du er allerede i dette opkald",

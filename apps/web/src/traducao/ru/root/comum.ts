@@ -6,7 +6,7 @@ export const comum = {
     recarregar: "Перезагрузить",
     copiarDetalhes: "Скопировать подробности",
     parteQuebrou: "Эта часть экрана сломалась.",
-    titulo: "Gravaê споткнулся.",
+    titulo: "Ravox Chat споткнулся.",
     detalhe: "Что-то сломалось по дороге, и экран не смог отрисоваться. Ваша переписка не потерялась — всё лежит на сервере.",
   },
   perdido: {
@@ -21,7 +21,7 @@ export const comum = {
   },
   avisoDoNavegador: {
     titulo: "Хотите получать уведомления о сообщениях?",
-    detalhe: "Когда Gravaê за другим окном, он вас позовёт.",
+    detalhe: "Когда Ravox Chat за другим окном, он вас позовёт.",
   },
   atualizacao: {
     titulo: "Обновление",
@@ -102,8 +102,8 @@ export const comum = {
   trocar: "Заменить",
   loginNoApp: {
     titulo: "Всё готово!",
-    detalhe: "Вы вошли в аккаунт. Возвращайтесь в Gravaê — приложение уже ждёт.",
-    abrir: "Открыть Gravaê",
+    detalhe: "Вы вошли в аккаунт. Возвращайтесь в Ravox Chat — приложение уже ждёт.",
+    abrir: "Открыть Ravox Chat",
     fecharAba: "Эту вкладку можно закрыть.",
     falhouTitulo: "Не удалось войти",
     falhouDetalhe: "Вернитесь в приложение и попробуйте войти ещё раз.",

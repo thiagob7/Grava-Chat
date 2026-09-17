@@ -7,7 +7,7 @@ import { isDesktop } from "~/lib/desktop";
 export const StudioInWindow: React.FC = () => {
   useEffect(() => {
     const before = document.title;
-    document.title = "Estúdio de temas — Gravaê";
+    document.title = "Estúdio de temas — Ravox Chat";
 
     return () => {
       document.title = before;

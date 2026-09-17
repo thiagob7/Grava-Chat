@@ -2,6 +2,7 @@ import Link from "next/link";
 
 import { VersionPublished } from "~/components/VersaoPublicada";
 import { Wordmark } from "~/components/Wordmark";
+import { APP_URL } from "~/lib/brand";
 
 const REPO = "https://github.com/thiagob7/Grava-Chat";
 
@@ -33,7 +34,7 @@ export const Footer = () => (
             </Link>
           </li>
           <li>
-            <a href="https://gravae-chat.vercel.app" className="transition hover:text-ink">
+            <a href={APP_URL} className="transition hover:text-ink">
               Abrir no navegador
             </a>
           </li>

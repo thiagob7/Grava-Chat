@@ -167,7 +167,7 @@ export const chamada = {
     tela: "स्क्रीन रिकॉर्डिंग",
     telaDetalhe: "स्क्रीन और विंडो साझा करना।",
     monitoramento: "इनपुट मॉनिटरिंग",
-    monitoramentoDetalhe: "Gravaê के बैकग्राउंड में रहने पर भी पुश-टू-टॉक इस्तेमाल करना।",
+    monitoramentoDetalhe: "Ravox Chat के बैकग्राउंड में रहने पर भी पुश-टू-टॉक इस्तेमाल करना।",
   },
   jaConectado: {
     titulo: "आप पहले से इस कॉल में हैं",

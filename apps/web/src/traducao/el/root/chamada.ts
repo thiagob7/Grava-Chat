@@ -167,7 +167,7 @@ export const chamada = {
     tela: "Εγγραφή οθόνης",
     telaDetalhe: "Κοινή χρήση της οθόνης και των παραθύρων.",
     monitoramento: "Παρακολούθηση εισόδου",
-    monitoramentoDetalhe: "Χρήση του πάτα-για-να-μιλήσεις ακόμη και με το Gravaê στο παρασκήνιο.",
+    monitoramentoDetalhe: "Χρήση του πάτα-για-να-μιλήσεις ακόμη και με το Ravox Chat στο παρασκήνιο.",
   },
   jaConectado: {
     titulo: "Είσαι ήδη σε αυτή την κλήση",

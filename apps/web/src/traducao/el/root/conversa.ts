@@ -131,7 +131,7 @@ export const conversa = {
   },
   denuncia: {
     titulo: "Αναφορά μηνύματος",
-    descricao: "Η αναφορά πηγαίνει στην ομάδα του Gravaê. Πες μας τι συνέβη.",
+    descricao: "Η αναφορά πηγαίνει στην ομάδα του Ravox Chat. Πες μας τι συνέβη.",
     de: "Από {{nome}}",
     semTexto: "(χωρίς κείμενο)",
     motivo: "Λόγος",
