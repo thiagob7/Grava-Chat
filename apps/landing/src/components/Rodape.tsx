@@ -4,7 +4,7 @@ import { VersionPublished } from "~/components/VersaoPublicada";
 import { Wordmark } from "~/components/Wordmark";
 import { APP_URL } from "~/lib/brand";
 
-const REPO = "https://github.com/thiagob7/Grava-Chat";
+const REPO = "https://github.com/thiagob7/Ravox-Chat";
 
 export const Footer = () => (
   <footer className="border-t border-line bg-surface-1">

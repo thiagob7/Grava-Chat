@@ -30,7 +30,7 @@ export const Header = () => (
           Desenvolvedores
         </Link>
         <a
-          href="https://github.com/thiagob7/Grava-Chat"
+          href="https://github.com/thiagob7/Ravox-Chat"
           className="transition hover:text-ink"
           target="_blank"
           rel="noreferrer"
