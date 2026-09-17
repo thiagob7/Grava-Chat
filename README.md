@@ -1,4 +1,4 @@
-# Gravaê Chat
+# Ravox Chat
 
 Chat de comunidades: servidores, canais de texto, voz e fórum, webcam,
 compartilhamento de tela, amigos e conversas privadas, bots e webhooks. Roda no
