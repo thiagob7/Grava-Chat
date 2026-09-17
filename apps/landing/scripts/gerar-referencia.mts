@@ -563,7 +563,7 @@ if (!paginasDosDocs.length) {
 }
 
 const index = [
-  "# Gravaê — documentação para desenvolvedores",
+  "# Ravox Chat — documentação para desenvolvedores",
   "",
   "Tudo abaixo de um endereço só, com o cabeçalho `Authorization: Bot <token>`.",
   "",
@@ -592,7 +592,7 @@ const index = [
 await writeFile(join(HERE, "..", "public", "llms.txt"), `${index}\n`);
 
 const indiceEmIngles = [
-  "# Gravaê — developer documentation",
+  "# Ravox Chat — developer documentation",
   "",
   "One base URL, one header: `Authorization: Bot <token>`.",
   "The full documentation is written in Portuguese; this index is the map.",
