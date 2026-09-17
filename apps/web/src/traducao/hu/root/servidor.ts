@@ -1,4 +1,15 @@
 export const servidor = {
+  perfilNoServidor: {
+    titulo: "Profil ezen a szerveren",
+    descricao: "Profilkép, banner és bemutatkozás, ami csak itt látszik: {{server}}.",
+    soInfinity: "A közösségenkénti profil a(z) {{plan}} része. Koppints a csomagokért.",
+    trocarFoto: "Profilkép cseréje",
+    trocarFaixa: "Banner cseréje",
+    usarDaConta: "A fiókét használom",
+    bio: "Bemutatkozás ezen a szerveren",
+    bioDica: "Írj valamit csak ennek a közösségnek",
+    salvo: "Szerverprofil mentve.",
+  },
   comunidade: {
     ativa: "A közösség nyitva van",
     ativaDesde: "Nyitva {{quando}} óta",
@@ -113,7 +124,7 @@ export const servidor = {
     feitoPor: "Készítette",
     publicadoEm: "Közzétéve",
     denunciarNome: "{{nome}} jelentése",
-    denunciaDetalhe: "A jelentés a Gravaê csapatához megy. Az alkalmazás készítője nem tudja meg, hogy te voltál.",
+    denunciaDetalhe: "A jelentés a Ravox Chat csapatához megy. Az alkalmazás készítője nem tudja meg, hogy te voltál.",
     denunciaFalhou: "A jelentést nem sikerült elküldeni.",
     umMembro: "1 tag",
     semDescricao: "Nincs leírás.",
@@ -205,7 +216,7 @@ export const servidor = {
   },
   denuncia: {
     titulo: "{{nome}} jelentése",
-    descricao: "A jelentés a Gravaê csapatához kerül. Mondd el, mi történt.",
+    descricao: "A jelentés a Ravox Chat csapatához kerül. Mondd el, mi történt.",
     motivo: "Ok",
     detalhes: "Részletek (nem kötelező)",
     enviar: "Jelentés küldése",

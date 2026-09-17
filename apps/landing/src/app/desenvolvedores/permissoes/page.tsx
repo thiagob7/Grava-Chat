@@ -4,8 +4,8 @@ import { Ahead, Notice, Section, Title, Trail } from "~/components/docs/PecasDos
 import { PermissionsTable } from "~/components/docs/TabelaDePermissoes";
 
 export const metadata: Metadata = {
-  title: "Permissões — Documentação do Gravaê",
-  description: "As 33 permissões do Gravaê, o que cada uma libera e quais já vêm de fábrica.",
+  title: "Permissões — Documentação do Ravox Chat",
+  description: "As 33 permissões do Ravox Chat, o que cada uma libera e quais já vêm de fábrica.",
 };
 
 export default function Permissions() {

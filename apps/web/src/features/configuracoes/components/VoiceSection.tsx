@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import {
   AudioLines,
+  Infinity as InfinityIcon,
   Keyboard,
   Mic,
   ShieldCheck,
@@ -29,6 +30,7 @@ import { useTranslation } from "~/traducao";
 import { useVoiceStore } from "~/features/voz/stores/voice-store";
 import { cn } from "~/lib/utils";
 import { ConfigSection as Section } from "~/features/configuracoes/components/SecaoDeConfig";
+import { usePlanLimits, usePlanStore } from "~/features/plan/stores/plan-store";
 
 function keyName(code: string) {
   if (code === "Space") return "Espaço";
@@ -61,7 +63,7 @@ const ShortcutNotice: React.FC = () => {
           Falta liberar o <b data-gc="configuracoes.voice-section.b">{bridge.nameSystem}</b> em{" "}
           <b data-gc="configuracoes.voice-section.b--2">Ajustes do Sistema → Privacidade e Segurança → Acessibilidade</b>.
           Sem isso o macOS não entrega a tecla quando a janela está atrás do
-          jogo — e o push-to-talk volta a valer só com o Gravaê em foco.
+          jogo — e o push-to-talk volta a valer só com o Ravox Chat em foco.
         </p>
         <Button data-gc="configuracoes.voice-section.button"
           className="mt-2"
@@ -76,7 +78,7 @@ const ShortcutNotice: React.FC = () => {
           Abrir os ajustes
         </Button>
         <p data-gc="configuracoes.voice-section.p--3" className="mt-2 text-ink-faint">
-          Depois de marcar a caixinha, reabra o Gravaê.
+          Depois de marcar a caixinha, reabra o Ravox Chat.
         </p>
       </div>
     );
@@ -86,7 +88,7 @@ const ShortcutNotice: React.FC = () => {
     return (
       <p data-gc="configuracoes.voice-section.p--4" className="mt-3 rounded bg-idle/10 px-3 py-2 text-xs text-idle">
         Não consegui ligar o atalho global nesta máquina. O push-to-talk
-        continua funcionando com a janela do Gravaê em foco.
+        continua funcionando com a janela do Ravox Chat em foco.
       </p>
     );
   }
@@ -102,6 +104,8 @@ export const VoiceSection: React.FC<{ part?: "audio" | "video" }> = ({
   part = "audio",
 }) => {
   const prefs = useVoicePrefs();
+  const planLimits = usePlanLimits();
+  const openUpgrade = usePlanStore((s) => s.openUpgrade);
   const { t } = useTranslation();
   const applySettings = useVoiceStore((s) => s.applySettings);
   const setScreenQuality = useVoiceStore((s) => s.setScreenQuality);
@@ -483,7 +487,7 @@ export const VoiceSection: React.FC<{ part?: "audio" | "video" }> = ({
             {!cameras.length && (
               <p data-gc="configuracoes.voice-section.p--17" className="mt-2 text-xs text-ink-faint">
                 Nenhuma câmera encontrada. Os nomes só aparecem depois que você
-                der permissão de vídeo ao Gravaê uma vez.
+                der permissão de vídeo ao Ravox Chat uma vez.
               </p>
             )}
           </Section>
@@ -516,12 +520,12 @@ export const VoiceSection: React.FC<{ part?: "audio" | "video" }> = ({
                   {t("chamada.tela.resolucao")}
                 </span>
                 <SelectField data-gc="configuracoes.voice-section.select-field--4"
-                  value={screenQuality(prefs.screenResolution, prefs.screenFrameRate).resolution}
+                  value={screenQuality(prefs.screenResolution, prefs.screenFrameRate, planLimits).resolution}
                   onSelect={(value) => void setScreenQuality({ screenResolution: value })}
                   options={SCREEN_RESOLUTIONS.map((value) => ({
                     value,
                     label: value === "original" ? t("chamada.tela.original") : `${value}p`,
-                    disabled: isScreenResolutionLocked(value),
+                    disabled: isScreenResolutionLocked(value, planLimits),
                   }))}
                 />
               </label>
@@ -531,16 +535,25 @@ export const VoiceSection: React.FC<{ part?: "audio" | "video" }> = ({
                   {t("chamada.tela.taxaDeQuadros")}
                 </span>
                 <SelectField data-gc="configuracoes.voice-section.select-field--5"
-                  value={screenQuality(prefs.screenResolution, prefs.screenFrameRate).frameRate}
+                  value={screenQuality(prefs.screenResolution, prefs.screenFrameRate, planLimits).frameRate}
                   onSelect={(value) => void setScreenQuality({ screenFrameRate: value })}
                   options={SCREEN_FRAME_RATES.map((value) => ({
                     value,
                     label: t("chamada.tela.quadros", { quadros: value }),
-                    disabled: isScreenFrameRateLocked(value),
+                    disabled: isScreenFrameRateLocked(value, planLimits),
                   }))}
                 />
               </label>
             </div>
+            {planLimits.screenResolutions.length < SCREEN_RESOLUTIONS.length && (
+              <button data-gc="configuracoes.voice-section.button.open-upgrade"
+                type="button"
+                onClick={openUpgrade}
+                className="mt-2 flex items-center gap-1.5 text-xs font-medium text-brand hover:underline"
+              >
+                <InfinityIcon data-gc="configuracoes.voice-section.infinity-icon" size={13} /> {t("configuracoes.subscription.screenUpsell")}
+              </button>
+            )}
             <p data-gc="configuracoes.voice-section.p--20" className="mt-2 max-w-md text-xs text-ink-faint">
               {t("chamada.tela.qualidadeDica")}
             </p>

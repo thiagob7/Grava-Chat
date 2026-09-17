@@ -1,7 +1,7 @@
 export const idioma = {
   titulo: "Ngôn ngữ giao diện",
   detalhe:
-    "Ngôn ngữ mà Gravaê dùng để nói với bạn. Chỉ áp dụng trên thiết bị này.",
+    "Ngôn ngữ mà Ravox Chat dùng để nói với bạn. Chỉ áp dụng trên thiết bị này.",
   procurar: "Tìm ngôn ngữ…",
   nenhum: "Không có ngôn ngữ nào tên như vậy.",
   escolher: "Chọn ngôn ngữ giao diện",

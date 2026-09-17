@@ -1,4 +1,15 @@
 export const servidor = {
+  perfilNoServidor: {
+    titulo: "इस सर्वर में प्रोफ़ाइल",
+    descricao: "अवतार, बैनर और परिचय जो सिर्फ़ {{server}} में दिखते हैं।",
+    soInfinity: "हर कम्युनिटी के लिए प्रोफ़ाइल {{plan}} का हिस्सा है। प्लान देखने के लिए टैप करें।",
+    trocarFoto: "अवतार बदलें",
+    trocarFaixa: "बैनर बदलें",
+    usarDaConta: "खाते वाला इस्तेमाल करें",
+    bio: "इस सर्वर में परिचय",
+    bioDica: "सिर्फ़ इस कम्युनिटी के लिए कुछ लिखें",
+    salvo: "सर्वर प्रोफ़ाइल सहेजी गई।",
+  },
   comunidade: {
     ativa: "समुदाय खुला है",
     ativaDesde: "{{quando}} से खुला",
@@ -113,7 +124,7 @@ export const servidor = {
     feitoPor: "बनाया",
     publicadoEm: "प्रकाशित",
     denunciarNome: "{{nome}} की शिकायत करें",
-    denunciaDetalhe: "शिकायत Gravaê की टीम तक जाती है। ऐप बनाने वाले को पता नहीं चलेगा कि यह आप थे।",
+    denunciaDetalhe: "शिकायत Ravox Chat की टीम तक जाती है। ऐप बनाने वाले को पता नहीं चलेगा कि यह आप थे।",
     denunciaFalhou: "शिकायत भेजी नहीं जा सकी।",
     umMembro: "1 सदस्य",
     semDescricao: "कोई विवरण नहीं।",
@@ -205,7 +216,7 @@ export const servidor = {
   },
   denuncia: {
     titulo: "{{nome}} की रिपोर्ट करें",
-    descricao: "रिपोर्ट Gravaê टीम को जाती है। बताएँ क्या हुआ।",
+    descricao: "रिपोर्ट Ravox Chat टीम को जाती है। बताएँ क्या हुआ।",
     motivo: "कारण",
     detalhes: "विवरण (वैकल्पिक)",
     enviar: "रिपोर्ट भेजें",

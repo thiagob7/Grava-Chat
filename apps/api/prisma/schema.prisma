@@ -106,6 +106,61 @@ type PollOption {
   userIds String[] @db.ObjectId
 }
 
+type EmbedField {
+  name   String
+  value  String
+  inline Boolean @default(false)
+}
+
+type EmbedAuthor {
+  name    String
+  url     String?
+  iconUrl String?
+}
+
+type EmbedFooter {
+  text    String
+  iconUrl String?
+}
+
+type Embed {
+  title        String?
+  description  String?
+  url          String?
+  color        Int?
+  author       EmbedAuthor?
+  fields       EmbedField[]
+  thumbnailUrl String?
+  imageUrl     String?
+  footer       EmbedFooter?
+  timestamp    DateTime?
+}
+
+type SelectOption {
+  label       String
+  value       String
+  description String?
+  emoji       String?
+}
+
+type Component {
+  type        String
+  style       String?
+  label       String?
+  emoji       String?
+  customId    String?
+  url         String?
+  disabled    Boolean        @default(false)
+  placeholder String?
+  minValues   Int?
+  maxValues   Int?
+  options     SelectOption[]
+}
+
+type ComponentRow {
+  components Component[]
+}
+
 type Poll {
   question    String @map("pergunta")
   options      PollOption[]
@@ -143,6 +198,9 @@ model User {
   showsFriendsCommon     Boolean @default(true) @map("mostraAmigosEmComum")
 
   deleteAt DateTime? @map("excluirEm")
+
+  premiumUntil  DateTime?
+  premiumSource String?
 
   createdAt   DateTime       @default(now())
   updatedAt   DateTime       @updatedAt
@@ -314,6 +372,9 @@ model GuildMember {
   roleIds  String[] @db.ObjectId
   emblemIds String[] @db.ObjectId
   nickname String?
+  avatarUrl String?
+  bannerUrl String?
+  bio String?
   timeoutUntil DateTime?
   inviteCode String?
   invitedById String? @db.ObjectId
@@ -420,6 +481,8 @@ model Message {
   kind        MessageType  @default(USER) @map("tipo")
   attachments Attachment[]
   poll        Poll?
+  embeds      Embed[]
+  components  ComponentRow[]
   stickerId   String?       @db.ObjectId
   sticker     GuildSticker? @relation(fields: [stickerId], references: [id], onDelete: SetNull)
   replyToId   String?      @db.ObjectId
@@ -828,4 +891,83 @@ model AdminLog {
   createdAt DateTime @default(now())
 
   @@map("RegistroDeAdministracao")
+}
+
+/// Cliente da Stripe de cada conta e o estado da assinatura no cartão.
+/// Os índices únicos exigem `db push` antes de ligar a cobrança.
+model BillingCustomer {
+  id                 String    @id @default(auto()) @map("_id") @db.ObjectId
+  userId             String    @unique @db.ObjectId
+  stripeCustomerId   String    @unique
+  subscriptionId     String?
+  subscriptionStatus String?
+  interval           String?
+  currentPeriodEnd   DateTime?
+  cancelAtPeriodEnd  Boolean   @default(false)
+  createdAt          DateTime  @default(now())
+  updatedAt          DateTime  @updatedAt
+}
+
+/// Cada pagamento que liberou premium: fatura da assinatura ou período avulso.
+model BillingPayment {
+  id              String    @id @default(auto()) @map("_id") @db.ObjectId
+  userId          String    @db.ObjectId
+  kind            String
+  sourceId        String    @unique
+  paymentIntentId String?
+  amount          Int
+  currency        String
+  days            Int?
+  paidAt          DateTime
+  refundedAt      DateTime?
+  createdAt       DateTime  @default(now())
+
+  @@index([userId, paidAt])
+  @@index([paymentIntentId])
+}
+
+/// Eventos da Stripe já tratados, para o mesmo evento não liberar premium duas vezes.
+model BillingEvent {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  stripeId    String   @unique
+  type        String
+  processedAt DateTime @default(now())
+}
+
+/// Presente do Infinity: quem paga ganha um código, e quem resgata recebe os dias.
+model Gift {
+  id          String    @id @default(auto()) @map("_id") @db.ObjectId
+  code        String    @unique
+  interval    String
+  days        Int
+  amount      Int
+  buyerId     String    @db.ObjectId
+  sourceId    String    @unique
+  claimedById String?   @db.ObjectId
+  claimedAt   DateTime?
+  createdAt   DateTime  @default(now())
+
+  @@index([buyerId, createdAt])
+}
+
+/// Pix avulso cobrado pelo Mercado Pago: o QR vale até expiresAt e libera os dias quando é pago.
+model PixCharge {
+  id           String    @id @default(auto()) @map("_id") @db.ObjectId
+  userId       String    @db.ObjectId
+  interval     String
+  target       String    @default("me")
+  days         Int
+  amount       Int
+  mpPaymentId  String?
+  mpOrderId    String?
+  qrCode       String?
+  qrCodeBase64 String?
+  status       String    @default("pending")
+  expiresAt    DateTime
+  paidAt       DateTime?
+  createdAt    DateTime  @default(now())
+
+  @@index([userId, createdAt])
+  @@index([mpPaymentId])
+  @@index([mpOrderId])
 }

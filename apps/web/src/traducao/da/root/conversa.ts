@@ -15,6 +15,16 @@ export const conversa = {
     carregando: "Ser, hvad der er på linket…",
     destino: "Fører til {{destino}}",
   },
+  botComponents: {
+    noResponse: "Botten svarede ikke.",
+    choose: "Vælg en mulighed",
+    onlyYou: "Kun du kan se dette",
+    dismiss: "Luk",
+    formFrom: "Formular fra {{nome}}",
+    optional: "valgfrit",
+    yes: "Ja",
+    no: "Nej",
+  },
   reacao: {
     carregando: "Ser efter, hvem der reagerede med {{emoji}}…",
     uma: "{{nome}} reagerede med {{emoji}}",
@@ -121,7 +131,7 @@ export const conversa = {
   },
   denuncia: {
     titulo: "Anmeld beskeden",
-    descricao: "Anmeldelsen går til Gravaê-teamet. Fortæl hvad der skete.",
+    descricao: "Anmeldelsen går til Ravox Chat-teamet. Fortæl hvad der skete.",
     de: "Fra {{nome}}",
     semTexto: "(ingen tekst)",
     motivo: "Årsag",
@@ -141,6 +151,7 @@ export const conversa = {
   },
 
   falha: {
+    premium: "Ikke leveret – det kræver Infinity",
     tentarDeNovo: "Prøv igen",
     erro: "Ikke leveret",
     semConexao: "Ikke leveret — du har ingen forbindelse",

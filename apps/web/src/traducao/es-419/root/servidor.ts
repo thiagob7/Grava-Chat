@@ -1,4 +1,15 @@
 export const servidor = {
+  perfilNoServidor: {
+    titulo: "Perfil en este servidor",
+    descricao: "Avatar, banner y biografía que solo se ven en {{server}}.",
+    soInfinity: "Los perfiles por comunidad son de {{plan}}. Toca para ver los planes.",
+    trocarFoto: "Cambiar avatar",
+    trocarFaixa: "Cambiar banner",
+    usarDaConta: "Usar el de la cuenta",
+    bio: "Biografía en este servidor",
+    bioDica: "Cuenta algo solo para esta comunidad",
+    salvo: "Perfil del servidor guardado.",
+  },
   comunidade: {
     ativa: "La comunidad está abierta",
     ativaDesde: "Abierta desde {{quando}}",
@@ -113,7 +124,7 @@ export const servidor = {
     feitoPor: "Hecha por",
     publicadoEm: "Publicada el",
     denunciarNome: "Denunciar {{nome}}",
-    denunciaDetalhe: "La denuncia va al equipo de Gravaê. Quien hizo la app no se entera de que fuiste vos.",
+    denunciaDetalhe: "La denuncia va al equipo de Ravox Chat. Quien hizo la app no se entera de que fuiste vos.",
     denunciaFalhou: "No se pudo enviar la denuncia.",
     umMembro: "1 miembro",
     semDescricao: "Sin descripción.",
@@ -205,7 +216,7 @@ export const servidor = {
   },
   denuncia: {
     titulo: "Denunciar {{nome}}",
-    descricao: "La denuncia va al equipo de Gravaê. Cuéntanos qué pasó.",
+    descricao: "La denuncia va al equipo de Ravox Chat. Cuéntanos qué pasó.",
     motivo: "Motivo",
     detalhes: "Detalles (opcional)",
     enviar: "Enviar denuncia",

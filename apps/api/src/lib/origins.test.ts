@@ -40,6 +40,8 @@ describe("prévias da Vercel", () => {
     for (const o of [
       "https://gravae-chat-abc123-thiago.vercel.app",
       "https://gravae-chat-git-staging-thiago.vercel.app",
+      "https://app-ravox-chat-abc123-thiago.vercel.app",
+      "https://app-ravox-chat-git-staging-thiago.vercel.app",
     ]) {
       expect({ o, ok: originAllowed(o) }).toEqual({ o, ok: true });
     }
@@ -55,6 +57,7 @@ describe("prévias da Vercel", () => {
       "https://atacante.vercel.app",
       "https://gravae-chat-abc123-outro-time.vercel.app",
       "https://outro-projeto-abc123-thiago.vercel.app",
+      "https://ravox-chat-abc123-thiago.vercel.app",
     ]) {
       expect({ o, ok: originAllowed(o) }).toEqual({ o, ok: false });
     }

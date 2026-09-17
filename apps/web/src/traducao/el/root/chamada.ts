@@ -85,12 +85,14 @@ export const chamada = {
     quadros: "{{quadros}} FPS",
     qualidadeDica: "Η ανάλυση είναι ανώτατο όριο: ένα μικρότερο παράθυρο κρατά το μέγεθός του. Περισσότερη ανάλυση και καρέ θέλουν περισσότερο internet, δικό σου και των θεατών. Ισχύει και για τη μετάδοση σε εξέλιξη.",
   },
+  cameraLimit: "Η κλήση έχει ήδη {{limite}} κάμερες ανοιχτές. Περιμένετε να κλείσει κάποιος τη δική του.",
   live: {
     etiqueta: "Ζωντανά",
     etiquetaMaiuscula: "ΖΩΝΤΑΝΑ",
     assistir: "Παρακολούθηση της μετάδοσης",
     assistirPessoa: "Παρακολούθηση {{nome}}",
     pararDeAssistir: "Διακοπή παρακολούθησης",
+    conectando: "Σύνδεση στη μετάδοση…",
   },
   membro: {
     mudarMeuApelido: "Αλλαγή του ψευδωνύμου μου",
@@ -165,7 +167,7 @@ export const chamada = {
     tela: "Εγγραφή οθόνης",
     telaDetalhe: "Κοινή χρήση της οθόνης και των παραθύρων.",
     monitoramento: "Παρακολούθηση εισόδου",
-    monitoramentoDetalhe: "Χρήση του πάτα-για-να-μιλήσεις ακόμη και με το Gravaê στο παρασκήνιο.",
+    monitoramentoDetalhe: "Χρήση του πάτα-για-να-μιλήσεις ακόμη και με το Ravox Chat στο παρασκήνιο.",
   },
   jaConectado: {
     titulo: "Είσαι ήδη σε αυτή την κλήση",

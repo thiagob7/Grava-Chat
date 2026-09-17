@@ -15,6 +15,16 @@ export const conversa = {
     carregando: "Melihat isi tautannya…",
     destino: "Menuju {{destino}}",
   },
+  botComponents: {
+    noResponse: "Bot tidak merespons.",
+    choose: "Pilih salah satu",
+    onlyYou: "Hanya kamu yang bisa melihat ini",
+    dismiss: "Tutup",
+    formFrom: "Formulir dari {{nome}}",
+    optional: "opsional",
+    yes: "Ya",
+    no: "Tidak",
+  },
   reacao: {
     carregando: "Melihat siapa yang bereaksi dengan {{emoji}}…",
     uma: "{{nome}} bereaksi dengan {{emoji}}",
@@ -121,7 +131,7 @@ export const conversa = {
   },
   denuncia: {
     titulo: "Laporkan pesan",
-    descricao: "Laporan dikirim ke tim Gravaê. Ceritakan apa yang terjadi.",
+    descricao: "Laporan dikirim ke tim Ravox Chat. Ceritakan apa yang terjadi.",
     de: "Dari {{nome}}",
     semTexto: "(tanpa teks)",
     motivo: "Alasan",
@@ -141,6 +151,7 @@ export const conversa = {
   },
 
   falha: {
+    premium: "Tidak terkirim — ini fitur Infinity",
     tentarDeNovo: "Coba lagi",
     erro: "Tidak terkirim",
     semConexao: "Tidak terkirim — kamu tidak punya koneksi",

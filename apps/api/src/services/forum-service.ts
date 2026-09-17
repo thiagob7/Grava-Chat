@@ -7,6 +7,7 @@ import { guildRepository } from "~/repositories/guild-repository.js";
 import { accessService } from "./access-service.js";
 import { autoModService } from "./automod-service.js";
 import { ensureFlow, respectModeSlow, timeoutRequireNotThis, verifiedRequireEmail } from "./message-guards.js";
+import { planService } from "./plan-service.js";
 
 const toPost = (
   p: Awaited<ReturnType<typeof forumRepository.findById>> & object,
@@ -52,6 +53,7 @@ export const forumService = {
     }
 
     await ensureFlow(userId);
+    await planService.requireMessageLength(userId, input.content.trim());
 
     if (context) {
       await autoModService.evaluate({

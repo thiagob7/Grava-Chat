@@ -15,6 +15,16 @@ export const conversa = {
     carregando: "Văd ce e la capătul linkului…",
     destino: "Duce la {{destino}}",
   },
+  botComponents: {
+    noResponse: "Botul nu a răspuns.",
+    choose: "Alege o opțiune",
+    onlyYou: "Doar tu poți vedea asta",
+    dismiss: "Închide",
+    formFrom: "Formular de la {{nome}}",
+    optional: "opțional",
+    yes: "Da",
+    no: "Nu",
+  },
   reacao: {
     carregando: "Văd cine a reacționat cu {{emoji}}…",
     uma: "{{nome}} a reacționat cu {{emoji}}",
@@ -121,7 +131,7 @@ export const conversa = {
   },
   denuncia: {
     titulo: "Raportează mesajul",
-    descricao: "Raportul ajunge la echipa Gravaê. Spune-ne ce s-a întâmplat.",
+    descricao: "Raportul ajunge la echipa Ravox Chat. Spune-ne ce s-a întâmplat.",
     de: "De la {{nome}}",
     semTexto: "(fără text)",
     motivo: "Motiv",
@@ -141,6 +151,7 @@ export const conversa = {
   },
 
   falha: {
+    premium: "Nelivrat — asta ține de Infinity",
     tentarDeNovo: "Încearcă din nou",
     erro: "Nu a fost livrat",
     semConexao: "Nu a fost livrat — nu ai conexiune",

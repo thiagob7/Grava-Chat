@@ -85,12 +85,14 @@ export const chamada = {
     quadros: "{{quadros}} FPS",
     qualidadeDica: "Resolution is a ceiling: a smaller window keeps its own size. More resolution and frames need more bandwidth, yours and your viewers'. Also applies to a stream already live.",
   },
+  cameraLimit: "This call already has {{limite}} cameras on. Wait for someone to turn theirs off.",
   live: {
     etiqueta: "Live",
     etiquetaMaiuscula: "LIVE",
     assistir: "Watch the broadcast",
     assistirPessoa: "Watch {{nome}}",
     pararDeAssistir: "Stop watching",
+    conectando: "Connecting to the stream…",
   },
   membro: {
     mudarMeuApelido: "Change my nickname",
@@ -165,7 +167,7 @@ export const chamada = {
     tela: "Screen recording",
     telaDetalhe: "Sharing the screen and windows.",
     monitoramento: "Input monitoring",
-    monitoramentoDetalhe: "Using push-to-talk even with Gravaê in the background.",
+    monitoramentoDetalhe: "Using push-to-talk even with Ravox Chat in the background.",
   },
   jaConectado: {
     titulo: "You are already in this call",

@@ -316,8 +316,10 @@
   --panel-control-highlight: rgba(255, 255, 255, 0.04);
   --control-button-normal-bg: transparent;
   --status-offline: #9ca3b0;
-  --plutonium: #413cdd;
-  --plutonium-hover: #3732c8;
+  --brand-primary: hsl(239, calc(83% * var(--saturation-factor)), 65%);
+  --brand-secondary: hsl(239, calc(69% * var(--saturation-factor)), 58%);
+  --plutonium: #5c5ff0;
+  --plutonium-hover: #4a4dde;
   --plutonium-text: #fafafa;
   --plutonium-icon: #f59f0a;
   --invite-verified-icon-color: #fafafa;
@@ -927,11 +929,11 @@
   --panel-control-highlight: rgba(255, 255, 255, 0.65);
   --control-button-normal-bg: transparent;
   --status-offline: #818c98;
-  --plutonium: #413cdd;
-  --plutonium-hover: #3732c8;
+  --plutonium: #5c5ff0;
+  --plutonium-hover: #4a4dde;
   --plutonium-text: #fafafa;
   --plutonium-icon: #dc8f09;
-  --invite-verified-icon-color: #413cdd;
+  --invite-verified-icon-color: #5c5ff0;
   --code-text: color-mix(
     in srgb,
     #e5e4e9 72%,
@@ -1207,8 +1209,8 @@
     --panel-control-highlight: rgba(255, 255, 255, 0.04);
     --control-button-normal-bg: transparent;
     --status-offline: #9ca3b0;
-    --plutonium: #413cdd;
-    --plutonium-hover: #3732c8;
+    --plutonium: #5c5ff0;
+    --plutonium-hover: #4a4dde;
     --plutonium-text: #fafafa;
     --plutonium-icon: #f59f0a;
     --invite-verified-icon-color: #fafafa;

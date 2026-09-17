@@ -1,14 +1,14 @@
-# Gravaê Music — a plataforma
+# Ravox Music — a plataforma
 
 O site do bot, no estilo da Loritta: uma **capa** que apresenta e um **painel**
 onde o dono de cada servidor configura o comportamento.
 
-**Isto roda fora do Gravaê.** É o dev que hospeda, e é aqui que ele inventa o
+**Isto roda fora do Ravox Chat.** É o dev que hospeda, e é aqui que ele inventa o
 que o bot faz — "prefixo", "fila máxima", "boas-vindas do bot" são invenções
 deste site. A plataforma não sabe que existem; ela só entrega o OAuth2 e a API.
 
 ```
-capa  →  entrar (OAuth2 do Gravaê)  →  escolher servidor  →  configurar
+capa  →  entrar (OAuth2 do Ravox Chat)  →  escolher servidor  →  configurar
                                                                   ↓
                                           o bot lê /api/config/<servidor>
                                                                   ↓
@@ -43,7 +43,7 @@ uma ida à rede por mensagem lida — e o bot lê todas.
 
 Painel fora do ar não derruba o bot: ele cai no padrão e segue respondendo.
 
-## O que a plataforma (o Gravaê) entrega
+## O que a plataforma (o Ravox Chat) entrega
 
 | | |
 |---|---|

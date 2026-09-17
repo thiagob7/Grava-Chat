@@ -5,7 +5,7 @@ import { Code } from "~/components/docs/Codigo";
 import { API } from "~/dados/docs";
 
 export const metadata: Metadata = {
-  title: "Servidores e canais — Documentação do Gravaê",
+  title: "Servidores e canais — Documentação do Ravox Chat",
   description:
     "O que um bot pode mudar num servidor, qual permissão cada coisa exige e o que ele nunca vai conseguir.",
 };

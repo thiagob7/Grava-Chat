@@ -1,3 +1,5 @@
+import type { PremiumSource } from "./plans.js";
+
 export const ADMIN_AREAS = [
   "publicacoes",
   "aprovar",
@@ -6,6 +8,7 @@ export const ADMIN_AREAS = [
   "comunicado",
   "comunidades",
   "administradores",
+  "premium",
 ] as const;
 
 export type AdminArea = (typeof ADMIN_AREAS)[number];
@@ -42,6 +45,16 @@ export interface AdminOwnerView {
   email: string;
   displayName: string | null;
   avatarUrl: string | null;
+}
+
+export interface PremiumAccount {
+  id: string;
+  email: string;
+  username: string;
+  displayName: string;
+  avatarUrl: string | null;
+  premiumUntil: string | null;
+  premiumSource: PremiumSource | null;
 }
 
 export interface AdminLogEntry {

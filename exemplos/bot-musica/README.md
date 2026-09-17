@@ -1,4 +1,4 @@
-# Bot de música do Gravaê
+# Bot de música do Ravox Chat
 
 Toca música do YouTube num canal de voz. Roda **fora do app**, como todo bot
 daqui: conecta ao gateway pelo token e publica o áudio no SFU.

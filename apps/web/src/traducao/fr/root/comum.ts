@@ -6,8 +6,12 @@ export const comum = {
     recarregar: "Recharger",
     copiarDetalhes: "Copier les détails",
     parteQuebrou: "Cette partie de l'écran a cassé.",
-    titulo: "Gravaê a trébuché.",
+    titulo: "Ravox Chat a trébuché.",
     detalhe: "Quelque chose a cassé en chemin et l'écran n'a pas pu se dessiner. Votre conversation n'est pas perdue — tout est sur le serveur.",
+  },
+  perdido: {
+    titulo: "Cette adresse ne mène nulle part.",
+    detalhe: "Soit le lien est erroné, soit la page a changé de place.",
   },
   conexao: {
     voltou: "De nouveau connecté",
@@ -17,7 +21,7 @@ export const comum = {
   },
   avisoDoNavegador: {
     titulo: "Vous voulez être prévenu des messages ?",
-    detalhe: "Quand Gravaê est derrière une autre fenêtre, il vous appelle.",
+    detalhe: "Quand Ravox Chat est derrière une autre fenêtre, il vous appelle.",
   },
   atualizacao: {
     titulo: "Mise à jour",
@@ -98,8 +102,8 @@ export const comum = {
   trocar: "Changer",
   loginNoApp: {
     titulo: "C'est tout bon !",
-    detalhe: "Tu es connecté. Retourne sur Gravaê, l'application t'attend déjà.",
-    abrir: "Ouvrir Gravaê",
+    detalhe: "Tu es connecté. Retourne sur Ravox Chat, l'application t'attend déjà.",
+    abrir: "Ouvrir Ravox Chat",
     fecharAba: "Tu peux fermer cet onglet.",
     falhouTitulo: "La connexion a échoué",
     falhouDetalhe: "Retourne dans l'application et réessaie.",

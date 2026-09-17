@@ -1,4 +1,15 @@
 export const servidor = {
+  perfilNoServidor: {
+    titulo: "在此服务器的资料",
+    descricao: "只在 {{server}} 显示的头像、横幅和简介。",
+    soInfinity: "按社区设置资料是 {{plan}} 的功能。点按查看方案。",
+    trocarFoto: "更换头像",
+    trocarFaixa: "更换横幅",
+    usarDaConta: "使用账号的",
+    bio: "在此服务器的简介",
+    bioDica: "写点只给这个社区看的内容",
+    salvo: "服务器资料已保存。",
+  },
   comunidade: {
     ativa: "社区已经开放",
     ativaDesde: "自 {{quando}} 起开放",
@@ -113,7 +124,7 @@ export const servidor = {
     feitoPor: "作者",
     publicadoEm: "发布于",
     denunciarNome: "举报 {{nome}}",
-    denunciaDetalhe: "举报会送到 Gravaê 团队。做这个应用的人不会知道是你举报的。",
+    denunciaDetalhe: "举报会送到 Ravox Chat 团队。做这个应用的人不会知道是你举报的。",
     denunciaFalhou: "举报没能送出。",
     umMembro: "1 位成员",
     semDescricao: "没有介绍。",
@@ -205,7 +216,7 @@ export const servidor = {
   },
   denuncia: {
     titulo: "举报 {{nome}}",
-    descricao: "举报将发送给 Gravaê 团队。请告诉我们发生了什么。",
+    descricao: "举报将发送给 Ravox Chat 团队。请告诉我们发生了什么。",
     motivo: "原因",
     detalhes: "详情（可选）",
     enviar: "发送举报",

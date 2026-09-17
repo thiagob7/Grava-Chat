@@ -4,8 +4,11 @@ import { useNavigate, useSearchParams } from "react-router";
 import { useConfirmEmail } from "~/@core/application/queries/auth/use-senha";
 import { apiErrorMessage } from "~/@core/lib/api";
 import { Button } from "~/components/ui/button";
+import { LottieArt } from "~/components/LottieArt";
 import { BrandBackground } from "~/features/app/components/FundoDaMarca";
 import { useTranslation } from "~/traducao";
+
+const loadThankYou = () => import("~/assets/animations/thank-you.json").then((mod) => mod.default);
 
 export const VerifyEmail: React.FC = () => {
   const { t } = useTranslation();
@@ -51,6 +54,13 @@ export const VerifyEmail: React.FC = () => {
           </>
         ) : ready ? (
           <>
+            <LottieArt data-gc="auth.verificar-email.lottie-art"
+              name="thank-you"
+              load={loadThankYou}
+              label={t("configuracoes.email.confirmado")}
+              className="mx-auto -mt-2 mb-3 w-40"
+            />
+
             <h1 data-gc="auth.verificar-email.h1--2" className="text-lg font-semibold">
               {t("configuracoes.email.confirmado")}
             </h1>

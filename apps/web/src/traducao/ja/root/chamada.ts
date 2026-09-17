@@ -85,12 +85,14 @@ export const chamada = {
     quadros: "{{quadros}} FPS",
     qualidadeDica: "解像度は上限です。小さいウインドウは元のサイズのまま送られます。解像度とフレームレートを上げるほど、あなたと視聴者の回線を使います。配信中の画面にもすぐ反映されます。",
   },
+  cameraLimit: "この通話ではすでに{{limite}}台のカメラがオンです。誰かがオフにするまでお待ちください。",
   live: {
     etiqueta: "ライブ",
     etiquetaMaiuscula: "ライブ",
     assistir: "配信を見る",
     assistirPessoa: "{{nome}} を見る",
     pararDeAssistir: "見るのをやめる",
+    conectando: "配信に接続中…",
   },
   membro: {
     mudarMeuApelido: "自分のニックネームを変更",
@@ -165,7 +167,7 @@ export const chamada = {
     tela: "画面収録",
     telaDetalhe: "画面とウインドウを共有します。",
     monitoramento: "入力モニタリング",
-    monitoramentoDetalhe: "Gravaê がバックグラウンドでもプッシュトゥトークを使えます。",
+    monitoramentoDetalhe: "Ravox Chat がバックグラウンドでもプッシュトゥトークを使えます。",
   },
   jaConectado: {
     titulo: "すでにこの通話に参加しています",

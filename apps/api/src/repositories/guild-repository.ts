@@ -137,6 +137,10 @@ export const memberRepository = {
     return prisma.guildMember.findMany({ where: { userId }, select: { guildId: true } });
   },
 
+  countOf(userId: string) {
+    return prisma.guildMember.count({ where: { userId } });
+  },
+
   setBadges(memberId: string, emblemIds: string[]) {
     return prisma.guildMember.update({ where: { id: memberId }, data: { emblemIds } });
   },
@@ -187,6 +191,18 @@ export const memberRepository = {
     return prisma.guildMember.update({
       where: { guildId_userId: { guildId, userId } },
       data: { timeoutUntil: until },
+      include: { user: true },
+    });
+  },
+
+  setGuildProfile(
+    guildId: string,
+    userId: string,
+    data: { avatarUrl?: string | null; bannerUrl?: string | null; bio?: string | null },
+  ) {
+    return prisma.guildMember.update({
+      where: { guildId_userId: { guildId, userId } },
+      data,
       include: { user: true },
     });
   },

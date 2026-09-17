@@ -12,7 +12,7 @@ import { writeSwap, prepareMac } from "./atualizacao-mac.js";
 import { isDev } from "./config.js";
 import { isMoreNew } from "./versao.js";
 
-const REPO = "thiagob7/Grava-Chat";
+const REPO = "thiagob7/Ravox-Chat";
 const FILE = process.platform === "darwin" ? "gravae-chat-mac.dmg" : "gravae-chat-win.exe";
 
 const INTERVAL_MS = 6 * 60 * 60 * 1000;
@@ -169,7 +169,7 @@ export function createUpdater(onChange: (state: UpdateState) => void) {
 
         if (!packet) {
           throw new Error(
-            "Não achei o Gravaê Chat.app no disco. Se você abriu o app de dentro do instalador, arraste-o para a pasta Aplicativos primeiro.",
+            "Não achei o Ravox Chat instalado no disco. Se você abriu o app de dentro do instalador, arraste-o para a pasta Aplicativos primeiro.",
           );
         }
 

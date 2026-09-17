@@ -158,7 +158,8 @@ export const appearancePrefs = (): AppearancePrefs => {
 };
 
 export const HIGHLIGHT_COLORS = [
-  { name: "Gravaê", value: "#d30404" },
+  { name: "Ravox Chat", value: "#5c5ff0" },
+  { name: "Vermelho", value: "#d30404" },
   { name: "Laranja", value: "#e2620d" },
   { name: "Âmbar", value: "#b7791f" },
   { name: "Verde", value: "#0f8a4b" },

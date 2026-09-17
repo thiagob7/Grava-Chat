@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { UPLOAD_PURPOSES, LIMITS, CEILING_BY_PURPOSE } from "@gravae/shared";
+import { UPLOAD_PURPOSES, CEILING_BY_PURPOSE, HIGHEST_LIMITS } from "@gravae/shared";
 
 export const uploadPurpose = z.enum(UPLOAD_PURPOSES).default("anexo");
 
@@ -7,10 +7,12 @@ export const presignInput = z
   .object({
     filename: z.string().min(1).max(256),
     contentType: z.string().min(1).max(128),
-    size: z.number().int().positive().max(LIMITS.attachmentBytes),
+    size: z.number().int().positive().max(HIGHEST_LIMITS.attachmentBytes),
     purpose: uploadPurpose,
   })
   .superRefine((v, ctx) => {
+    if (v.purpose === "anexo") return;
+
     const ceiling = CEILING_BY_PURPOSE[v.purpose];
     if (v.size <= ceiling) return;
 

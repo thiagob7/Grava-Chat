@@ -4,7 +4,7 @@ import { Code } from "~/components/docs/Codigo";
 import { Ahead, Notice, Section, Title, Trail } from "~/components/docs/PecasDosDocs";
 
 export const metadata: Metadata = {
-  title: "Tempo real — Documentação do Gravaê",
+  title: "Tempo real — Documentação do Ravox Chat",
   description: "A conexão que faz o bot reagir sozinho ao que acontece no servidor.",
 };
 
@@ -21,7 +21,7 @@ export default function TempoReal() {
       <Section id="ligar" title="Ligue a conexão">
         <Code legenda="bot.js">{`import { io } from "socket.io-client";
 
-const socket = io("https://gravaechat-api.duckdns.org", {
+const socket = io("https://ravoxchat-api.duckdns.org", {
   transports: ["websocket"],
   auth: { token: \`Bot \${process.env.GRAVAE_TOKEN}\` },
 });

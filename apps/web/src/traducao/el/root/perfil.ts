@@ -43,7 +43,8 @@ export const perfil = {
     falhou: "Δεν στάλθηκε. Δοκίμασε από τη συνομιλία.",
   },
   cartao: {
-    equipe: "Ομάδα Gravaê",
+    infinity: "Μέλος Infinity",
+    equipe: "Ομάδα Ravox Chat",
     trocarFaixa: "Αλλαγή banner της κάρτας",
     trocarFaixaCurto: "Αλλαγή banner",
     trocarFoto: "Αλλαγή φωτογραφίας προφίλ",

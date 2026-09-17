@@ -2,9 +2,9 @@ import React from "react";
 import Link from "next/link";
 
 import { LimitsTable } from "~/components/docs/TabelaDeLimites";
+import { APP_URL as APP } from "~/lib/brand";
 
-const APP = "https://gravae-chat.vercel.app";
-const REPO = "https://github.com/thiagob7/Grava-Chat";
+const REPO = "https://github.com/thiagob7/Ravox-Chat";
 
 const link = "text-brand transition hover:text-brand-hover";
 const forte = "font-semibold text-ink";
@@ -19,7 +19,7 @@ export const BODIES: Record<string, React.ReactNode> = {
   "preciso-instalar": (
     <>
       <p>
-        Não. O Gravaê{" "}
+        Não. O Ravox Chat{" "}
         <a href={APP} className={link}>
           abre no navegador
         </a>{" "}
@@ -39,7 +39,13 @@ export const BODIES: Record<string, React.ReactNode> = {
   "quanto-custa": (
     <>
       <p>
-        Nada. Não tem plano pago, não tem anúncio e o que você fala não é vendido para ninguém.
+        Usar é grátis. Não tem anúncio e o que você fala não é vendido para ninguém.
+      </p>
+      <p>
+        Para quem quer mais, existe o Infinity, que é opcional: R$ 18 por mês ou R$ 185 por ano. Ele
+        aumenta os limites (mensagens de até 4.000 caracteres, arquivos de até 500 MB, 200
+        comunidades, vídeo em 1080p a 60 quadros) e libera perfil por comunidade, tag
+        personalizada, avatar animado, emojis e figurinhas de qualquer servidor e o selo no perfil.
       </p>
       <p>
         O código é aberto — dá para{" "}
@@ -202,7 +208,7 @@ export const BODIES: Record<string, React.ReactNode> = {
     <>
       <p>
         Primeiro o navegador: ele precisa ter recebido permissão de microfone para o endereço do
-        Gravaê.
+        Ravox Chat.
       </p>
       <p>
         Depois, em Configurações → Voz, confira se o dispositivo escolhido é o certo — a barrinha de
@@ -241,7 +247,7 @@ export const BODIES: Record<string, React.ReactNode> = {
         cancela tudo. Passados os 15 dias, aí vai.
       </p>
       <p>
-        Se você é dono de um servidor com outras pessoas dentro, o Gravaê não deixa excluir antes de
+        Se você é dono de um servidor com outras pessoas dentro, o Ravox Chat não deixa excluir antes de
         você passar a posse ou apagar o servidor — para o lugar não ficar sem dono de uma hora para
         outra.
       </p>
@@ -251,7 +257,7 @@ export const BODIES: Record<string, React.ReactNode> = {
   "limites-do-app": (
     <>
       <p>
-        Os números valem para todo mundo, e são lidos do próprio código do Gravaê — o que está aqui
+        Os números valem para todo mundo, e são lidos do próprio código do Ravox Chat — o que está aqui
         é o que o servidor aceita hoje.
       </p>
       <LimitsTable />

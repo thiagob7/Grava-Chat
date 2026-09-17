@@ -85,12 +85,14 @@ export const chamada = {
     quadros: "{{quadros}} FPS",
     qualidadeDica: "Raiška yra viršutinė riba: mažesnis langas išlaiko savo dydį. Didesnė raiška ir daugiau kadrų reikalauja daugiau interneto, jūsų ir žiūrovų. Taikoma ir vykstančiai transliacijai.",
   },
+  cameraLimit: "Skambutyje jau įjungta {{limite}} kamerų. Palaukite, kol kas nors išjungs savo.",
   live: {
     etiqueta: "Tiesiogiai",
     etiquetaMaiuscula: "TIESIOGIAI",
     assistir: "Žiūrėti transliaciją",
     assistirPessoa: "Žiūrėti {{nome}}",
     pararDeAssistir: "Nustoti žiūrėti",
+    conectando: "Jungiamasi prie transliacijos…",
   },
   membro: {
     mudarMeuApelido: "Keisti mano slapyvardį",
@@ -165,7 +167,7 @@ export const chamada = {
     tela: "Ekrano įrašymas",
     telaDetalhe: "Bendrinti ekraną ir langus.",
     monitoramento: "Įvesties stebėjimas",
-    monitoramentoDetalhe: "Naudoti spausk-ir-kalbėk net kai Gravaê veikia fone.",
+    monitoramentoDetalhe: "Naudoti spausk-ir-kalbėk net kai Ravox Chat veikia fone.",
   },
   jaConectado: {
     titulo: "Jūs jau esate šiame skambutyje",

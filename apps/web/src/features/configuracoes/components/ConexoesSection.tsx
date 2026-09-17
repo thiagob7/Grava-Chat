@@ -49,7 +49,7 @@ export const ConnectionsSection: React.FC<{ user: SelfUserModel }> = ({
       >
         <p data-gc="configuracoes.conexoes-section.p" className="mb-4 rounded-lg border border-line bg-surface-2 p-3 text-xs text-ink-muted">
           Estas contas são{" "}
-          <strong data-gc="configuracoes.conexoes-section.strong" className="text-ink">declaradas por você</strong>, e o Gravaê
+          <strong data-gc="configuracoes.conexoes-section.strong" className="text-ink">declaradas por você</strong>, e o Ravox Chat
           não confere nenhuma delas. Quem olhar o seu perfil vê o que você
           escreveu aqui — não uma prova de que a conta é sua.
         </p>

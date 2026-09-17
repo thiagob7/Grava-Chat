@@ -1,4 +1,15 @@
 export const servidor = {
+  perfilNoServidor: {
+    titulo: "Profil na ovom poslužitelju",
+    descricao: "Avatar, banner i bio koji se vide samo na {{server}}.",
+    soInfinity: "Profili po zajednici dio su plana {{plan}}. Dodirnite za planove.",
+    trocarFoto: "Promijeni avatar",
+    trocarFaixa: "Promijeni banner",
+    usarDaConta: "Koristi onaj s računa",
+    bio: "Bio na ovom poslužitelju",
+    bioDica: "Recite nešto samo ovoj zajednici",
+    salvo: "Profil poslužitelja spremljen.",
+  },
   comunidade: {
     ativa: "Zajednica je otvorena",
     ativaDesde: "Otvorena od {{quando}}",
@@ -113,7 +124,7 @@ export const servidor = {
     feitoPor: "Napravio",
     publicadoEm: "Objavljeno",
     denunciarNome: "Prijavi {{nome}}",
-    denunciaDetalhe: "Prijava ide timu Gravaêa. Onaj tko je napravio aplikaciju neće saznati da si to bio ti.",
+    denunciaDetalhe: "Prijava ide timu Ravox Chata. Onaj tko je napravio aplikaciju neće saznati da si to bio ti.",
     denunciaFalhou: "Prijava se nije mogla poslati.",
     umMembro: "1 član",
     semDescricao: "Bez opisa.",
@@ -205,7 +216,7 @@ export const servidor = {
   },
   denuncia: {
     titulo: "Prijavi {{nome}}",
-    descricao: "Prijava ide timu Gravaê. Reci nam što se dogodilo.",
+    descricao: "Prijava ide timu Ravox Chat. Reci nam što se dogodilo.",
     motivo: "Razlog",
     detalhes: "Detalji (neobavezno)",
     enviar: "Pošalji prijavu",

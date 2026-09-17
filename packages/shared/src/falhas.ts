@@ -9,6 +9,7 @@ export const FAILURE_REASONS = [
   "recusada",
   "nao-entregue",
   "erro",
+  "premium",
 ] as const;
 
 export type FailureReason = (typeof FAILURE_REASONS)[number];

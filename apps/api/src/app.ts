@@ -4,12 +4,11 @@ import Fastify from "fastify";
 import cors from "@fastify/cors";
 import cookie from "@fastify/cookie";
 import sensible from "@fastify/sensible";
-import { ZodError } from "zod";
 import { env, isDev } from "~/env.js";
 import { authPlugin } from "~/plugins/auth.js";
 import { rateLimitPlugin } from "~/plugins/rate-limit.js";
 import { swaggerPlugin } from "~/plugins/swagger.js";
-import { AppError } from "~/lib/http.js";
+import { errorAnswer } from "~/lib/erro-de-rota.js";
 import { HEADER_CEILING } from "~/lib/limites-http.js";
 import { corsOrigin } from "~/lib/origins.js";
 import { healthRoutes } from "~/routes/health.js";
@@ -38,6 +37,7 @@ import { botRoutes } from "~/routes/bots.js";
 import { oauthRoutes } from "~/routes/oauth.js";
 import { botApiRoutes } from "~/routes/bot-api.js";
 import { embedRoutes } from "~/routes/embeds.js";
+import { billingRoutes, billingWebhookRoutes, mercadoPagoWebhookRoutes, publicGiftRoutes } from "~/routes/billing.js";
 
 export async function buildApp() {
   const app = Fastify({
@@ -69,24 +69,10 @@ export async function buildApp() {
   await app.register(swaggerPlugin);
 
   app.setErrorHandler((error, req, reply) => {
-    if (error instanceof AppError) {
-      return reply.code(error.statusCode).send({ message: error.message });
-    }
+    const answer = errorAnswer(error);
+    if (answer.log) req.log.error(error as Error);
 
-    if (error instanceof ZodError) {
-      return reply.code(400).send({
-        message: error.issues[0]?.message ?? "Dados inválidos",
-        issues: error.issues.map((i) => ({ path: i.path.join("."), message: i.message })),
-      });
-    }
-
-    const status = (error as { statusCode?: number }).statusCode;
-    if (status && status < 500) {
-      return reply.code(status).send({ message: (error as Error).message });
-    }
-
-    req.log.error(error as Error);
-    return reply.code(500).send({ message: "Erro interno" });
+    return reply.code(answer.status).send(answer.body);
   });
 
   await app.register(
@@ -117,6 +103,10 @@ export async function buildApp() {
       await api.register(forumRoutes);
       await api.register(gifRoutes);
       await api.register(embedRoutes);
+      await api.register(billingRoutes);
+      await api.register(billingWebhookRoutes);
+      await api.register(mercadoPagoWebhookRoutes);
+      await api.register(publicGiftRoutes);
       await api.register(publicWebhookRoutes);
     },
     { prefix: "/api" },

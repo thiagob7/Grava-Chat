@@ -1,5 +1,5 @@
 import React, { useState, type ReactNode } from "react";
-import { Camera, NotebookPen, Pencil, PlusCircle, X } from "lucide-react";
+import { Camera, Infinity as InfinityIcon, NotebookPen, Pencil, PlusCircle, X } from "lucide-react";
 import { LIMITS } from "@gravae/shared";
 import type {
   Badge,
@@ -27,6 +27,7 @@ import { IconButton } from "~/components/ui/button";
 import { Tooltip } from "~/components/ui/tooltip";
 import { currentLanguage, useTranslation } from "~/traducao";
 import { flx, flxCls } from "~/lib/compat-de-tema";
+import { usePlanLimits, usePlanStore } from "~/features/plan/stores/plan-store";
 
 interface ProfileCardVisualProps {
   id: string;
@@ -35,6 +36,7 @@ interface ProfileCardVisualProps {
   isBot?: boolean;
   isSystem?: boolean;
   staff?: boolean;
+  premium?: boolean;
   avatarUrl: string | null;
   status?: PresenceStatus;
   profile?: ProfileStyle | null;
@@ -83,6 +85,7 @@ export const ProfileCardVisual: React.FC<ProfileCardVisualProps> = ({
   isBot = false,
   isSystem = false,
   staff = false,
+  premium = false,
   avatarUrl,
   status,
   profile,
@@ -121,6 +124,8 @@ export const ProfileCardVisual: React.FC<ProfileCardVisualProps> = ({
 }) => {
   const { t } = useTranslation();
   const [editingTag, setEditingTag] = useState(false);
+  const customTag = usePlanLimits().customTag;
+  const openUpgrade = usePlanStore((s) => s.openUpgrade);
   const [editingBio, setEditingBio] = useState(false);
 
   const managesRoles = Boolean(onToggleRole);
@@ -200,9 +205,24 @@ export const ProfileCardVisual: React.FC<ProfileCardVisualProps> = ({
         )}
 
         <div data-gc="perfil.cartao.profile-card-visual.div--6" className="relative -mt-10 mb-3 flex items-start gap-3">
-          {staff && (
-            <Tooltip data-gc="perfil.cartao.profile-card-visual.tooltip" label={t("perfil.cartao.equipe")}>
+          {premium && (
+            <Tooltip data-gc="perfil.cartao.profile-card-visual.tooltip" label={t("perfil.cartao.infinity")}>
               <span data-gc="perfil.cartao.profile-card-visual.span--3"
+                role="img"
+                aria-label={t("perfil.cartao.infinity")}
+                className={cn(
+                  "absolute top-12 flex size-7 items-center justify-center rounded-md bg-surface-3 text-brand shadow-md shadow-sombra ring-1 ring-line-sutil",
+                  staff ? "right-9" : "right-0",
+                )}
+              >
+                <InfinityIcon data-gc="perfil.cartao.profile-card-visual.infinity-icon" size={16} />
+              </span>
+            </Tooltip>
+          )}
+
+          {staff && (
+            <Tooltip data-gc="perfil.cartao.profile-card-visual.tooltip--2" label={t("perfil.cartao.equipe")}>
+              <span data-gc="perfil.cartao.profile-card-visual.span--4"
                 role="img"
                 aria-label={t("perfil.cartao.equipe")}
                 className="absolute right-0 top-12 flex size-7 items-center justify-center rounded-md bg-surface-3 shadow-md shadow-sombra ring-1 ring-line-sutil"
@@ -212,7 +232,7 @@ export const ProfileCardVisual: React.FC<ProfileCardVisualProps> = ({
             </Tooltip>
           )}
 
-          <span data-gc="perfil.cartao.profile-card-visual.span--4" {...flx("photoProfileFrame", "relative shrink-0")}>
+          <span data-gc="perfil.cartao.profile-card-visual.span--5" {...flx("photoProfileFrame", "relative shrink-0")}>
           {/*
             A foto abre o perfil completo, como o nome ao lado dela já fazia. É
             para onde a pessoa aponta quando quer ver mais de alguém, e clicar
@@ -254,12 +274,12 @@ export const ProfileCardVisual: React.FC<ProfileCardVisualProps> = ({
           </span>
 
           {(customStatus || onStatus) && (
-            <span data-gc="perfil.cartao.profile-card-visual.span--5" {...flx("profileNote", cn("relative ml-2 mt-9 min-w-0 shrink", staff && "mr-10"))}>
-              <span data-gc="perfil.cartao.profile-card-visual.span--6"
+            <span data-gc="perfil.cartao.profile-card-visual.span--6" {...flx("profileNote", cn("relative ml-2 mt-9 min-w-0 shrink", staff && "mr-10"))}>
+              <span data-gc="perfil.cartao.profile-card-visual.span--7"
                 aria-hidden
                 className="absolute -left-3 top-0 size-2.5 rounded-full bg-surface-3 shadow-md shadow-sombra"
               />
-              <span data-gc="perfil.cartao.profile-card-visual.span--7"
+              <span data-gc="perfil.cartao.profile-card-visual.span--8"
                 aria-hidden
                 className="absolute -left-5 -top-2.5 size-1.5 rounded-full bg-surface-3 shadow-md shadow-sombra"
               />
@@ -272,26 +292,26 @@ export const ProfileCardVisual: React.FC<ProfileCardVisualProps> = ({
                   {customStatus ? (
                     <>
                       {customStatus.emoji && (
-                        <span data-gc="perfil.cartao.profile-card-visual.span--8">{customStatus.emoji}</span>
+                        <span data-gc="perfil.cartao.profile-card-visual.span--9">{customStatus.emoji}</span>
                       )}
-                      <span data-gc="perfil.cartao.profile-card-visual.span--9" {...flx("noteText", "min-w-0 truncate italic")}>
+                      <span data-gc="perfil.cartao.profile-card-visual.span--10" {...flx("noteText", "min-w-0 truncate italic")}>
                         {customStatus.text}
                       </span>
                     </>
                   ) : (
                     <>
                       <PlusCircle data-gc="perfil.cartao.profile-card-visual.plus-circle" size={14} className="shrink-0" />
-                      <span data-gc="perfil.cartao.profile-card-visual.span--10" {...flx("emptyNote", "truncate italic")}>{t("perfil.cartao.adicionarStatus")}</span>
+                      <span data-gc="perfil.cartao.profile-card-visual.span--11" {...flx("emptyNote", "truncate italic")}>{t("perfil.cartao.adicionarStatus")}</span>
                     </>
                   )}
                 </button>
               ) : (
                 customStatus && (
-                  <span data-gc="perfil.cartao.profile-card-visual.span--11" className="flex max-w-[min(10rem,100%)] items-center gap-1.5 rounded-2xl bg-surface-3 px-3 py-1.5 text-xs text-ink-muted shadow-lg shadow-sombra">
+                  <span data-gc="perfil.cartao.profile-card-visual.span--12" className="flex max-w-[min(10rem,100%)] items-center gap-1.5 rounded-2xl bg-surface-3 px-3 py-1.5 text-xs text-ink-muted shadow-lg shadow-sombra">
                     {customStatus.emoji && (
-                      <span data-gc="perfil.cartao.profile-card-visual.span--12">{customStatus.emoji}</span>
+                      <span data-gc="perfil.cartao.profile-card-visual.span--13">{customStatus.emoji}</span>
                     )}
-                    <span data-gc="perfil.cartao.profile-card-visual.span--13" {...flx("noteText", "min-w-0 truncate italic")}>
+                    <span data-gc="perfil.cartao.profile-card-visual.span--14" {...flx("noteText", "min-w-0 truncate italic")}>
                       {customStatus.text}
                     </span>
                   </span>
@@ -340,7 +360,7 @@ export const ProfileCardVisual: React.FC<ProfileCardVisualProps> = ({
             </p>
 
             {onIrForNote && (
-              <Tooltip data-gc="perfil.cartao.profile-card-visual.tooltip--2" label={t("perfil.nota.adicionar")}>
+              <Tooltip data-gc="perfil.cartao.profile-card-visual.tooltip--3" label={t("perfil.nota.adicionar")}>
                 <IconButton data-gc="perfil.cartao.profile-card-visual.icon-button.on-ir-for-note"
                   size="xs"
                   label={t("perfil.nota.adicionar")}
@@ -359,12 +379,12 @@ export const ProfileCardVisual: React.FC<ProfileCardVisualProps> = ({
                 @{username}
               </button>
             ) : (
-              <span data-gc="perfil.cartao.profile-card-visual.span--14" className={flxCls("userProfileButton")}>@{username}</span>
+              <span data-gc="perfil.cartao.profile-card-visual.span--15" className={flxCls("userProfileButton")}>@{username}</span>
             )}
 
             {(pronouns || onPronouns) && (
               <>
-                <span data-gc="perfil.cartao.profile-card-visual.span--15" className="text-ink-faint">•</span>
+                <span data-gc="perfil.cartao.profile-card-visual.span--16" className="text-ink-faint">•</span>
                 {onPronouns ? (
                   <input data-gc="perfil.cartao.profile-card-visual.input"
                     value={pronouns ?? ""}
@@ -380,20 +400,20 @@ export const ProfileCardVisual: React.FC<ProfileCardVisualProps> = ({
                     )}
                   />
                 ) : (
-                  <span data-gc="perfil.cartao.profile-card-visual.span--16" className={cn(flxCls("pronounsCard"), "truncate")}>{pronouns}</span>
+                  <span data-gc="perfil.cartao.profile-card-visual.span--17" className={cn(flxCls("pronounsCard"), "truncate")}>{pronouns}</span>
                 )}
               </>
             )}
 
             {editable ? (
-              <span data-gc="perfil.cartao.profile-card-visual.span--17"
+              <span data-gc="perfil.cartao.profile-card-visual.span--18"
                 className={cn(
                   flxCls("editPlaceFrame"),
                   flxCls("editPlaceBox"),
                   "flex items-center gap-1.5",
                 )}
               >
-                <span data-gc="perfil.cartao.profile-card-visual.span--18" className="text-ink-faint">•</span>
+                <span data-gc="perfil.cartao.profile-card-visual.span--19" className="text-ink-faint">•</span>
                 {editingTag ? (
                   <input data-gc="perfil.cartao.profile-card-visual.input--2"
                     autoFocus
@@ -414,7 +434,7 @@ export const ProfileCardVisual: React.FC<ProfileCardVisualProps> = ({
                   />
                 ) : (
                   <button data-gc="perfil.cartao.profile-card-visual.button"
-                    onClick={() => setEditingTag(true)}
+                    onClick={() => (customTag || profile?.tag ? setEditingTag(true) : openUpgrade())}
                     title={t("perfil.cartao.editarEtiqueta")}
                     className={cn(
                       flxCls("editPlaceButton"),
@@ -422,7 +442,7 @@ export const ProfileCardVisual: React.FC<ProfileCardVisualProps> = ({
                     )}
                   >
                     {profile?.tag || (
-                      <span data-gc="perfil.cartao.profile-card-visual.span--19" className="text-ink-faint">etiqueta</span>
+                      <span data-gc="perfil.cartao.profile-card-visual.span--20" className="text-ink-faint">etiqueta</span>
                     )}
                   </button>
                 )}
@@ -430,8 +450,8 @@ export const ProfileCardVisual: React.FC<ProfileCardVisualProps> = ({
             ) : (
               profile?.tag && (
                 <>
-                  <span data-gc="perfil.cartao.profile-card-visual.span--20" className="text-ink-faint">•</span>
-                  <span data-gc="perfil.cartao.profile-card-visual.span--21" className="font-semibold text-ink">
+                  <span data-gc="perfil.cartao.profile-card-visual.span--21" className="text-ink-faint">•</span>
+                  <span data-gc="perfil.cartao.profile-card-visual.span--22" className="font-semibold text-ink">
                     {profile.tag}
                   </span>
                 </>
@@ -453,13 +473,13 @@ export const ProfileCardVisual: React.FC<ProfileCardVisualProps> = ({
 
 
             {badges.map((badge) => (
-              <span data-gc="perfil.cartao.profile-card-visual.span--22"
+              <span data-gc="perfil.cartao.profile-card-visual.span--23"
                 key={badge.id}
                 title={badge.name}
                 className="inline-flex items-center"
               >
                 {badge.emoji ? (
-                  <span data-gc="perfil.cartao.profile-card-visual.span--23" className="text-base leading-none">
+                  <span data-gc="perfil.cartao.profile-card-visual.span--24" className="text-base leading-none">
                     {badge.emoji}
                   </span>
                 ) : badge.iconUrl ? (
@@ -512,9 +532,9 @@ export const ProfileCardVisual: React.FC<ProfileCardVisualProps> = ({
                 className="mt-4 block w-full rounded-lg px-1 py-0.5 text-left text-sm transition hover:bg-surface-3/60"
               >
                 {bio ? (
-                  <span data-gc="perfil.cartao.profile-card-visual.span--24" className="whitespace-pre-wrap text-ink">{bio}</span>
+                  <span data-gc="perfil.cartao.profile-card-visual.span--25" className="whitespace-pre-wrap text-ink">{bio}</span>
                 ) : (
-                  <span data-gc="perfil.cartao.profile-card-visual.span--25" className="italic text-ink-faint">
+                  <span data-gc="perfil.cartao.profile-card-visual.span--26" className="italic text-ink-faint">
                     {t("perfil.cartao.adicionarDescricao")}
                   </span>
                 )}
@@ -538,12 +558,12 @@ export const ProfileCardVisual: React.FC<ProfileCardVisualProps> = ({
 
               <div data-gc="perfil.cartao.profile-card-visual.div--11" className={cn("flex flex-wrap items-center gap-1.5", !detailed && "mt-4")}>
                 {roleList.map((role) => (
-                  <span data-gc="perfil.cartao.profile-card-visual.span--26"
+                  <span data-gc="perfil.cartao.profile-card-visual.span--27"
                     key={role.id}
                     className="flex items-center gap-1.5 rounded bg-surface-3 px-2 py-0.5 text-xs font-medium"
                   >
                     {role.iconEmoji ? (
-                      <span data-gc="perfil.cartao.profile-card-visual.span--27">{role.iconEmoji}</span>
+                      <span data-gc="perfil.cartao.profile-card-visual.span--28">{role.iconEmoji}</span>
                     ) : role.iconUrl ? (
                       <img data-gc="perfil.cartao.profile-card-visual.img--3"
                         src={role.iconUrl}
@@ -551,7 +571,7 @@ export const ProfileCardVisual: React.FC<ProfileCardVisualProps> = ({
                         className="size-3.5 rounded-sm object-cover"
                       />
                     ) : (
-                      <span data-gc="perfil.cartao.profile-card-visual.span--28"
+                      <span data-gc="perfil.cartao.profile-card-visual.span--29"
                         className="size-2.5 rounded-full"
                         style={{
                           backgroundColor:
@@ -592,13 +612,13 @@ export const ProfileCardVisual: React.FC<ProfileCardVisualProps> = ({
             <>
               <p data-gc="perfil.cartao.profile-card-visual.p--7" className="mb-1 mt-5 text-sm font-bold text-ink">{t("perfil.membroDesde")}</p>
               <div data-gc="perfil.cartao.profile-card-visual.div--12" className="grid grid-cols-2 items-start gap-x-3 text-sm text-ink-muted">
-                <span data-gc="perfil.cartao.profile-card-visual.span--29" className="flex items-start gap-1.5" title="Gravaê">
+                <span data-gc="perfil.cartao.profile-card-visual.span--30" className="flex items-start gap-1.5" title="Ravox Chat">
                   <img data-gc="perfil.cartao.profile-card-visual.img--4" src="/brand/logo%20g%20branco.svg" alt="" className="size-3.5 opacity-80" draggable={false} />
                   {new Intl.DateTimeFormat(currentLanguage(), { dateStyle: "medium" }).format(new Date(createdAt))}
                 </span>
                 {joinedAt && (
-                  <span data-gc="perfil.cartao.profile-card-visual.span--30" className="flex items-center gap-1.5" title={serverName ?? undefined}>
-                    <span data-gc="perfil.cartao.profile-card-visual.span--31" className="flex size-3.5 items-center justify-center rounded-full bg-surface-4 text-[8px] font-bold uppercase text-ink">
+                  <span data-gc="perfil.cartao.profile-card-visual.span--31" className="flex items-center gap-1.5" title={serverName ?? undefined}>
+                    <span data-gc="perfil.cartao.profile-card-visual.span--32" className="flex size-3.5 items-center justify-center rounded-full bg-surface-4 text-[8px] font-bold uppercase text-ink">
                       {(serverName ?? "").slice(0, 1)}
                     </span>
                     {new Intl.DateTimeFormat(currentLanguage(), { dateStyle: "medium" }).format(new Date(joinedAt))}

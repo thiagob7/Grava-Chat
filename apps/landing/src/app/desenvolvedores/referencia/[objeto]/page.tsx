@@ -20,7 +20,7 @@ export async function generateMetadata({
   if (!object) return {};
 
   return {
-    title: `${object.name} — Documentação do Gravaê`,
+    title: `${object.name} — Documentação do Ravox Chat`,
     description: object.summary,
   };
 }

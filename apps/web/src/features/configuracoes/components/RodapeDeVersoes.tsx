@@ -11,7 +11,7 @@ declare const __VERSION_WEB__: string;
 export const VersionsFooter: React.FC = () => {
   const { t } = useTranslation();
   const [fromApp, setDoApp] = useState<AppVersions | null>(null);
-  const name = desktop()?.nameSystem ?? "Gravaê";
+  const name = desktop()?.nameSystem ?? "Ravox Chat";
   const [copied, setCopied] = useState(false);
 
   useEffect(() => {

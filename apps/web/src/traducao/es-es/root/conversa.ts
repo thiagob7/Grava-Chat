@@ -15,6 +15,16 @@ export const conversa = {
     carregando: "Viendo qué hay en el enlace…",
     destino: "Va a {{destino}}",
   },
+  botComponents: {
+    noResponse: "El bot no ha respondido.",
+    choose: "Elige una opción",
+    onlyYou: "Solo tú puedes ver esto",
+    dismiss: "Descartar",
+    formFrom: "Formulario de {{nome}}",
+    optional: "opcional",
+    yes: "Sí",
+    no: "No",
+  },
   reacao: {
     carregando: "Viendo quién ha reaccionado con {{emoji}}…",
     uma: "{{nome}} ha reaccionado con {{emoji}}",
@@ -121,7 +131,7 @@ export const conversa = {
   },
   denuncia: {
     titulo: "Denunciar mensaje",
-    descricao: "La denuncia va al equipo de Gravaê. Cuéntanos qué pasó.",
+    descricao: "La denuncia va al equipo de Ravox Chat. Cuéntanos qué pasó.",
     de: "De {{nome}}",
     semTexto: "(sin texto)",
     motivo: "Motivo",
@@ -141,6 +151,7 @@ export const conversa = {
   },
 
   falha: {
+    premium: "No se entregó: esto es de Infinity",
     tentarDeNovo: "Intentar de nuevo",
     erro: "No se entregó",
     semConexao: "No se entregó — no tienes conexión",

@@ -1,7 +1,7 @@
 export const idioma = {
   titulo: "A felület nyelve",
   detalhe:
-    "Az a nyelv, amelyen a Gravaê beszél hozzád. Csak ezen az eszközön érvényes.",
+    "Az a nyelv, amelyen a Ravox Chat beszél hozzád. Csak ezen az eszközön érvényes.",
   procurar: "Nyelv keresése…",
   nenhum: "Nincs ilyen nevű nyelv.",
   escolher: "A felület nyelvének kiválasztása",

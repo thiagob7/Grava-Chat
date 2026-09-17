@@ -85,12 +85,14 @@ export const chamada = {
     quadros: "{{quadros}} FPS",
     qualidadeDica: "分辨率是上限：较小的窗口保持原尺寸。分辨率和帧率越高，你和观众需要的带宽越多。也会应用到正在进行的直播。",
   },
+  cameraLimit: "通话中已开启 {{limite}} 个摄像头。请等待其他人关闭。",
   live: {
     etiqueta: "直播中",
     etiquetaMaiuscula: "直播中",
     assistir: "观看直播",
     assistirPessoa: "观看 {{nome}}",
     pararDeAssistir: "停止观看",
+    conectando: "正在连接直播…",
   },
   membro: {
     mudarMeuApelido: "修改我的昵称",
@@ -165,7 +167,7 @@ export const chamada = {
     tela: "屏幕录制",
     telaDetalhe: "共享屏幕和窗口。",
     monitoramento: "输入监听",
-    monitoramentoDetalhe: "即使 Gravaê 在后台也能使用按键通话。",
+    monitoramentoDetalhe: "即使 Ravox Chat 在后台也能使用按键通话。",
   },
   jaConectado: {
     titulo: "你已经在这个通话里了",

@@ -43,7 +43,8 @@ export const perfil = {
     falhou: "ส่งไม่สำเร็จ ลองจากหน้าสนทนา",
   },
   cartao: {
-    equipe: "ทีม Gravaê",
+    infinity: "สมาชิก Infinity",
+    equipe: "ทีม Ravox Chat",
     trocarFaixa: "เปลี่ยนแบนเนอร์ของการ์ด",
     trocarFaixaCurto: "เปลี่ยนแบนเนอร์",
     trocarFoto: "เปลี่ยนรูปโปรไฟล์",

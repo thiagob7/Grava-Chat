@@ -6,8 +6,12 @@ export const comum = {
     recarregar: "Reîncarcă",
     copiarDetalhes: "Copiază detaliile",
     parteQuebrou: "Partea asta a ecranului s-a stricat.",
-    titulo: "Gravaê s-a împiedicat.",
+    titulo: "Ravox Chat s-a împiedicat.",
     detalhe: "Ceva s-a stricat pe drum și ecranul n-a reușit să se deseneze. Conversația ta nu s-a pierdut — totul e pe server.",
+  },
+  perdido: {
+    titulo: "Adresa asta nu duce nicăieri.",
+    detalhe: "Ori linkul e greșit, ori pagina s-a mutat.",
   },
   conexao: {
     voltou: "Conectat din nou",
@@ -17,7 +21,7 @@ export const comum = {
   },
   avisoDoNavegador: {
     titulo: "Vrei să fii anunțat de mesaje?",
-    detalhe: "Cu Gravaê în spatele altei ferestre, el te strigă.",
+    detalhe: "Cu Ravox Chat în spatele altei ferestre, el te strigă.",
   },
   atualizacao: {
     titulo: "Actualizare",
@@ -98,8 +102,8 @@ export const comum = {
   trocar: "Schimbă",
   loginNoApp: {
     titulo: "Totul e gata!",
-    detalhe: "Te-ai conectat. Revino în Gravaê, aplicația te așteaptă deja.",
-    abrir: "Deschide Gravaê",
+    detalhe: "Te-ai conectat. Revino în Ravox Chat, aplicația te așteaptă deja.",
+    abrir: "Deschide Ravox Chat",
     fecharAba: "Poți închide această filă.",
     falhouTitulo: "Conectarea nu a reușit",
     falhouDetalhe: "Revino în aplicație și încearcă din nou.",

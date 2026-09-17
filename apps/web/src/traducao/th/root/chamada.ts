@@ -85,12 +85,14 @@ export const chamada = {
     quadros: "{{quadros}} FPS",
     qualidadeDica: "ความละเอียดคือเพดาน: หน้าต่างที่เล็กกว่าจะคงขนาดเดิม ความละเอียดและเฟรมที่มากขึ้นต้องใช้อินเทอร์เน็ตมากขึ้น ทั้งของคุณและผู้ชม มีผลกับสตรีมที่กำลังออกอากาศด้วย",
   },
+  cameraLimit: "สายนี้เปิดกล้องอยู่แล้ว {{limite}} ตัว รอให้มีคนปิดกล้องก่อน",
   live: {
     etiqueta: "ไลฟ์",
     etiquetaMaiuscula: "ไลฟ์",
     assistir: "ดูการถ่ายทอด",
     assistirPessoa: "ดู {{nome}}",
     pararDeAssistir: "หยุดดู",
+    conectando: "กำลังเชื่อมต่อการถ่ายทอด…",
   },
   membro: {
     mudarMeuApelido: "เปลี่ยนชื่อเล่นของฉัน",
@@ -165,7 +167,7 @@ export const chamada = {
     tela: "การบันทึกหน้าจอ",
     telaDetalhe: "แชร์หน้าจอและหน้าต่าง",
     monitoramento: "การมอนิเตอร์เสียงเข้า",
-    monitoramentoDetalhe: "ใช้กดเพื่อพูดได้แม้ Gravaê อยู่เบื้องหลัง",
+    monitoramentoDetalhe: "ใช้กดเพื่อพูดได้แม้ Ravox Chat อยู่เบื้องหลัง",
   },
   jaConectado: {
     titulo: "คุณอยู่ในสายนี้อยู่แล้ว",

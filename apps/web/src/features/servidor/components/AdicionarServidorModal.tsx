@@ -232,7 +232,7 @@ const Create: React.FC<{
             value={name}
             onChange={(e) => setName(e.target.value)}
             onKeyDown={(e) => e.key === "Enter" && void submit()}
-            placeholder="Ex: Gravaê"
+            placeholder="Ex: Ravox Chat"
             maxLength={64}
           />
           {error && <p data-gc="servidor.adicionar-servidor-modal.p--2" className="mt-2 text-sm text-danger">{error}</p>}
@@ -315,7 +315,7 @@ const Join: React.FC<{ onBack: () => void; onClose: () => void }> = ({
             onClose();
             navigate(`/invite/${code}`);
           }}
-          placeholder="https://gravae-chat.vercel.app/invite/abc123"
+          placeholder="https://app-ravox-chat.vercel.app/invite/abc123"
         />
       </DialogBody>
 

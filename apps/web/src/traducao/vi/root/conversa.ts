@@ -15,6 +15,16 @@ export const conversa = {
     carregando: "Đang xem trong liên kết có gì…",
     destino: "Dẫn tới {{destino}}",
   },
+  botComponents: {
+    noResponse: "Bot không phản hồi.",
+    choose: "Chọn một tùy chọn",
+    onlyYou: "Chỉ bạn nhìn thấy nội dung này",
+    dismiss: "Bỏ qua",
+    formFrom: "Biểu mẫu từ {{nome}}",
+    optional: "không bắt buộc",
+    yes: "Có",
+    no: "Không",
+  },
   reacao: {
     carregando: "Đang xem ai đã thả {{emoji}}…",
     uma: "{{nome}} đã thả {{emoji}}",
@@ -121,7 +131,7 @@ export const conversa = {
   },
   denuncia: {
     titulo: "Báo cáo tin nhắn",
-    descricao: "Báo cáo được gửi đến đội Gravaê. Hãy kể điều gì đã xảy ra.",
+    descricao: "Báo cáo được gửi đến đội Ravox Chat. Hãy kể điều gì đã xảy ra.",
     de: "Từ {{nome}}",
     semTexto: "(không có nội dung)",
     motivo: "Lý do",
@@ -141,6 +151,7 @@ export const conversa = {
   },
 
   falha: {
+    premium: "Chưa gửi được — cần Infinity",
     tentarDeNovo: "Thử lại",
     erro: "Chưa gửi được",
     semConexao: "Chưa gửi được — bạn không có kết nối",

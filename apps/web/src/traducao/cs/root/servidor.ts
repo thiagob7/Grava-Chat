@@ -1,4 +1,15 @@
 export const servidor = {
+  perfilNoServidor: {
+    titulo: "Profil na tomto serveru",
+    descricao: "Avatar, banner a bio, které uvidí jen na {{server}}.",
+    soInfinity: "Profily pro komunity jsou součástí {{plan}}. Klepněte pro tarify.",
+    trocarFoto: "Změnit avatar",
+    trocarFaixa: "Změnit banner",
+    usarDaConta: "Použít ten z účtu",
+    bio: "Bio na tomto serveru",
+    bioDica: "Napište něco jen pro tuto komunitu",
+    salvo: "Profil serveru uložen.",
+  },
   comunidade: {
     ativa: "Komunita je otevřená",
     ativaDesde: "Otevřená od {{quando}}",
@@ -113,7 +124,7 @@ export const servidor = {
     feitoPor: "Vytvořil",
     publicadoEm: "Zveřejněno",
     denunciarNome: "Nahlásit {{nome}}",
-    denunciaDetalhe: "Hlášení jde týmu Gravaê. Autor aplikace se nedozví, že jste to byli vy.",
+    denunciaDetalhe: "Hlášení jde týmu Ravox Chat. Autor aplikace se nedozví, že jste to byli vy.",
     denunciaFalhou: "Hlášení se nepodařilo odeslat.",
     umMembro: "1 člen",
     semDescricao: "Bez popisu.",
@@ -205,7 +216,7 @@ export const servidor = {
   },
   denuncia: {
     titulo: "Nahlásit {{nome}}",
-    descricao: "Hlášení jde týmu Gravaê. Popiš, co se stalo.",
+    descricao: "Hlášení jde týmu Ravox Chat. Popiš, co se stalo.",
     motivo: "Důvod",
     detalhes: "Podrobnosti (nepovinné)",
     enviar: "Odeslat hlášení",

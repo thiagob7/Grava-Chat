@@ -5,7 +5,7 @@ export const conversa = {
     botao: "Acenar para {{nome}}",
   },
   oficial: {
-    titulo: "Este canal é só para avisos oficiais do Gravaê.",
+    titulo: "Este canal é só para avisos oficiais do Ravox Chat.",
     detalhe: "Nunca pedimos a sua senha nem o token da sua conta.",
     saibaMais: "Saiba mais",
   },
@@ -15,6 +15,16 @@ export const conversa = {
   previaDoLink: {
     carregando: "Vendo o que tem no link…",
     destino: "Vai para {{destino}}",
+  },
+  botComponents: {
+    noResponse: "O bot não respondeu.",
+    choose: "Escolha uma opção",
+    onlyYou: "Só você está vendo isto",
+    dismiss: "Dispensar",
+    formFrom: "Formulário de {{nome}}",
+    optional: "opcional",
+    yes: "Sim",
+    no: "Não",
   },
   reacao: {
     carregando: "Vendo quem reagiu com {{emoji}}…",
@@ -123,7 +133,7 @@ export const conversa = {
   },
   denuncia: {
     titulo: "Denunciar mensagem",
-    descricao: "A denúncia vai para a equipe do Gravaê. Conte o que aconteceu.",
+    descricao: "A denúncia vai para a equipe do Ravox Chat. Conte o que aconteceu.",
     de: "De {{nome}}",
     semTexto: "(sem texto)",
     motivo: "Motivo",
@@ -143,6 +153,7 @@ export const conversa = {
   },
 
   falha: {
+    premium: "Não foi entregue — isso é do Infinity",
     tentarDeNovo: "Tentar de novo",
     erro: "Não foi entregue",
     semConexao: "Não foi entregue — você está sem conexão",

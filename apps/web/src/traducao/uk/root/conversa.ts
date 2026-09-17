@@ -15,6 +15,16 @@ export const conversa = {
     carregando: "Дивлюся, що за посиланням…",
     destino: "Веде на {{destino}}",
   },
+  botComponents: {
+    noResponse: "Бот не відповів.",
+    choose: "Виберіть варіант",
+    onlyYou: "Це бачите лише ви",
+    dismiss: "Приховати",
+    formFrom: "Форма від {{nome}}",
+    optional: "необов’язково",
+    yes: "Так",
+    no: "Ні",
+  },
   reacao: {
     carregando: "Дивлюся, хто відреагував із {{emoji}}…",
     uma: "{{nome}} відреагував із {{emoji}}",
@@ -121,7 +131,7 @@ export const conversa = {
   },
   denuncia: {
     titulo: "Поскаржитися на повідомлення",
-    descricao: "Скарга надходить команді Gravaê. Розкажіть, що сталося.",
+    descricao: "Скарга надходить команді Ravox Chat. Розкажіть, що сталося.",
     de: "Від {{nome}}",
     semTexto: "(без тексту)",
     motivo: "Причина",
@@ -141,6 +151,7 @@ export const conversa = {
   },
 
   falha: {
+    premium: "Не доставлено — це доступно в Infinity",
     tentarDeNovo: "Спробувати ще раз",
     erro: "Не доставлено",
     semConexao: "Не доставлено — немає з'єднання",

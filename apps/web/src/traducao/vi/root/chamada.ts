@@ -85,12 +85,14 @@ export const chamada = {
     quadros: "{{quadros}} FPS",
     qualidadeDica: "Độ phân giải là mức trần: cửa sổ nhỏ hơn giữ nguyên kích thước. Độ phân giải và khung hình cao hơn cần nhiều băng thông hơn, của bạn và người xem. Áp dụng cả cho buổi phát đang diễn ra.",
   },
+  cameraLimit: "Cuộc gọi đã có {{limite}} camera đang bật. Hãy chờ ai đó tắt camera của họ.",
   live: {
     etiqueta: "Trực tiếp",
     etiquetaMaiuscula: "TRỰC TIẾP",
     assistir: "Xem buổi phát",
     assistirPessoa: "Xem {{nome}}",
     pararDeAssistir: "Ngừng xem",
+    conectando: "Đang kết nối tới buổi phát…",
   },
   membro: {
     mudarMeuApelido: "Đổi biệt danh của tôi",
@@ -165,7 +167,7 @@ export const chamada = {
     tela: "Ghi màn hình",
     telaDetalhe: "Chia sẻ màn hình và cửa sổ.",
     monitoramento: "Giám sát đầu vào",
-    monitoramentoDetalhe: "Dùng nhấn-để-nói ngay cả khi Gravaê ở nền.",
+    monitoramentoDetalhe: "Dùng nhấn-để-nói ngay cả khi Ravox Chat ở nền.",
   },
   jaConectado: {
     titulo: "Bạn đã ở trong cuộc gọi này rồi",

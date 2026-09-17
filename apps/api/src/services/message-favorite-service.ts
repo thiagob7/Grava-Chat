@@ -1,10 +1,13 @@
+import { PLAN_LIMITS } from "@gravae/shared";
+
 import { NotFoundError } from "~/lib/http.js";
 import { toMessage } from "~/lib/serialize.js";
 import { messageFavoriteRepository } from "~/repositories/message-favorite-repository.js";
 import { messageRepository } from "~/repositories/message-repository.js";
 import { accessService } from "~/services/access-service.js";
+import { planService } from "~/services/plan-service.js";
 
-const LIMIT = 200;
+const LIMIT = PLAN_LIMITS.premium.savedMessages;
 
 export const messageFavoriteService = {
   async list(userId: string) {
@@ -36,7 +39,11 @@ export const messageFavoriteService = {
 
     await accessService.requireChannelAccess(userId, message.channelId);
 
-    if (favorite) await messageFavoriteRepository.add(userId, messageId);
+    if (favorite && !(await messageFavoriteRepository.exists(userId, messageId))) {
+      const current = await messageFavoriteRepository.countOf(userId);
+      await planService.requireRoom(userId, "savedMessages", current, (limit) => `Você já salvou ${limit} mensagens`);
+      await messageFavoriteRepository.add(userId, messageId);
+    }
     else await messageFavoriteRepository.remove(userId, messageId);
 
     return messageFavoriteService.idsDe(userId);

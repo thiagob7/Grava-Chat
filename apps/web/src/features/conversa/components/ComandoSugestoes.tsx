@@ -3,6 +3,7 @@ import type { AvailableCommand, CommandOption } from "@gravae/shared";
 
 import { Avatar } from "~/features/perfil/components/Avatar";
 import { cn } from "~/lib/utils";
+import { useTranslation } from "~/traducao";
 
 const signature = (options: CommandOption[]) =>
   options.map((o) => (o.required ? `<${o.name}>` : `[${o.name}]`)).join(" ");
@@ -76,8 +77,21 @@ export const CommandHint: React.FC<{
   command: AvailableCommand;
   filled: Record<string, string>;
   missing: CommandOption[];
-}> = ({ command, filled, missing }) => {
+  onChoose?: (value: string) => void;
+}> = ({ command, filled, missing, onChoose }) => {
+  const { t } = useTranslation();
   const current = command.options.find((o) => !filled[o.name]) ?? null;
+
+  const quickValues = !current
+    ? []
+    : current.choices
+      ? current.choices.map((choice) => ({ label: choice.name, value: String(choice.value) }))
+      : current.kind === "boolean"
+        ? [
+            { label: t("conversa.botComponents.yes"), value: "true" },
+            { label: t("conversa.botComponents.no"), value: "false" },
+          ]
+        : [];
 
   return (
     <div data-gc="conversa.comando-sugestoes.div--2" className="absolute bottom-full left-0 right-0 z-20 mb-2 overflow-hidden rounded-lg bg-surface-1 shadow-2xl ring-1 ring-line">
@@ -120,6 +134,22 @@ export const CommandHint: React.FC<{
           command.description
         )}
       </p>
+
+      {quickValues.length > 0 && onChoose && (
+        <div data-gc="conversa.comando-sugestoes.div--4" className="flex flex-wrap gap-1.5 border-t border-line px-3 py-2">
+          {quickValues.map((item) => (
+            <button data-gc="conversa.comando-sugestoes.button--2"
+              key={item.value}
+              type="button"
+              onMouseDown={(event) => event.preventDefault()}
+              onClick={() => onChoose(item.value)}
+              className="rounded-md bg-surface-3 px-2 py-1 text-xs text-ink-muted transition hover:bg-surface-4 hover:text-ink"
+            >
+              {item.label}
+            </button>
+          ))}
+        </div>
+      )}
 
       {missing.length > 0 && (
         <p data-gc="conversa.comando-sugestoes.p--3" className="border-t border-line bg-danger-fundo px-3 py-1.5 text-xs text-danger">

@@ -1,4 +1,15 @@
 export const servidor = {
+  perfilNoServidor: {
+    titulo: "Profiili tällä palvelimella",
+    descricao: "Profiilikuva, banneri ja bio, jotka näkyvät vain palvelimella {{server}}.",
+    soInfinity: "Yhteisökohtaiset profiilit kuuluvat {{plan}}-tilaukseen. Napauta nähdäksesi tilaukset.",
+    trocarFoto: "Vaihda profiilikuva",
+    trocarFaixa: "Vaihda banneri",
+    usarDaConta: "Käytä tilin omaa",
+    bio: "Bio tällä palvelimella",
+    bioDica: "Kerro jotain vain tälle yhteisölle",
+    salvo: "Palvelinprofiili tallennettu.",
+  },
   comunidade: {
     ativa: "Yhteisö on auki",
     ativaDesde: "Auki alkaen {{quando}}",
@@ -113,7 +124,7 @@ export const servidor = {
     feitoPor: "Tekijä",
     publicadoEm: "Julkaistu",
     denunciarNome: "Ilmianna {{nome}}",
-    denunciaDetalhe: "Ilmianto menee Gravaên tiimille. Sovelluksen tekijä ei saa tietää, että se olit sinä.",
+    denunciaDetalhe: "Ilmianto menee Ravox Chatn tiimille. Sovelluksen tekijä ei saa tietää, että se olit sinä.",
     denunciaFalhou: "Ilmiantoa ei voitu lähettää.",
     umMembro: "1 jäsen",
     semDescricao: "Ei kuvausta.",
@@ -205,7 +216,7 @@ export const servidor = {
   },
   denuncia: {
     titulo: "Ilmoita: {{nome}}",
-    descricao: "Ilmoitus menee Gravaên tiimille. Kerro mitä tapahtui.",
+    descricao: "Ilmoitus menee Ravox Chatn tiimille. Kerro mitä tapahtui.",
     motivo: "Syy",
     detalhes: "Lisätiedot (valinnainen)",
     enviar: "Lähetä ilmoitus",

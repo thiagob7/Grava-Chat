@@ -29,6 +29,10 @@ const FORGIVEN: { file: string; because: string }[] = [
     because: "as miniaturas desenham cada tema base; são amostra, não interface",
   },
   {
+    file: "features/plan/components/PixPayment.tsx",
+    because: "o QR do Pix precisa de fundo branco para o app do banco ler, em qualquer tema",
+  },
+  {
     file: "components/Confete.tsx",
     because: "papel picado é enfeite de festa, não peça de interface",
   },

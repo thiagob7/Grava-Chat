@@ -6,6 +6,7 @@ import { CEILING_BY_PURPOSE, type UploadPurpose } from "@gravae/shared";
 import { AppError } from "~/lib/http.js";
 import { redis, keys } from "~/lib/redis.js";
 import { fitsQuota, quotaMessage, QUOTA_S_WINDOW } from "~/lib/cota-de-upload.js";
+import { planService } from "~/services/plan-service.js";
 import type { ImportImageInput, PresignInput } from "~/validations/upload.js";
 
 const s3 = new S3Client({
@@ -37,9 +38,11 @@ export const uploadService = {
   async reserveQuota(userId: string, size: number) {
     const key = keys.uploadQuota(userId);
 
-    const alreadyUsed = await redis.get(key).then(Number).catch(() => 0);
-    if (!fitsQuota({ alreadyUsed: alreadyUsed || 0, size })) {
-      throw new AppError(quotaMessage({ alreadyUsed: alreadyUsed || 0 }), 429);
+    const alreadyUsed = (await redis.get(key).then(Number).catch(() => 0)) || 0;
+    const quota = await planService.uploadQuotaOf(userId, alreadyUsed + size);
+
+    if (!fitsQuota({ alreadyUsed, size, quota })) {
+      throw new AppError(quotaMessage({ alreadyUsed, quota }), 429);
     }
 
     await redis
@@ -135,6 +138,7 @@ export const uploadService = {
 
   async presign(userId: string, input: PresignInput) {
     input = { ...input, contentType: storedType(input.contentType, input.purpose) };
+    if (input.purpose === "anexo") await planService.requireAttachmentSize(userId, input.size);
     await uploadService.reserveQuota(userId, input.size);
 
     const key = uploadService.buildKey(userId, input.filename);

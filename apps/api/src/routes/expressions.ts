@@ -1,6 +1,8 @@
 import type { FastifyInstance } from "fastify";
 import { rooms, objectId } from "@gravae/shared";
 import { io } from "~/realtime/io.js";
+import { z } from "zod";
+import { expressionAccess } from "~/services/expression-access.js";
 import { expressionService } from "~/services/expression-service.js";
 import { guildParams } from "~/validations/common.js";
 import {
@@ -20,6 +22,13 @@ const notify = (guildId: string) =>
 
 export async function expressionRoutes(app: FastifyInstance) {
   app.addHook("preHandler", app.authenticate);
+
+  app.get("/emojis", (req) => {
+    const { ids } = z.object({ ids: z.string().max(1300) }).parse(req.query);
+    const valid = ids.split(",").filter((id) => objectId.safeParse(id).success);
+
+    return expressionAccess.describeEmojis(valid);
+  });
 
   app.get("/guilds/:guildId/expressions", (req) => {
     const { guildId } = guildParams.parse(req.params);

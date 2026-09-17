@@ -1,7 +1,7 @@
 export const idioma = {
   titulo: "Bahasa antarmuka",
   detalhe:
-    "Bahasa yang digunakan Gravaê untuk berbicara denganmu. Berlaku di perangkat ini saja.",
+    "Bahasa yang digunakan Ravox Chat untuk berbicara denganmu. Berlaku di perangkat ini saja.",
   procurar: "Cari bahasa…",
   nenhum: "Tidak ada bahasa dengan nama itu.",
   escolher: "Pilih bahasa antarmuka",

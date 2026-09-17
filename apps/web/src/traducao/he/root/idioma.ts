@@ -1,6 +1,6 @@
 export const idioma = {
   titulo: "שפת הממשק",
-  detalhe: "השפה שבה Gravaê מדבר אליך. תקפה במכשיר הזה בלבד.",
+  detalhe: "השפה שבה Ravox Chat מדבר אליך. תקפה במכשיר הזה בלבד.",
   procurar: "חיפוש שפה…",
   nenhum: "אין שפה בשם הזה.",
   escolher: "בחירת שפת הממשק",

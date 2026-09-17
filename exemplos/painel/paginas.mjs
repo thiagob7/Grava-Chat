@@ -3,7 +3,7 @@ import { ESTILO } from "./estilo.mjs";
 const escapar = (texto = "") =>
   String(texto).replace(/[&<>"']/g, (c) => `&#${c.charCodeAt(0)};`);
 
-export const NOME = "Gravaê Music";
+export const NOME = "Ravox Music";
 
 const moldura = (titulo, corpo, { topo = true, usuario = null } = {}) => `<!doctype html>
 <html lang="pt-BR"><head>
@@ -15,7 +15,7 @@ const moldura = (titulo, corpo, { topo = true, usuario = null } = {}) => `<!doct
 ${
   topo
     ? `<header class="topo">
-        <a class="marca" href="/">Gravaê <span>Music</span></a>
+        <a class="marca" href="/">Ravox <span>Music</span></a>
         <nav>
           <a href="/#comandos">Comandos</a>
           <a href="/painel">Painel</a>
@@ -76,7 +76,7 @@ export const landing = ({ usuario, linkDeConvite }) =>
       </section>
 
       <footer class="rodape">
-        Exemplo de plataforma para bots do Gravaê · <code>exemplos/painel</code>
+        Exemplo de plataforma para bots do Ravox Chat · <code>exemplos/painel</code>
       </footer>
     </main>`,
     { usuario },
@@ -88,9 +88,9 @@ export const precisaEntrar = () =>
     `<main class="centro"><div class="caixa">
       <h1 style="font-size:22px">Entre para configurar</h1>
       <p style="color:var(--texto-fraco);margin:12px 0 22px">
-        Use sua conta do Gravaê. A gente só vê seu nome e em quais servidores você manda.
+        Use sua conta do Ravox Chat. A gente só vê seu nome e em quais servidores você manda.
       </p>
-      <a class="botao" href="/entrar" style="width:100%;justify-content:center">Entrar com o Gravaê</a>
+      <a class="botao" href="/entrar" style="width:100%;justify-content:center">Entrar com o Ravox Chat</a>
     </div></main>`,
     { topo: false },
   );
@@ -128,7 +128,7 @@ export const listaDeServidores = ({ usuario, servidores, linkDeConvite }) => {
             .join("") ||
           `<div class="vazio">
             <p>Você não gerencia nenhum servidor ainda.</p>
-            <p>Crie um no Gravaê, ou peça pra quem manda te dar “Gerenciar servidor”.</p>
+            <p>Crie um no Ravox Chat, ou peça pra quem manda te dar “Gerenciar servidor”.</p>
           </div>`
         }
       </div>

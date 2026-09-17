@@ -30,7 +30,7 @@ export class ErrorBoundary extends React.Component<Props, State> {
     const { error } = this.state;
 
     return [
-      `Gravaê — ${this.props.where ?? "aplicação"}`,
+      `Ravox Chat — ${this.props.where ?? "aplicação"}`,
       new Date().toISOString(),
       navigator.userAgent,
       "",

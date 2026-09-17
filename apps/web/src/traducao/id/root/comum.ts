@@ -6,8 +6,12 @@ export const comum = {
     recarregar: "Muat ulang",
     copiarDetalhes: "Salin rinciannya",
     parteQuebrou: "Bagian layar ini rusak.",
-    titulo: "Gravaê tersandung.",
+    titulo: "Ravox Chat tersandung.",
     detalhe: "Ada yang rusak di tengah jalan dan layar tidak berhasil digambar. Percakapanmu tidak hilang — semuanya ada di server.",
+  },
+  perdido: {
+    titulo: "Alamat ini tidak menuju ke mana-mana.",
+    detalhe: "Entah tautannya salah, atau halamannya sudah pindah.",
   },
   conexao: {
     voltou: "Tersambung lagi",
@@ -17,7 +21,7 @@ export const comum = {
   },
   avisoDoNavegador: {
     titulo: "Mau diberi tahu soal pesan?",
-    detalhe: "Saat Gravaê ada di balik jendela lain, dia akan memanggilmu.",
+    detalhe: "Saat Ravox Chat ada di balik jendela lain, dia akan memanggilmu.",
   },
   atualizacao: {
     titulo: "Pembaruan",
@@ -98,8 +102,8 @@ export const comum = {
   trocar: "Ganti",
   loginNoApp: {
     titulo: "Semua beres!",
-    detalhe: "Kamu sudah masuk. Kembali ke Gravaê, aplikasinya sudah menunggu.",
-    abrir: "Buka Gravaê",
+    detalhe: "Kamu sudah masuk. Kembali ke Ravox Chat, aplikasinya sudah menunggu.",
+    abrir: "Buka Ravox Chat",
     fecharAba: "Kamu bisa menutup tab ini.",
     falhouTitulo: "Gagal masuk",
     falhouDetalhe: "Kembali ke aplikasi dan coba masuk lagi.",

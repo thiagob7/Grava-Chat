@@ -39,6 +39,7 @@ import type {
   UpdateChannelInput,
   UpdateGuildInput,
 } from "~/validations/guild.js";
+import { planService } from "~/services/plan-service.js";
 
 const DEFAULT_CATEGORIES = ["CANAIS DE TEXTO", "CANAIS DE VOZ"];
 
@@ -89,6 +90,8 @@ export const guildService = {
   },
 
   async create(userId: string, input: CreateGuildInput) {
+    await planService.requireCommunityRoom(userId);
+
     const guild = await guildRepository.createWithDefaults({
       name: input.name,
       ownerId: userId,
@@ -382,7 +385,7 @@ export const guildService = {
 
     const noticesChannelId =
       input.noticesChannelId ??
-      (await born("avisos-da-comunidade", "O que o Gravaê anuncia para quem administra aqui."));
+      (await born("avisos-da-comunidade", "O que o Ravox Chat anuncia para quem administra aqui."));
 
     const updated = await guildRepository.update(guildId, {
       community: true,

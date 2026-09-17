@@ -17,20 +17,20 @@ export const ENVIRONMENTS: Environment[] = [
   {
     id: "producao",
     name: "Produção",
-    api: "https://gravaechat-api.duckdns.org",
-    front: "https://gravae-chat.vercel.app",
+    api: "https://ravoxchat-api.duckdns.org",
+    front: "https://app-ravox-chat.vercel.app",
     branch: "master",
   },
   {
     id: "staging",
     name: "Staging",
-    api: "https://gravaechat-api-staging.duckdns.org",
-    front: "https://gravae-chat-staging.vercel.app",
+    api: "https://ravoxchat-api-staging.duckdns.org",
+    front: "https://app-ravox-chat-staging.vercel.app",
     branch: "staging",
   },
 ];
 
-export const REPOSITORY = "thiagob7/Grava-Chat";
+export const REPOSITORY = "thiagob7/Ravox-Chat";
 export const API_FLOW = "api.yml";
 
 export interface Post {

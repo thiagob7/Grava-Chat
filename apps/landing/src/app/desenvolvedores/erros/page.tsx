@@ -4,7 +4,7 @@ import { Ahead, Notice, Section, Title, Trail } from "~/components/docs/PecasDos
 import { ErrorCodes, FailureReasons } from "~/components/docs/ReferenciaDaApi";
 
 export const metadata: Metadata = {
-  title: "Erros — Documentação do Gravaê",
+  title: "Erros — Documentação do Ravox Chat",
   description:
     "O que a API responde quando dá errado: os códigos HTTP, o formato do corpo e os motivos que vêm nos eventos.",
 };

@@ -85,12 +85,14 @@ export const chamada = {
     quadros: "{{quadros}} FPS",
     qualidadeDica: "A felbontás felső határ: a kisebb ablak megtartja a méretét. Több felbontás és képkocka több sávszélességet kér, tőled és a nézőktől. A futó közvetítésre is vonatkozik.",
   },
+  cameraLimit: "A hívásban már {{limite}} kamera be van kapcsolva. Várj, amíg valaki kikapcsolja az övét.",
   live: {
     etiqueta: "Élő",
     etiquetaMaiuscula: "ÉLŐ",
     assistir: "Az adás megtekintése",
     assistirPessoa: "{{nome}} megtekintése",
     pararDeAssistir: "Megtekintés abbahagyása",
+    conectando: "Csatlakozás az adáshoz…",
   },
   membro: {
     mudarMeuApelido: "A becenevem módosítása",
@@ -165,7 +167,7 @@ export const chamada = {
     tela: "Képernyőfelvétel",
     telaDetalhe: "A képernyő és az ablakok megosztása.",
     monitoramento: "Bemenet figyelése",
-    monitoramentoDetalhe: "A nyomd-és-beszélj használata akkor is, ha a Gravaê a háttérben van.",
+    monitoramentoDetalhe: "A nyomd-és-beszélj használata akkor is, ha a Ravox Chat a háttérben van.",
   },
   jaConectado: {
     titulo: "Már bent vagy ebben a hívásban",

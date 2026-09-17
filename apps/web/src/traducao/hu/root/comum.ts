@@ -6,8 +6,12 @@ export const comum = {
     recarregar: "Újratöltés",
     copiarDetalhes: "Részletek másolása",
     parteQuebrou: "A képernyőnek ez a része eltört.",
-    titulo: "A Gravaê megbotlott.",
+    titulo: "A Ravox Chat megbotlott.",
     detalhe: "Valami eltört útközben, és a képernyő nem tudta kirajzolni magát. A beszélgetésed nem veszett el — minden a kiszolgálón van.",
+  },
+  perdido: {
+    titulo: "Ez a cím nem vezet sehová.",
+    detalhe: "Vagy rossz a hivatkozás, vagy az oldal elköltözött.",
   },
   conexao: {
     voltou: "Újra kapcsolódva",
@@ -17,7 +21,7 @@ export const comum = {
   },
   avisoDoNavegador: {
     titulo: "Kérsz értesítést az üzenetekről?",
-    detalhe: "Ha a Gravaê másik ablak mögött van, akkor szól neked.",
+    detalhe: "Ha a Ravox Chat másik ablak mögött van, akkor szól neked.",
   },
   atualizacao: {
     titulo: "Frissítés",
@@ -98,8 +102,8 @@ export const comum = {
   trocar: "Csere",
   loginNoApp: {
     titulo: "Minden rendben!",
-    detalhe: "Bejelentkeztél. Térj vissza a Gravaêba, az alkalmazás már vár.",
-    abrir: "Gravaê megnyitása",
+    detalhe: "Bejelentkeztél. Térj vissza a Ravox Chatba, az alkalmazás már vár.",
+    abrir: "Ravox Chat megnyitása",
     fecharAba: "Most már bezárhatod ezt a lapot.",
     falhouTitulo: "A bejelentkezés nem sikerült",
     falhouDetalhe: "Térj vissza az alkalmazásba, és próbálj újra bejelentkezni.",

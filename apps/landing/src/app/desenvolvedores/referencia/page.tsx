@@ -5,8 +5,8 @@ import { ObjectsIndex, RoutesRest } from "~/components/docs/ReferenciaDaApi";
 import { API } from "~/dados/docs";
 
 export const metadata: Metadata = {
-  title: "Referência REST — Documentação do Gravaê",
-  description: "Todas as rotas que um bot do Gravaê pode chamar, geradas do código da API.",
+  title: "Referência REST — Documentação do Ravox Chat",
+  description: "Todas as rotas que um bot do Ravox Chat pode chamar, geradas do código da API.",
 };
 
 export default function Reference() {

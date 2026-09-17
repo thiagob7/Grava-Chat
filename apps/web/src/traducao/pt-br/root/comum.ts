@@ -7,8 +7,12 @@ export const comum = {
     recarregar: "Recarregar",
     copiarDetalhes: "Copiar detalhes",
     parteQuebrou: "Esta parte da tela quebrou.",
-    titulo: "O Gravaê tropeçou.",
+    titulo: "O Ravox Chat tropeçou.",
     detalhe: "Alguma coisa quebrou no meio do caminho e a tela não conseguiu se desenhar. Sua conversa não se perdeu — está tudo no servidor.",
+  },
+  perdido: {
+    titulo: "Esse endereço não leva a lugar nenhum.",
+    detalhe: "Ou o link veio errado, ou a página mudou de lugar.",
   },
   conexao: {
     voltou: "Conectado de novo",
@@ -18,7 +22,7 @@ export const comum = {
   },
   avisoDoNavegador: {
     titulo: "Quer ser avisado das mensagens?",
-    detalhe: "Com o Gravaê atrás de outra janela, ele te chama.",
+    detalhe: "Com o Ravox Chat atrás de outra janela, ele te chama.",
   },
   atualizacao: {
     titulo: "Atualização",
@@ -99,8 +103,8 @@ export const comum = {
   trocar: "Trocar",
   loginNoApp: {
     titulo: "Tudo certo!",
-    detalhe: "Você entrou com a sua conta. Pode voltar pro Gravaê, o aplicativo já está te esperando.",
-    abrir: "Abrir o Gravaê",
+    detalhe: "Você entrou com a sua conta. Pode voltar pro Ravox Chat, o aplicativo já está te esperando.",
+    abrir: "Abrir o Ravox Chat",
     fecharAba: "Já pode fechar esta aba.",
     falhouTitulo: "O login não deu certo",
     falhouDetalhe: "Volte pro aplicativo e tente entrar de novo.",

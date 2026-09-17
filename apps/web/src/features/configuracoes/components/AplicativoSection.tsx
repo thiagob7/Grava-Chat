@@ -5,7 +5,7 @@ import { Button } from "~/components/ui/button";
 import { cn } from "~/lib/utils";
 import { ConfigSection as Section } from "~/features/configuracoes/components/SecaoDeConfig";
 
-const BASE = "https://github.com/thiagob7/Grava-Chat/releases/latest/download";
+const BASE = "https://github.com/thiagob7/Ravox-Chat/releases/latest/download";
 
 const MAC = `${BASE}/gravae-chat-mac.dmg`;
 const WINDOWS = `${BASE}/gravae-chat-win.exe`;

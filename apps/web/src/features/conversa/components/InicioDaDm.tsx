@@ -58,7 +58,7 @@ export const StartDm: React.FC<{ person: PublicUser; channelId?: string; empty?:
       <p data-gc="conversa.inicio-da-dm.p" className="mt-3 text-ink-muted">
         {person.system ? (
           <>
-            Esta é uma mensagem oficial da equipe do Gravaê. Não esqueça: o Gravaê nunca vai
+            Esta é uma mensagem oficial da equipe do Ravox Chat. Não esqueça: o Ravox Chat nunca vai
             pedir sua senha nem o token da sua conta.
           </>
         ) : (

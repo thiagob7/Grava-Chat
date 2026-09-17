@@ -1,4 +1,15 @@
 export const servidor = {
+  perfilNoServidor: {
+    titulo: "Profil på denne serveren",
+    descricao: "Avatar, banner og bio som bare vises på {{server}}.",
+    soInfinity: "Profiler per fellesskap er en del av {{plan}}. Trykk for å se planene.",
+    trocarFoto: "Bytt avatar",
+    trocarFaixa: "Bytt banner",
+    usarDaConta: "Bruk kontoens",
+    bio: "Bio på denne serveren",
+    bioDica: "Si noe bare til dette fellesskapet",
+    salvo: "Serverprofilen er lagret.",
+  },
   comunidade: {
     ativa: "Fellesskapet er åpent",
     ativaDesde: "Åpent siden {{quando}}",
@@ -113,7 +124,7 @@ export const servidor = {
     feitoPor: "Laget av",
     publicadoEm: "Publisert",
     denunciarNome: "Rapporter {{nome}}",
-    denunciaDetalhe: "Rapporten går til Gravaê-teamet. Den som lagde appen får ikke vite at det var deg.",
+    denunciaDetalhe: "Rapporten går til Ravox Chat-teamet. Den som lagde appen får ikke vite at det var deg.",
     denunciaFalhou: "Rapporten kunne ikke sendes.",
     umMembro: "1 medlem",
     semDescricao: "Ingen beskrivelse.",
@@ -205,7 +216,7 @@ export const servidor = {
   },
   denuncia: {
     titulo: "Rapporter {{nome}}",
-    descricao: "Rapporten går til Gravaê-teamet. Fortell hva som skjedde.",
+    descricao: "Rapporten går til Ravox Chat-teamet. Fortell hva som skjedde.",
     motivo: "Årsak",
     detalhes: "Detaljer (valgfritt)",
     enviar: "Send rapport",

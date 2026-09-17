@@ -1,4 +1,15 @@
 export const servidor = {
+  perfilNoServidor: {
+    titulo: "Profil na tym serwerze",
+    descricao: "Awatar, baner i bio widoczne tylko na {{server}}.",
+    soInfinity: "Profile dla społeczności są częścią {{plan}}. Dotknij, aby zobaczyć plany.",
+    trocarFoto: "Zmień awatar",
+    trocarFaixa: "Zmień baner",
+    usarDaConta: "Użyj tego z konta",
+    bio: "Bio na tym serwerze",
+    bioDica: "Napisz coś tylko dla tej społeczności",
+    salvo: "Profil serwera zapisany.",
+  },
   comunidade: {
     ativa: "Społeczność jest otwarta",
     ativaDesde: "Otwarta od {{quando}}",
@@ -113,7 +124,7 @@ export const servidor = {
     feitoPor: "Autor",
     publicadoEm: "Opublikowano",
     denunciarNome: "Zgłoś {{nome}}",
-    denunciaDetalhe: "Zgłoszenie trafia do zespołu Gravaê. Autor aplikacji nie dowie się, że to ty.",
+    denunciaDetalhe: "Zgłoszenie trafia do zespołu Ravox Chat. Autor aplikacji nie dowie się, że to ty.",
     denunciaFalhou: "Nie udało się wysłać zgłoszenia.",
     umMembro: "1 członek",
     semDescricao: "Bez opisu.",
@@ -205,7 +216,7 @@ export const servidor = {
   },
   denuncia: {
     titulo: "Zgłoś {{nome}}",
-    descricao: "Zgłoszenie trafia do zespołu Gravaê. Opisz, co się stało.",
+    descricao: "Zgłoszenie trafia do zespołu Ravox Chat. Opisz, co się stało.",
     motivo: "Powód",
     detalhes: "Szczegóły (opcjonalnie)",
     enviar: "Wyślij zgłoszenie",

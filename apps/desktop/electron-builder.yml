@@ -4,7 +4,7 @@
 # executável é o Electron genérico, e o macOS guarda as permissões debaixo de
 # quem lançou o processo. Resultado: microfone e gravação de tela ficavam
 # negados sem o app sequer aparecer nas listas de Privacidade. Empacotado, ele
-# vira "Gravaê Chat" com identificador próprio, pede as permissões sozinho e
+# vira "Ravox Chat" com identificador próprio, pede as permissões sozinho e
 # aparece na lista com o nome dele.
 appId: io.gravae.chat
 
@@ -16,7 +16,7 @@ appId: io.gravae.chat
 # empacotamentos. O acento volta logo abaixo, em `CFBundleDisplayName`, que é
 # o que o Finder, o Dock e o menu mostram.
 productName: Gravae Chat
-copyright: Gravaê
+copyright: Ravox Chat
 
 # O uiohook-napi é N-API e já vem com o `.node` pronto pra cada plataforma
 # (prebuilds/darwin-arm64/…). Recompilar não só é desnecessário como quebra:
@@ -77,10 +77,10 @@ mac:
   # chega a ser perguntada.
   extendInfo:
     # O nome bonito, com acento, vive só aqui — nunca em caminho de arquivo.
-    CFBundleDisplayName: Gravaê Chat
-    NSMicrophoneUsageDescription: O Gravaê usa o microfone nas chamadas de voz.
-    NSCameraUsageDescription: O Gravaê usa a câmera quando você liga o vídeo na chamada.
-    NSAudioCaptureUsageDescription: O Gravaê captura o som do sistema ao compartilhar a tela.
+    CFBundleDisplayName: Ravox Chat
+    NSMicrophoneUsageDescription: O Ravox Chat usa o microfone nas chamadas de voz.
+    NSCameraUsageDescription: O Ravox Chat usa a câmera quando você liga o vídeo na chamada.
+    NSAudioCaptureUsageDescription: O Ravox Chat captura o som do sistema ao compartilhar a tela.
 
 # Windows precisa ser empacotado NUM Windows — daí o GitHub Actions. O .ico é
 # gerado a partir do build/icon.png (512px), então não há um arquivo a manter.
@@ -98,12 +98,12 @@ nsis:
   oneClick: false
   allowToChangeInstallationDirectory: true
   # O executável e o atalho levam o nome bonito; só o caminho é que evita acento.
-  shortcutName: Gravaê Chat
+  shortcutName: Ravox Chat
 
 # o retorno do login com Google chega por aqui
 protocols:
-  - name: Gravaê
+  - name: Ravox Chat
     schemes: [gravae]
 
 dmg:
-  title: Gravaê Chat
+  title: Ravox Chat

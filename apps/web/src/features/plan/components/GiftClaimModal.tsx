@@ -1,0 +1,106 @@
+import React from "react";
+import { toast } from "react-toastify";
+import { cleanGiftCode, PLAN_NAME, prettyGiftCode } from "@gravae/shared";
+
+import { useGiftPreview } from "~/@core/application/queries/billing/use-billing";
+import { Button } from "~/components/ui/button";
+import { Dialog, DialogContent, DialogDescription, DialogTitle } from "~/components/ui/dialog";
+import { Skeleton } from "~/components/ui/skeleton";
+import { Avatar } from "~/features/perfil/components/Avatar";
+import { GiftReview } from "~/features/plan/components/GiftReview";
+import { InfinityArt } from "~/features/plan/components/InfinityArt";
+import { usePlanStore } from "~/features/plan/stores/plan-store";
+import { currentLanguage, useTranslation } from "~/traducao";
+
+export const GiftClaimModal: React.FC = () => {
+  const code = usePlanStore((s) => s.claimingGift);
+  const close = usePlanStore((s) => s.claimGift);
+
+  return (
+    <Dialog data-gc="plan.gift-claim-modal.dialog" open={Boolean(code)} onOpenChange={(open) => !open && close(null)}>
+      <DialogContent data-gc="plan.gift-claim-modal.dialog-content" className="max-w-md overflow-hidden">
+        {code && <GiftClaimBody data-gc="plan.gift-claim-modal.gift-claim-body" code={code} onClose={() => close(null)} />}
+      </DialogContent>
+    </Dialog>
+  );
+};
+
+const GiftClaimBody: React.FC<{ code: string; onClose: () => void }> = ({ code, onClose }) => {
+  const { t } = useTranslation();
+  const preview = useGiftPreview(cleanGiftCode(code));
+
+  const gift = preview.data;
+  const day = (iso: string) => new Date(iso).toLocaleDateString(currentLanguage(), { dateStyle: "long" });
+
+  const copyLink = async () => {
+    await navigator.clipboard.writeText(`${window.location.origin}/gift/${cleanGiftCode(code)}`).catch(() => undefined);
+    toast.success(t("configuracoes.subscription.giftLinkCopied"));
+  };
+
+  return (
+    <div data-gc="plan.gift-claim-modal.div" className="pb-6 text-center">
+      <div data-gc="plan.gift-claim-modal.div--2" className="relative h-36 overflow-hidden bg-gradient-to-br from-brand/45 via-brand/20 to-surface-2">
+        <span data-gc="plan.gift-claim-modal.span" aria-hidden className="infinity-glow absolute inset-0" />
+        <InfinityArt data-gc="plan.gift-claim-modal.infinity-art" className="absolute inset-0 m-auto size-32" />
+      </div>
+
+      <div data-gc="plan.gift-claim-modal.div--3" className="px-6 pt-5">
+
+      {preview.isPending ? (
+        <Skeleton data-gc="plan.gift-claim-modal.skeleton" className="mx-auto mt-5 h-24 w-full rounded-lg" />
+      ) : !gift ? (
+        <>
+          <DialogTitle data-gc="plan.gift-claim-modal.dialog-title" className="mt-4 text-lg font-bold">
+            {t("configuracoes.subscription.giftNotFoundTitle")}
+          </DialogTitle>
+          <DialogDescription data-gc="plan.gift-claim-modal.dialog-description">{t("configuracoes.subscription.giftNotFoundDetail")}</DialogDescription>
+          <Button data-gc="plan.gift-claim-modal.button.on-close" className="mt-6 w-full" variant="surface" onClick={onClose}>
+            {t("comum.fechar")}
+          </Button>
+        </>
+      ) : gift.claimed ? (
+        <>
+          <DialogTitle data-gc="plan.gift-claim-modal.dialog-title--2" className="mt-4 text-lg font-bold">
+            {t("configuracoes.subscription.giftUsedTitle")}
+          </DialogTitle>
+          <DialogDescription data-gc="plan.gift-claim-modal.dialog-description--2">{t("configuracoes.subscription.giftUsedDetail")}</DialogDescription>
+          <Button data-gc="plan.gift-claim-modal.button.on-close--2" className="mt-6 w-full" variant="surface" onClick={onClose}>
+            {t("comum.fechar")}
+          </Button>
+        </>
+      ) : gift.alreadyPremium ? (
+        <>
+          <DialogTitle data-gc="plan.gift-claim-modal.dialog-title--3" className="mt-4 text-lg font-bold">
+            {t("configuracoes.subscription.giftHasPlanTitle")}
+          </DialogTitle>
+          <DialogDescription data-gc="plan.gift-claim-modal.dialog-description--3">
+            {gift.premiumUntil
+              ? t("configuracoes.subscription.giftHasPlanDetail", { plan: PLAN_NAME, date: day(gift.premiumUntil) })
+              : t("configuracoes.subscription.giftUsedDetail")}
+          </DialogDescription>
+
+          <div data-gc="plan.gift-claim-modal.div--4" className="mt-6 flex flex-col gap-2">
+            <Button data-gc="plan.gift-claim-modal.button" onClick={() => void copyLink()}>
+              {t("configuracoes.subscription.giftCopyLink")}
+            </Button>
+            <Button data-gc="plan.gift-claim-modal.button.on-close--3" variant="ghost" onClick={onClose}>
+              {t("comum.fechar")}
+            </Button>
+          </div>
+        </>
+      ) : (
+        <>
+          <DialogTitle data-gc="plan.gift-claim-modal.dialog-title--4" className="mt-4 text-lg font-bold">
+            {t("configuracoes.subscription.giftClaimTitle", { plan: PLAN_NAME })}
+          </DialogTitle>
+          <DialogDescription data-gc="plan.gift-claim-modal.dialog-description--4" className="sr-only">
+            {t("configuracoes.subscription.giftClaimDetail", { days: gift.days })}
+          </DialogDescription>
+
+          <GiftReview data-gc="plan.gift-claim-modal.gift-review.on-close" code={cleanGiftCode(code)} gift={gift} onClose={onClose} />
+        </>
+      )}
+      </div>
+    </div>
+  );
+};

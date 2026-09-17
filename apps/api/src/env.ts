@@ -38,7 +38,7 @@ const schema = z.object({
   ADMIN_EMAILS: z.string().default(""),
 
   GITHUB_TOKEN: z.string().default(""),
-  GITHUB_REPOSITORY: z.string().default("thiagob7/Grava-Chat"),
+  GITHUB_REPOSITORY: z.string().default("thiagob7/Ravox-Chat"),
 
   COOKIE_BETWEEN_SITES: z.stringbool().default(false),
 
@@ -47,13 +47,28 @@ const schema = z.object({
   EDGE_SECRET: z.string().refine((v) => !v || v.length >= 32, "EDGE_SECRET precisa de 32 caracteres ou mais").default(""),
 
   RESEND_API_KEY: z.string().default(""),
-  EMAIL_SENDER: z.string().default("Gravaê <onboarding@resend.dev>"),
+  EMAIL_SENDER: z.string().default("Ravox Chat <onboarding@resend.dev>"),
 
   THEMES_OWNER_SERVER: z.string().default(""),
   DEVELOPERS_OWNER_SERVER: z.string().default(""),
   HOUSE_OWNER_SERVER: z.string().default(""),
 
   DOCS_ISOPEN: z.stringbool().default(false),
+
+  STRIPE_SECRET_KEY: z.string().default(""),
+  STRIPE_WEBHOOK_SECRET: z.string().default(""),
+  STRIPE_PUBLISHABLE_KEY: z.string().default(""),
+  STRIPE_PRICE_MONTHLY: z.string().default(""),
+  STRIPE_PRICE_YEARLY: z.string().default(""),
+  STRIPE_PRICE_MONTH_PASS: z.string().default(""),
+  STRIPE_PRICE_YEAR_PASS: z.string().default(""),
+
+  MERCADOPAGO_ACCESS_TOKEN: z.string().default(""),
+  MERCADOPAGO_CLIENT_ID: z.string().default(""),
+  MERCADOPAGO_CLIENT_SECRET: z.string().default(""),
+  MERCADOPAGO_WEBHOOK_SECRET: z.string().default(""),
+  MERCADOPAGO_POS_EXTERNAL_ID: z.string().default(""),
+  MERCADOPAGO_STORE_ID: z.string().default(""),
 });
 
 const parsed = schema.safeParse(process.env);

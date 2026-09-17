@@ -1,7 +1,7 @@
 export const idioma = {
   titulo: "Gränssnittets språk",
   detalhe:
-    "Språket som Gravaê talar med dig på. Gäller bara på den här enheten.",
+    "Språket som Ravox Chat talar med dig på. Gäller bara på den här enheten.",
   procurar: "Sök språk…",
   nenhum: "Inget språk med det namnet.",
   escolher: "Välj gränssnittets språk",

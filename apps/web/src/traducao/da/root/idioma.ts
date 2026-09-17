@@ -1,6 +1,6 @@
 export const idioma = {
   titulo: "Grænsefladens sprog",
-  detalhe: "Sproget Gravaê taler til dig på. Gælder kun på denne enhed.",
+  detalhe: "Sproget Ravox Chat taler til dig på. Gælder kun på denne enhed.",
   procurar: "Søg efter sprog…",
   nenhum: "Intet sprog med det navn.",
   escolher: "Vælg grænsefladens sprog",

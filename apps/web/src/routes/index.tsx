@@ -8,6 +8,7 @@ import { Splash } from "~/features/app/components/Splash";
 import { useSendQueue } from "~/features/conversa/hooks/use-fila-de-envio";
 
 import { CallReceived } from "~/features/voz/components/ChamadaRecebida";
+import { BotModal } from "~/features/conversa/components/BotModal";
 import { FloatingScreenShare } from "~/features/voz/components/FloatingScreenShare";
 import { ThemeOffNotice } from "~/features/configuracoes/components/AvisoDeTemaDesligado";
 import { StudioWindow } from "~/features/configuracoes/components/estudio/JanelaDoEstudio";
@@ -22,7 +23,7 @@ import { VerifyEmail } from "~/pages/presentation/auth/VerificarEmail";
 import { DesktopLoginDone } from "~/pages/presentation/auth/LoginNoApp";
 import { SignIn } from "~/pages/presentation/auth/SignIn";
 
-const Admin = React.lazy(() => import("~/pages/presentation/admin/Admin"));
+const Admin = lazyPage(() => import("~/pages/presentation/admin/Admin"));
 
 import { Chat } from "~/pages/presentation/chat/Chat";
 import { AcceptInvite } from "~/pages/presentation/invite/AcceptInvite";
@@ -37,8 +38,11 @@ import { useConfigByUrl } from "~/features/app/hooks/use-config-por-url";
 import { AccountDeletion } from "~/features/perfil/components/ContaEmExclusao";
 import { ThemeBackground } from "~/features/tema/components/FundoDoTema";
 import { cn } from "~/lib/utils";
+import { lazyPage } from "~/lib/lazy-page";
 import { flx, flxAttr, flxCls } from "~/lib/compat-de-tema";
 import { isDesktop } from "~/lib/desktop";
+import { Gift } from "~/pages/presentation/gift/Gift";
+import { NotFound } from "~/pages/presentation/not-found/NotFound";
 
 export const AppRoutes: React.FC = () => {
   useConfigByUrl();
@@ -50,6 +54,7 @@ export const AppRoutes: React.FC = () => {
       <AppShell data-gc="routes.app-shell">
       <div data-gc="routes.div--2" {...flxAttr("frameExternal")} {...flx("appFrame", cn("moldura-externa min-h-0 flex-1 overflow-x-hidden", flxCls("frameExternal")))}>
     <Routes>
+      <Route path="/gift/:code" element={<Gift data-gc="routes.gift" />} />
       <Route path="/login" element={<PublicOnly data-gc="routes.public-only" />} />
       <Route path="/redefinir" element={<ResetPassword data-gc="routes.reset-password" />} />
       <Route path="/verificar-email" element={<VerifyEmail data-gc="routes.verify-email" />} />
@@ -97,25 +102,33 @@ export const AppRoutes: React.FC = () => {
         }
       />
       <Route
-        path="/dm/solicitacoes"
+        path="/dm/infinity"
         element={
           <Protected data-gc="routes.protected--6">
-            <DirectMessages data-gc="routes.direct-messages" requests />
+            <DirectMessages data-gc="routes.direct-messages" infinity />
+          </Protected>
+        }
+      />
+      <Route
+        path="/dm/solicitacoes"
+        element={
+          <Protected data-gc="routes.protected--7">
+            <DirectMessages data-gc="routes.direct-messages--2" requests />
           </Protected>
         }
       />
       <Route
         path="/dm/:channelId?"
         element={
-          <Protected data-gc="routes.protected--7">
-            <DirectMessages data-gc="routes.direct-messages--2" />
+          <Protected data-gc="routes.protected--8">
+            <DirectMessages data-gc="routes.direct-messages--3" />
           </Protected>
         }
       />
       <Route
         path="/tema/:themeId"
         element={
-          <Protected data-gc="routes.protected--8">
+          <Protected data-gc="routes.protected--9">
             <SeeTheme data-gc="routes.see-theme" />
           </Protected>
         }
@@ -123,7 +136,7 @@ export const AppRoutes: React.FC = () => {
       <Route
         path="/estudio"
         element={
-          <Protected data-gc="routes.protected--9">
+          <Protected data-gc="routes.protected--10">
             <StudioInWindow data-gc="routes.studio-in-window" />
           </Protected>
         }
@@ -131,7 +144,7 @@ export const AppRoutes: React.FC = () => {
       <Route
         path="/cursores"
         element={
-          <Protected data-gc="routes.protected--10">
+          <Protected data-gc="routes.protected--11">
             <CursorsInWindow data-gc="routes.cursors-in-window" />
           </Protected>
         }
@@ -139,7 +152,7 @@ export const AppRoutes: React.FC = () => {
       <Route
         path="/explorar"
         element={
-          <Protected data-gc="routes.protected--11">
+          <Protected data-gc="routes.protected--12">
             <Explore data-gc="routes.explore--2" />
           </Protected>
         }
@@ -148,12 +161,13 @@ export const AppRoutes: React.FC = () => {
       <Route
         path="/channels/:guildId?/:channelId?"
         element={
-          <Protected data-gc="routes.protected--12">
+          <Protected data-gc="routes.protected--13">
             <Chat data-gc="routes.chat" />
           </Protected>
         }
       />
-      <Route path="*" element={<Navigate to="/channels" replace />} />
+      <Route path="/" element={<Navigate to="/channels" replace />} />
+      <Route path="*" element={<NotFound data-gc="routes.not-found" />} />
     </Routes>
       </div>
       </AppShell>
@@ -164,6 +178,7 @@ export const AppRoutes: React.FC = () => {
     <CursorsWindow data-gc="routes.cursors-window" />
     <ThemeOffNotice data-gc="routes.theme-off-notice" />
     <CallReceived data-gc="routes.call-received" />
+    <BotModal data-gc="routes.bot-modal" />
     <LinksDoDesktop data-gc="routes.links-do-desktop" />
   </BrowserRouter>
   );
@@ -171,7 +186,10 @@ export const AppRoutes: React.FC = () => {
 
 const WINDOWS_OWN = ["/estudio", "/cursores"];
 
-const BRAND_SCREENS = [/^\/login$/, /^\/login\/app$/, /^\/redefinir$/, /^\/verificar-email$/, /^\/oauth2\/autorizar$/, /^\/bots\/[^/]+\/adicionar$/];
+const BRAND_SCREENS = [/^\/gift\//, /^\/login$/, /^\/login\/app$/, /^\/redefinir$/, /^\/verificar-email$/, /^\/oauth2\/autorizar$/, /^\/bots\/[^/]+\/adicionar$/];
+
+const KNOWN_PLACES =
+  /^\/$|^\/(channels|dm|invite|apps|oauth2|bots|tema|estudio|cursores|explorar|evento|admin|gift|login|redefinir|verificar-email)(\/|$)/;
 
 const AppShell: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const { pathname } = useLocation();
@@ -187,6 +205,12 @@ const AppShell: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   if (WINDOWS_OWN.includes(pathname)) return <>{children}</>;
 
   if (!isDesktop() && BRAND_SCREENS.some((display) => display.test(pathname))) return <>{children}</>;
+
+  /*
+    Endereço que não é nosso não ganha a moldura do aplicativo: quem caiu de um
+    link torto vê só a tela dizendo isso, e não uma casca de app vazia em volta.
+  */
+  if (!isDesktop() && !KNOWN_PLACES.test(pathname)) return <>{children}</>;
 
   /*
     No navegador a barra de título do painel não tem o que dizer nem botão de

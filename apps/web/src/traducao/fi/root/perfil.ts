@@ -43,7 +43,8 @@ export const perfil = {
     falhou: "Lähetys ei onnistunut. Kokeile keskustelusta.",
   },
   cartao: {
-    equipe: "Gravaê-tiimi",
+    infinity: "Infinity-jäsen",
+    equipe: "Ravox Chat-tiimi",
     trocarFaixa: "Vaihda kortin banneri",
     trocarFaixaCurto: "Vaihda banneri",
     trocarFoto: "Vaihda profiilikuva",

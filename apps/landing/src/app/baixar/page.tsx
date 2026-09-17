@@ -5,13 +5,12 @@ import { Header } from "~/components/Cabecalho";
 import { Footer } from "~/components/Rodape";
 import { VersionPublished } from "~/components/VersaoPublicada";
 import { LINK_MAC, LINK_RELEASES, LINK_WINDOWS } from "~/lib/release";
+import { APP_URL as APP } from "~/lib/brand";
 
 export const metadata: Metadata = {
-  title: "Baixar o Gravaê",
-  description: "O Gravaê para macOS e Windows, ou direto no navegador.",
+  title: "Baixar o Ravox Chat",
+  description: "O Ravox Chat para macOS e Windows, ou direto no navegador.",
 };
-
-const APP = "https://gravae-chat.vercel.app";
 
 export default function Download() {
   return (
@@ -19,7 +18,7 @@ export default function Download() {
       <Header />
 
       <main className="mx-auto max-w-3xl px-6 py-20">
-        <h1 className="text-center text-4xl font-bold">Baixar o Gravaê</h1>
+        <h1 className="text-center text-4xl font-bold">Baixar o Ravox Chat</h1>
         <p className="mx-auto mt-4 max-w-lg text-center text-sm leading-relaxed text-ink-muted">
           O aplicativo dá push-to-talk que funciona com a janela atrás, escolha
           de qual tela transmitir e aviso no Dock. O resto é igual ao navegador.
@@ -53,13 +52,13 @@ export default function Download() {
             title="Navegador"
             detail="Funciona sem instalar nada, em qualquer sistema"
             href={APP}
-            action="Abrir o Gravaê"
+            action="Abrir o Ravox Chat"
           />
         </div>
 
         <p className="mt-10 text-center text-sm text-ink-muted">
           Ainda não há aplicativo para Linux nem para celular. No Linux e no
-          celular, o Gravaê roda no navegador.
+          celular, o Ravox Chat roda no navegador.
         </p>
 
         <p className="mt-4 text-center text-sm">

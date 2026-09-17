@@ -85,12 +85,14 @@ export const chamada = {
     quadros: "{{quadros}} FPS",
     qualidadeDica: "Opløsningen er et loft: et mindre vindue beholder sin størrelse. Mere opløsning og flere billeder kræver mere bredbånd, dit og seernes. Gælder også en igangværende stream.",
   },
+  cameraLimit: "Opkaldet har allerede {{limite}} kameraer tændt. Vent til nogen slukker sit.",
   live: {
     etiqueta: "Live",
     etiquetaMaiuscula: "LIVE",
     assistir: "Se udsendelsen",
     assistirPessoa: "Se {{nome}}",
     pararDeAssistir: "Stop med at se",
+    conectando: "Forbinder til streamen…",
   },
   membro: {
     mudarMeuApelido: "Skift mit kaldenavn",
@@ -165,7 +167,7 @@ export const chamada = {
     tela: "Skærmoptagelse",
     telaDetalhe: "Dele skærmen og vinduerne.",
     monitoramento: "Inputovervågning",
-    monitoramentoDetalhe: "Bruge tryk-for-at-tale, også når Gravaê er i baggrunden.",
+    monitoramentoDetalhe: "Bruge tryk-for-at-tale, også når Ravox Chat er i baggrunden.",
   },
   jaConectado: {
     titulo: "Du er allerede i dette opkald",

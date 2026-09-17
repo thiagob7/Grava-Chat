@@ -112,8 +112,8 @@ export const UserProfilePopover: React.FC<UserProfilePopoverProps> = ({
 
   const close = useRef(() => setIsOpen(false)).current;
   const trigger = useRef<HTMLButtonElement>(null);
-  const frozenRect = useRef(new DOMRect());
-  const anchor = useRef({ getBoundingClientRect: () => frozenRect.current });
+  const anchor = useRef({ getBoundingClientRect: () => new DOMRect() });
+  const [opening, setOpening] = useState(false);
   const [align, setAlign] = useState<"start" | "end">("start");
 
   const changeOpen = (open: boolean) => {
@@ -121,17 +121,24 @@ export const UserProfilePopover: React.FC<UserProfilePopoverProps> = ({
       if (trigger.current) {
         const rect = trigger.current.getBoundingClientRect();
         const below = window.innerHeight - rect.top;
-        frozenRect.current = rect;
+        anchor.current = { getBoundingClientRect: () => rect };
         setAlign(below < Math.min(CARD_HEIGHT, window.innerHeight * 0.8) && rect.bottom > below ? "end" : "start");
       }
       if (closeOpenCard !== close) closeOpenCard?.();
       closeOpenCard = close;
-    } else if (closeOpenCard === close) {
-      closeOpenCard = null;
+      setOpening(true);
+      return;
     }
 
-    setIsOpen(open);
+    if (closeOpenCard === close) closeOpenCard = null;
+    setIsOpen(false);
   };
+
+  useEffect(() => {
+    if (!opening) return;
+    setOpening(false);
+    setIsOpen(true);
+  }, [opening]);
 
   useEffect(() => () => {
     if (closeOpenCard === close) closeOpenCard = null;
@@ -195,6 +202,7 @@ const ProfileCard: React.FC<{
   const charms = useCharms(guildId);
   const badges = charms.badges(profile.id);
   const { data: serverDetail } = useFindGuild(guildId);
+  const guildMember = serverDetail?.members.find((m) => m.user.id === profile.id);
   const { can } = usePermissions(serverDetail);
   const setRoles = useSetMemberRoles(guildId);
 
@@ -516,13 +524,14 @@ const ProfileCard: React.FC<{
         isBot={profile.isBot}
         isSystem={profile.system}
         staff={profile.staff}
-        avatarUrl={profile.avatarUrl}
+        premium={profile.premium}
+        avatarUrl={guildMember?.avatarUrl ?? profile.avatarUrl}
         status={profile.status}
-        profile={profile.profile}
+        profile={guildMember?.bannerUrl ? { ...profile.profile, bannerUrl: guildMember.bannerUrl } as typeof profile.profile : profile.profile}
         serverTag={profile.serverTag}
         customStatus={profile.customStatus}
         roleColor={roleColor}
-        bio={profile.bio}
+        bio={guildMember?.bio ?? profile.bio}
         pronouns={profile.pronouns}
         detailed={profile.friendship === "SELF"}
         createdAt={profile.friendship === "SELF" ? profile.createdAt : null}
@@ -612,7 +621,7 @@ const ProfileComposer: React.FC<{
   /*
     A mensagem sai pela conversa, e não por fora dela. Assim, se o servidor
     recusar, a recusa aparece onde a pessoa vai estar olhando — na conversa,
-    marcada, com o aviso do Gravaê explicando — em vez de um toast que some.
+    marcada, com o aviso do Ravox Chat explicando — em vez de um toast que some.
   */
   const send = async () => {
     const content = text.trim();

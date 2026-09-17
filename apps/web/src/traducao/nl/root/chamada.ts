@@ -85,12 +85,14 @@ export const chamada = {
     quadros: "{{quadros}} FPS",
     qualidadeDica: "De resolutie is een maximum: een kleiner venster houdt zijn eigen formaat. Meer resolutie en frames vragen meer bandbreedte, van jou en van kijkers. Geldt ook voor een lopende stream.",
   },
+  cameraLimit: "Er staan al {{limite}} camera's aan in dit gesprek. Wacht tot iemand de zijne uitzet.",
   live: {
     etiqueta: "Live",
     etiquetaMaiuscula: "LIVE",
     assistir: "De uitzending bekijken",
     assistirPessoa: "{{nome}} bekijken",
     pararDeAssistir: "Stoppen met kijken",
+    conectando: "Verbinden met de stream…",
   },
   membro: {
     mudarMeuApelido: "Mijn bijnaam wijzigen",
@@ -165,7 +167,7 @@ export const chamada = {
     tela: "Schermopname",
     telaDetalhe: "Het scherm en vensters delen.",
     monitoramento: "Invoermonitoring",
-    monitoramentoDetalhe: "Push-to-talk gebruiken, ook met Gravaê op de achtergrond.",
+    monitoramentoDetalhe: "Push-to-talk gebruiken, ook met Ravox Chat op de achtergrond.",
   },
   jaConectado: {
     titulo: "Je zit al in dit gesprek",

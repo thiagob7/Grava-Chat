@@ -43,7 +43,8 @@ export const perfil = {
     falhou: "לא הצלחנו לשלוח. נסה מתוך השיחה.",
   },
   cartao: {
-    equipe: "צוות Gravaê",
+    infinity: "חבר Infinity",
+    equipe: "צוות Ravox Chat",
     trocarFaixa: "החלפת הכרזה של הכרטיס",
     trocarFaixaCurto: "החלפת הכרזה",
     trocarFoto: "החלפת תמונת הפרופיל",

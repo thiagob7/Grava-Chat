@@ -2,7 +2,7 @@ import { io } from "socket.io-client";
 
 const BASE = "http://localhost:3333";
 const email = process.argv[2] ?? "thiago@gravae.io";
-const guildName = process.argv[3] ?? "GRAVAÊ";
+const guildName = process.argv[3] ?? "RAVOX";
 
 const api = async (path, { token, body, method = "POST" } = {}) => {
   const res = await fetch(`${BASE}/api${path}`, {

@@ -6,6 +6,7 @@ import { useFindGuild } from "~/@core/application/queries/guild/use-find-guild";
 export interface PersonCharms {
   profile: ProfilePublic | null;
   roleColor: string | null;
+  guildAvatarUrl?: string | null;
 }
 
 const WITHOUT_CHARM: PersonCharms = { profile: null, roleColor: null };
@@ -28,6 +29,12 @@ export function useCharms(guildId: string | undefined) {
     return map;
   }, [detail]);
 
+  const guildAvatars = useMemo(() => {
+    const map = new Map<string, string>();
+    for (const m of detail?.members ?? []) if (m.avatarUrl) map.set(m.user.id, m.avatarUrl);
+    return map;
+  }, [detail]);
+
   const badges = useCallback(
     (userId: string) => {
       const ids = detail?.profiles?.[userId]?.badges ?? [];
@@ -43,12 +50,13 @@ export function useCharms(guildId: string | undefined) {
     (userId: string): PersonCharms => {
       const profile = detail?.profiles?.[userId] ?? null;
       const roleColor = colors.get(userId) ?? null;
+      const guildAvatarUrl = guildAvatars.get(userId) ?? null;
 
-      if (!profile && !roleColor) return WITHOUT_CHARM;
+      if (!profile && !roleColor && !guildAvatarUrl) return WITHOUT_CHARM;
 
-      return { profile, roleColor };
+      return { profile, roleColor, guildAvatarUrl };
     },
-    [detail, colors],
+    [detail, colors, guildAvatars],
   );
 
   return Object.assign(resolve, { badges });

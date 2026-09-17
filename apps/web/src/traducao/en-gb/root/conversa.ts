@@ -15,6 +15,16 @@ export const conversa = {
     carregando: "Seeing what is behind the link…",
     destino: "Goes to {{destino}}",
   },
+  botComponents: {
+    noResponse: "The bot didn't respond.",
+    choose: "Make a selection",
+    onlyYou: "Only you can see this",
+    dismiss: "Dismiss",
+    formFrom: "Form from {{nome}}",
+    optional: "optional",
+    yes: "Yes",
+    no: "No",
+  },
   reacao: {
     carregando: "Seeing who reacted with {{emoji}}…",
     uma: "{{nome}} reacted with {{emoji}}",
@@ -121,7 +131,7 @@ export const conversa = {
   },
   denuncia: {
     titulo: "Report message",
-    descricao: "The report goes to the Gravaê team. Tell us what happened.",
+    descricao: "The report goes to the Ravox Chat team. Tell us what happened.",
     de: "From {{nome}}",
     semTexto: "(no text)",
     motivo: "Reason",
@@ -141,6 +151,7 @@ export const conversa = {
   },
 
   falha: {
+    premium: "Not delivered — this needs Infinity",
     tentarDeNovo: "Try again",
     erro: "Not delivered",
     semConexao: "Not delivered — you're offline",

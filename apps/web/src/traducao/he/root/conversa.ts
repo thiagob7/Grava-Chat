@@ -15,6 +15,16 @@ export const conversa = {
     carregando: "בודק מה יש בקישור…",
     destino: "מוביל אל {{destino}}",
   },
+  botComponents: {
+    noResponse: "הבוט לא הגיב.",
+    choose: "בחרו אפשרות",
+    onlyYou: "רק את/ה רואה את זה",
+    dismiss: "סגירה",
+    formFrom: "טופס מאת {{nome}}",
+    optional: "לא חובה",
+    yes: "כן",
+    no: "לא",
+  },
   reacao: {
     carregando: "בודק מי הגיב עם {{emoji}}…",
     uma: "{{nome}} הגיב עם {{emoji}}",
@@ -121,7 +131,7 @@ export const conversa = {
   },
   denuncia: {
     titulo: "דיווח על ההודעה",
-    descricao: "הדיווח מגיע לצוות Gravaê. ספרו לנו מה קרה.",
+    descricao: "הדיווח מגיע לצוות Ravox Chat. ספרו לנו מה קרה.",
     de: "מאת {{nome}}",
     semTexto: "(ללא טקסט)",
     motivo: "סיבה",
@@ -141,6 +151,7 @@ export const conversa = {
   },
 
   falha: {
+    premium: "לא נמסר — זה חלק מ-Infinity",
     tentarDeNovo: "לנסות שוב",
     erro: "לא נשלחה",
     semConexao: "לא נשלחה — אין לך חיבור",

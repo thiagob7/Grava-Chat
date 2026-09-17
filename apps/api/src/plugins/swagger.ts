@@ -78,7 +78,7 @@ export const swaggerPlugin = fp(async (app) => {
     },
     openapi: {
       info: {
-        title: "API do Gravaê Chat",
+        title: "API do Ravox Chat",
         description:
           "A API que o próprio app usa. A maior parte das rotas pede a sessão em cookie; " +
           "as de `/api/bot/*` pedem o token do aplicativo no cabeçalho `Authorization: Bot <token>`.",

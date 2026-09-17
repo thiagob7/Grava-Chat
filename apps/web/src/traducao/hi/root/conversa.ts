@@ -15,6 +15,16 @@ export const conversa = {
     carregando: "देख रहे हैं लिंक में क्या है…",
     destino: "{{destino}} पर जाता है",
   },
+  botComponents: {
+    noResponse: "बॉट ने जवाब नहीं दिया।",
+    choose: "एक विकल्प चुनें",
+    onlyYou: "यह सिर्फ़ आपको दिख रहा है",
+    dismiss: "हटाएं",
+    formFrom: "{{nome}} का फ़ॉर्म",
+    optional: "वैकल्पिक",
+    yes: "हाँ",
+    no: "नहीं",
+  },
   reacao: {
     carregando: "देख रहे हैं किसने {{emoji}} से रिएक्ट किया…",
     uma: "{{nome}} ने {{emoji}} से रिएक्ट किया",
@@ -121,7 +131,7 @@ export const conversa = {
   },
   denuncia: {
     titulo: "संदेश की शिकायत करें",
-    descricao: "रिपोर्ट Gravaê टीम को जाती है। बताएँ क्या हुआ।",
+    descricao: "रिपोर्ट Ravox Chat टीम को जाती है। बताएँ क्या हुआ।",
     de: "{{nome}} की ओर से",
     semTexto: "(कोई टेक्स्ट नहीं)",
     motivo: "कारण",
@@ -141,6 +151,7 @@ export const conversa = {
   },
 
   falha: {
+    premium: "नहीं भेजा गया — यह Infinity में है",
     tentarDeNovo: "फिर कोशिश करें",
     erro: "डिलीवर नहीं हुई",
     semConexao: "डिलीवर नहीं हुई — आपका कनेक्शन नहीं है",

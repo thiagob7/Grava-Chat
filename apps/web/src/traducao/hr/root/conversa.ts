@@ -15,6 +15,16 @@ export const conversa = {
     carregando: "Gledam što je na poveznici…",
     destino: "Vodi na {{destino}}",
   },
+  botComponents: {
+    noResponse: "Bot nije odgovorio.",
+    choose: "Odaberite opciju",
+    onlyYou: "Ovo vidite samo vi",
+    dismiss: "Odbaci",
+    formFrom: "Obrazac od {{nome}}",
+    optional: "neobavezno",
+    yes: "Da",
+    no: "Ne",
+  },
   reacao: {
     carregando: "Gledam tko je reagirao s {{emoji}}…",
     uma: "{{nome}} je reagirao s {{emoji}}",
@@ -121,7 +131,7 @@ export const conversa = {
   },
   denuncia: {
     titulo: "Prijavi poruku",
-    descricao: "Prijava ide timu Gravaê. Reci nam što se dogodilo.",
+    descricao: "Prijava ide timu Ravox Chat. Reci nam što se dogodilo.",
     de: "Od {{nome}}",
     semTexto: "(bez teksta)",
     motivo: "Razlog",
@@ -141,6 +151,7 @@ export const conversa = {
   },
 
   falha: {
+    premium: "Nije isporučeno — to je za Infinity",
     tentarDeNovo: "Pokušaj ponovno",
     erro: "Nije dostavljeno",
     semConexao: "Nije dostavljeno — nemaš vezu",

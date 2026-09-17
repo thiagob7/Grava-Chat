@@ -184,7 +184,7 @@ describe("quem pode dar o quê", () => {
     ).rejects.toMatchObject({ statusCode: 400 });
   });
 
-  it("e-mail sem conta no Gravaê não entra", async () => {
+  it("e-mail sem conta no Ravox Chat não entra", async () => {
     await expect(
       adminService.add(owner, { email: "ninguem@gmail.com", areas: ["servidor"], password: "provisoria-456" }),
     ).rejects.toMatchObject({ statusCode: 404 });

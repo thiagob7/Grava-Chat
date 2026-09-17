@@ -1,4 +1,15 @@
 export const servidor = {
+  perfilNoServidor: {
+    titulo: "Профіль на цьому сервері",
+    descricao: "Аватар, банер і опис, які видно лише в {{server}}.",
+    soInfinity: "Профілі для спільнот входять до {{plan}}. Натисніть, щоб побачити плани.",
+    trocarFoto: "Змінити аватар",
+    trocarFaixa: "Змінити банер",
+    usarDaConta: "Використати з акаунта",
+    bio: "Опис на цьому сервері",
+    bioDica: "Розкажіть щось лише цій спільноті",
+    salvo: "Профіль сервера збережено.",
+  },
   comunidade: {
     ativa: "Спільнота відкрита",
     ativaDesde: "Відкрита з {{quando}}",
@@ -113,7 +124,7 @@ export const servidor = {
     feitoPor: "Автор",
     publicadoEm: "Опубліковано",
     denunciarNome: "Поскаржитися на {{nome}}",
-    denunciaDetalhe: "Скарга йде команді Gravaê. Автор застосунку не дізнається, що це були ви.",
+    denunciaDetalhe: "Скарга йде команді Ravox Chat. Автор застосунку не дізнається, що це були ви.",
     denunciaFalhou: "Не вдалося надіслати скаргу.",
     umMembro: "1 учасник",
     semDescricao: "Без опису.",
@@ -205,7 +216,7 @@ export const servidor = {
   },
   denuncia: {
     titulo: "Поскаржитися на {{nome}}",
-    descricao: "Скарга надходить команді Gravaê. Розкажіть, що сталося.",
+    descricao: "Скарга надходить команді Ravox Chat. Розкажіть, що сталося.",
     motivo: "Причина",
     detalhes: "Подробиці (необов’язково)",
     enviar: "Надіслати скаргу",

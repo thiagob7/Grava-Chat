@@ -1,5 +1,6 @@
 import React, { useMemo, useState } from "react";
-import { Mail, Phone, Plus, Users, Volume2 } from "lucide-react";
+import { PLAN_NAME } from "@gravae/shared";
+import { Mail, Phone, Plus, Users, Volume2, Infinity as InfinityIcon } from "lucide-react";
 import type { ProfilePublic } from "@gravae/shared";
 
 import { useFindDms } from "~/@core/application/queries/friend/use-find-dms";
@@ -27,7 +28,9 @@ interface DmSidebarProps {
   user: SelfUserModel;
   onOpenFriends: () => void;
   onOpenRequests: () => void;
+  onOpenInfinity: () => void;
   requestsIsOpen: boolean;
+  infinityIsOpen: boolean;
   onSelectDm: (channelId: string) => void;
   width: number;
   fluid?: boolean;
@@ -39,7 +42,9 @@ export const DmSidebar: React.FC<DmSidebarProps> = ({
   user,
   onOpenFriends,
   onOpenRequests,
+  onOpenInfinity,
   requestsIsOpen,
+  infinityIsOpen,
   onSelectDm,
   width,
   fluid = false,
@@ -99,12 +104,20 @@ export const DmSidebar: React.FC<DmSidebarProps> = ({
 
         <NavItem data-gc="amizades.dm-sidebar.nav-item.on-open-friends"
           className="mb-0.5"
-          active={!activeChannelId && !requestsIsOpen}
+          active={!activeChannelId && !requestsIsOpen && !infinityIsOpen}
           icon={<Users data-gc="amizades.dm-sidebar.users" />}
           badge={<CountBadge data-gc="amizades.dm-sidebar.count-badge" count={requestsReceived} />}
           onClick={onOpenFriends}
         >
           {t("amizades.amigos")}
+        </NavItem>
+
+        <NavItem data-gc="amizades.dm-sidebar.nav-item.on-open-infinity"
+          active={infinityIsOpen}
+          icon={<InfinityIcon data-gc="amizades.dm-sidebar.infinity-icon" />}
+          onClick={onOpenInfinity}
+        >
+          {PLAN_NAME}
         </NavItem>
 
         <NavItem data-gc="amizades.dm-sidebar.nav-item.on-open-requests"

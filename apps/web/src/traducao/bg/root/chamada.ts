@@ -85,12 +85,14 @@ export const chamada = {
     quadros: "{{quadros}} FPS",
     qualidadeDica: "Резолюцията е таван: по-малък прозорец запазва размера си. Повече резолюция и кадри искат повече интернет, твоя и на зрителите. Важи и за текущото излъчване.",
   },
+  cameraLimit: "В разговора вече има {{limite}} включени камери. Изчакайте някой да изключи своята.",
   live: {
     etiqueta: "На живо",
     etiquetaMaiuscula: "НА ЖИВО",
     assistir: "Гледай предаването",
     assistirPessoa: "Гледай {{nome}}",
     pararDeAssistir: "Спри да гледаш",
+    conectando: "Свързване с излъчването…",
   },
   membro: {
     mudarMeuApelido: "Смени моя прякор",
@@ -165,7 +167,7 @@ export const chamada = {
     tela: "Запис на екрана",
     telaDetalhe: "Споделяне на екрана и прозорците.",
     monitoramento: "Наблюдение на входа",
-    monitoramentoDetalhe: "Използване на натисни-и-говори дори когато Gravaê е на заден план.",
+    monitoramentoDetalhe: "Използване на натисни-и-говори дори когато Ravox Chat е на заден план.",
   },
   jaConectado: {
     titulo: "Вече си в този разговор",

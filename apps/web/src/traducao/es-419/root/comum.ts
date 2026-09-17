@@ -6,8 +6,12 @@ export const comum = {
     recarregar: "Recargar",
     copiarDetalhes: "Copiar los detalles",
     parteQuebrou: "Esta parte de la pantalla se rompió.",
-    titulo: "Gravaê tropezó.",
+    titulo: "Ravox Chat tropezó.",
     detalhe: "Algo se rompió en el camino y la pantalla no pudo dibujarse. Tu conversación no se perdió — está todo en el servidor.",
+  },
+  perdido: {
+    titulo: "Esta dirección no lleva a ninguna parte.",
+    detalhe: "O el enlace vino mal, o la página cambió de lugar.",
   },
   conexao: {
     voltou: "Conectado de nuevo",
@@ -17,7 +21,7 @@ export const comum = {
   },
   avisoDoNavegador: {
     titulo: "¿Querés que te avise de los mensajes?",
-    detalhe: "Con Gravaê detrás de otra ventana, te llama.",
+    detalhe: "Con Ravox Chat detrás de otra ventana, te llama.",
   },
   atualizacao: {
     titulo: "Actualización",
@@ -98,8 +102,8 @@ export const comum = {
   trocar: "Cambiar",
   loginNoApp: {
     titulo: "¡Todo listo!",
-    detalhe: "Iniciaste sesión. Vuelve a Gravaê, la app ya te está esperando.",
-    abrir: "Abrir Gravaê",
+    detalhe: "Iniciaste sesión. Vuelve a Ravox Chat, la app ya te está esperando.",
+    abrir: "Abrir Ravox Chat",
     fecharAba: "Ya puedes cerrar esta pestaña.",
     falhouTitulo: "No se pudo iniciar sesión",
     falhouDetalhe: "Vuelve a la app e inténtalo de nuevo.",

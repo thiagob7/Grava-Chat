@@ -5,8 +5,8 @@ import { Ahead, Notice, Section, Title, Trail } from "~/components/docs/PecasDos
 import { API } from "~/dados/docs";
 
 export const metadata: Metadata = {
-  title: "Bot de moderação — Documentação do Gravaê",
-  description: "Expulsar, banir, castigar e mexer em cargos pela API de bots do Gravaê.",
+  title: "Bot de moderação — Documentação do Ravox Chat",
+  description: "Expulsar, banir, castigar e mexer em cargos pela API de bots do Ravox Chat.",
 };
 
 export default function Moderation() {

@@ -15,6 +15,16 @@ export const conversa = {
     carregando: "Sprawdzam, co jest pod odnośnikiem…",
     destino: "Prowadzi do {{destino}}",
   },
+  botComponents: {
+    noResponse: "Bot nie odpowiedział.",
+    choose: "Wybierz opcję",
+    onlyYou: "Tylko ty to widzisz",
+    dismiss: "Odrzuć",
+    formFrom: "Formularz od {{nome}}",
+    optional: "opcjonalne",
+    yes: "Tak",
+    no: "Nie",
+  },
   reacao: {
     carregando: "Sprawdzam, kto zareagował z {{emoji}}…",
     uma: "{{nome}} zareagował z {{emoji}}",
@@ -121,7 +131,7 @@ export const conversa = {
   },
   denuncia: {
     titulo: "Zgłoś wiadomość",
-    descricao: "Zgłoszenie trafia do zespołu Gravaê. Opisz, co się stało.",
+    descricao: "Zgłoszenie trafia do zespołu Ravox Chat. Opisz, co się stało.",
     de: "Od {{nome}}",
     semTexto: "(bez tekstu)",
     motivo: "Powód",
@@ -141,6 +151,7 @@ export const conversa = {
   },
 
   falha: {
+    premium: "Nie dostarczono — to wymaga Infinity",
     tentarDeNovo: "Spróbuj ponownie",
     erro: "Nie dostarczono",
     semConexao: "Nie dostarczono — nie masz połączenia",

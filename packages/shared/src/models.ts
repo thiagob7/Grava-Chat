@@ -13,6 +13,7 @@ import {
   NAME_FONTS,
   statusCustomSchema,
 } from "./cosmeticos.js";
+import { HIGHEST_LIMITS, PREMIUM_SOURCES } from "./plans.js";
 
 export const objectId = z.string().regex(/^[a-f\d]{24}$/i, "id invalido");
 
@@ -25,6 +26,7 @@ export const publicUserSchema = z.object({
   isBot: z.boolean(),
   system: z.boolean().optional(),
   decoration: z.string().optional(),
+  premium: z.boolean().optional(),
 });
 export type PublicUser = z.infer<typeof publicUserSchema>;
 
@@ -48,6 +50,9 @@ export const selfUserSchema = publicUserSchema.extend({
 
   deleteAt: z.iso.datetime().nullable(),
   verifiedEmail: z.boolean(),
+
+  premiumUntil: z.iso.datetime().nullable(),
+  premiumSource: z.enum(PREMIUM_SOURCES).nullable(),
 });
 export type SelfUser = z.infer<typeof selfUserSchema>;
 
@@ -131,6 +136,156 @@ export const pollSchema = z.object({
 });
 export type Poll = z.infer<typeof pollSchema>;
 
+const embedUrl = z.url({ protocol: /^https?$/ }).max(2048);
+
+export const embedFieldSchema = z.object({
+  name: z.string().trim().min(1).max(256),
+  value: z.string().trim().min(1).max(1024),
+  inline: z.boolean().optional(),
+});
+export type EmbedField = z.infer<typeof embedFieldSchema>;
+
+export const embedSchema = z.object({
+  title: z.string().trim().min(1).max(256).optional(),
+  description: z.string().trim().min(1).max(4096).optional(),
+  url: embedUrl.optional(),
+  color: z.number().int().min(0).max(0xffffff).optional(),
+  author: z
+    .object({ name: z.string().trim().min(1).max(256), url: embedUrl.optional(), iconUrl: embedUrl.optional() })
+    .optional(),
+  fields: z.array(embedFieldSchema).max(LIMITS.embedFields).optional(),
+  thumbnailUrl: embedUrl.optional(),
+  imageUrl: embedUrl.optional(),
+  footer: z.object({ text: z.string().trim().min(1).max(2048), iconUrl: embedUrl.optional() }).optional(),
+  timestamp: z.iso.datetime({ offset: true }).optional(),
+});
+export type Embed = z.infer<typeof embedSchema>;
+
+export const embedLength = (embed: Embed) =>
+  (embed.title?.length ?? 0) +
+  (embed.description?.length ?? 0) +
+  (embed.author?.name.length ?? 0) +
+  (embed.footer?.text.length ?? 0) +
+  (embed.fields ?? []).reduce((total, field) => total + field.name.length + field.value.length, 0);
+
+const hasVisibleContent = (embed: Embed) =>
+  Boolean(
+    embed.title || embed.description || embed.author || embed.fields?.length || embed.imageUrl || embed.thumbnailUrl || embed.footer,
+  );
+
+export const embedsInput = z
+  .array(embedSchema)
+  .max(LIMITS.embedsPerMessage)
+  .superRefine((embeds, ctx) => {
+    embeds.forEach((embed, index) => {
+      if (!hasVisibleContent(embed)) {
+        ctx.addIssue({ code: "custom", path: [index], message: "Embed without anything to show" });
+      }
+    });
+
+    const total = embeds.reduce((sum, embed) => sum + embedLength(embed), 0);
+    if (total > LIMITS.embedTotalLength) {
+      ctx.addIssue({ code: "custom", message: `Embeds add up to ${total} characters, the limit is ${LIMITS.embedTotalLength}` });
+    }
+  });
+
+export const BUTTON_STYLES = ["primary", "secondary", "success", "danger", "link"] as const;
+export type ButtonStyle = (typeof BUTTON_STYLES)[number];
+
+const customId = z.string().min(1).max(100);
+
+export const buttonComponentSchema = z.object({
+  type: z.literal("button"),
+  style: z.enum(BUTTON_STYLES),
+  label: z.string().trim().min(1).max(80).optional(),
+  emoji: z.string().trim().min(1).max(64).optional(),
+  customId: customId.optional(),
+  url: embedUrl.optional(),
+  disabled: z.boolean().optional(),
+});
+export type ButtonComponent = z.infer<typeof buttonComponentSchema>;
+
+export const selectOptionSchema = z.object({
+  label: z.string().trim().min(1).max(100),
+  value: z.string().min(1).max(100),
+  description: z.string().trim().min(1).max(100).optional(),
+  emoji: z.string().trim().min(1).max(64).optional(),
+});
+export type SelectOption = z.infer<typeof selectOptionSchema>;
+
+export const selectComponentSchema = z.object({
+  type: z.literal("select"),
+  customId,
+  placeholder: z.string().trim().min(1).max(150).optional(),
+  minValues: z.number().int().min(0).max(LIMITS.selectOptions).optional(),
+  maxValues: z.number().int().min(1).max(LIMITS.selectOptions).optional(),
+  options: z.array(selectOptionSchema).min(1).max(LIMITS.selectOptions),
+  disabled: z.boolean().optional(),
+});
+export type SelectComponent = z.infer<typeof selectComponentSchema>;
+
+export const messageComponentSchema = z.discriminatedUnion("type", [buttonComponentSchema, selectComponentSchema]);
+export type MessageComponent = z.infer<typeof messageComponentSchema>;
+
+export const componentRowSchema = z.object({
+  components: z.array(messageComponentSchema).min(1).max(LIMITS.componentsPerRow),
+});
+export type ComponentRow = z.infer<typeof componentRowSchema>;
+
+export const selectLimits = (select: SelectComponent) => {
+  const max = Math.min(select.maxValues ?? 1, select.options.length);
+  return { min: Math.min(select.minValues ?? 1, max), max };
+};
+
+export const componentsInput = z
+  .array(componentRowSchema)
+  .max(LIMITS.componentRows)
+  .superRefine((rows, ctx) => {
+    const seen = new Set<string>();
+
+    rows.forEach((row, rowIndex) => {
+      const hasSelect = row.components.some((component) => component.type === "select");
+      if (hasSelect && row.components.length > 1) {
+        ctx.addIssue({ code: "custom", path: [rowIndex], message: "A row with a select cannot hold anything else" });
+      }
+
+      row.components.forEach((component, index) => {
+        const path = [rowIndex, "components", index];
+
+        if (component.customId) {
+          if (seen.has(component.customId)) {
+            ctx.addIssue({ code: "custom", path, message: `customId "${component.customId}" is repeated` });
+          }
+          seen.add(component.customId);
+        }
+
+        if (component.type === "button") {
+          if (!component.label && !component.emoji) {
+            ctx.addIssue({ code: "custom", path, message: "A button needs a label or an emoji" });
+          }
+          if (component.style === "link" && (!component.url || component.customId)) {
+            ctx.addIssue({ code: "custom", path, message: "A link button needs url and no customId" });
+          }
+          if (component.style !== "link" && (!component.customId || component.url)) {
+            ctx.addIssue({ code: "custom", path, message: "A button needs customId and no url, unless its style is link" });
+          }
+          return;
+        }
+
+        const values = component.options.map((option) => option.value);
+        if (new Set(values).size !== values.length) {
+          ctx.addIssue({ code: "custom", path, message: "Select option values must be unique" });
+        }
+        if ((component.minValues ?? 1) > (component.maxValues ?? 1)) {
+          ctx.addIssue({ code: "custom", path, message: "minValues cannot be greater than maxValues" });
+        }
+        if ((component.minValues ?? 1) > component.options.length) {
+          ctx.addIssue({ code: "custom", path, message: "minValues cannot be greater than the number of options" });
+        }
+      });
+    });
+  });
+
 export const stickerSchema = z.object({
   id: objectId,
   guildId: objectId,
@@ -191,6 +346,9 @@ export const messageSchema = z.object({
   kind: z.enum(["USER", "JOIN", "COMANDO"]),
   attachments: z.array(attachmentSchema),
   poll: pollSchema.nullable(),
+  embeds: z.array(embedSchema).optional(),
+  components: z.array(componentRowSchema).optional(),
+  ephemeral: z.boolean().optional(),
   sticker: stickerSchema.nullable(),
   reactions: z.array(reactionSummarySchema),
   mentions: z.array(objectId),
@@ -213,9 +371,14 @@ export const guildMemberSchema = z.object({
   user: publicUserSchema,
   roleIds: z.array(objectId),
   nickname: z.string().nullable(),
+  avatarUrl: z.string().nullable().optional(),
+  bannerUrl: z.string().nullable().optional(),
+  bio: z.string().nullable().optional(),
   timeoutUntil: z.iso.datetime().nullable(),
   joinedAt: z.iso.datetime(),
 });
+
+export const GUILD_BIO_MAX = 190;
 
 export const roleSchema = z.object({
   id: objectId,
@@ -313,7 +476,7 @@ export type CreatePollInput = z.infer<typeof createPollInput>;
 
 export const sendMessageInput = z.object({
   channelId: objectId,
-  content: z.string().max(LIMITS.messageLength),
+  content: z.string().max(HIGHEST_LIMITS.messageLength),
   font: z.enum(NAME_FONTS).optional(),
   attachments: z.array(attachmentSchema).max(LIMITS.attachmentsPerMessage).optional(),
   poll: createPollInput.optional(),
@@ -331,22 +494,136 @@ export const sendMessageInput = z.object({
 
 export const editMessageInput = z.object({
   messageId: objectId,
-  content: z.string().min(1).max(LIMITS.messageLength),
+  content: z.string().min(1).max(HIGHEST_LIMITS.messageLength),
 });
+
+export const botSendMessageInput = sendMessageInput
+  .omit({ channelId: true, nonce: true, retry: true })
+  .extend({
+    content: z.string().max(LIMITS.messageLength),
+    embeds: embedsInput.optional(),
+    components: componentsInput.optional(),
+  });
+export type BotSendMessageInput = z.infer<typeof botSendMessageInput>;
+
+export const botEditMessageInput = z
+  .object({
+    content: z.string().max(LIMITS.messageLength).optional(),
+    embeds: embedsInput.optional(),
+    components: componentsInput.optional(),
+  })
+  .refine((input) => input.content !== undefined || input.embeds !== undefined || input.components !== undefined, {
+    message: "Send content, embeds, components or a mix",
+  });
+export type BotEditMessageInput = z.infer<typeof botEditMessageInput>;
+
+export const INTERACTION_RESPONSE_MS = 3000;
+
+export const interactInput = z.object({
+  messageId: objectId,
+  customId,
+  values: z.array(z.string().min(1).max(100)).max(LIMITS.selectOptions).optional(),
+});
+export type InteractInput = z.infer<typeof interactInput>;
+
+export const MODAL_FIELD_STYLES = ["short", "paragraph"] as const;
+
+export const modalFieldSchema = z.object({
+  customId,
+  label: z.string().trim().min(1).max(45),
+  style: z.enum(MODAL_FIELD_STYLES),
+  placeholder: z.string().trim().min(1).max(100).optional(),
+  required: z.boolean().optional(),
+  minLength: z.number().int().min(0).max(LIMITS.modalFieldLength).optional(),
+  maxLength: z.number().int().min(1).max(LIMITS.modalFieldLength).optional(),
+  value: z.string().max(LIMITS.modalFieldLength).optional(),
+});
+export type ModalField = z.infer<typeof modalFieldSchema>;
+
+export const modalInput = z
+  .object({
+    customId,
+    title: z.string().trim().min(1).max(45),
+    fields: z.array(modalFieldSchema).min(1).max(LIMITS.modalFields),
+  })
+  .superRefine((modal, ctx) => {
+    const seen = new Set<string>();
+
+    modal.fields.forEach((field, index) => {
+      const path = ["fields", index];
+      if (seen.has(field.customId)) ctx.addIssue({ code: "custom", path, message: `customId "${field.customId}" is repeated` });
+      seen.add(field.customId);
+
+      const max = field.maxLength ?? LIMITS.modalFieldLength;
+      if ((field.minLength ?? 0) > max) ctx.addIssue({ code: "custom", path, message: "minLength cannot be greater than maxLength" });
+      if (field.value && field.value.length > max) ctx.addIssue({ code: "custom", path, message: "value is longer than maxLength" });
+    });
+  });
+export type ModalInput = z.infer<typeof modalInput>;
+
+export const fieldLimits = (field: ModalField) => ({
+  min: field.minLength ?? (field.required === false ? 0 : 1),
+  max: field.maxLength ?? LIMITS.modalFieldLength,
+  required: field.required !== false,
+});
+
+export const modalSubmitInput = z.object({
+  modalId: z.uuid(),
+  fields: z.record(z.string().min(1).max(100), z.string().max(LIMITS.modalFieldLength)),
+});
+export type ModalSubmitInput = z.infer<typeof modalSubmitInput>;
+
+export const interactionReplyInput = botSendMessageInput
+  .extend({ ephemeral: z.boolean().optional() })
+  .refine(
+    (input) =>
+      !input.ephemeral ||
+      (!input.attachments?.length && !input.poll && !input.stickerId && !input.replyToId && !input.forwarded && !input.postId),
+    { message: "An ephemeral reply only takes content, embeds and components" },
+  );
+
+export const interactionCallbackInput = z.discriminatedUnion("type", [
+  z.object({ type: z.literal("reply"), data: interactionReplyInput }),
+  z.object({ type: z.literal("update"), data: botEditMessageInput }),
+  z.object({ type: z.literal("defer") }),
+  z.object({ type: z.literal("modal"), data: modalInput }),
+]);
+export type InteractionCallbackInput = z.infer<typeof interactionCallbackInput>;
 
 const commandName = z
   .string()
   .regex(/^[a-z0-9_-]{1,32}$/, "Só minúsculas, números, hífen e sublinhado");
 
-export const OPTION_KINDS = ["texto", "numero", "usuario", "canal"] as const;
+export const OPTION_KINDS = ["texto", "numero", "usuario", "canal", "role", "boolean"] as const;
 export type OptionKind = (typeof OPTION_KINDS)[number];
 
-export const commandOptionSchema = z.object({
-  name: commandName,
-  description: z.string().min(1).max(100),
-  kind: z.enum(OPTION_KINDS),
-  required: z.boolean().optional(),
+export const commandChoiceSchema = z.object({
+  name: z.string().trim().min(1).max(100),
+  value: z.union([z.string().min(1).max(100), z.number()]),
 });
+export type CommandChoice = z.infer<typeof commandChoiceSchema>;
+
+export const commandOptionSchema = z
+  .object({
+    name: commandName,
+    description: z.string().min(1).max(100),
+    kind: z.enum(OPTION_KINDS),
+    required: z.boolean().optional(),
+    choices: z.array(commandChoiceSchema).min(1).max(25).optional(),
+  })
+  .superRefine((option, ctx) => {
+    if (!option.choices) return;
+
+    if (option.kind !== "texto" && option.kind !== "numero") {
+      ctx.addIssue({ code: "custom", path: ["choices"], message: "Only text and number options take choices" });
+      return;
+    }
+
+    const expected = option.kind === "numero" ? "number" : "string";
+    if (option.choices.some((choice) => typeof choice.value !== expected)) {
+      ctx.addIssue({ code: "custom", path: ["choices"], message: `Choices of a ${option.kind} option need ${expected} values` });
+    }
+  });
 export type CommandOption = z.infer<typeof commandOptionSchema>;
 
 export const botCommandSchema = z.object({

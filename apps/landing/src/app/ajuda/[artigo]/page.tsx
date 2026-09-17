@@ -26,10 +26,10 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { artigo: id } = await params;
   const article = findArticle(id);
 
-  if (!article) return { title: "Ajuda — Gravaê" };
+  if (!article) return { title: "Ajuda — Ravox Chat" };
 
   return {
-    title: `${article.title} — Ajuda do Gravaê`,
+    title: `${article.title} — Ajuda do Ravox Chat`,
     description: article.summary,
   };
 }

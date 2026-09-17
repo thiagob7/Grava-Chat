@@ -6,8 +6,12 @@ export const comum = {
     recarregar: "重新載入",
     copiarDetalhes: "複製詳細資訊",
     parteQuebrou: "畫面的這一塊壞掉了。",
-    titulo: "Gravaê 絆了一跤。",
+    titulo: "Ravox Chat 絆了一跤。",
     detalhe: "半路上出了問題，畫面畫不出來。你的會話沒有遺失 — 一切都在伺服器上。",
+  },
+  perdido: {
+    titulo: "這個網址哪裡也去不了。",
+    detalhe: "可能是連結錯了，或者頁面換了位置。",
   },
   conexao: {
     voltou: "重新連上了",
@@ -17,7 +21,7 @@ export const comum = {
   },
   avisoDoNavegador: {
     titulo: "要接收訊息通知嗎？",
-    detalhe: "當 Gravaê 被別的視窗擋住時，它會叫你。",
+    detalhe: "當 Ravox Chat 被別的視窗擋住時，它會叫你。",
   },
   atualizacao: {
     titulo: "更新",
@@ -98,8 +102,8 @@ export const comum = {
   trocar: "更換",
   loginNoApp: {
     titulo: "一切就緒！",
-    detalhe: "你已登入。回到 Gravaê 吧，應用程式正在等你。",
-    abrir: "開啟 Gravaê",
+    detalhe: "你已登入。回到 Ravox Chat 吧，應用程式正在等你。",
+    abrir: "開啟 Ravox Chat",
     fecharAba: "現在可以關閉此分頁了。",
     falhouTitulo: "登入失敗",
     falhouDetalhe: "請回到應用程式並重新登入。",

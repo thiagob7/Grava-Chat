@@ -54,7 +54,7 @@ export const verificationService = {
 
     await mail.send(
       user.email,
-      "Confirme o seu e-mail no Gravaê",
+      "Confirme o seu e-mail no Ravox Chat",
       emailText(user.displayName, `${web()}${VERIFICATION_PATH}?token=${token}`),
     );
   },

@@ -85,12 +85,14 @@ export const chamada = {
     quadros: "{{quadros}} FPS",
     qualidadeDica: "La resolución es un límite: una ventana más chica conserva su tamaño. Más resolución y cuadros piden más internet, tuyo y de quien mira. También se aplica a la transmisión en curso.",
   },
+  cameraLimit: "La llamada ya tiene {{limite}} cámaras encendidas. Espera a que alguien apague la suya.",
   live: {
     etiqueta: "En directo",
     etiquetaMaiuscula: "EN DIRECTO",
     assistir: "Ver la retransmisión",
     assistirPessoa: "Ver a {{nome}}",
     pararDeAssistir: "Dejar de ver",
+    conectando: "Conectando a la transmisión…",
   },
   membro: {
     mudarMeuApelido: "Cambiar mi apodo",
@@ -165,7 +167,7 @@ export const chamada = {
     tela: "Grabación de pantalla",
     telaDetalhe: "Compartir la pantalla y las ventanas.",
     monitoramento: "Monitorización de entrada",
-    monitoramentoDetalhe: "Usar el pulsar para hablar incluso con Gravaê en segundo plano.",
+    monitoramentoDetalhe: "Usar el pulsar para hablar incluso con Ravox Chat en segundo plano.",
   },
   jaConectado: {
     titulo: "Ya estás en esta llamada",

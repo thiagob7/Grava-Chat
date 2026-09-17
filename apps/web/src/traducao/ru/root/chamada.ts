@@ -85,12 +85,14 @@ export const chamada = {
     quadros: "{{quadros}} FPS",
     qualidadeDica: "Разрешение — это потолок: окно поменьше сохраняет свой размер. Больше разрешения и кадров — больше трафика, вашего и зрителей. Применяется и к идущей трансляции.",
   },
+  cameraLimit: "В звонке уже включено {{limite}} камер. Подождите, пока кто-нибудь выключит свою.",
   live: {
     etiqueta: "В эфире",
     etiquetaMaiuscula: "В ЭФИРЕ",
     assistir: "Смотреть трансляцию",
     assistirPessoa: "Смотреть {{nome}}",
     pararDeAssistir: "Перестать смотреть",
+    conectando: "Подключение к трансляции…",
   },
   membro: {
     mudarMeuApelido: "Сменить мой псевдоним",
@@ -165,7 +167,7 @@ export const chamada = {
     tela: "Запись экрана",
     telaDetalhe: "Показывать экран и окна.",
     monitoramento: "Мониторинг входа",
-    monitoramentoDetalhe: "Использовать push-to-talk, даже когда Gravaê в фоне.",
+    monitoramentoDetalhe: "Использовать push-to-talk, даже когда Ravox Chat в фоне.",
   },
   jaConectado: {
     titulo: "Вы уже в этом звонке",

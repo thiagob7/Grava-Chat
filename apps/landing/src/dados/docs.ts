@@ -1,6 +1,5 @@
-export const API = "https://gravaechat-api.duckdns.org/api";
-export const APP = "https://gravae-chat.vercel.app";
-export const REPO = "https://github.com/thiagob7/Grava-Chat";
+export { API_URL as API, APP_URL as APP } from "~/lib/brand";
+export const REPO = "https://github.com/thiagob7/Ravox-Chat";
 
 export type Page = {
   href: string;
@@ -20,7 +19,7 @@ export const GROUPS: Group[] = [
       {
         href: "/desenvolvedores",
         title: "Introdução",
-        summary: "O que dá pra construir no Gravaê e por onde começar.",
+        summary: "O que dá pra construir no Ravox Chat e por onde começar.",
       },
     ],
   },

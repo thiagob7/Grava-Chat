@@ -6,8 +6,12 @@ export const comum = {
     recarregar: "Tải lại",
     copiarDetalhes: "Sao chép chi tiết",
     parteQuebrou: "Phần này của màn hình đã hỏng.",
-    titulo: "Gravaê vấp một cái.",
+    titulo: "Ravox Chat vấp một cái.",
     detalhe: "Có gì đó hỏng giữa đường và màn hình không vẽ được. Cuộc trò chuyện của bạn không mất — mọi thứ đều nằm trên máy chủ.",
+  },
+  perdido: {
+    titulo: "Địa chỉ này không dẫn đến đâu cả.",
+    detalhe: "Hoặc là liên kết bị sai, hoặc là trang đã chuyển chỗ.",
   },
   conexao: {
     voltou: "Đã kết nối lại",
@@ -17,7 +21,7 @@ export const comum = {
   },
   avisoDoNavegador: {
     titulo: "Bạn muốn được báo khi có tin nhắn chứ?",
-    detalhe: "Khi Gravaê nằm sau một cửa sổ khác, nó sẽ gọi bạn.",
+    detalhe: "Khi Ravox Chat nằm sau một cửa sổ khác, nó sẽ gọi bạn.",
   },
   atualizacao: {
     titulo: "Cập nhật",
@@ -98,8 +102,8 @@ export const comum = {
   trocar: "Đổi",
   loginNoApp: {
     titulo: "Xong rồi!",
-    detalhe: "Bạn đã đăng nhập. Quay lại Gravaê nhé, ứng dụng đang chờ bạn.",
-    abrir: "Mở Gravaê",
+    detalhe: "Bạn đã đăng nhập. Quay lại Ravox Chat nhé, ứng dụng đang chờ bạn.",
+    abrir: "Mở Ravox Chat",
     fecharAba: "Bạn có thể đóng tab này.",
     falhouTitulo: "Đăng nhập không thành công",
     falhouDetalhe: "Quay lại ứng dụng và thử đăng nhập lại.",

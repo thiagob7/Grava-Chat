@@ -3,10 +3,7 @@ import { z } from "zod";
 import { authService, REFRESH_COOKIE } from "~/services/auth-service.js";
 import { meService } from "~/services/me-service.js";
 import { presenceService } from "~/services/presence-service.js";
-import { io } from "~/realtime/io.js";
-import { rooms } from "@gravae/shared";
-import { toProfilePublic, toPublicUser } from "~/lib/serialize.js";
-import { memberRepository } from "~/repositories/guild-repository.js";
+import { announceUserUpdated } from "~/realtime/difusao.js";
 import { messageService } from "~/services/message-service.js";
 import { voiceService } from "~/services/voice-service.js";
 import { userRepository } from "~/repositories/user-repository.js";
@@ -38,12 +35,7 @@ export async function meRoutes(app: FastifyInstance) {
       presenceService.desiredOf(req.userId),
     ]);
 
-    const guilds = await memberRepository.guildIdsOf(req.userId);
-    const payload = { user: toPublicUser(user), profile: toProfilePublic(user) };
-
-    io()
-      .to([rooms.user(req.userId), ...guilds.map((g) => rooms.guild(g.guildId))])
-      .emit("user:updated", payload);
+    await announceUserUpdated(user);
 
     return toSelfUser(user, providers, desired);
   });

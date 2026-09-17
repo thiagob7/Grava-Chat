@@ -626,3 +626,80 @@ describe("reenvio pelo nonce", () => {
     expect(createMessage).toHaveBeenCalledOnce();
   });
 });
+
+describe("embeds", () => {
+  const card = {
+    title: "Ticket",
+    description: "Opened by <@6a8781f57415b08f427be1ad>",
+    fields: [{ name: "Type", value: "build", inline: true }],
+  };
+
+  it("sends a message that only has embeds", async () => {
+    await messageService.send(AUTHOR, { channelId: CHANNEL, content: "" }, { embeds: [card] });
+
+    expect(recorded().content).toBe("");
+    expect(recorded().embeds).toEqual([
+      expect.objectContaining({
+        title: "Ticket",
+        fields: [{ name: "Type", value: "build", inline: true }],
+        imageUrl: null,
+      }),
+    ]);
+  });
+
+  it("a mention inside an embed does not notify", async () => {
+    await messageService.send(AUTHOR, { channelId: CHANNEL, content: "" }, { embeds: [card] });
+
+    expect(recorded().mentions).toEqual([]);
+  });
+
+  it("automod reads the text inside embeds", async () => {
+    const { autoModService } = await import("~/services/automod-service.js");
+
+    await messageService.send(AUTHOR, { channelId: CHANNEL, content: "hi" }, { embeds: [card] });
+
+    const checked = vi.mocked(autoModService.evaluate).mock.calls.at(-1)?.[0].content;
+    expect(checked).toContain("hi");
+    expect(checked).toContain("Ticket");
+    expect(checked).toContain("build");
+  });
+
+  it("an edit can swap the embeds and keep the text", async () => {
+    findMessageById.mockResolvedValue({ ...messageRow, embeds: [], poll: null, stickerId: null });
+    updateMessage.mockResolvedValue(messageRow);
+
+    await messageService.edit(AUTHOR, { messageId: "m1", embeds: [card] });
+
+    const data = updateMessage.mock.calls.at(-1)?.[1];
+    expect(data.content).toBe("oi");
+    expect(data.embeds).toHaveLength(1);
+  });
+
+  it("an edit that would leave the message with nothing is refused", async () => {
+    findMessageById.mockResolvedValue({ ...messageRow, content: "", embeds: [{ title: "x" }], poll: null, stickerId: null });
+
+    await expect(messageService.edit(AUTHOR, { messageId: "m1", embeds: [] })).rejects.toThrow("Mensagem vazia");
+    expect(updateMessage).not.toHaveBeenCalled();
+  });
+});
+
+describe("components", () => {
+  const rows = [{ components: [{ type: "button" as const, style: "success" as const, label: "Accept", customId: "accept" }] }];
+
+  it("changing only the components does not mark the message as edited", async () => {
+    findMessageById.mockResolvedValue({ ...messageRow, embeds: [], components: [], poll: null, stickerId: null });
+    updateMessage.mockResolvedValue(messageRow);
+
+    await messageService.edit(AUTHOR, { messageId: "m1", components: rows });
+
+    const data = updateMessage.mock.calls.at(-1)?.[1];
+    expect(data.components).toHaveLength(1);
+    expect(data.editedAt).toBeUndefined();
+  });
+
+  it("a message can carry only components", async () => {
+    await messageService.send(AUTHOR, { channelId: CHANNEL, content: "" }, { components: rows });
+
+    expect(recorded().components[0].components[0]).toMatchObject({ type: "button", customId: "accept", url: null });
+  });
+});

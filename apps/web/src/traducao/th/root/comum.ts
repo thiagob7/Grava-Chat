@@ -6,8 +6,12 @@ export const comum = {
     recarregar: "โหลดใหม่",
     copiarDetalhes: "คัดลอกรายละเอียด",
     parteQuebrou: "ส่วนนี้ของหน้าจอพัง",
-    titulo: "Gravaê สะดุด",
+    titulo: "Ravox Chat สะดุด",
     detalhe: "มีบางอย่างพังระหว่างทางและหน้าจอวาดตัวเองไม่ได้ บทสนทนาของคุณไม่หายไป — ทุกอย่างอยู่บนเซิร์ฟเวอร์",
+  },
+  perdido: {
+    titulo: "ที่อยู่นี้ไม่พาไปไหนเลย",
+    detalhe: "ลิงก์อาจผิด หรือหน้านี้ย้ายที่ไปแล้ว",
   },
   conexao: {
     voltou: "เชื่อมต่อได้อีกครั้ง",
@@ -17,7 +21,7 @@ export const comum = {
   },
   avisoDoNavegador: {
     titulo: "อยากให้แจ้งเตือนข้อความไหม",
-    detalhe: "เวลา Gravaê อยู่หลังหน้าต่างอื่น มันจะเรียกคุณ",
+    detalhe: "เวลา Ravox Chat อยู่หลังหน้าต่างอื่น มันจะเรียกคุณ",
   },
   atualizacao: {
     titulo: "การอัปเดต",
@@ -98,8 +102,8 @@ export const comum = {
   trocar: "เปลี่ยน",
   loginNoApp: {
     titulo: "เรียบร้อยแล้ว!",
-    detalhe: "คุณเข้าสู่ระบบแล้ว กลับไปที่ Gravaê ได้เลย แอปกำลังรออยู่",
-    abrir: "เปิด Gravaê",
+    detalhe: "คุณเข้าสู่ระบบแล้ว กลับไปที่ Ravox Chat ได้เลย แอปกำลังรออยู่",
+    abrir: "เปิด Ravox Chat",
     fecharAba: "ปิดแท็บนี้ได้เลย",
     falhouTitulo: "เข้าสู่ระบบไม่สำเร็จ",
     falhouDetalhe: "กลับไปที่แอปแล้วลองเข้าสู่ระบบอีกครั้ง",

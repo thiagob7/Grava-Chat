@@ -43,7 +43,8 @@ export const perfil = {
     falhou: "It could not be sent. Try from the conversation.",
   },
   cartao: {
-    equipe: "Gravaê Team",
+    infinity: "Infinity member",
+    equipe: "Ravox Team",
     trocarFaixa: "Change the card banner",
     trocarFaixaCurto: "Change the banner",
     trocarFoto: "Change the profile picture",

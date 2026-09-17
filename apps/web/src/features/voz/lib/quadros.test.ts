@@ -10,6 +10,8 @@ const tile = (patch: Partial<VoiceTile> = {}): VoiceTile => ({
   isLocal: false,
   speaking: false,
   micEnabled: true,
+  cameraOn: false,
+  sharingScreen: false,
   cameraTrack: null,
   screenTrack: null,
   micTrack: null,
@@ -59,5 +61,11 @@ describe("lista firme entre redesenhos", () => {
     const depois = [tile({ identity: "a" }), tile({ identity: "b" })];
 
     expect(keepSteady(antes, depois)).toBe(depois);
+  });
+});
+
+describe("stream state in a tile", () => {
+  it("starting a screen share changes the tile even before anyone subscribes", () => {
+    expect(sameTile(tile(), tile({ sharingScreen: true }))).toBe(false);
   });
 });

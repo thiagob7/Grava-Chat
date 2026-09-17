@@ -1,4 +1,15 @@
 export const servidor = {
+  perfilNoServidor: {
+    titulo: "פרופיל בשרת הזה",
+    descricao: "תמונה, באנר וביו שמופיעים רק ב-{{server}}.",
+    soInfinity: "פרופילים לכל קהילה הם חלק מ-{{plan}}. הקש כדי לראות את התוכניות.",
+    trocarFoto: "החלפת תמונה",
+    trocarFaixa: "החלפת באנר",
+    usarDaConta: "להשתמש בזה של החשבון",
+    bio: "ביו בשרת הזה",
+    bioDica: "ספר משהו רק לקהילה הזו",
+    salvo: "פרופיל השרת נשמר.",
+  },
   comunidade: {
     ativa: "הקהילה פתוחה",
     ativaDesde: "פתוחה מאז {{quando}}",
@@ -113,7 +124,7 @@ export const servidor = {
     feitoPor: "נוצר בידי",
     publicadoEm: "פורסם ב־",
     denunciarNome: "דיווח על {{nome}}",
-    denunciaDetalhe: "הדיווח מגיע לצוות Gravaê. מי שיצר את האפליקציה לא יידע שזה הייתם אתם.",
+    denunciaDetalhe: "הדיווח מגיע לצוות Ravox Chat. מי שיצר את האפליקציה לא יידע שזה הייתם אתם.",
     denunciaFalhou: "לא הצלחנו לשלוח את הדיווח.",
     umMembro: "חבר אחד",
     semDescricao: "ללא תיאור.",
@@ -205,7 +216,7 @@ export const servidor = {
   },
   denuncia: {
     titulo: "דיווח על {{nome}}",
-    descricao: "הדיווח מגיע לצוות Gravaê. ספרו לנו מה קרה.",
+    descricao: "הדיווח מגיע לצוות Ravox Chat. ספרו לנו מה קרה.",
     motivo: "סיבה",
     detalhes: "פרטים (לא חובה)",
     enviar: "שליחת דיווח",

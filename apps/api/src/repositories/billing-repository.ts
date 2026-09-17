@@ -1,0 +1,118 @@
+import type { Prisma } from "@prisma/client";
+
+import { unset } from "~/lib/mongo.js";
+import { prisma } from "~/lib/prisma.js";
+
+export const billingRepository = {
+  customerOfUser(userId: string) {
+    return prisma.billingCustomer.findUnique({ where: { userId } });
+  },
+
+  customerByStripeId(stripeCustomerId: string) {
+    return prisma.billingCustomer.findUnique({ where: { stripeCustomerId } });
+  },
+
+  createCustomer(userId: string, stripeCustomerId: string) {
+    return prisma.billingCustomer.create({ data: { userId, stripeCustomerId } });
+  },
+
+  updateCustomer(stripeCustomerId: string, data: Prisma.BillingCustomerUpdateInput) {
+    return prisma.billingCustomer.update({ where: { stripeCustomerId }, data });
+  },
+
+  paymentBySource(sourceId: string) {
+    return prisma.billingPayment.findUnique({ where: { sourceId } });
+  },
+
+  paymentByIntent(paymentIntentId: string) {
+    return prisma.billingPayment.findFirst({ where: { paymentIntentId } });
+  },
+
+  latestPayment(userId: string) {
+    return prisma.billingPayment.findFirst({ where: { userId }, orderBy: { paidAt: "desc" } });
+  },
+
+  recentPayments(userId: string, take = 10) {
+    return prisma.billingPayment.findMany({ where: { userId }, orderBy: { paidAt: "desc" }, take });
+  },
+
+  createPayment(data: Prisma.BillingPaymentCreateInput) {
+    return prisma.billingPayment.create({ data });
+  },
+
+  markRefunded(id: string, refundedAt: Date) {
+    return prisma.billingPayment.updateMany({ where: { id, ...unset("refundedAt") }, data: { refundedAt } });
+  },
+
+  createPixCharge(data: Prisma.PixChargeCreateInput) {
+    return prisma.pixCharge.create({ data });
+  },
+
+  updatePixCharge(id: string, data: Prisma.PixChargeUpdateInput) {
+    return prisma.pixCharge.update({ where: { id }, data });
+  },
+
+  pixCharge(id: string) {
+    return prisma.pixCharge.findUnique({ where: { id } });
+  },
+
+  pixChargeByOrder(mpOrderId: string) {
+    return prisma.pixCharge.findFirst({ where: { mpOrderId } });
+  },
+
+  pixChargeByPayment(mpPaymentId: string) {
+    return prisma.pixCharge.findFirst({ where: { mpPaymentId } });
+  },
+
+  openPixCharge(userId: string, interval: string, target: string, now: Date) {
+    return prisma.pixCharge.findFirst({
+      where: { userId, interval, target, status: "pending", expiresAt: { gt: now } },
+      orderBy: { createdAt: "desc" },
+    });
+  },
+
+  pendingPixCharges(userId: string) {
+    return prisma.pixCharge.findMany({ where: { userId, status: "pending" }, take: 5 });
+  },
+
+  claimPixCharge(id: string, paidAt: Date) {
+    return prisma.pixCharge.updateMany({ where: { id, status: "pending" }, data: { status: "paid", paidAt } });
+  },
+
+  createGift(data: Prisma.GiftCreateInput) {
+    return prisma.gift.create({ data });
+  },
+
+  giftByCode(code: string) {
+    return prisma.gift.findUnique({ where: { code } });
+  },
+
+  giftBySource(sourceId: string) {
+    return prisma.gift.findUnique({ where: { sourceId } });
+  },
+
+  giftsOf(buyerId: string) {
+    return prisma.gift.findMany({ where: { buyerId }, orderBy: { createdAt: "desc" }, take: 50 });
+  },
+
+  removeGift(sourceId: string) {
+    return prisma.gift.deleteMany({ where: { sourceId, ...unset("claimedAt") } });
+  },
+
+  claimGift(id: string, claimedById: string, claimedAt: Date) {
+    return prisma.gift.updateMany({
+      where: { id, ...unset("claimedAt") },
+      data: { claimedById, claimedAt },
+    });
+  },
+
+  async eventSeen(stripeId: string) {
+    return (await prisma.billingEvent.count({ where: { stripeId } })) > 0;
+  },
+
+  async markEventSeen(stripeId: string, type: string) {
+    await prisma.billingEvent.create({ data: { stripeId, type } }).catch((error: { code?: string }) => {
+      if (error.code !== "P2002") throw error;
+    });
+  },
+};

@@ -15,6 +15,16 @@ export const conversa = {
     carregando: "جارٍ فتح ما في الرابط…",
     destino: "يذهب إلى {{destino}}",
   },
+  botComponents: {
+    noResponse: "لم يستجب البوت.",
+    choose: "اختر خيارًا",
+    onlyYou: "أنت فقط من يرى هذا",
+    dismiss: "تجاهل",
+    formFrom: "نموذج من {{nome}}",
+    optional: "اختياري",
+    yes: "نعم",
+    no: "لا",
+  },
   reacao: {
     carregando: "جارٍ معرفة من تفاعل بـ {{emoji}}…",
     uma: "تفاعل {{nome}} بـ {{emoji}}",
@@ -121,7 +131,7 @@ export const conversa = {
   },
   denuncia: {
     titulo: "الإبلاغ عن الرسالة",
-    descricao: "يصل البلاغ إلى فريق Gravaê. أخبرنا بما حدث.",
+    descricao: "يصل البلاغ إلى فريق Ravox Chat. أخبرنا بما حدث.",
     de: "من {{nome}}",
     semTexto: "(بلا نص)",
     motivo: "السبب",
@@ -141,6 +151,7 @@ export const conversa = {
   },
 
   falha: {
+    premium: "لم تُسلَّم — هذه ميزة Infinity",
     tentarDeNovo: "إعادة المحاولة",
     erro: "لم تُرسل",
     semConexao: "لم تُرسل — لا يوجد اتصال",

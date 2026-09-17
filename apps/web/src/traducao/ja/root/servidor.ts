@@ -1,4 +1,15 @@
 export const servidor = {
+  perfilNoServidor: {
+    titulo: "このサーバーでのプロフィール",
+    descricao: "{{server}}だけで表示されるアバター、バナー、自己紹介。",
+    soInfinity: "コミュニティごとのプロフィールは{{plan}}の機能です。タップしてプランを見る。",
+    trocarFoto: "アバターを変更",
+    trocarFaixa: "バナーを変更",
+    usarDaConta: "アカウントのものを使う",
+    bio: "このサーバーでの自己紹介",
+    bioDica: "このコミュニティだけに向けて書く",
+    salvo: "サーバープロフィールを保存しました。",
+  },
   comunidade: {
     ativa: "コミュニティは開いています",
     ativaDesde: "{{quando}} から公開",
@@ -113,7 +124,7 @@ export const servidor = {
     feitoPor: "作った人",
     publicadoEm: "公開日",
     denunciarNome: "{{nome}} を報告",
-    denunciaDetalhe: "報告は Gravaê のチームに届きます。アプリを作った人に、あなたが報告したことは伝わりません。",
+    denunciaDetalhe: "報告は Ravox Chat のチームに届きます。アプリを作った人に、あなたが報告したことは伝わりません。",
     denunciaFalhou: "報告を送れませんでした。",
     umMembro: "メンバー 1 人",
     semDescricao: "説明はありません。",
@@ -205,7 +216,7 @@ export const servidor = {
   },
   denuncia: {
     titulo: "{{nome}}を通報",
-    descricao: "通報はGravaêチームに届きます。何があったか教えてください。",
+    descricao: "通報はRavox Chatチームに届きます。何があったか教えてください。",
     motivo: "理由",
     detalhes: "詳細（任意）",
     enviar: "通報を送信",

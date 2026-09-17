@@ -5,7 +5,7 @@ import { Ahead, Notice, Section, Title, Trail } from "~/components/docs/PecasDos
 import { API } from "~/dados/docs";
 
 export const metadata: Metadata = {
-  title: "Autenticação — Documentação do Gravaê",
+  title: "Autenticação — Documentação do Ravox Chat",
   description: "O token de bot, onde ele vai e como não deixar vazar.",
 };
 
@@ -22,7 +22,7 @@ export default function Authentication() {
       <Section id="token" title="O token">
         <p>
           Ele aparece uma vez, na hora em que o aplicativo é criado. Guarde num lugar seguro: o
-          Gravaê não mostra de novo. Se você perder, ou se ele vazar, gere outro na tela de
+          Ravox Chat não mostra de novo. Se você perder, ou se ele vazar, gere outro na tela de
           Aplicativos — o antigo morre na hora, e toda conexão aberta com ele cai.
         </p>
       </Section>
@@ -47,7 +47,7 @@ export default function Authentication() {
           cabeçalho:
         </p>
 
-        <Code legenda="bot.js">{`const socket = io("https://gravaechat-api.duckdns.org", {
+        <Code legenda="bot.js">{`const socket = io("https://ravoxchat-api.duckdns.org", {
   transports: ["websocket"],
   auth: { token: \`Bot \${process.env.GRAVAE_TOKEN}\` },
 });`}</Code>

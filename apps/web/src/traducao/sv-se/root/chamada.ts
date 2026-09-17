@@ -85,12 +85,14 @@ export const chamada = {
     quadros: "{{quadros}} FPS",
     qualidadeDica: "Upplösningen är ett tak: ett mindre fönster behåller sin storlek. Mer upplösning och fler bilder kräver mer bandbredd, din och tittarnas. Gäller även en pågående stream.",
   },
+  cameraLimit: "Samtalet har redan {{limite}} kameror på. Vänta tills någon stänger av sin.",
   live: {
     etiqueta: "Live",
     etiquetaMaiuscula: "LIVE",
     assistir: "Titta på sändningen",
     assistirPessoa: "Titta på {{nome}}",
     pararDeAssistir: "Sluta titta",
+    conectando: "Ansluter till strömmen…",
   },
   membro: {
     mudarMeuApelido: "Byt mitt smeknamn",
@@ -165,7 +167,7 @@ export const chamada = {
     tela: "Skärminspelning",
     telaDetalhe: "Dela skärmen och fönstren.",
     monitoramento: "Ingångsövervakning",
-    monitoramentoDetalhe: "Använda tryck-för-att-prata även med Gravaê i bakgrunden.",
+    monitoramentoDetalhe: "Använda tryck-för-att-prata även med Ravox Chat i bakgrunden.",
   },
   jaConectado: {
     titulo: "Du är redan i det här samtalet",

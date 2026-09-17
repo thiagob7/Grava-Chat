@@ -14,10 +14,10 @@ import { UserName } from "~/features/perfil/components/UserName";
 import { formatTime, formatTimestamp } from "~/lib/format";
 import { useTranslation } from "~/traducao";
 
-const HOUSE_NAME = "Gravaê";
+const HOUSE_NAME = "Ravox Chat";
 
 /*
-  O Gravaê explica a recusa dentro da conversa, logo abaixo da mensagem que não
+  O Ravox Chat explica a recusa dentro da conversa, logo abaixo da mensagem que não
   saiu. Não é mensagem de verdade: não vai ao servidor, a outra pessoa nunca vê,
   e some ao dispensar ou ao recarregar — igual à própria mensagem recusada, que
   também só existe na tela de quem escreveu.

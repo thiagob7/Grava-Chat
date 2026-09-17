@@ -13,6 +13,8 @@ import {
   nicknameInput,
   timeoutInput,
 } from "~/validations/moderation.js";
+import { guildProfileService } from "~/services/guild-profile-service.js";
+import { guildProfileInput } from "~/validations/guild-profile.js";
 
 const ruleParams = guildParams.extend({ ruleId: objectId });
 
@@ -54,6 +56,14 @@ export async function moderationRoutes(app: FastifyInstance) {
       userId,
       timeoutInput.parse(req.body),
     );
+
+    io().to(rooms.guild(guildId)).emit("member:updated", member);
+    return member;
+  });
+
+  app.patch("/guilds/:guildId/members/@me/profile", async (req) => {
+    const { guildId } = guildParams.parse(req.params);
+    const member = await guildProfileService.update(req.userId, guildId, guildProfileInput.parse(req.body));
 
     io().to(rooms.guild(guildId)).emit("member:updated", member);
     return member;

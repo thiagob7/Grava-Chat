@@ -10,6 +10,8 @@ import {
   tagRepository,
 } from "~/repositories/guild-repository.js";
 import { userRepository } from "~/repositories/user-repository.js";
+import { isAnimatedImage } from "~/lib/animated-image.js";
+import { planService, premiumRequired } from "~/services/plan-service.js";
 
 const WINDOW_S = 2;
 const BY_WINDOW = 10;
@@ -17,6 +19,26 @@ const BY_WINDOW = 10;
 const MESSAGES_CEILING = 10_000;
 
 const REGRET_DAYS = 15;
+
+async function requirePlanForProfile(userId: string, input: UpdateProfileInput) {
+  const current = await userRepository.findById(userId);
+  if (!current) return;
+
+  const newTag = input.profile?.tag?.trim();
+  if (newTag && newTag !== current.profile?.tag) {
+    await planService.requireFeature(userId, "customTag", "Tag personalizada é do Infinity");
+  }
+
+  const images = [
+    input.avatarUrl && input.avatarUrl !== current.avatarUrl ? input.avatarUrl : null,
+    input.profile?.bannerUrl && input.profile.bannerUrl !== current.profile?.bannerUrl ? input.profile.bannerUrl : null,
+  ].filter((url): url is string => Boolean(url));
+
+  if (!images.length || (await planService.hasFeature(userId, "animatedProfile"))) return;
+
+  const animated = await Promise.all(images.map(isAnimatedImage));
+  if (animated.some(Boolean)) throw premiumRequired("Avatar e banner animados são do Infinity");
+}
 
 export const meService = {
   async requestDeletion(userId: string) {
@@ -131,6 +153,7 @@ export const meService = {
 
   async updateProfile(userId: string, input: UpdateProfileInput) {
     await respectThroughput(userId);
+    await requirePlanForProfile(userId, input);
 
     if (input.profile?.tagGuildId) {
       await requireCanWearTag(userId, input.profile.tagGuildId);

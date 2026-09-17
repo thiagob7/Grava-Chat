@@ -12,7 +12,7 @@ import { UserName } from "~/features/perfil/components/UserName";
 import { cn } from "~/lib/utils";
 
 const LIMIT = 4000;
-const HOUSE_NAME = "Gravaê";
+const HOUSE_NAME = "Ravox Chat";
 
 export const AnnouncementsSection: React.FC = () => {
   const [text, setText] = useState("");
@@ -64,7 +64,7 @@ export const AnnouncementsSection: React.FC = () => {
           value={text}
           rows={10}
           maxLength={LIMIT}
-          placeholder="Ex: O Gravaê vai ficar fora do ar hoje às 22h, por uns dez minutos."
+          placeholder="Ex: O Ravox Chat vai ficar fora do ar hoje às 22h, por uns dez minutos."
           onChange={(e) => setText(e.target.value)}
         />
 

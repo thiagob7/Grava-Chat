@@ -1,4 +1,15 @@
 export const servidor = {
+  perfilNoServidor: {
+    titulo: "Bu sunucudaki profil",
+    descricao: "Yalnızca {{server}} içinde görünen avatar, afiş ve biyografi.",
+    soInfinity: "Topluluğa özel profiller {{plan}} planına dahil. Planları görmek için dokun.",
+    trocarFoto: "Avatarı değiştir",
+    trocarFaixa: "Afişi değiştir",
+    usarDaConta: "Hesabınkini kullan",
+    bio: "Bu sunucudaki biyografi",
+    bioDica: "Sadece bu topluluk için bir şey yaz",
+    salvo: "Sunucu profili kaydedildi.",
+  },
   comunidade: {
     ativa: "Topluluk açık",
     ativaDesde: "{{quando}} tarihinden beri açık",
@@ -113,7 +124,7 @@ export const servidor = {
     feitoPor: "Yapan",
     publicadoEm: "Yayımlanma",
     denunciarNome: "{{nome}} uygulamasını bildir",
-    denunciaDetalhe: "Bildirim Gravaê ekibine gider. Uygulamayı yapan kişi, bildirenin sen olduğunu öğrenmez.",
+    denunciaDetalhe: "Bildirim Ravox Chat ekibine gider. Uygulamayı yapan kişi, bildirenin sen olduğunu öğrenmez.",
     denunciaFalhou: "Bildirim gönderilemedi.",
     umMembro: "1 üye",
     semDescricao: "Açıklama yok.",
@@ -205,7 +216,7 @@ export const servidor = {
   },
   denuncia: {
     titulo: "{{nome}} topluluğunu bildir",
-    descricao: "Bildirim Gravaê ekibine gider. Ne olduğunu anlat.",
+    descricao: "Bildirim Ravox Chat ekibine gider. Ne olduğunu anlat.",
     motivo: "Sebep",
     detalhes: "Ayrıntılar (isteğe bağlı)",
     enviar: "Bildirimi gönder",

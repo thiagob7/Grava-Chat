@@ -63,7 +63,7 @@ export const NotificationsSection: React.FC = () => {
             <p data-gc="configuracoes.notifications-section.p--4" className="text-sm font-medium">Os avisos estão bloqueados</p>
             <p data-gc="configuracoes.notifications-section.p--5" className="mt-0.5 text-xs text-ink-muted">
               {bridge
-                ? "Libere o Gravaê em Ajustes do Sistema → Notificações."
+                ? "Libere o Ravox Chat em Ajustes do Sistema → Notificações."
                 : "O navegador guardou um “bloquear” para este endereço — o botão de pedir não aparece mais. Libere no cadeado ao lado da barra de endereço."}{" "}
               O som e o contador no título não dependem disso.
             </p>
@@ -74,11 +74,11 @@ export const NotificationsSection: React.FC = () => {
       <Section data-gc="configuracoes.notifications-section.section"
         id="geral"
         title="Geral"
-        detail="O que te interrompe enquanto o Gravaê está atrás de outra coisa."
+        detail="O que te interrompe enquanto o Ravox Chat está atrás de outra coisa."
       >
         <Choice data-gc="configuracoes.notifications-section.choice"
           title="Aviso na tela"
-          detail="A janelinha do sistema quando chega mensagem com o Gravaê atrás de outra coisa. Com a janela na frente ele não aparece — você já está vendo."
+          detail="A janelinha do sistema quando chega mensagem com o Ravox Chat atrás de outra coisa. Com a janela na frente ele não aparece — você já está vendo."
           on={prefs.notice}
           onChange={(v) => prefs.set({ notice: v })}
         />
@@ -88,7 +88,7 @@ export const NotificationsSection: React.FC = () => {
           detail={
             bridge
               ? "O número de menções na aba e no ícone do app — o balãozinho do Dock."
-              : "O número de menções no título da aba, para achar o Gravaê no meio de vinte abas."
+              : "O número de menções no título da aba, para achar o Ravox Chat no meio de vinte abas."
           }
           on={prefs.counter}
           onChange={(v) => prefs.set({ counter: v })}
@@ -115,7 +115,7 @@ export const NotificationsSection: React.FC = () => {
       >
         <Choice data-gc="configuracoes.notifications-section.choice--4"
           title="Som"
-          detail="O aviso do Gravaê para mensagem e duas notas para menção. Não toca no canal que você está lendo."
+          detail="O aviso do Ravox Chat para mensagem e duas notas para menção. Não toca no canal que você está lendo."
           on={prefs.sound}
           onChange={(v) => {
             prefs.set({ sound: v });

@@ -47,8 +47,8 @@ export function useVoiceSync(guildId: string | undefined, currentUserId?: string
 
             return {
               ...v,
-              camera: Boolean(tile.cameraTrack),
-              screenShare: Boolean(tile.screenTrack),
+              camera: tile.cameraOn,
+              screenShare: tile.sharingScreen,
             };
           });
 
@@ -81,8 +81,8 @@ export function useVoiceSync(guildId: string | undefined, currentUserId?: string
           selfDeaf: false,
           serverMute: false,
           serverDeaf: false,
-          camera: Boolean(t.cameraTrack),
-          screenShare: Boolean(t.screenTrack),
+          camera: t.cameraOn,
+          screenShare: t.sharingScreen,
         }));
 
         return {

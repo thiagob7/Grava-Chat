@@ -21,7 +21,7 @@ export interface ClientOptions {
   attempts?: number;
 }
 
-const DEFAULT_BASE = "https://gravaechat-api.duckdns.org/api";
+const DEFAULT_BASE = "https://ravoxchat-api.duckdns.org/api";
 
 const wait = (ms: number) => new Promise((r) => setTimeout(r, ms));
 

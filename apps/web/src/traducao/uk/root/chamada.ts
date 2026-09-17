@@ -85,12 +85,14 @@ export const chamada = {
     quadros: "{{quadros}} FPS",
     qualidadeDica: "Роздільність — це стеля: менше вікно зберігає свій розмір. Більша роздільність і кадри потребують більше інтернету, вашого й глядачів. Діє і для поточної трансляції.",
   },
+  cameraLimit: "У дзвінку вже увімкнено {{limite}} камер. Зачекайте, поки хтось вимкне свою.",
   live: {
     etiqueta: "У прямому ефірі",
     etiquetaMaiuscula: "У ПРЯМОМУ ЕФІРІ",
     assistir: "Дивитися трансляцію",
     assistirPessoa: "Дивитися {{nome}}",
     pararDeAssistir: "Припинити дивитися",
+    conectando: "Підключення до трансляції…",
   },
   membro: {
     mudarMeuApelido: "Змінити мій псевдонім",
@@ -165,7 +167,7 @@ export const chamada = {
     tela: "Запис екрана",
     telaDetalhe: "Показувати екран і вікна.",
     monitoramento: "Моніторинг входу",
-    monitoramentoDetalhe: "Використовувати push-to-talk, навіть коли Gravaê у фоні.",
+    monitoramentoDetalhe: "Використовувати push-to-talk, навіть коли Ravox Chat у фоні.",
   },
   jaConectado: {
     titulo: "Ви вже в цьому дзвінку",

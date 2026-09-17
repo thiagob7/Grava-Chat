@@ -5,7 +5,7 @@ import { Ahead, Notice, Section, Title, Trail } from "~/components/docs/PecasDos
 import { API } from "~/dados/docs";
 
 export const metadata: Metadata = {
-  title: "Comandos de barra — Documentação do Gravaê",
+  title: "Comandos de barra — Documentação do Ravox Chat",
   description: "Registrar comandos de barra e responder quando alguém chama.",
 };
 
@@ -68,7 +68,7 @@ export default function Commands() {
         <p>
           <strong className="text-ink">Confira quem chamou.</strong> O evento diz o usuário e o
           servidor. Se o comando faz algo que nem todo mundo devia fazer, essa conferência é sua —
-          o Gravaê garante que a pessoa pode ver o canal, não que ela pode usar o seu comando.
+          o Ravox Chat garante que a pessoa pode ver o canal, não que ela pode usar o seu comando.
         </p>
       </Section>
 

@@ -1,4 +1,15 @@
 export const servidor = {
+  perfilNoServidor: {
+    titulo: "الملف الشخصي في هذا الخادم",
+    descricao: "صورة ولافتة ونبذة تظهر فقط في {{server}}.",
+    soInfinity: "الملفات الشخصية لكل مجتمع جزء من {{plan}}. اضغط لعرض الخطط.",
+    trocarFoto: "تغيير الصورة",
+    trocarFaixa: "تغيير اللافتة",
+    usarDaConta: "استخدم صورة الحساب",
+    bio: "نبذة في هذا الخادم",
+    bioDica: "اكتب شيئًا لهذا المجتمع فقط",
+    salvo: "حُفظ الملف الشخصي للخادم.",
+  },
   comunidade: {
     ativa: "المجتمع مفتوح",
     ativaDesde: "مفتوح منذ {{quando}}",
@@ -113,7 +124,7 @@ export const servidor = {
     feitoPor: "من صنع",
     publicadoEm: "نُشر في",
     denunciarNome: "الإبلاغ عن {{nome}}",
-    denunciaDetalhe: "يصل البلاغ إلى فريق Gravaê. لن يعرف صاحب التطبيق أنك من أبلغ.",
+    denunciaDetalhe: "يصل البلاغ إلى فريق Ravox Chat. لن يعرف صاحب التطبيق أنك من أبلغ.",
     denunciaFalhou: "تعذّر إرسال البلاغ.",
     umMembro: "عضو واحد",
     semDescricao: "بلا وصف.",
@@ -205,7 +216,7 @@ export const servidor = {
   },
   denuncia: {
     titulo: "الإبلاغ عن {{nome}}",
-    descricao: "يصل البلاغ إلى فريق Gravaê. أخبرنا بما حدث.",
+    descricao: "يصل البلاغ إلى فريق Ravox Chat. أخبرنا بما حدث.",
     motivo: "السبب",
     detalhes: "التفاصيل (اختياري)",
     enviar: "إرسال البلاغ",

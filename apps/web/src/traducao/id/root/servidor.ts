@@ -1,4 +1,15 @@
 export const servidor = {
+  perfilNoServidor: {
+    titulo: "Profil di server ini",
+    descricao: "Avatar, banner, dan bio yang hanya muncul di {{server}}.",
+    soInfinity: "Profil per komunitas termasuk {{plan}}. Ketuk untuk melihat paket.",
+    trocarFoto: "Ganti avatar",
+    trocarFaixa: "Ganti banner",
+    usarDaConta: "Pakai milik akun",
+    bio: "Bio di server ini",
+    bioDica: "Ceritakan sesuatu khusus untuk komunitas ini",
+    salvo: "Profil server disimpan.",
+  },
   comunidade: {
     ativa: "Komunitas sudah terbuka",
     ativaDesde: "Terbuka sejak {{quando}}",
@@ -113,7 +124,7 @@ export const servidor = {
     feitoPor: "Dibuat oleh",
     publicadoEm: "Diterbitkan pada",
     denunciarNome: "Laporkan {{nome}}",
-    denunciaDetalhe: "Laporan masuk ke tim Gravaê. Pembuat aplikasinya tidak diberi tahu bahwa itu kamu.",
+    denunciaDetalhe: "Laporan masuk ke tim Ravox Chat. Pembuat aplikasinya tidak diberi tahu bahwa itu kamu.",
     denunciaFalhou: "Laporan tidak bisa dikirim.",
     umMembro: "1 anggota",
     semDescricao: "Tanpa deskripsi.",
@@ -205,7 +216,7 @@ export const servidor = {
   },
   denuncia: {
     titulo: "Laporkan {{nome}}",
-    descricao: "Laporan dikirim ke tim Gravaê. Ceritakan apa yang terjadi.",
+    descricao: "Laporan dikirim ke tim Ravox Chat. Ceritakan apa yang terjadi.",
     motivo: "Alasan",
     detalhes: "Detail (opsional)",
     enviar: "Kirim laporan",

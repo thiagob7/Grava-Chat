@@ -8,7 +8,7 @@ const oldBridge = (overrides: Record<string, unknown> = {}) =>
   ({
     ehDesktop: true,
     plataforma: "darwin",
-    nomeNoSistema: "Gravaê",
+    nomeNoSistema: "Ravox Chat",
     ptt: { configurar: vi.fn(), pedirPermissao: vi.fn(), aoMudar: vi.fn() },
     tela: { aoPedirEscolha: vi.fn(), responder: vi.fn(), permissao: vi.fn() },
     login: { iniciar: vi.fn(), aoReceber: vi.fn() },
@@ -23,7 +23,7 @@ describe("ponte de uma casca mais velha", () => {
 
     expect(bridge?.isDesktop).toBe(true);
     expect(bridge?.platform).toBe("darwin");
-    expect(bridge?.nameSystem).toBe("Gravaê");
+    expect(bridge?.nameSystem).toBe("Ravox Chat");
     expect(typeof bridge?.login.onReceive).toBe("function");
     expect(typeof bridge?.media.ensure).toBe("function");
     expect(typeof bridge?.appWindow.focus).toBe("function");

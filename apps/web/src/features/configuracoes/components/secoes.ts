@@ -2,6 +2,7 @@
 
 export type Section =
   | "account"
+  | "subscription"
   | "privacy"
   | "voice"
   | "video"
@@ -53,6 +54,7 @@ export const SUBSECTIONS: Record<Section, SubSection[]> = {
   ],
   appearance: [
     { id: "tema", key: "configuracoes.secoes.tema" },
+    { id: "cores-do-app", key: "configuracoes.secoes.coresDoApp" },
     { id: "cor-de-destaque", key: "configuracoes.secoes.corDeDestaque" },
     { id: "interface", key: "configuracoes.secoes.interface" },
     { id: "lista-de-canais", key: "configuracoes.secoes.listaDeCanais" },
@@ -106,4 +108,5 @@ export const SUBSECTIONS: Record<Section, SubSection[]> = {
   desktop: [],
   shortcuts: [],
   advanced: [],
+  subscription: [],
 };

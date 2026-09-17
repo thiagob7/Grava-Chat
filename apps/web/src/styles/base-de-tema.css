@@ -1,7 +1,7 @@
 /*
   GERADO por scripts/base-de-tema.mjs — não edite à mão.
 
-  Os 88 nós do grafo de cores da referência que o tokens.css não declara.
+  Os 86 nós do grafo de cores da referência que o tokens.css não declara.
   O porquê da camada, e por que isto não sombreia a cadeia do @theme, está no
   cabeçalho do gerador.
 */
@@ -40,10 +40,8 @@
     --bg-tertiary: var(--background-tertiary);
     --border-color: hsla(258,calc(10%*var(--saturation-factor)),50%,.2);
     --border-color-focus: hsla(198,calc(92%*var(--saturation-factor)),70%,.45);
-    --brand-primary: hsl(242,calc(70%*var(--saturation-factor)),55%);
     --brand-primary-fill: #fff;
     --brand-primary-light: hsl(242,calc(100%*var(--saturation-factor)),84%);
-    --brand-secondary: hsl(242,calc(60%*var(--saturation-factor)),49%);
     --button-danger-active-fill: hsl(359,calc(65%*var(--saturation-factor)),45%);
     --button-danger-fill: hsl(359,calc(70%*var(--saturation-factor)),54%);
     --button-danger-text: #fff;

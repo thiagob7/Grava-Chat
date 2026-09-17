@@ -15,6 +15,16 @@ export const conversa = {
     carregando: "Žiūriu, kas yra nuorodoje…",
     destino: "Veda į {{destino}}",
   },
+  botComponents: {
+    noResponse: "Botas neatsakė.",
+    choose: "Pasirinkite parinktį",
+    onlyYou: "Tai matote tik jūs",
+    dismiss: "Uždaryti",
+    formFrom: "Forma iš {{nome}}",
+    optional: "neprivaloma",
+    yes: "Taip",
+    no: "Ne",
+  },
   reacao: {
     carregando: "Žiūriu, kas reagavo su {{emoji}}…",
     uma: "{{nome}} reagavo su {{emoji}}",
@@ -121,7 +131,7 @@ export const conversa = {
   },
   denuncia: {
     titulo: "Pranešti apie žinutę",
-    descricao: "Pranešimas keliauja Gravaê komandai. Papasakok, kas nutiko.",
+    descricao: "Pranešimas keliauja Ravox Chat komandai. Papasakok, kas nutiko.",
     de: "Nuo {{nome}}",
     semTexto: "(be teksto)",
     motivo: "Priežastis",
@@ -141,6 +151,7 @@ export const conversa = {
   },
 
   falha: {
+    premium: "Nepristatyta — tam reikia Infinity",
     tentarDeNovo: "Bandyti dar kartą",
     erro: "Nepristatyta",
     semConexao: "Nepristatyta — neturi ryšio",

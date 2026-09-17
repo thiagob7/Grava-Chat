@@ -3,7 +3,9 @@ import path from "node:path";
 
 import { APP_ORIGIN, APP_URL, isDev } from "./config.js";
 
-const BRAND = `<svg width="54" height="80" viewBox="0 0 538 802" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M0 657.14L358.358 614.064V610.397L402.349 249.29L228.212 284.118L208.965 391.352L283.203 378.519L269.455 485.753L151.225 499.499L198.883 132.895L432.595 116.398L443.592 0L89.8185 44.9095L0 657.14Z" fill="white"/><path d="M461.458 801.261C503.731 801.261 538 766.992 538 724.72C538 682.447 503.731 648.178 461.458 648.178C419.185 648.178 384.916 682.447 384.916 724.72C384.916 766.992 419.185 801.261 461.458 801.261Z" fill="#FF0000"/></svg>`;
+const systemName = () => (isDev ? "Electron" : process.platform === "darwin" ? "Ravox Chat" : app.name);
+
+const BRAND = `<svg width="64" height="64" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg"><rect width="100" height="100" rx="12" fill="#6467F2"/><path transform="translate(27.303 27.000) scale(0.10110)" fill-rule="evenodd" clip-rule="evenodd" d="M104 0L219 0L219 455L148 455L148 260L106 261L106 262L100 263L96 265L95 267L93 267L87 273L86 277L83 280L80 294L79 294L79 303L78 303L78 424L77 424L76 441L75 441L72 455L0 455L0 452L2 450L4 440L5 440L6 424L7 424L7 306L8 306L8 294L9 294L10 280L11 280L11 276L12 276L12 272L13 272L16 259L22 247L27 242L27 240L39 230L47 226L50 226L52 224L55 224L55 222L40 215L27 203L27 201L22 196L15 182L14 176L13 176L13 172L12 172L12 168L10 164L10 158L9 158L9 150L8 150L8 88L9 88L11 68L12 68L13 60L17 52L17 49L21 41L23 40L24 36L43 17L45 17L46 15L58 9L61 9L61 8L64 8L70 5L84 3L84 2L91 2L91 1L104 1ZM260 0L331 0L331 390L449 390L449 455L260 455ZM106 65L106 66L102 66L102 67L99 67L93 70L87 76L87 78L85 79L82 85L81 92L80 92L80 97L79 97L79 160L80 160L81 170L87 182L92 187L94 187L100 192L111 194L111 195L148 195L148 65Z" fill="white"/></svg>`;
 
 function waitPage(reason: string) {
   return `data:text/html;charset=utf-8,${encodeURIComponent(
@@ -13,7 +15,7 @@ function waitPage(reason: string) {
          <div style="animation:respirar 2s ease-in-out infinite">${BRAND}</div>
          <h1 style="margin:28px 0 8px;font-size:17px;font-weight:600">${reason}</h1>
          <p style="margin:0;color:#a8a8b3">Isto volta sozinho assim que a conexão voltar — não precisa fechar o app.</p>
-         <a href="${APP_URL}" style="display:inline-block;margin-top:22px;padding:9px 18px;border-radius:8px;background:#d30404;color:#fff;text-decoration:none;font-weight:600">Tentar agora</a>
+         <a href="${APP_URL}" style="display:inline-block;margin-top:22px;padding:9px 18px;border-radius:8px;background:#5c5ff0;color:#fff;text-decoration:none;font-weight:600">Tentar agora</a>
        </div>
        <style>@keyframes respirar{0%,100%{opacity:1}50%{opacity:.45}}</style>
      </body>`,
@@ -64,7 +66,7 @@ export function createWindow() {
     ...(process.platform === "darwin" ? {} : { frame: false, icon: ICON }),
     webPreferences: {
       preload: path.join(__dirname, "preload.cjs"),
-      additionalArguments: [`--gravae-nome=${isDev ? "Electron" : app.name}`],
+      additionalArguments: [`--gravae-nome=${systemName()}`],
       contextIsolation: true,
       nodeIntegration: false,
       sandbox: false,
@@ -97,7 +99,7 @@ export function createWindow() {
 
     if (!isPrincipal || code === -3 || appWindow.isDestroyed()) return;
 
-    void appWindow.loadURL(waitPage("Sem conexão com o Gravaê"));
+    void appWindow.loadURL(waitPage("Sem conexão com o Ravox Chat"));
     loader.schedule();
   });
 
@@ -129,7 +131,7 @@ export function createWindow() {
         ...(process.platform === "darwin" ? {} : { icon: ICON }),
         webPreferences: {
           preload: path.join(__dirname, "preload.cjs"),
-          additionalArguments: [`--gravae-nome=${isDev ? "Electron" : app.name}`],
+          additionalArguments: [`--gravae-nome=${systemName()}`],
           contextIsolation: true,
           nodeIntegration: false,
           sandbox: false,
@@ -172,7 +174,7 @@ export function createWindow() {
     allow(our);
   });
 
-  void appWindow.loadURL(waitPage("Abrindo o Gravaê…")).then(async () => {
+  void appWindow.loadURL(waitPage("Abrindo o Ravox Chat…")).then(async () => {
     await appWindow.webContents.session.clearCache().catch(() => undefined);
     await loader.load();
   });

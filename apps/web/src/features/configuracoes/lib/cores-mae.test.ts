@@ -97,7 +97,7 @@ describe("cores-mãe", () => {
   it("o texto de cima do botão vira o polo oposto ao da marca", () => {
     const luminance = (color: string) => Color(color).lch().array()[0] ?? 0;
 
-    expect(luminance(derive("brand", "#413cdd")["--color-sobre-marca"]!)).toBeGreaterThan(90);
+    expect(luminance(derive("brand", "#5c5ff0")["--color-sobre-marca"]!)).toBeGreaterThan(90);
     expect(luminance(derive("brand", "#f7d56e")["--color-sobre-marca"]!)).toBeLessThan(10);
   });
 
@@ -111,7 +111,7 @@ describe("cores-mãe", () => {
   });
 
   it("o fator de saturação zerado entrega cinza", () => {
-    const colors = derive("brand", "#413cdd", 0);
+    const colors = derive("brand", "#5c5ff0", 0);
 
     for (const value of Object.values(colors)) {
       const [, chroma = 0] = Color(value).lch().array();

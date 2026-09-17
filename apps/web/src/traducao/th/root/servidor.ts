@@ -1,4 +1,15 @@
 export const servidor = {
+  perfilNoServidor: {
+    titulo: "โปรไฟล์ในเซิร์ฟเวอร์นี้",
+    descricao: "อวาตาร์ แบนเนอร์ และประวัติที่แสดงเฉพาะใน {{server}}",
+    soInfinity: "โปรไฟล์แยกตามชุมชนเป็นส่วนหนึ่งของ {{plan}} แตะเพื่อดูแพ็กเกจ",
+    trocarFoto: "เปลี่ยนอวาตาร์",
+    trocarFaixa: "เปลี่ยนแบนเนอร์",
+    usarDaConta: "ใช้ของบัญชี",
+    bio: "ประวัติในเซิร์ฟเวอร์นี้",
+    bioDica: "เล่าอะไรสักอย่างสำหรับชุมชนนี้",
+    salvo: "บันทึกโปรไฟล์เซิร์ฟเวอร์แล้ว",
+  },
   comunidade: {
     ativa: "ชุมชนเปิดแล้ว",
     ativaDesde: "เปิดตั้งแต่ {{quando}}",
@@ -113,7 +124,7 @@ export const servidor = {
     feitoPor: "สร้างโดย",
     publicadoEm: "เผยแพร่เมื่อ",
     denunciarNome: "รายงาน {{nome}}",
-    denunciaDetalhe: "รายงานจะไปถึงทีม Gravaê คนที่ทำแอปจะไม่รู้ว่าเป็นคุณ",
+    denunciaDetalhe: "รายงานจะไปถึงทีม Ravox Chat คนที่ทำแอปจะไม่รู้ว่าเป็นคุณ",
     denunciaFalhou: "ส่งรายงานไม่สำเร็จ",
     umMembro: "สมาชิก 1 คน",
     semDescricao: "ไม่มีคำอธิบาย",
@@ -205,7 +216,7 @@ export const servidor = {
   },
   denuncia: {
     titulo: "รายงาน {{nome}}",
-    descricao: "รายงานจะส่งถึงทีม Gravaê บอกเราว่าเกิดอะไรขึ้น",
+    descricao: "รายงานจะส่งถึงทีม Ravox Chat บอกเราว่าเกิดอะไรขึ้น",
     motivo: "เหตุผล",
     detalhes: "รายละเอียด (ไม่บังคับ)",
     enviar: "ส่งรายงาน",

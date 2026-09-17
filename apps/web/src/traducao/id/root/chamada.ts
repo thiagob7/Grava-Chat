@@ -85,12 +85,14 @@ export const chamada = {
     quadros: "{{quadros}} FPS",
     qualidadeDica: "Resolusi adalah batas atas: jendela yang lebih kecil tetap pada ukurannya. Resolusi dan bingkai lebih tinggi butuh internet lebih besar, milikmu dan penonton. Berlaku juga untuk siaran yang sedang berjalan.",
   },
+  cameraLimit: "Panggilan ini sudah memiliki {{limite}} kamera menyala. Tunggu seseorang mematikan kameranya.",
   live: {
     etiqueta: "Siaran langsung",
     etiquetaMaiuscula: "SIARAN LANGSUNG",
     assistir: "Tonton siaran",
     assistirPessoa: "Tonton {{nome}}",
     pararDeAssistir: "Berhenti menonton",
+    conectando: "Menghubungkan ke siaran…",
   },
   membro: {
     mudarMeuApelido: "Ubah nama panggilanku",
@@ -165,7 +167,7 @@ export const chamada = {
     tela: "Perekaman layar",
     telaDetalhe: "Membagikan layar dan jendela.",
     monitoramento: "Pemantauan masukan",
-    monitoramentoDetalhe: "Memakai tekan-untuk-bicara meski Gravaê ada di latar belakang.",
+    monitoramentoDetalhe: "Memakai tekan-untuk-bicara meski Ravox Chat ada di latar belakang.",
   },
   jaConectado: {
     titulo: "Kamu sudah ada di panggilan ini",

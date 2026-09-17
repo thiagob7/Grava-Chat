@@ -268,7 +268,7 @@ export const adminService = {
     if (isAdmin(email)) throw new AppError("Este e-mail já é dono do painel.");
 
     const user = await userRepository.findByEmail(email);
-    if (!user) throw new NotFoundError("Não há conta no Gravaê com este e-mail. A pessoa precisa criar a conta antes.");
+    if (!user) throw new NotFoundError("Não há conta no Ravox Chat com este e-mail. A pessoa precisa criar a conta antes.");
     if (user.isBot || user.system) throw new AppError("Bot e conta do sistema não entram no painel.");
 
     const existing = await prisma.adminMember.findFirst({ where: { userId: user.id } });

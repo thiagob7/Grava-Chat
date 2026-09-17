@@ -43,7 +43,8 @@ export const perfil = {
     falhou: "تعذّر الإرسال. جرّب من المحادثة.",
   },
   cartao: {
-    equipe: "فريق Gravaê",
+    infinity: "عضو Infinity",
+    equipe: "فريق Ravox Chat",
     trocarFaixa: "تغيير غلاف البطاقة",
     trocarFaixaCurto: "تغيير الغلاف",
     trocarFoto: "تغيير صورة الملف الشخصي",

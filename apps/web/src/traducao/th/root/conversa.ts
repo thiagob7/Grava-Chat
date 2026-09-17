@@ -15,6 +15,16 @@ export const conversa = {
     carregando: "กำลังดูว่าในลิงก์มีอะไร…",
     destino: "ไปที่ {{destino}}",
   },
+  botComponents: {
+    noResponse: "บอทไม่ตอบกลับ",
+    choose: "เลือกตัวเลือก",
+    onlyYou: "มีเพียงคุณที่เห็นข้อความนี้",
+    dismiss: "ปิด",
+    formFrom: "แบบฟอร์มจาก {{nome}}",
+    optional: "ไม่บังคับ",
+    yes: "ใช่",
+    no: "ไม่",
+  },
   reacao: {
     carregando: "กำลังดูว่าใครแสดงความรู้สึกด้วย {{emoji}}…",
     uma: "{{nome}} แสดงความรู้สึกด้วย {{emoji}}",
@@ -121,7 +131,7 @@ export const conversa = {
   },
   denuncia: {
     titulo: "รายงานข้อความ",
-    descricao: "รายงานจะส่งถึงทีม Gravaê บอกเราว่าเกิดอะไรขึ้น",
+    descricao: "รายงานจะส่งถึงทีม Ravox Chat บอกเราว่าเกิดอะไรขึ้น",
     de: "จาก {{nome}}",
     semTexto: "(ไม่มีข้อความ)",
     motivo: "เหตุผล",
@@ -141,6 +151,7 @@ export const conversa = {
   },
 
   falha: {
+    premium: "ส่งไม่สำเร็จ — ต้องใช้ Infinity",
     tentarDeNovo: "ลองอีกครั้ง",
     erro: "ส่งไม่สำเร็จ",
     semConexao: "ส่งไม่สำเร็จ — คุณไม่มีการเชื่อมต่อ",

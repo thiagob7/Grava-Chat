@@ -1,5 +1,16 @@
 
 export const servidor = {
+  perfilNoServidor: {
+    titulo: "Perfil neste servidor",
+    descricao: "Foto, faixa e bio que só aparecem em {{server}}.",
+    soInfinity: "Perfil por comunidade é do {{plan}}. Toque para ver os planos.",
+    trocarFoto: "Trocar foto",
+    trocarFaixa: "Trocar faixa",
+    usarDaConta: "Usar a da conta",
+    bio: "Bio neste servidor",
+    bioDica: "Conte algo só para esta comunidade",
+    salvo: "Perfil do servidor salvo.",
+  },
   comunidade: {
     ativa: "A comunidade está aberta",
     ativaDesde: "Aberta desde {{quando}}",
@@ -63,7 +74,7 @@ export const servidor = {
     trocarIcone: "Trocar o ícone",
     tirarCapa: "Tirar a capa",
     heroComunidades: "Tem gente falando do que você gosta",
-    heroComunidadesDetalhe: "Comunidades abertas por quem usa o Gravaê. Entre, leia o papo e fique se gostar.",
+    heroComunidadesDetalhe: "Comunidades abertas por quem usa o Ravox Chat. Entre, leia o papo e fique se gostar.",
     emDestaque: "Em destaque",
     todasAsComunidades: "As outras",
     heroTitulo: "O que a sua turma vai usar hoje?",
@@ -114,7 +125,7 @@ export const servidor = {
     feitoPor: "Feito por",
     publicadoEm: "Publicado em",
     denunciarNome: "Denunciar {{nome}}",
-    denunciaDetalhe: "A denúncia vai para a equipe do Gravaê. Quem fez o aplicativo não fica sabendo que foi você.",
+    denunciaDetalhe: "A denúncia vai para a equipe do Ravox Chat. Quem fez o aplicativo não fica sabendo que foi você.",
     denunciaFalhou: "Não deu para enviar a denúncia.",
     umMembro: "1 membro",
     semDescricao: "Sem descrição.",
@@ -206,7 +217,7 @@ export const servidor = {
   },
   denuncia: {
     titulo: "Denunciar {{nome}}",
-    descricao: "A denúncia vai para a equipe do Gravaê. Conte o que aconteceu.",
+    descricao: "A denúncia vai para a equipe do Ravox Chat. Conte o que aconteceu.",
     motivo: "Motivo",
     detalhes: "Detalhes (opcional)",
     enviar: "Enviar denúncia",

@@ -6,8 +6,12 @@ export const comum = {
     recarregar: "Yeniden yükle",
     copiarDetalhes: "Ayrıntıları kopyala",
     parteQuebrou: "Ekranın bu bölümü bozuldu.",
-    titulo: "Gravaê tökezledi.",
+    titulo: "Ravox Chat tökezledi.",
     detalhe: "Yolda bir şey bozuldu ve ekran kendini çizemedi. Sohbetin kaybolmadı — hepsi sunucuda.",
+  },
+  perdido: {
+    titulo: "Bu adres hiçbir yere çıkmıyor.",
+    detalhe: "Ya bağlantı yanlış geldi ya da sayfa yer değiştirdi.",
   },
   conexao: {
     voltou: "Yeniden bağlanıldı",
@@ -17,7 +21,7 @@ export const comum = {
   },
   avisoDoNavegador: {
     titulo: "Mesajlardan haberdar olmak ister misin?",
-    detalhe: "Gravaê başka bir pencerenin arkasındayken seni çağırır.",
+    detalhe: "Ravox Chat başka bir pencerenin arkasındayken seni çağırır.",
   },
   atualizacao: {
     titulo: "Güncelleme",
@@ -98,8 +102,8 @@ export const comum = {
   trocar: "Değiştir",
   loginNoApp: {
     titulo: "Her şey hazır!",
-    detalhe: "Giriş yaptın. Gravaê'ye geri dön, uygulama seni bekliyor.",
-    abrir: "Gravaê'yi aç",
+    detalhe: "Giriş yaptın. Ravox Chat'ye geri dön, uygulama seni bekliyor.",
+    abrir: "Ravox Chat'yi aç",
     fecharAba: "Bu sekmeyi artık kapatabilirsin.",
     falhouTitulo: "Giriş yapılamadı",
     falhouDetalhe: "Uygulamaya dön ve tekrar giriş yapmayı dene.",

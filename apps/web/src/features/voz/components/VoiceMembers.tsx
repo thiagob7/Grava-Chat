@@ -19,7 +19,6 @@ import { qualityNotice } from "~/features/voz/lib/qualidade-da-conexao";
 import { usePanelSound } from "~/features/voz/lib/soundboard";
 import { Tooltip } from "~/components/ui/tooltip";
 import { BroadcastPreview } from "~/features/voz/components/PreviaDaTransmissao";
-import type { Track } from "livekit-client";
 import { cn } from "~/lib/utils";
 import { flxCls } from "~/lib/compat-de-tema";
 import { useTranslation } from "~/traducao";
@@ -66,14 +65,14 @@ export const VoiceMembers: React.FC<VoiceMembersProps> = ({
           state.screenShare && channelConnected === state.channelId && watching !== state.userId;
 
         const inRoom = tiles.find((t) => t.identity === state.userId);
-        const broadcast = inRoom?.screenTrack ?? null;
+        const broadcasting = Boolean(inRoom?.sharingScreen);
         const connection = inRoom ? qualityNotice(inRoom.quality) : null;
 
         const line = (
           <InviteForLive data-gc="voz.voice-members.invite-for-live"
             active={canWatch}
             name={name}
-            broadcast={broadcast}
+            identity={broadcasting ? state.userId : null}
             onWatch={() => watch(state.userId)}
           >
             <UserProfilePopover data-gc="voz.voice-members.user-profile-popover"
@@ -204,10 +203,10 @@ export const VoiceMembers: React.FC<VoiceMembersProps> = ({
 const InviteForLive: React.FC<{
   active: boolean;
   name: string;
-  broadcast: Track | null;
+  identity: string | null;
   onWatch: () => void;
   children: React.ReactNode;
-}> = ({ active, name, broadcast, onWatch, children }) => {
+}> = ({ active, name, identity, onWatch, children }) => {
   const { t } = useTranslation();
   const [isOpen, setIsOpen] = useState(false);
 
@@ -234,7 +233,7 @@ const InviteForLive: React.FC<{
             {t("chamada.carregandoPrevia")}
           </div>
 
-          {broadcast && <BroadcastPreview data-gc="voz.voice-members.broadcast-preview" track={broadcast} />}
+          {identity && isOpen && <BroadcastPreview data-gc="voz.voice-members.broadcast-preview" identity={identity} />}
 
           <span data-gc="voz.voice-members.span--7" className="absolute left-1.5 top-1.5 flex items-center gap-1 rounded-sm bg-danger px-1.5 py-0.5 text-10 font-bold uppercase tracking-wide text-sobre-marca">
             <span data-gc="voz.voice-members.span--8" className="size-1.5 animate-pulse rounded-full bg-sobre-marca" />

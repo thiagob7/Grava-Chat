@@ -25,7 +25,7 @@ const BASE = `
   --color-ink: var(--text-chat, #f4f4f6);
   --color-ink-muted: var(--text-chat-muted, #cecbd4);
   --color-ink-faint: var(--text-tertiary-muted, #b1acbb);
-  --color-brand: var(--accent-primary, #413cdd);
+  --color-brand: var(--accent-primary, #5c5ff0);
 }
 * { box-sizing: border-box; }
 html, body { height: 100%; margin: 0; overflow: hidden; }

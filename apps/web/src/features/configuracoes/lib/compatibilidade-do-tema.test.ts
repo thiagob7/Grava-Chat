@@ -33,7 +33,7 @@ describe("compatibilidade com um tema da referência", () => {
     expect(missing).toEqual(["Sumido.module__x_"]);
   });
 
-  it("não vê nada num tema escrito para o Gravaê", () => {
+  it("não vê nada num tema escrito para o Ravox Chat", () => {
     const { matches, missing } = checkCompatibility(
       ':root { --color-brand: #123 }\n.avatar { border-radius: 0 }',
     );

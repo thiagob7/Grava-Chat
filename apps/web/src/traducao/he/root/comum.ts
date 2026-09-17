@@ -6,8 +6,12 @@ export const comum = {
     recarregar: "טעינה מחדש",
     copiarDetalhes: "העתקת הפרטים",
     parteQuebrou: "החלק הזה במסך נשבר.",
-    titulo: "Gravaê מעד.",
+    titulo: "Ravox Chat מעד.",
     detalhe: "משהו נשבר בדרך והמסך לא הצליח להצטייר. השיחה שלכם לא אבדה — הכול נמצא בשרת.",
+  },
+  perdido: {
+    titulo: "הכתובת הזאת לא מובילה לשום מקום.",
+    detalhe: "או שהקישור שגוי, או שהעמוד עבר מקום.",
   },
   conexao: {
     voltou: "מחוברים שוב",
@@ -17,7 +21,7 @@ export const comum = {
   },
   avisoDoNavegador: {
     titulo: "רוצים לקבל התראות על הודעות?",
-    detalhe: "כש‑Gravaê מאחורי חלון אחר, הוא קורא לכם.",
+    detalhe: "כש‑Ravox Chat מאחורי חלון אחר, הוא קורא לכם.",
   },
   atualizacao: {
     titulo: "עדכון",
@@ -98,8 +102,8 @@ export const comum = {
   trocar: "החלפה",
   loginNoApp: {
     titulo: "הכול מוכן!",
-    detalhe: "נכנסת לחשבון. אפשר לחזור ל-Gravaê, האפליקציה כבר מחכה לך.",
-    abrir: "פתיחת Gravaê",
+    detalhe: "נכנסת לחשבון. אפשר לחזור ל-Ravox Chat, האפליקציה כבר מחכה לך.",
+    abrir: "פתיחת Ravox Chat",
     fecharAba: "אפשר לסגור את הכרטיסייה הזו.",
     falhouTitulo: "הכניסה לא הצליחה",
     falhouDetalhe: "חזרו לאפליקציה ונסו להיכנס שוב.",
