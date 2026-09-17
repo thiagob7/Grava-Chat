@@ -40,8 +40,8 @@
   --color-ink: var(--text-chat, var(--text-primary, var(--button-secondary-text, var(--interactive-active, var(--control-button-active-text, var(--control-button-hover-text, var(--surface-interactive-selected-color, var(--voice-text-strong, var(--interactive-hover, var(--header-primary, #f4f4f6))))))))));
   --color-ink-muted: var(--text-chat-muted, var(--text-primary-muted, var(--text-secondary, var(--button-ghost-text, var(--control-button-normal-text, var(--interactive-normal, var(--channels-default, var(--text-normal, var(--header-secondary, #c4c4d2)))))))));
   --color-ink-faint: var(--text-tertiary-muted, var(--text-tertiary, var(--interactive-muted, var(--text-muted, #8b8b9d))));
-  --color-brand: var(--accent-primary, var(--brand-primary, var(--button-primary-fill, var(--brand-500, var(--brand-experiment, var(--background-accent, #413cdd))))));
-  --color-brand-hover: var(--brand-primary-light, var(--brand-secondary, var(--button-primary-active-fill, var(--brand-560, #3732c8))));
+  --color-brand: var(--accent-primary, var(--brand-primary, var(--button-primary-fill, var(--brand-500, var(--brand-experiment, var(--background-accent, #5c5ff0))))));
+  --color-brand-hover: var(--brand-primary-light, var(--brand-secondary, var(--button-primary-active-fill, var(--brand-560, #4a4dde))));
   --color-online: var(--status-online, var(--accent-success, var(--alert-tip-color, var(--info-positive-foreground, var(--status-positive, #1daf6b)))));
   --color-idle: var(--status-idle, var(--accent-warning, var(--status-warning, var(--info-warning-foreground, var(--status-warning-background, #f6bb09)))));
   --color-dnd: var(--status-dnd, var(--button-danger-fill, #ef4343));
@@ -72,7 +72,7 @@
   --color-veu: rgb(0 0 0 / 0.6);
   --color-line-sutil: rgb(255 255 255 / 0.08);
   --color-danger-fundo: var(--control-button-danger-hover-bg, rgb(229 55 52 / 0.12));
-  --color-foco-anel: var(--focus-primary, rgb(65 60 221 / 0.6));
+  --color-foco-anel: var(--focus-primary, rgb(92 95 240 / 0.6));
   --color-palco: #0a0a0c;
   --color-sobre-midia: rgb(0 0 0 / 0.6);
   --color-sombra: rgb(0 0 0 / 0.32);
@@ -129,7 +129,7 @@
     --color-veu: rgb(0 0 0 / 0.72);
     --color-line-sutil: rgb(255 255 255 / 0.06);
     --control-button-danger-hover-bg: rgb(229 55 52 / 0.14);
-    --focus-primary: rgb(65 60 221 / 0.6);
+    --focus-primary: rgb(92 95 240 / 0.6);
     --color-palco: #000000;
     --color-sobre-midia: rgb(0 0 0 / 0.66);
     --color-sombra: rgb(0 0 0 / 0.4);
@@ -152,8 +152,8 @@
     --text-chat: #f4f4f6;
     --text-chat-muted: #c4c4d2;
     --text-tertiary-muted: #8b8b9d;
-    --accent-primary: #413cdd;
-    --brand-primary-light: #3732c8;
+    --accent-primary: #5c5ff0;
+    --brand-primary-light: #4a4dde;
     --status-online: #1daf6b;
     --status-idle: #f6bb09;
     --status-dnd: #ef4343;
@@ -177,38 +177,38 @@
     --color-veu: rgb(0 0 0 / 0.66);
     --color-line-sutil: rgb(255 255 255 / 0.08);
     --control-button-danger-hover-bg: rgb(229 55 52 / 0.14);
-    --focus-primary: rgb(211 4 4 / 0.6);
-    --color-palco: #0b0709;
+    --focus-primary: rgb(92 95 240 / 0.6);
+    --color-palco: #07090b;
     --color-sobre-midia: rgb(0 0 0 / 0.62);
     --color-sombra: rgb(0 0 0 / 0.36);
     --color-brilho: rgb(255 255 255 / 0.32);
     --color-palco-ink: #f4f4f6;
-    --background-primary: #0b0708;
-    --background-secondary: #120c0d;
-    --background-secondary-lighter: #171011;
-    --guild-list-foreground: #201617;
-    --form-surface-background: #2b1e1f;
+    --background-primary: #080a0c;
+    --background-secondary: #111317;
+    --background-secondary-lighter: #15181d;
+    --guild-list-foreground: #1a1d23;
+    --form-surface-background: #21242c;
     --scrollbar-thumb-bg-hover: #bcbcbf;
     --scrollbar-thumb-bg: color-mix(in oklab, #bcbcbf, transparent 55%);
-    --border-color: #2e2021;
-    --background-textarea: #201617;
-    --background-modifier-accent-focus: #6b3134;
+    --border-color: #272c35;
+    --background-textarea: #1a1d23;
+    --background-modifier-accent-focus: #3b3d8f;
 
-    --text-chat: #f4ecec;
-    --text-chat-muted: #bda9aa;
-    --text-tertiary-muted: #806c6d;
+    --text-chat: #e3e5e8;
+    --text-chat-muted: #a3a9b8;
+    --text-tertiary-muted: #6b7180;
 
-    --accent-primary: #ff0000;
-    --brand-primary-light: #cc0000;
+    --accent-primary: #5c5ff0;
+    --brand-primary-light: #4a4dde;
 
-    --composer-surface-color: #171011;
-    --background-channel-header: #171011;
-    --background-secondary-alt: #201617;
+    --composer-surface-color: #15181d;
+    --background-channel-header: #15181d;
+    --background-secondary-alt: #1a1d23;
     --background-modifier-selected: rgb(255 255 255 / 0.08);
 
     --user-area-divider-color: rgb(0 0 0 / 0.45);
-    --background-modifier-hover: rgb(255 0 0 / 0.06);
-    --color-pilula: #ff0000;
+    --background-modifier-hover: rgb(92 95 240 / 0.08);
+    --color-pilula: #5c5ff0;
   }
 
 
@@ -244,7 +244,7 @@
     --color-veu: rgb(23 25 28 / 0.45);
     --color-line-sutil: rgb(23 25 28 / 0.08);
     --control-button-danger-hover-bg: rgb(229 55 52 / 0.1);
-    --focus-primary: rgb(65 60 221 / 0.5);
+    --focus-primary: rgb(92 95 240 / 0.5);
     --color-palco: #22252a;
     --color-sobre-midia: rgb(0 0 0 / 0.55);
     --color-sombra: rgb(0 0 0 / 0.18);
@@ -267,8 +267,8 @@
     --text-chat: #22252a;
     --text-chat-muted: #616876;
     --text-tertiary-muted: #6e7686;
-    --accent-primary: #413cdd;
-    --brand-primary-light: #3732c8;
+    --accent-primary: #5c5ff0;
+    --brand-primary-light: #4a4dde;
     --status-online: #1fad6b;
     --status-idle: #daa60b;
     --status-dnd: #d92629;
