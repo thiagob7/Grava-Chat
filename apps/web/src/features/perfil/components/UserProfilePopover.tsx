@@ -112,8 +112,8 @@ export const UserProfilePopover: React.FC<UserProfilePopoverProps> = ({
 
   const close = useRef(() => setIsOpen(false)).current;
   const trigger = useRef<HTMLButtonElement>(null);
-  const frozenRect = useRef(new DOMRect());
-  const anchor = useRef({ getBoundingClientRect: () => frozenRect.current });
+  const anchor = useRef({ getBoundingClientRect: () => new DOMRect() });
+  const [opening, setOpening] = useState(false);
   const [align, setAlign] = useState<"start" | "end">("start");
 
   const changeOpen = (open: boolean) => {
@@ -121,17 +121,24 @@ export const UserProfilePopover: React.FC<UserProfilePopoverProps> = ({
       if (trigger.current) {
         const rect = trigger.current.getBoundingClientRect();
         const below = window.innerHeight - rect.top;
-        frozenRect.current = rect;
+        anchor.current = { getBoundingClientRect: () => rect };
         setAlign(below < Math.min(CARD_HEIGHT, window.innerHeight * 0.8) && rect.bottom > below ? "end" : "start");
       }
       if (closeOpenCard !== close) closeOpenCard?.();
       closeOpenCard = close;
-    } else if (closeOpenCard === close) {
-      closeOpenCard = null;
+      setOpening(true);
+      return;
     }
 
-    setIsOpen(open);
+    if (closeOpenCard === close) closeOpenCard = null;
+    setIsOpen(false);
   };
+
+  useEffect(() => {
+    if (!opening) return;
+    setOpening(false);
+    setIsOpen(true);
+  }, [opening]);
 
   useEffect(() => () => {
     if (closeOpenCard === close) closeOpenCard = null;
