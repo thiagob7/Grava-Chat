@@ -1,6 +1,6 @@
 import type { FastifyBaseLogger } from "fastify";
 
-import { THEME_PATH, rooms } from "@gravae/shared";
+import { BRAND_NAME, SITE_URL, THEME_PATH, rooms } from "@gravae/shared";
 
 import { env } from "~/env.js";
 import { unset } from "~/lib/mongo.js";
@@ -13,15 +13,23 @@ import { categoryRepository } from "~/repositories/guild-repository.js";
 import { messageRepository } from "~/repositories/message-repository.js";
 import { userRepository } from "~/repositories/user-repository.js";
 import { guildService } from "~/services/guild-service.js";
+import {
+  LEGACY_BRAND,
+  LEGACY_CHANNEL_NAMES,
+  LEGACY_HOUSE_USERNAME,
+  LEGACY_SERVER_NAMES,
+  withoutLegacyBrand,
+} from "~/services/legacy-brand.js";
 import { messageService } from "~/services/message-service.js";
 import { readHouseThemes, type HouseTheme } from "~/temas-da-casa.js";
 
 export const HOUSE_EMAIL = "sistema@gravae.local";
-const SERVER_NAME = "Gravaê Temas";
+const SERVER_NAME = "Ravox Temas";
+const HOUSE_USERNAME = "ravox";
 const CHANNEL_NAME = "temas";
 
-const DEVELOPERS_SERVER = "Gravaê Developers";
-const HOUSE_SERVER = "Gravaê HQ";
+const DEVELOPERS_SERVER = "Ravox Developers";
+const HOUSE_SERVER = "Ravox HQ";
 
 const HOUSE_CHANNELS: {
   category: string | null;
@@ -33,32 +41,32 @@ const HOUSE_CHANNELS: {
   { category: null, name: "regras", topic: "O combinado de quem fica." },
   {
     category: null,
-    name: "gravae-developers",
-    topic: "A casa de quem constrói no Gravaê.",
-    url: "https://gravae.io/developers",
+    name: "ravox-developers",
+    topic: "A casa de quem constrói no Ravox Chat.",
+    url: `${SITE_URL}/desenvolvedores`,
   },
   {
     category: null,
-    name: "gravae-temas",
+    name: "ravox-temas",
     topic: "Os temas feitos pela casa.",
-    url: "https://gravae.io/temas",
+    url: `${SITE_URL}/desenvolvedores/temas`,
   },
-  { category: "Gravaê", name: "novidades", topic: "O que mudou, e quando." },
-  { category: "Gravaê", name: "perguntas-frequentes", topic: "As dúvidas que mais chegam." },
-  { category: "Gravaê", name: "no-que-estamos", topic: "O que está sendo construído agora." },
+  { category: BRAND_NAME, name: "novidades", topic: "O que mudou, e quando." },
+  { category: BRAND_NAME, name: "perguntas-frequentes", topic: "As dúvidas que mais chegam." },
+  { category: BRAND_NAME, name: "no-que-estamos", topic: "O que está sendo construído agora." },
   {
-    category: "Gravaê",
+    category: BRAND_NAME,
     name: "central-de-ajuda",
     topic: "Os guias escritos da casa.",
-    url: "https://gravae.io/ajuda",
+    url: `${SITE_URL}/ajuda`,
   },
-  { category: "Gravaê", name: "estado-da-plataforma", topic: "Se caiu, o aviso sai aqui." },
-  { category: "Gravaê", name: "quebrou-alguma-coisa", topic: "Conte o que deu errado." },
+  { category: BRAND_NAME, name: "estado-da-plataforma", topic: "Se caiu, o aviso sai aqui." },
+  { category: BRAND_NAME, name: "quebrou-alguma-coisa", topic: "Conte o que deu errado." },
   {
-    category: "Gravaê",
+    category: BRAND_NAME,
     name: "por-vir",
     topic: "O caminho até as próximas entregas.",
-    url: "https://gravae.io/roadmap",
+    url: `${SITE_URL}/desenvolvedores/mudancas`,
   },
   { category: "Conversa", name: "papo-da-casa", topic: "Conversa solta de quem usa." },
   { category: "Conversa", name: "mostre-o-seu", topic: "Temas, bots e o que você fez." },
@@ -75,11 +83,11 @@ const DEVELOPERS_CHANNELS: {
     topic: "Quem chega, começa por aqui.",
   },
   { category: "Meta", name: "regras", topic: "O combinado da comunidade." },
-  { category: "Meta", name: "novidades", topic: "O que mudou no Gravaê." },
+  { category: "Meta", name: "novidades", topic: "O que mudou no Ravox Chat." },
   { category: "Meta", name: "materiais", topic: "Documentação, exemplos e links úteis." },
   { category: "Terminal", name: "geral-dev", topic: "Conversa solta de quem constrói." },
   { category: "Terminal", name: "bots-e-api", topic: "A API pública e o @gravae/bot." },
-  { category: "Terminal", name: "auto-hospedagem", topic: "Subir o Gravaê na sua própria máquina." },
+  { category: "Terminal", name: "auto-hospedagem", topic: "Subir o Ravox Chat na sua própria máquina." },
   { category: "Clientes", name: "clientes-mobile", topic: "Clientes de terceiros no celular." },
   { category: "Clientes", name: "clientes-desktop", topic: "Clientes de terceiros no computador." },
 ];
@@ -135,12 +143,12 @@ export const systemService = {
       return userRepository.update(existing.id, { isBot: false, system: true });
     }
 
-    const livre = !(await userRepository.findByUsername("gravae"));
+    const livre = !(await userRepository.findByUsername(HOUSE_USERNAME));
 
     return userRepository.create({
       email: HOUSE_EMAIL,
-      username: livre ? "gravae" : "gravae-sistema",
-      displayName: "Gravaê",
+      username: livre ? HOUSE_USERNAME : `${HOUSE_USERNAME}-sistema`,
+      displayName: BRAND_NAME,
       avatarUrl: `${env.WEB_ORIGIN}/brand/icone-512.png`,
       isBot: false,
       system: true,
@@ -172,6 +180,69 @@ export const systemService = {
     })();
 
     return { recipients: destinations.length };
+  },
+
+  async renameLegacyBrand(log: FastifyBaseLogger) {
+    const house = await systemService.user();
+    const houseChanges: { displayName?: string; username?: string } = {};
+
+    if (house.displayName === LEGACY_BRAND) houseChanges.displayName = BRAND_NAME;
+    if (house.username === LEGACY_HOUSE_USERNAME && !(await userRepository.findByUsername(HOUSE_USERNAME))) {
+      houseChanges.username = HOUSE_USERNAME;
+    }
+    if (Object.keys(houseChanges).length) {
+      await userRepository.update(house.id, houseChanges);
+      log.info(houseChanges, "conta oficial: nome antigo trocado");
+    }
+
+    const themes = await prisma.theme.updateMany({
+      where: { authorId: house.id, author: LEGACY_BRAND },
+      data: { author: BRAND_NAME },
+    });
+    if (themes.count) log.info(`temas da casa: autor trocado em ${themes.count}`);
+
+    const servers = [
+      { ownerEmail: env.THEMES_OWNER_SERVER, from: LEGACY_SERVER_NAMES.themes, to: SERVER_NAME },
+      { ownerEmail: env.DEVELOPERS_OWNER_SERVER, from: LEGACY_SERVER_NAMES.developers, to: DEVELOPERS_SERVER },
+      { ownerEmail: env.HOUSE_OWNER_SERVER, from: LEGACY_SERVER_NAMES.house, to: HOUSE_SERVER },
+    ];
+
+    for (const { ownerEmail, from, to } of servers) {
+      if (!ownerEmail) continue;
+
+      const owner = await userRepository.findByEmail(ownerEmail);
+      if (!owner) continue;
+
+      const guild =
+        (await prisma.guild.findFirst({ where: { ownerId: owner.id, name: to } })) ??
+        (await prisma.guild.findFirst({ where: { ownerId: owner.id, name: from } }));
+      if (!guild) continue;
+
+      if (guild.name !== to || guild.description?.includes(LEGACY_BRAND)) {
+        await prisma.guild.update({
+          where: { id: guild.id },
+          data: {
+            name: to,
+            ...(guild.description ? { description: withoutLegacyBrand(guild.description, BRAND_NAME) } : {}),
+          },
+        });
+        log.info(`"${from}" agora é "${to}"`);
+      }
+
+      await prisma.category.updateMany({ where: { guildId: guild.id, name: LEGACY_BRAND }, data: { name: BRAND_NAME } });
+
+      const channels = await prisma.channel.findMany({ where: { guildId: guild.id } });
+      for (const channel of channels) {
+        const name = LEGACY_CHANNEL_NAMES[channel.name] ?? channel.name;
+        const topic = channel.topic ? withoutLegacyBrand(channel.topic, BRAND_NAME) : channel.topic;
+        const url = HOUSE_CHANNELS.find((c) => c.name === name)?.url ?? channel.url;
+
+        if (name === channel.name && topic === channel.topic && url === channel.url) continue;
+
+        await prisma.channel.update({ where: { id: channel.id }, data: { name, topic, url } });
+        log.info(`canal ${channel.name}: nome, descrição ou link atualizados`);
+      }
+    }
   },
 
   async removeServers(log: FastifyBaseLogger) {
@@ -270,7 +341,7 @@ export const systemService = {
           category: guild.category ?? "CIENCIA_E_TECNOLOGIA",
           description:
             guild.description ??
-            "A casa de quem constrói no Gravaê: API, bots, temas e o que vem por aí.",
+            "A casa de quem constrói no Ravox Chat: API, bots, temas e o que vem por aí.",
         },
       });
     }
@@ -310,7 +381,7 @@ export const systemService = {
 
     const owner = await userRepository.findByEmail(env.HOUSE_OWNER_SERVER);
     if (!owner) {
-      log.warn(`Gravaê HQ: o dono ${env.HOUSE_OWNER_SERVER} ainda não tem conta`);
+      log.warn(`Ravox HQ: o dono ${env.HOUSE_OWNER_SERVER} ainda não tem conta`);
       return;
     }
 
@@ -321,7 +392,7 @@ export const systemService = {
     if (!guild) {
       const created = await guildService.create(owner.id, { name: HOUSE_SERVER });
       guild = await prisma.guild.findUniqueOrThrow({ where: { id: created.id } });
-      log.info(`Gravaê HQ: criado para ${owner.username}`);
+      log.info(`Ravox HQ: criado para ${owner.username}`);
     }
 
     if (!guild.verified || guild.discoverable === false || !guild.description) {
@@ -333,7 +404,7 @@ export const systemService = {
           category: guild.category ?? "CIENCIA_E_TECNOLOGIA",
           description:
             guild.description ??
-            "A casa oficial do Gravaê: novidades, ajuda, o que quebrou e o que vem por aí.",
+            "A casa oficial do Ravox Chat: novidades, ajuda, o que quebrou e o que vem por aí.",
         },
       });
     }
@@ -365,7 +436,7 @@ export const systemService = {
         topic: channel.topic,
       });
 
-      log.info(`Gravaê HQ: canal ${channel.name} criado`);
+      log.info(`Ravox HQ: canal ${channel.name} criado`);
     }
   },
 
@@ -377,7 +448,7 @@ export const systemService = {
         data: {
           name: theme.name,
           description: theme.description,
-          author: "Gravaê",
+          author: BRAND_NAME,
           version: theme.version,
           tags: [],
           css: theme.css,
