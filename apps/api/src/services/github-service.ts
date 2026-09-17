@@ -279,7 +279,7 @@ export const githubService = {
       body: JSON.stringify({
         environment_ids: pending.map((p) => p.environment.id),
         state: approve ? "approved" : "rejected",
-        comment: `${approve ? "Aprovado" : "Recusado"} no painel do Gravaê por ${actorName}.`,
+        comment: `${approve ? "Aprovado" : "Recusado"} no painel do Ravox Chat por ${actorName}.`,
       }),
     });
 

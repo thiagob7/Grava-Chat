@@ -44,7 +44,7 @@ export const perfil = {
   },
   cartao: {
     infinity: "Infinity-jäsen",
-    equipe: "Gravaê-tiimi",
+    equipe: "Ravox Chat-tiimi",
     trocarFaixa: "Vaihda kortin banneri",
     trocarFaixaCurto: "Vaihda banneri",
     trocarFoto: "Vaihda profiilikuva",

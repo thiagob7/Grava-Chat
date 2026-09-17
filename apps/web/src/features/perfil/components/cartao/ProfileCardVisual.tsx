@@ -612,7 +612,7 @@ export const ProfileCardVisual: React.FC<ProfileCardVisualProps> = ({
             <>
               <p data-gc="perfil.cartao.profile-card-visual.p--7" className="mb-1 mt-5 text-sm font-bold text-ink">{t("perfil.membroDesde")}</p>
               <div data-gc="perfil.cartao.profile-card-visual.div--12" className="grid grid-cols-2 items-start gap-x-3 text-sm text-ink-muted">
-                <span data-gc="perfil.cartao.profile-card-visual.span--30" className="flex items-start gap-1.5" title="Gravaê">
+                <span data-gc="perfil.cartao.profile-card-visual.span--30" className="flex items-start gap-1.5" title="Ravox Chat">
                   <img data-gc="perfil.cartao.profile-card-visual.img--4" src="/brand/logo%20g%20branco.svg" alt="" className="size-3.5 opacity-80" draggable={false} />
                   {new Intl.DateTimeFormat(currentLanguage(), { dateStyle: "medium" }).format(new Date(createdAt))}
                 </span>

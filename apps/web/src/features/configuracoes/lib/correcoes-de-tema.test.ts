@@ -13,7 +13,7 @@ describe("correções para tema da referência", () => {
     expect(outsideLooksTheme(":root { --ThemePanelMargin: 4px }")).toBe(true);
   });
 
-  it("deixa passar tema escrito para o Gravaê", () => {
+  it("deixa passar tema escrito para o Ravox Chat", () => {
     expect(outsideLooksTheme(':root { --color-brand: #123 }\n.avatar { border-radius: 0 }')).toBe(
       false,
     );

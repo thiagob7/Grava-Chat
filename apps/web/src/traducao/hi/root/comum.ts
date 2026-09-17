@@ -6,7 +6,7 @@ export const comum = {
     recarregar: "फिर से लोड करें",
     copiarDetalhes: "ब्योरा कॉपी करें",
     parteQuebrou: "स्क्रीन का यह हिस्सा टूट गया।",
-    titulo: "Gravaê लड़खड़ा गया।",
+    titulo: "Ravox Chat लड़खड़ा गया।",
     detalhe: "रास्ते में कुछ टूट गया और स्क्रीन खुद को बना नहीं पाई। आपकी बातचीत खोई नहीं है — सब कुछ सर्वर पर है।",
   },
   perdido: {
@@ -21,7 +21,7 @@ export const comum = {
   },
   avisoDoNavegador: {
     titulo: "संदेशों की सूचना चाहिए?",
-    detalhe: "Gravaê किसी और विंडो के पीछे हो तो वह आपको बुला लेगा।",
+    detalhe: "Ravox Chat किसी और विंडो के पीछे हो तो वह आपको बुला लेगा।",
   },
   atualizacao: {
     titulo: "अपडेट",
@@ -102,8 +102,8 @@ export const comum = {
   trocar: "बदलें",
   loginNoApp: {
     titulo: "सब तैयार है!",
-    detalhe: "आपने साइन इन कर लिया है। Gravaê पर वापस जाएँ, ऐप आपका इंतज़ार कर रहा है।",
-    abrir: "Gravaê खोलें",
+    detalhe: "आपने साइन इन कर लिया है। Ravox Chat पर वापस जाएँ, ऐप आपका इंतज़ार कर रहा है।",
+    abrir: "Ravox Chat खोलें",
     fecharAba: "अब आप यह टैब बंद कर सकते हैं।",
     falhouTitulo: "साइन इन नहीं हो सका",
     falhouDetalhe: "ऐप पर वापस जाएँ और फिर से साइन इन करें।",

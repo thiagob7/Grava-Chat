@@ -167,7 +167,7 @@ export const chamada = {
     tela: "Schermopname",
     telaDetalhe: "Het scherm en vensters delen.",
     monitoramento: "Invoermonitoring",
-    monitoramentoDetalhe: "Push-to-talk gebruiken, ook met Gravaê op de achtergrond.",
+    monitoramentoDetalhe: "Push-to-talk gebruiken, ook met Ravox Chat op de achtergrond.",
   },
   jaConectado: {
     titulo: "Je zit al in dit gesprek",

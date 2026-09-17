@@ -6,7 +6,7 @@ export const comum = {
     recarregar: "Last inn på nytt",
     copiarDetalhes: "Kopier detaljene",
     parteQuebrou: "Denne delen av skjermen røk.",
-    titulo: "Gravaê snublet.",
+    titulo: "Ravox Chat snublet.",
     detalhe: "Noe røk underveis, og skjermen klarte ikke å tegne seg. Samtalen din er ikke borte — alt ligger på tjeneren.",
   },
   perdido: {
@@ -21,7 +21,7 @@ export const comum = {
   },
   avisoDoNavegador: {
     titulo: "Vil du få beskjed om meldinger?",
-    detalhe: "Når Gravaê ligger bak et annet vindu, roper den på deg.",
+    detalhe: "Når Ravox Chat ligger bak et annet vindu, roper den på deg.",
   },
   atualizacao: {
     titulo: "Oppdatering",
@@ -102,8 +102,8 @@ export const comum = {
   trocar: "Bytt",
   loginNoApp: {
     titulo: "Alt klart!",
-    detalhe: "Du er logget inn. Gå tilbake til Gravaê, appen venter på deg.",
-    abrir: "Åpne Gravaê",
+    detalhe: "Du er logget inn. Gå tilbake til Ravox Chat, appen venter på deg.",
+    abrir: "Åpne Ravox Chat",
     fecharAba: "Du kan lukke denne fanen nå.",
     falhouTitulo: "Innloggingen mislyktes",
     falhouDetalhe: "Gå tilbake til appen og prøv å logge inn igjen.",

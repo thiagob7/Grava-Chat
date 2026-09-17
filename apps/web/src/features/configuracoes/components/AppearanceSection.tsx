@@ -70,7 +70,7 @@ const THEMES: ListTheme[] = [
   },
   {
     id: "gravae",
-    name: "Modo Gravaê",
+    name: "Modo Ravox Chat",
     icon: <Flame data-gc="configuracoes.appearance-section.flame" size={14} />,
     brand: true,
   },

@@ -32,7 +32,7 @@ export const DesktopSection: React.FC = () => {
       <Section data-gc="configuracoes.desktop-section.section"
         id="inicializacao"
         title="Inicialização"
-        detail="Como o Gravaê se comporta quando o computador liga."
+        detail="Como o Ravox Chat se comporta quando o computador liga."
       >
         {!bridge ? (
           <p data-gc="configuracoes.desktop-section.p--2" className="text-sm text-ink-faint">
@@ -47,7 +47,7 @@ export const DesktopSection: React.FC = () => {
         ) : (
           <Choice data-gc="configuracoes.desktop-section.choice"
             title="Abrir junto com o computador"
-            detail="O Gravaê sobe minimizado quando você entra na sua conta do sistema, já conectado."
+            detail="O Ravox Chat sobe minimizado quando você entra na sua conta do sistema, já conectado."
             on={inLogin}
             onChange={(on) => {
               setNoLogin(on);
@@ -78,7 +78,7 @@ export const DesktopSection: React.FC = () => {
             disabled={!bridge}
             onClick={() =>
               void confirm({
-                title: "Reiniciar o Gravaê?",
+                title: "Reiniciar o Ravox Chat?",
                 description:
                   "O aplicativo fecha e abre de novo na hora. Se você estiver numa chamada, sai dela.",
                 action: "Reiniciar",

@@ -314,7 +314,7 @@ export const AppDetail: React.FC<AppPropsDetail> = ({
         <Section data-gc="configuracoes.aplicativos.detalhe-do-aplicativo.section--5"
           id="oauth2"
           title="OAuth2"
-          detail="Pra montar um painel externo que entra com a conta do Gravaê."
+          detail="Pra montar um painel externo que entra com a conta do Ravox Chat."
         >
           <div data-gc="configuracoes.aplicativos.detalhe-do-aplicativo.div--9">
             <Label data-gc="configuracoes.aplicativos.detalhe-do-aplicativo.label--5" htmlFor={`uris-${bot.id}`}>Endereços de retorno</Label>

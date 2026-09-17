@@ -44,7 +44,7 @@ export const perfil = {
   },
   cartao: {
     infinity: "Anggota Infinity",
-    equipe: "Tim Gravaê",
+    equipe: "Tim Ravox Chat",
     trocarFaixa: "Ganti banner kartu",
     trocarFaixaCurto: "Ganti banner",
     trocarFoto: "Ganti foto profil",

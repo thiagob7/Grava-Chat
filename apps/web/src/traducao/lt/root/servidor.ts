@@ -124,7 +124,7 @@ export const servidor = {
     feitoPor: "Sukūrė",
     publicadoEm: "Paskelbta",
     denunciarNome: "Pranešti apie {{nome}}",
-    denunciaDetalhe: "Pranešimas keliauja Gravaê komandai. Programos autorius nesužinos, kad tai buvote jūs.",
+    denunciaDetalhe: "Pranešimas keliauja Ravox Chat komandai. Programos autorius nesužinos, kad tai buvote jūs.",
     denunciaFalhou: "Pranešimo išsiųsti nepavyko.",
     umMembro: "1 narys",
     semDescricao: "Aprašymo nėra.",
@@ -216,7 +216,7 @@ export const servidor = {
   },
   denuncia: {
     titulo: "Pranešti apie {{nome}}",
-    descricao: "Pranešimas keliauja Gravaê komandai. Papasakok, kas nutiko.",
+    descricao: "Pranešimas keliauja Ravox Chat komandai. Papasakok, kas nutiko.",
     motivo: "Priežastis",
     detalhes: "Detalės (nebūtina)",
     enviar: "Siųsti pranešimą",

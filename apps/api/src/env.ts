@@ -47,7 +47,7 @@ const schema = z.object({
   EDGE_SECRET: z.string().refine((v) => !v || v.length >= 32, "EDGE_SECRET precisa de 32 caracteres ou mais").default(""),
 
   RESEND_API_KEY: z.string().default(""),
-  EMAIL_SENDER: z.string().default("Gravaê <onboarding@resend.dev>"),
+  EMAIL_SENDER: z.string().default("Ravox Chat <onboarding@resend.dev>"),
 
   THEMES_OWNER_SERVER: z.string().default(""),
   DEVELOPERS_OWNER_SERVER: z.string().default(""),

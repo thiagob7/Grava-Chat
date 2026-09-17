@@ -516,7 +516,7 @@ export const MessageItem: React.FC<MessageItemProps> = ({
           </div>
         )}
 
-        {/* Na recusa por não entregar, quem explica é o aviso do Gravaê logo abaixo. */}
+        {/* Na recusa por não entregar, quem explica é o aviso do Ravox Chat logo abaixo. */}
         {message.failed && message.reason !== "nao-entregue" && (
           <div data-gc="conversa.message-item.div--10" className="mt-1 flex flex-wrap items-center gap-1 text-xs text-danger">
             <TriangleAlert data-gc="conversa.message-item.triangle-alert" size={12} />

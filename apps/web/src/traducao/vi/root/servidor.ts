@@ -124,7 +124,7 @@ export const servidor = {
     feitoPor: "Người làm",
     publicadoEm: "Đăng ngày",
     denunciarNome: "Báo cáo {{nome}}",
-    denunciaDetalhe: "Báo cáo được gửi tới đội Gravaê. Người làm ứng dụng sẽ không biết là bạn.",
+    denunciaDetalhe: "Báo cáo được gửi tới đội Ravox Chat. Người làm ứng dụng sẽ không biết là bạn.",
     denunciaFalhou: "Không gửi được báo cáo.",
     umMembro: "1 thành viên",
     semDescricao: "Không có mô tả.",
@@ -216,7 +216,7 @@ export const servidor = {
   },
   denuncia: {
     titulo: "Báo cáo {{nome}}",
-    descricao: "Báo cáo được gửi đến đội Gravaê. Hãy kể điều gì đã xảy ra.",
+    descricao: "Báo cáo được gửi đến đội Ravox Chat. Hãy kể điều gì đã xảy ra.",
     motivo: "Lý do",
     detalhes: "Chi tiết (tùy chọn)",
     enviar: "Gửi báo cáo",

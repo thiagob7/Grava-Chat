@@ -93,7 +93,7 @@ export const AppsSection: React.FC = () => {
           {!isLoading && !isError && !bots.length && (
             <p data-gc="configuracoes.aplicativos.aplicativos-section.p--4" className="text-sm text-ink-faint">
               Nenhum aplicativo ainda. Crie o primeiro pra começar a usar a API
-              do Gravaê.
+              do Ravox Chat.
             </p>
           )}
 

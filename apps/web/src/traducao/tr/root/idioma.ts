@@ -1,6 +1,6 @@
 export const idioma = {
   titulo: "Arayüz dili",
-  detalhe: "Gravaê'nin seninle konuştuğu dil. Yalnızca bu cihazda geçerlidir.",
+  detalhe: "Ravox Chat'nin seninle konuştuğu dil. Yalnızca bu cihazda geçerlidir.",
   procurar: "Dil ara…",
   nenhum: "Bu adda bir dil yok.",
   escolher: "Arayüz dilini seç",

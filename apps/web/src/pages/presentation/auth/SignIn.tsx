@@ -99,7 +99,7 @@ export const SignIn: React.FC = () => {
             draggable={false}
           />
 
-          <img data-gc="auth.sign-in.img--2" src="/brand/logotipo.png" alt="Gravaê" className="h-7 w-auto" draggable={false} />
+          <img data-gc="auth.sign-in.img--2" src="/brand/logotipo.png" alt="Ravox Chat" className="h-7 w-auto" draggable={false} />
 
           <p data-gc="auth.sign-in.p" className="max-w-[15rem] text-center text-xs leading-relaxed text-ink-faint">
             Conversa, voz e vídeo com os seus. Sem cobrar, sem anúncio, sem

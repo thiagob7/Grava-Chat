@@ -44,7 +44,7 @@ export const perfil = {
   },
   cartao: {
     infinity: "Infinity 會員",
-    equipe: "Gravaê 團隊",
+    equipe: "Ravox Chat 團隊",
     trocarFaixa: "更換卡片橫幅",
     trocarFaixaCurto: "更換橫幅",
     trocarFoto: "更換大頭貼",

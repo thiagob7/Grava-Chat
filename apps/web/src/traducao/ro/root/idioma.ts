@@ -1,7 +1,7 @@
 export const idioma = {
   titulo: "Limba interfeței",
   detalhe:
-    "Limba în care Gravaê îți vorbește. Valabilă doar pe acest dispozitiv.",
+    "Limba în care Ravox Chat îți vorbește. Valabilă doar pe acest dispozitiv.",
   procurar: "Caută limba…",
   nenhum: "Nicio limbă cu acest nume.",
   escolher: "Alege limba interfeței",

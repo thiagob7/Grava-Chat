@@ -124,7 +124,7 @@ export const servidor = {
     feitoPor: "สร้างโดย",
     publicadoEm: "เผยแพร่เมื่อ",
     denunciarNome: "รายงาน {{nome}}",
-    denunciaDetalhe: "รายงานจะไปถึงทีม Gravaê คนที่ทำแอปจะไม่รู้ว่าเป็นคุณ",
+    denunciaDetalhe: "รายงานจะไปถึงทีม Ravox Chat คนที่ทำแอปจะไม่รู้ว่าเป็นคุณ",
     denunciaFalhou: "ส่งรายงานไม่สำเร็จ",
     umMembro: "สมาชิก 1 คน",
     semDescricao: "ไม่มีคำอธิบาย",
@@ -216,7 +216,7 @@ export const servidor = {
   },
   denuncia: {
     titulo: "รายงาน {{nome}}",
-    descricao: "รายงานจะส่งถึงทีม Gravaê บอกเราว่าเกิดอะไรขึ้น",
+    descricao: "รายงานจะส่งถึงทีม Ravox Chat บอกเราว่าเกิดอะไรขึ้น",
     motivo: "เหตุผล",
     detalhes: "รายละเอียด (ไม่บังคับ)",
     enviar: "ส่งรายงาน",

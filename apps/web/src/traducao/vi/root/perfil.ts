@@ -44,7 +44,7 @@ export const perfil = {
   },
   cartao: {
     infinity: "Thành viên Infinity",
-    equipe: "Đội ngũ Gravaê",
+    equipe: "Đội ngũ Ravox Chat",
     trocarFaixa: "Đổi ảnh bìa của thẻ",
     trocarFaixaCurto: "Đổi ảnh bìa",
     trocarFoto: "Đổi ảnh đại diện",

@@ -42,9 +42,9 @@ body {
 }
 
 /*
-  O padrão da marca: pontinhos por cima da cor da casa. Era o "G" do Gravaê em
-  SVG, que saiu com o nome. Vive em CSS porque é fundo de seção, e seção de
-  página não precisa de componente React pra pintar.
+  O padrão da marca: pontinhos por cima da cor da casa. Antes era a letra da
+  marca repetida em SVG, que saiu quando o nome mudou. Vive em CSS porque é fundo
+  de seção, e seção de página não precisa de componente React pra pintar.
 */
 .fundo-da-marca {
   background-color: var(--color-brand);

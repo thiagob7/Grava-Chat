@@ -44,7 +44,7 @@ export const perfil = {
   },
   cartao: {
     infinity: "Infinity-medlem",
-    equipe: "Gravaê-teamet",
+    equipe: "Ravox Chat-teamet",
     trocarFaixa: "Skift kortets banner",
     trocarFaixaCurto: "Skift banner",
     trocarFoto: "Skift profilbillede",

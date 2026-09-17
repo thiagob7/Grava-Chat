@@ -6,7 +6,7 @@ export const comum = {
     recarregar: "Lataa uudelleen",
     copiarDetalhes: "Kopioi tiedot",
     parteQuebrou: "Tämä osa näkymästä hajosi.",
-    titulo: "Gravaê kompastui.",
+    titulo: "Ravox Chat kompastui.",
     detalhe: "Jokin hajosi matkalla eikä näkymä pystynyt piirtymään. Keskustelusi ei kadonnut — kaikki on palvelimella.",
   },
   perdido: {
@@ -21,7 +21,7 @@ export const comum = {
   },
   avisoDoNavegador: {
     titulo: "Haluatko ilmoitukset viesteistä?",
-    detalhe: "Kun Gravaê on toisen ikkunan takana, se huutaa sinulle.",
+    detalhe: "Kun Ravox Chat on toisen ikkunan takana, se huutaa sinulle.",
   },
   atualizacao: {
     titulo: "Päivitys",
@@ -102,8 +102,8 @@ export const comum = {
   trocar: "Vaihda",
   loginNoApp: {
     titulo: "Kaikki valmista!",
-    detalhe: "Olet kirjautunut sisään. Palaa Gravaêhen, sovellus odottaa jo.",
-    abrir: "Avaa Gravaê",
+    detalhe: "Olet kirjautunut sisään. Palaa Ravox Chathen, sovellus odottaa jo.",
+    abrir: "Avaa Ravox Chat",
     fecharAba: "Voit sulkea tämän välilehden.",
     falhouTitulo: "Kirjautuminen epäonnistui",
     falhouDetalhe: "Palaa sovellukseen ja yritä kirjautua uudelleen.",

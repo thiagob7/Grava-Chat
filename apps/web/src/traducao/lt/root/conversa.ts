@@ -131,7 +131,7 @@ export const conversa = {
   },
   denuncia: {
     titulo: "Pranešti apie žinutę",
-    descricao: "Pranešimas keliauja Gravaê komandai. Papasakok, kas nutiko.",
+    descricao: "Pranešimas keliauja Ravox Chat komandai. Papasakok, kas nutiko.",
     de: "Nuo {{nome}}",
     semTexto: "(be teksto)",
     motivo: "Priežastis",

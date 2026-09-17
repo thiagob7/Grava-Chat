@@ -124,7 +124,7 @@ export const servidor = {
     feitoPor: "Φτιάχτηκε από",
     publicadoEm: "Δημοσιεύτηκε στις",
     denunciarNome: "Αναφορά του {{nome}}",
-    denunciaDetalhe: "Η αναφορά πάει στην ομάδα του Gravaê. Όποιος έφτιαξε την εφαρμογή δεν μαθαίνει ότι ήσασταν εσείς.",
+    denunciaDetalhe: "Η αναφορά πάει στην ομάδα του Ravox Chat. Όποιος έφτιαξε την εφαρμογή δεν μαθαίνει ότι ήσασταν εσείς.",
     denunciaFalhou: "Η αναφορά δεν στάλθηκε.",
     umMembro: "1 μέλος",
     semDescricao: "Χωρίς περιγραφή.",
@@ -216,7 +216,7 @@ export const servidor = {
   },
   denuncia: {
     titulo: "Αναφορά: {{nome}}",
-    descricao: "Η αναφορά πηγαίνει στην ομάδα του Gravaê. Πες μας τι συνέβη.",
+    descricao: "Η αναφορά πηγαίνει στην ομάδα του Ravox Chat. Πες μας τι συνέβη.",
     motivo: "Λόγος",
     detalhes: "Λεπτομέρειες (προαιρετικό)",
     enviar: "Αποστολή αναφοράς",

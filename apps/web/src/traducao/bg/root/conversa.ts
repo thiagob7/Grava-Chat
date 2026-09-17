@@ -131,7 +131,7 @@ export const conversa = {
   },
   denuncia: {
     titulo: "Докладване на съобщението",
-    descricao: "Докладът отива при екипа на Gravaê. Разкажи какво се случи.",
+    descricao: "Докладът отива при екипа на Ravox Chat. Разкажи какво се случи.",
     de: "От {{nome}}",
     semTexto: "(без текст)",
     motivo: "Причина",

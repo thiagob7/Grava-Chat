@@ -124,7 +124,7 @@ export const servidor = {
     feitoPor: "Făcută de",
     publicadoEm: "Publicată pe",
     denunciarNome: "Raportează {{nome}}",
-    denunciaDetalhe: "Raportul ajunge la echipa Gravaê. Cine a făcut aplicația nu află că ai fost tu.",
+    denunciaDetalhe: "Raportul ajunge la echipa Ravox Chat. Cine a făcut aplicația nu află că ai fost tu.",
     denunciaFalhou: "Raportul nu a putut fi trimis.",
     umMembro: "1 membru",
     semDescricao: "Fără descriere.",
@@ -216,7 +216,7 @@ export const servidor = {
   },
   denuncia: {
     titulo: "Raportează {{nome}}",
-    descricao: "Raportul ajunge la echipa Gravaê. Spune-ne ce s-a întâmplat.",
+    descricao: "Raportul ajunge la echipa Ravox Chat. Spune-ne ce s-a întâmplat.",
     motivo: "Motiv",
     detalhes: "Detalii (opțional)",
     enviar: "Trimite raportul",

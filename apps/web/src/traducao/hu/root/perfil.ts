@@ -44,7 +44,7 @@ export const perfil = {
   },
   cartao: {
     infinity: "Infinity-tag",
-    equipe: "Gravaê csapat",
+    equipe: "Ravox Chat csapat",
     trocarFaixa: "Kártya fejlécképének cseréje",
     trocarFaixaCurto: "Fejléckép cseréje",
     trocarFoto: "Profilkép cseréje",

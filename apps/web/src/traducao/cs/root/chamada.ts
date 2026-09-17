@@ -167,7 +167,7 @@ export const chamada = {
     tela: "Nahrávání obrazovky",
     telaDetalhe: "Sdílet obrazovku a okna.",
     monitoramento: "Sledování vstupu",
-    monitoramentoDetalhe: "Používat push-to-talk i s Gravaê na pozadí.",
+    monitoramentoDetalhe: "Používat push-to-talk i s Ravox Chat na pozadí.",
   },
   jaConectado: {
     titulo: "V tomhle hovoru už jsi",

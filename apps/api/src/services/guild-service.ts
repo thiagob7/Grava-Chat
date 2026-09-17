@@ -385,7 +385,7 @@ export const guildService = {
 
     const noticesChannelId =
       input.noticesChannelId ??
-      (await born("avisos-da-comunidade", "O que o Gravaê anuncia para quem administra aqui."));
+      (await born("avisos-da-comunidade", "O que o Ravox Chat anuncia para quem administra aqui."));
 
     const updated = await guildRepository.update(guildId, {
       community: true,

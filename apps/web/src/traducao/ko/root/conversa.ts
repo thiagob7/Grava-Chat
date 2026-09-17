@@ -131,7 +131,7 @@ export const conversa = {
   },
   denuncia: {
     titulo: "메시지 신고",
-    descricao: "신고는 Gravaê 팀에 전달됩니다. 무슨 일이 있었는지 알려주세요.",
+    descricao: "신고는 Ravox Chat 팀에 전달됩니다. 무슨 일이 있었는지 알려주세요.",
     de: "{{nome}} 님",
     semTexto: "(내용 없음)",
     motivo: "사유",

@@ -44,7 +44,7 @@ export const perfil = {
   },
   cartao: {
     infinity: "Član Infinityja",
-    equipe: "Tim Gravaê",
+    equipe: "Tim Ravox Chat",
     trocarFaixa: "Promijeni natpis kartice",
     trocarFaixaCurto: "Promijeni natpis",
     trocarFoto: "Promijeni profilnu sliku",

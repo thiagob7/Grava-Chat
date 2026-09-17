@@ -85,7 +85,7 @@ describe("seletor preso ao hash de um build", () => {
     expect(countPickersDated(css)).toEqual({ stuck: 0, withDiv: 0, loose: 1 });
   });
 
-  it("conta zero num tema escrito para o Gravaê", () => {
+  it("conta zero num tema escrito para o Ravox Chat", () => {
     expect(countPickersDated(":root { --color-brand: #123 }")).toEqual({
       stuck: 0,
       withDiv: 0,

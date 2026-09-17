@@ -167,7 +167,7 @@ export const chamada = {
     tela: "Запис на екрана",
     telaDetalhe: "Споделяне на екрана и прозорците.",
     monitoramento: "Наблюдение на входа",
-    monitoramentoDetalhe: "Използване на натисни-и-говори дори когато Gravaê е на заден план.",
+    monitoramentoDetalhe: "Използване на натисни-и-говори дори когато Ravox Chat е на заден план.",
   },
   jaConectado: {
     titulo: "Вече си в този разговор",

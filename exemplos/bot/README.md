@@ -1,6 +1,6 @@
-# Um bot do Gravaê
+# Um bot do Ravox Chat
 
-O bot **não roda dentro do Gravaê**. Ele roda onde você quiser e se conecta de
+O bot **não roda dentro do Ravox Chat**. Ele roda onde você quiser e se conecta de
 fora pelo WebSocket, do mesmo jeito que um bot de outro app de chat. A gente entrega o
 token e o endereço; a hospedagem é sua.
 

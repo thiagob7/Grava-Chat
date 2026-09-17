@@ -6,7 +6,7 @@ export const comum = {
     recarregar: "Επαναφόρτωση",
     copiarDetalhes: "Αντιγραφή λεπτομερειών",
     parteQuebrou: "Αυτό το κομμάτι της οθόνης χάλασε.",
-    titulo: "Το Gravaê σκόνταψε.",
+    titulo: "Το Ravox Chat σκόνταψε.",
     detalhe: "Κάτι χάλασε στη διαδρομή και η οθόνη δεν μπόρεσε να σχεδιαστεί. Η συνομιλία σας δεν χάθηκε — όλα είναι στον διακομιστή.",
   },
   perdido: {
@@ -21,7 +21,7 @@ export const comum = {
   },
   avisoDoNavegador: {
     titulo: "Θέλετε ειδοποιήσεις για τα μηνύματα;",
-    detalhe: "Όταν το Gravaê είναι πίσω από άλλο παράθυρο, σας φωνάζει.",
+    detalhe: "Όταν το Ravox Chat είναι πίσω από άλλο παράθυρο, σας φωνάζει.",
   },
   atualizacao: {
     titulo: "Ενημέρωση",
@@ -102,8 +102,8 @@ export const comum = {
   trocar: "Αλλαγή",
   loginNoApp: {
     titulo: "Όλα έτοιμα!",
-    detalhe: "Συνδέθηκες. Επέστρεψε στο Gravaê, η εφαρμογή σε περιμένει ήδη.",
-    abrir: "Άνοιγμα Gravaê",
+    detalhe: "Συνδέθηκες. Επέστρεψε στο Ravox Chat, η εφαρμογή σε περιμένει ήδη.",
+    abrir: "Άνοιγμα Ravox Chat",
     fecharAba: "Μπορείς να κλείσεις αυτή την καρτέλα.",
     falhouTitulo: "Η σύνδεση απέτυχε",
     falhouDetalhe: "Επέστρεψε στην εφαρμογή και δοκίμασε ξανά.",

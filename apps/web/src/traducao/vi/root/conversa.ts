@@ -131,7 +131,7 @@ export const conversa = {
   },
   denuncia: {
     titulo: "Báo cáo tin nhắn",
-    descricao: "Báo cáo được gửi đến đội Gravaê. Hãy kể điều gì đã xảy ra.",
+    descricao: "Báo cáo được gửi đến đội Ravox Chat. Hãy kể điều gì đã xảy ra.",
     de: "Từ {{nome}}",
     semTexto: "(không có nội dung)",
     motivo: "Lý do",

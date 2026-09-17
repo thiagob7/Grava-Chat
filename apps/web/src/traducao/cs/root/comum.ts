@@ -6,7 +6,7 @@ export const comum = {
     recarregar: "Načíst znovu",
     copiarDetalhes: "Zkopírovat podrobnosti",
     parteQuebrou: "Tahle část obrazovky se rozbila.",
-    titulo: "Gravaê klopýtl.",
+    titulo: "Ravox Chat klopýtl.",
     detalhe: "Něco se cestou rozbilo a obrazovka se nedokázala vykreslit. Vaše konverzace se neztratila — vše je na serveru.",
   },
   perdido: {
@@ -21,7 +21,7 @@ export const comum = {
   },
   avisoDoNavegador: {
     titulo: "Chcete upozornění na zprávy?",
-    detalhe: "Když je Gravaê za jiným oknem, ozve se vám.",
+    detalhe: "Když je Ravox Chat za jiným oknem, ozve se vám.",
   },
   atualizacao: {
     titulo: "Aktualizace",
@@ -102,8 +102,8 @@ export const comum = {
   trocar: "Změnit",
   loginNoApp: {
     titulo: "Hotovo!",
-    detalhe: "Jste přihlášeni. Vraťte se do Gravaê, aplikace už na vás čeká.",
-    abrir: "Otevřít Gravaê",
+    detalhe: "Jste přihlášeni. Vraťte se do Ravox Chat, aplikace už na vás čeká.",
+    abrir: "Otevřít Ravox Chat",
     fecharAba: "Tuto kartu už můžete zavřít.",
     falhouTitulo: "Přihlášení se nezdařilo",
     falhouDetalhe: "Vraťte se do aplikace a zkuste se přihlásit znovu.",

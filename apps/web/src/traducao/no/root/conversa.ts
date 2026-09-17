@@ -131,7 +131,7 @@ export const conversa = {
   },
   denuncia: {
     titulo: "Rapporter meldingen",
-    descricao: "Rapporten går til Gravaê-teamet. Fortell hva som skjedde.",
+    descricao: "Rapporten går til Ravox Chat-teamet. Fortell hva som skjedde.",
     de: "Fra {{nome}}",
     semTexto: "(ingen tekst)",
     motivo: "Årsak",

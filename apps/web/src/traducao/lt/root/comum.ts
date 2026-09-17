@@ -6,7 +6,7 @@ export const comum = {
     recarregar: "Įkelti iš naujo",
     copiarDetalhes: "Kopijuoti išsamią informaciją",
     parteQuebrou: "Ši ekrano dalis sugedo.",
-    titulo: "Gravaê suklupo.",
+    titulo: "Ravox Chat suklupo.",
     detalhe: "Kažkas sugedo pakeliui ir ekranas nesugebėjo nusipiešti. Jūsų pokalbis neprarastas — viskas yra serveryje.",
   },
   perdido: {
@@ -21,7 +21,7 @@ export const comum = {
   },
   avisoDoNavegador: {
     titulo: "Norite pranešimų apie žinutes?",
-    detalhe: "Kai Gravaê yra už kito lango, jis jus pašauks.",
+    detalhe: "Kai Ravox Chat yra už kito lango, jis jus pašauks.",
   },
   atualizacao: {
     titulo: "Atnaujinimas",
@@ -102,8 +102,8 @@ export const comum = {
   trocar: "Pakeisti",
   loginNoApp: {
     titulo: "Viskas paruošta!",
-    detalhe: "Prisijungėte. Grįžkite į Gravaê, programa jau laukia.",
-    abrir: "Atidaryti Gravaê",
+    detalhe: "Prisijungėte. Grįžkite į Ravox Chat, programa jau laukia.",
+    abrir: "Atidaryti Ravox Chat",
     fecharAba: "Dabar galite uždaryti šį skirtuką.",
     falhouTitulo: "Prisijungti nepavyko",
     falhouDetalhe: "Grįžkite į programą ir bandykite prisijungti dar kartą.",

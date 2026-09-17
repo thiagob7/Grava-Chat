@@ -167,7 +167,7 @@ export const chamada = {
     tela: "Snimanje zaslona",
     telaDetalhe: "Dijeliti zaslon i prozore.",
     monitoramento: "Nadzor ulaza",
-    monitoramentoDetalhe: "Koristiti pritisni-za-govor i kad je Gravaê u pozadini.",
+    monitoramentoDetalhe: "Koristiti pritisni-za-govor i kad je Ravox Chat u pozadini.",
   },
   jaConectado: {
     titulo: "Već si u ovom pozivu",

@@ -1,6 +1,6 @@
 export const idioma = {
   titulo: "Sąsajos kalba",
-  detalhe: "Kalba, kuria Gravaê su tavimi kalba. Galioja tik šiame įrenginyje.",
+  detalhe: "Kalba, kuria Ravox Chat su tavimi kalba. Galioja tik šiame įrenginyje.",
   procurar: "Ieškoti kalbos…",
   nenhum: "Nėra kalbos tokiu pavadinimu.",
   escolher: "Pasirinkti sąsajos kalbą",

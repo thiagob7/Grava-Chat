@@ -25,7 +25,7 @@ export function emailText(name: string, link: string) {
   return [
     `Oi, ${name}.`,
     "",
-    "Alguém pediu uma senha nova para a sua conta do Gravaê. Se foi você, o link abaixo abre a tela de escolher:",
+    "Alguém pediu uma senha nova para a sua conta do Ravox Chat. Se foi você, o link abaixo abre a tela de escolher:",
     "",
     link,
     "",
@@ -53,7 +53,7 @@ export const resetService = {
 
     await mail.send(
       user.email,
-      "Sua senha nova do Gravaê",
+      "Sua senha nova do Ravox Chat",
       emailText(user.displayName, link),
     );
   },

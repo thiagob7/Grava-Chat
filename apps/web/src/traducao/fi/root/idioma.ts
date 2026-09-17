@@ -1,6 +1,6 @@
 export const idioma = {
   titulo: "Käyttöliittymän kieli",
-  detalhe: "Kieli, jolla Gravaê puhuu sinulle. Koskee vain tätä laitetta.",
+  detalhe: "Kieli, jolla Ravox Chat puhuu sinulle. Koskee vain tätä laitetta.",
   procurar: "Etsi kieltä…",
   nenhum: "Ei kieltä tällä nimellä.",
   escolher: "Valitse käyttöliittymän kieli",

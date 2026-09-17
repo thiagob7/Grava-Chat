@@ -124,7 +124,7 @@ export const servidor = {
     feitoPor: "作者",
     publicadoEm: "發布於",
     denunciarNome: "檢舉 {{nome}}",
-    denunciaDetalhe: "檢舉會送到 Gravaê 團隊。做這個應用程式的人不會知道是你檢舉的。",
+    denunciaDetalhe: "檢舉會送到 Ravox Chat 團隊。做這個應用程式的人不會知道是你檢舉的。",
     denunciaFalhou: "檢舉沒能送出。",
     umMembro: "1 位成員",
     semDescricao: "沒有介紹。",
@@ -216,7 +216,7 @@ export const servidor = {
   },
   denuncia: {
     titulo: "檢舉 {{nome}}",
-    descricao: "檢舉會送給 Gravaê 團隊。請告訴我們發生了什麼。",
+    descricao: "檢舉會送給 Ravox Chat 團隊。請告訴我們發生了什麼。",
     motivo: "原因",
     detalhes: "詳情（選填）",
     enviar: "送出檢舉",

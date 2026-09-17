@@ -1,6 +1,6 @@
 export const idioma = {
   titulo: "表示言語",
-  detalhe: "Gravaê があなたに話しかける言語です。この端末にのみ適用されます。",
+  detalhe: "Ravox Chat があなたに話しかける言語です。この端末にのみ適用されます。",
   procurar: "言語を検索…",
   nenhum: "その名前の言語はありません。",
   escolher: "表示言語を選択",

@@ -232,7 +232,7 @@ const AddDialog: React.FC<{ open: boolean; me: AdminMe; onClose: () => void }> =
       <DialogContent data-gc="configuracoes.administradores-section.dialog-content" className="max-w-lg">
         <DialogHeader data-gc="configuracoes.administradores-section.dialog-header">
           <DialogTitle data-gc="configuracoes.administradores-section.dialog-title">Adicionar administrador</DialogTitle>
-          <DialogDescription data-gc="configuracoes.administradores-section.dialog-description">A pessoa precisa já ter conta no Gravaê com este e-mail.</DialogDescription>
+          <DialogDescription data-gc="configuracoes.administradores-section.dialog-description">A pessoa precisa já ter conta no Ravox Chat com este e-mail.</DialogDescription>
         </DialogHeader>
 
         <DialogBody data-gc="configuracoes.administradores-section.dialog-body" className="space-y-4">

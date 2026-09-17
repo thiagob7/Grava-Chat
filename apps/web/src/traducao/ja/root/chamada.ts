@@ -167,7 +167,7 @@ export const chamada = {
     tela: "画面収録",
     telaDetalhe: "画面とウインドウを共有します。",
     monitoramento: "入力モニタリング",
-    monitoramentoDetalhe: "Gravaê がバックグラウンドでもプッシュトゥトークを使えます。",
+    monitoramentoDetalhe: "Ravox Chat がバックグラウンドでもプッシュトゥトークを使えます。",
   },
   jaConectado: {
     titulo: "すでにこの通話に参加しています",

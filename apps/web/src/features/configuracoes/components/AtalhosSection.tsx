@@ -52,7 +52,7 @@ export const ShortcutsSection: React.FC = () => {
   return (
     <div data-gc="configuracoes.atalhos-section.div" className="max-w-2xl pb-10">
       <p data-gc="configuracoes.atalhos-section.p" className="text-sm text-ink-muted">
-        Os atalhos que o Gravaê entende hoje. Os que têm tecla trocável valem em
+        Os atalhos que o Ravox Chat entende hoje. Os que têm tecla trocável valem em
         qualquer lugar do app; os fixos são do próprio campo de texto e não dá
         pra mexer.
       </p>

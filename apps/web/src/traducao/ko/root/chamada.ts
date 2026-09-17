@@ -167,7 +167,7 @@ export const chamada = {
     tela: "화면 기록",
     telaDetalhe: "화면과 창을 공유합니다.",
     monitoramento: "입력 모니터링",
-    monitoramentoDetalhe: "Gravaê가 백그라운드에 있어도 푸시투토크를 사용합니다.",
+    monitoramentoDetalhe: "Ravox Chat가 백그라운드에 있어도 푸시투토크를 사용합니다.",
   },
   jaConectado: {
     titulo: "이미 이 통화에 참여 중입니다",

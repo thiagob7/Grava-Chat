@@ -124,7 +124,7 @@ export const servidor = {
     feitoPor: "Napravio",
     publicadoEm: "Objavljeno",
     denunciarNome: "Prijavi {{nome}}",
-    denunciaDetalhe: "Prijava ide timu Gravaêa. Onaj tko je napravio aplikaciju neće saznati da si to bio ti.",
+    denunciaDetalhe: "Prijava ide timu Ravox Chata. Onaj tko je napravio aplikaciju neće saznati da si to bio ti.",
     denunciaFalhou: "Prijava se nije mogla poslati.",
     umMembro: "1 član",
     semDescricao: "Bez opisa.",
@@ -216,7 +216,7 @@ export const servidor = {
   },
   denuncia: {
     titulo: "Prijavi {{nome}}",
-    descricao: "Prijava ide timu Gravaê. Reci nam što se dogodilo.",
+    descricao: "Prijava ide timu Ravox Chat. Reci nam što se dogodilo.",
     motivo: "Razlog",
     detalhes: "Detalji (neobavezno)",
     enviar: "Pošalji prijavu",

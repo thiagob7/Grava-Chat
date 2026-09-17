@@ -167,7 +167,7 @@ export const chamada = {
     tela: "Ghi màn hình",
     telaDetalhe: "Chia sẻ màn hình và cửa sổ.",
     monitoramento: "Giám sát đầu vào",
-    monitoramentoDetalhe: "Dùng nhấn-để-nói ngay cả khi Gravaê ở nền.",
+    monitoramentoDetalhe: "Dùng nhấn-để-nói ngay cả khi Ravox Chat ở nền.",
   },
   jaConectado: {
     titulo: "Bạn đã ở trong cuộc gọi này rồi",

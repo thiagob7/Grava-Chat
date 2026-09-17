@@ -124,7 +124,7 @@ export const servidor = {
     feitoPor: "만든이",
     publicadoEm: "공개일",
     denunciarNome: "{{nome}} 신고",
-    denunciaDetalhe: "신고는 Gravaê 팀에 전달됩니다. 앱을 만든 사람에게 신고자가 누구인지 알려지지 않습니다.",
+    denunciaDetalhe: "신고는 Ravox Chat 팀에 전달됩니다. 앱을 만든 사람에게 신고자가 누구인지 알려지지 않습니다.",
     denunciaFalhou: "신고를 보내지 못했습니다.",
     umMembro: "멤버 1명",
     semDescricao: "설명이 없습니다.",
@@ -216,7 +216,7 @@ export const servidor = {
   },
   denuncia: {
     titulo: "{{nome}} 신고",
-    descricao: "신고는 Gravaê 팀에 전달됩니다. 무슨 일이 있었는지 알려주세요.",
+    descricao: "신고는 Ravox Chat 팀에 전달됩니다. 무슨 일이 있었는지 알려주세요.",
     motivo: "사유",
     detalhes: "세부 내용 (선택)",
     enviar: "신고 보내기",

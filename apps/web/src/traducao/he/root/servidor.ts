@@ -124,7 +124,7 @@ export const servidor = {
     feitoPor: "נוצר בידי",
     publicadoEm: "פורסם ב־",
     denunciarNome: "דיווח על {{nome}}",
-    denunciaDetalhe: "הדיווח מגיע לצוות Gravaê. מי שיצר את האפליקציה לא יידע שזה הייתם אתם.",
+    denunciaDetalhe: "הדיווח מגיע לצוות Ravox Chat. מי שיצר את האפליקציה לא יידע שזה הייתם אתם.",
     denunciaFalhou: "לא הצלחנו לשלוח את הדיווח.",
     umMembro: "חבר אחד",
     semDescricao: "ללא תיאור.",
@@ -216,7 +216,7 @@ export const servidor = {
   },
   denuncia: {
     titulo: "דיווח על {{nome}}",
-    descricao: "הדיווח מגיע לצוות Gravaê. ספרו לנו מה קרה.",
+    descricao: "הדיווח מגיע לצוות Ravox Chat. ספרו לנו מה קרה.",
     motivo: "סיבה",
     detalhes: "פרטים (לא חובה)",
     enviar: "שליחת דיווח",

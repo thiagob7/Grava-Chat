@@ -124,7 +124,7 @@ export const servidor = {
     feitoPor: "बनाया",
     publicadoEm: "प्रकाशित",
     denunciarNome: "{{nome}} की शिकायत करें",
-    denunciaDetalhe: "शिकायत Gravaê की टीम तक जाती है। ऐप बनाने वाले को पता नहीं चलेगा कि यह आप थे।",
+    denunciaDetalhe: "शिकायत Ravox Chat की टीम तक जाती है। ऐप बनाने वाले को पता नहीं चलेगा कि यह आप थे।",
     denunciaFalhou: "शिकायत भेजी नहीं जा सकी।",
     umMembro: "1 सदस्य",
     semDescricao: "कोई विवरण नहीं।",
@@ -216,7 +216,7 @@ export const servidor = {
   },
   denuncia: {
     titulo: "{{nome}} की रिपोर्ट करें",
-    descricao: "रिपोर्ट Gravaê टीम को जाती है। बताएँ क्या हुआ।",
+    descricao: "रिपोर्ट Ravox Chat टीम को जाती है। बताएँ क्या हुआ।",
     motivo: "कारण",
     detalhes: "विवरण (वैकल्पिक)",
     enviar: "रिपोर्ट भेजें",

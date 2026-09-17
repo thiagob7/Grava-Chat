@@ -6,7 +6,7 @@ export const comum = {
     recarregar: "Neu laden",
     copiarDetalhes: "Details kopieren",
     parteQuebrou: "Dieser Teil des Bildschirms ist kaputtgegangen.",
-    titulo: "Gravaê ist gestolpert.",
+    titulo: "Ravox Chat ist gestolpert.",
     detalhe: "Unterwegs ist etwas kaputtgegangen und der Bildschirm konnte sich nicht zeichnen. Deine Unterhaltung ist nicht verloren — alles liegt auf dem Server.",
   },
   perdido: {
@@ -21,7 +21,7 @@ export const comum = {
   },
   avisoDoNavegador: {
     titulo: "Möchtest du über Nachrichten benachrichtigt werden?",
-    detalhe: "Wenn Gravaê hinter einem anderen Fenster liegt, meldet es sich.",
+    detalhe: "Wenn Ravox Chat hinter einem anderen Fenster liegt, meldet es sich.",
   },
   atualizacao: {
     titulo: "Aktualisierung",
@@ -102,8 +102,8 @@ export const comum = {
   trocar: "Ändern",
   loginNoApp: {
     titulo: "Alles erledigt!",
-    detalhe: "Du bist angemeldet. Geh zurück zu Gravaê, die App wartet schon auf dich.",
-    abrir: "Gravaê öffnen",
+    detalhe: "Du bist angemeldet. Geh zurück zu Ravox Chat, die App wartet schon auf dich.",
+    abrir: "Ravox Chat öffnen",
     fecharAba: "Du kannst diesen Tab jetzt schließen.",
     falhouTitulo: "Anmeldung fehlgeschlagen",
     falhouDetalhe: "Geh zurück zur App und versuch es noch einmal.",

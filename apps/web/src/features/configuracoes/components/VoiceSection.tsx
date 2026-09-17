@@ -63,7 +63,7 @@ const ShortcutNotice: React.FC = () => {
           Falta liberar o <b data-gc="configuracoes.voice-section.b">{bridge.nameSystem}</b> em{" "}
           <b data-gc="configuracoes.voice-section.b--2">Ajustes do Sistema → Privacidade e Segurança → Acessibilidade</b>.
           Sem isso o macOS não entrega a tecla quando a janela está atrás do
-          jogo — e o push-to-talk volta a valer só com o Gravaê em foco.
+          jogo — e o push-to-talk volta a valer só com o Ravox Chat em foco.
         </p>
         <Button data-gc="configuracoes.voice-section.button"
           className="mt-2"
@@ -78,7 +78,7 @@ const ShortcutNotice: React.FC = () => {
           Abrir os ajustes
         </Button>
         <p data-gc="configuracoes.voice-section.p--3" className="mt-2 text-ink-faint">
-          Depois de marcar a caixinha, reabra o Gravaê.
+          Depois de marcar a caixinha, reabra o Ravox Chat.
         </p>
       </div>
     );
@@ -88,7 +88,7 @@ const ShortcutNotice: React.FC = () => {
     return (
       <p data-gc="configuracoes.voice-section.p--4" className="mt-3 rounded bg-idle/10 px-3 py-2 text-xs text-idle">
         Não consegui ligar o atalho global nesta máquina. O push-to-talk
-        continua funcionando com a janela do Gravaê em foco.
+        continua funcionando com a janela do Ravox Chat em foco.
       </p>
     );
   }
@@ -487,7 +487,7 @@ export const VoiceSection: React.FC<{ part?: "audio" | "video" }> = ({
             {!cameras.length && (
               <p data-gc="configuracoes.voice-section.p--17" className="mt-2 text-xs text-ink-faint">
                 Nenhuma câmera encontrada. Os nomes só aparecem depois que você
-                der permissão de vídeo ao Gravaê uma vez.
+                der permissão de vídeo ao Ravox Chat uma vez.
               </p>
             )}
           </Section>

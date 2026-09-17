@@ -167,7 +167,7 @@ export const chamada = {
     tela: "Ekran kaydı",
     telaDetalhe: "Ekranı ve pencereleri paylaşmak.",
     monitoramento: "Giriş izleme",
-    monitoramentoDetalhe: "Gravaê arka plandayken bile bas-konuş kullanmak.",
+    monitoramentoDetalhe: "Ravox Chat arka plandayken bile bas-konuş kullanmak.",
   },
   jaConectado: {
     titulo: "Bu aramada zaten varsın",
