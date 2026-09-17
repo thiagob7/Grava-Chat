@@ -25,7 +25,7 @@ export async function prepareMac(dmg: string, versionExpected: string): Promise<
       /<key>CFBundleShortVersionString<\/key>\s*<string>([^<]+)<\/string>/,
     )?.[1];
 
-    if (identifier !== "io.gravae.chat") throw new Error("O app baixado não é o Gravaê.");
+    if (identifier !== "io.gravae.chat") throw new Error("O app baixado não é o Ravox Chat.");
     if (version !== versionExpected) {
       throw new Error(`O app baixado diz ${version}, e a release diz ${versionExpected}.`);
     }

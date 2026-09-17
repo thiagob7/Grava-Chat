@@ -169,7 +169,7 @@ export function createUpdater(onChange: (state: UpdateState) => void) {
 
         if (!packet) {
           throw new Error(
-            "Não achei o Gravaê Chat.app no disco. Se você abriu o app de dentro do instalador, arraste-o para a pasta Aplicativos primeiro.",
+            "Não achei o Ravox Chat instalado no disco. Se você abriu o app de dentro do instalador, arraste-o para a pasta Aplicativos primeiro.",
           );
         }
 

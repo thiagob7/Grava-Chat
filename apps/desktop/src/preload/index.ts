@@ -16,7 +16,7 @@ const bridge: BridgeDesktop = {
   isDesktop: true as const,
   platform: process.platform,
   nameSystem:
-    process.argv.find((a) => a.startsWith("--gravae-nome="))?.split("=")[1] ?? "Gravaê",
+    process.argv.find((a) => a.startsWith("--gravae-nome="))?.split("=")[1] ?? "Ravox Chat",
 
   versions: (): Promise<AppVersions> => ipcRenderer.invoke("app:versoes"),
 
