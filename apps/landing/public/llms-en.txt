@@ -1,4 +1,4 @@
-# Gravaê — developer documentation
+# Ravox Chat — developer documentation
 
 One base URL, one header: `Authorization: Bot <token>`.
 The full documentation is written in Portuguese; this index is the map.

@@ -1,4 +1,4 @@
-# Gravaê — documentação para desenvolvedores
+# Ravox Chat — documentação para desenvolvedores
 
 Tudo abaixo de um endereço só, com o cabeçalho `Authorization: Bot <token>`.
 
