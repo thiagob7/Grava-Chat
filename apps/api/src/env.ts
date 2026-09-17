@@ -38,7 +38,7 @@ const schema = z.object({
   ADMIN_EMAILS: z.string().default(""),
 
   GITHUB_TOKEN: z.string().default(""),
-  GITHUB_REPOSITORY: z.string().default("thiagob7/Grava-Chat"),
+  GITHUB_REPOSITORY: z.string().default("thiagob7/Ravox-Chat"),
 
   COOKIE_BETWEEN_SITES: z.stringbool().default(false),
 

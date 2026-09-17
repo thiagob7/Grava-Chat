@@ -4,7 +4,7 @@ import Link from "next/link";
 import { LimitsTable } from "~/components/docs/TabelaDeLimites";
 import { APP_URL as APP } from "~/lib/brand";
 
-const REPO = "https://github.com/thiagob7/Grava-Chat";
+const REPO = "https://github.com/thiagob7/Ravox-Chat";
 
 const link = "text-brand transition hover:text-brand-hover";
 const forte = "font-semibold text-ink";

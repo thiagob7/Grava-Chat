@@ -4,7 +4,7 @@ export interface Published {
   publishedAt: string;
 }
 
-const REPO = "thiagob7/Grava-Chat";
+const REPO = "thiagob7/Ravox-Chat";
 
 export const LINK_MAC = `https://github.com/${REPO}/releases/latest/download/gravae-chat-mac.dmg`;
 export const LINK_WINDOWS = `https://github.com/${REPO}/releases/latest/download/gravae-chat-win.exe`;

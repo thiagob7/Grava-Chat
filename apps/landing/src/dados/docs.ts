@@ -1,5 +1,5 @@
 export { API_URL as API, APP_URL as APP } from "~/lib/brand";
-export const REPO = "https://github.com/thiagob7/Grava-Chat";
+export const REPO = "https://github.com/thiagob7/Ravox-Chat";
 
 export type Page = {
   href: string;

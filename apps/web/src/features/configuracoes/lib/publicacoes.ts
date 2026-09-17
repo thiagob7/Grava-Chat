@@ -30,7 +30,7 @@ export const ENVIRONMENTS: Environment[] = [
   },
 ];
 
-export const REPOSITORY = "thiagob7/Grava-Chat";
+export const REPOSITORY = "thiagob7/Ravox-Chat";
 export const API_FLOW = "api.yml";
 
 export interface Post {

@@ -12,7 +12,7 @@ import { writeSwap, prepareMac } from "./atualizacao-mac.js";
 import { isDev } from "./config.js";
 import { isMoreNew } from "./versao.js";
 
-const REPO = "thiagob7/Grava-Chat";
+const REPO = "thiagob7/Ravox-Chat";
 const FILE = process.platform === "darwin" ? "gravae-chat-mac.dmg" : "gravae-chat-win.exe";
 
 const INTERVAL_MS = 6 * 60 * 60 * 1000;
